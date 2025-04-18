@@ -1,0 +1,56 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "next",
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:react/recommended",
+    "plugin:@next/next/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:import/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings"
+  ],
+  "plugins": ["prettier", "react", "import"],
+  "parserOptions": {
+    "sourceType": "module",
+    "allowImportExportEverywhere": true,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 6
+  },
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx"] }],
+    "react/jsx-indent-props": [1, 2],
+    "react/jsx-indent": [1, 2],
+    "react/prefer-stateless-function": [1],
+    "react/static-property-placement": [1, "property assignment"],
+    "no-undef": [1],
+    "import/first": "error",
+    "import/newline-after-import": "off",
+    "import/no-duplicates": "error",
+    "import/no-extraneous-dependencies": 0,
+    "react/forbid-prop-types": 0,
+    "no-nested-ternary": "off",
+    "jsx-a11y/click-events-have-key-events": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [["@*", "./src/*"]],
+        // INI BIAR BISA FORMAT ON SAVE DI TSX JANGAN LUPA DI TAMBAHIN!!
+        "extensions": [".ts", ".js", ".jsx", ".tsx", ".json"]
+      }
+    }
+  }
+}
