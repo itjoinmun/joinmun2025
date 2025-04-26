@@ -1,5 +1,5 @@
-import Welcome from "@/modules/Welcome";
-import { Test } from "@/modules/Test";
+import { Test } from "@/modules/temp";
+import Welcome from "@/modules/welcome";
 
 export default function Home() {
   return (
