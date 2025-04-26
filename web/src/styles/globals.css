@@ -14,9 +14,14 @@
   --color-red-dark: var(--color-foreground);
   --color-red-dark-hover: #661310;
   --color-gray: #2C2C2C;
+  --color-red-coming-soon: #661310;
 }
 
 @layer utilities {
+  .font-outfit {
+    font-family: var(--font-outfit), sans-serif;
+  }
+
   .text-gradient {
     @apply bg-gradient-to-r bg-clip-text text-transparent;
   }
