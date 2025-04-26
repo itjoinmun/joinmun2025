@@ -1,6 +1,6 @@
 export default function Welcome() {
   return (
-    <div className="flex min-h-[100vh] w-full flex-col items-center justify-center bg-[#242424] text-white">
+    <div className="flex min-h-[100vh] w-full flex-col items-center justify-center">
       <h1 className="z-[10] text-center text-3xl font-bold lg:text-5xl">
         Welcome IT Joinmun!
         <br />
