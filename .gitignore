@@ -1,1 +1,35 @@
 .idea
+# Binaries
+*.exe
+*.out
+*.app
+
+# Build cache
+/vendor/
+/bin/
+/pkg/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+*.test
+*.cover
+coverage.out
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+# System files
+.DS_Store
+
+certs/
+
+prometheus/data/
