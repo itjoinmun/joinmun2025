@@ -4,6 +4,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+body {
+  overflow-x: hidden;
+  width: 100vw;
+}
+
 @theme {
   --color-background: #232222 !important;
   --color-foreground: #801714;
@@ -15,6 +20,14 @@
   --color-red-dark-hover: #661310;
   --color-gray: #2C2C2C;
   --color-red-coming-soon: #661310;
+  --color-orange-blur: #FB3706;
+
+  /* Breakpoints */
+  --breakpoint-3xs: 20rem;
+  --breakpoint-2xs: 24rem;
+  --breakpoint-xs: 32rem;
+  --breakpoint-3xl: 108rem;
+  --breakpoint-4x: 114rem;
 }
 
 @layer utilities {
@@ -22,7 +35,11 @@
     font-family: var(--font-outfit), sans-serif;
   }
 
-  .text-gradient {
+  .text-gradient-top {
+    @apply bg-gradient-to-t bg-clip-text text-transparent;
+  }
+
+  .text-gradient-right {
     @apply bg-gradient-to-r bg-clip-text text-transparent;
   }
 

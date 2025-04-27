@@ -1,4 +1,4 @@
-import { cn } from "@/utils/helpers/cn";
+import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
 
 export const Test = () => {
