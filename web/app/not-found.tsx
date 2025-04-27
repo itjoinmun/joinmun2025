@@ -13,7 +13,7 @@ const NotFound = () => {
         </h1>
         <h1 className="text-xl font-bold">Page Not Found!</h1>
         <h2 className="mb-4">
-          We couldn't locate the page. It might've been updated or no longer available.
+          We couldn&#39;t locate the page. It might&#39;ve been updated or no longer available.
         </h2>
         <Link href={`/`} className={buttonVariants({ variant: "outline" })}>
           Go Home
