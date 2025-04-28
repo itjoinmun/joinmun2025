@@ -3,10 +3,12 @@ import Link from "next/link";
 
 const Logo = () => {
   return (
-    <Link href={`/`} className="flex gap-3 items-center">
-      <Image src={`/LOGO.png`} alt="JOINMUN" width={100} height={100} className="size-6" />
+    <Link href={`/`} className="flex items-center gap-3">
+      <Image src={`/LOGO.png`} alt="JOINMUN" width={100} height={100} priority className="size-6" />
 
-      <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
+      <h1 className="font-bold text-nowrap">
+        JOINMUN <span className="hidden md:inline">2025</span>
+      </h1>
     </Link>
   );
 };

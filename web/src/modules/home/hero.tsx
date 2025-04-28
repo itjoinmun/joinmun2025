@@ -23,9 +23,9 @@ const Hero = () => {
   ];
 
   return (
-    <main id="hero" className="relative flex min-h-screen items-end">
+    <main id="hero" className="relative flex min-h-[85vh] md:min-h-screen items-end">
       <NavbarResolver />
-      <Container className="max-w-[1536px] justify-end pb-12">
+      <Container className="max-w-8xl justify-end pb-12">
         <div className="h-24" />
         <h1 className="max-w-lg text-3xl/normal font-bold md:text-4xl/normal">
           Your Chance to Take on Real-World Issues and Shape Meaningful Change

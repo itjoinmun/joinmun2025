@@ -6,7 +6,7 @@ const ThemeUnesco = () => {
     <main className="bg-background relative -z-10 overflow-hidden">
       <Container className="gap-2">
         <SubHeading>Why The Cosmological Axis of Yogyakarta</SubHeading>
-        <section className="flex flex-col gap-2 md:flex-row md:justify-between md:gap-6">
+        <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
           <Heading>Recognized by UNESCO</Heading>
         </section>
       </Container>

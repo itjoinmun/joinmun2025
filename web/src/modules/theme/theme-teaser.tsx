@@ -8,10 +8,10 @@ const ThemeTeaser = () => {
     <main className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b">
       <Container className="gap-2">
         <SubHeading>Teaser</SubHeading>
-        <section className="flex w-full flex-col gap-2 md:flex-row md:justify-between md:gap-6">
+        <section className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-12">
           <Heading>Whispers of The Theme</Heading>
 
-          <div className="text-sm text-white md:max-w-lg">
+          <div className="text-sm text-white ">
             Discover the essence behind the theme, before it unfolds in full. A quiet nod to
             something greater.
           </div>

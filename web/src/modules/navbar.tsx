@@ -12,33 +12,32 @@ import { cn } from "@/utils/cn";
 import { ChevronRight, Menu, X } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Logo from "../components/logo";
 import { Button, buttonVariants } from "../components/ui/button";
-import Container from "../components/ui/container";
+import Container from "@/components/ui/container";
 
 const NAV_LINKS = [
   {
     name: "Theme",
-    href: "#theme",
+    href: "/#theme",
   },
   {
     name: "Rundown",
-    href: "#rundown",
+    href: "/#rundown",
   },
   {
     name: "Councils",
-    href: "#councils",
+    href: "/#councils",
   },
   {
     name: "Pricing",
-    href: "#pricing",
+    href: "/#pricing",
   },
 ];
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("#hero");
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -48,7 +47,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`bg-background fixed z-40 flex h-16 items-center transition-all duration-500 ease-in-out ${
+      className={`bg-background fixed z-40 flex h-16 items-center transition-all duration-500 ease-out ${
         isScrolled
           ? "inset-x-0 top-0 md:inset-x-5 md:top-5 md:rounded-2xl md:shadow-2xl"
           : "inset-x-0 top-0"
@@ -87,21 +86,21 @@ const MobileNav = () => (
   <div className="flex md:hidden">
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost">
-          <Menu />
+        <Button variant="ghost" className="">
+          <Menu className="size-5" />
         </Button>
       </SheetTrigger>
       <SheetContent>
-        <SheetHeader>
+        <SheetHeader className="sr-only">
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <SheetDescription className="sr-only">Sidebar for mobile view</SheetDescription>
         </SheetHeader>
-        <Container className="mb-8 h-full px-8">
+        <Container className="mb-8 py-5 justify-between h-full px-8">
           <section className="flex w-full items-center justify-between gap-4 border-b pb-4">
             <Logo />
             <SheetClose asChild>
               <Button variant="outline" size={`icon`} className="size-5 rounded-xs border-[1.5px]">
-                <X className="size-3" />
+                <X className="size-4" />
               </Button>
             </SheetClose>
           </section>
@@ -111,7 +110,7 @@ const MobileNav = () => (
               <Link
                 href={nav.href}
                 key={i}
-                className={`flex w-full items-center justify-between gap-4 text-lg`}
+                className={`flex w-full items-center justify-between gap-4 text-base`}
               >
                 <div>{nav.name}</div>
                 <ChevronRight className="size-5" />

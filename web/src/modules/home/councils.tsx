@@ -1,16 +1,28 @@
+"use client";
 import { Heading, SubHeading } from "@/components/section-heading";
 import Container from "@/components/ui/container";
 import Image from "next/image";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Council, COUNCILS } from "@/utils/helpers/councils";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const Councils = () => {
   return (
-    <main id="councils" className="relative z-0 overflow-hidden">
+    <main id="councils" className="relative z-0 overflow-hidden pb-12">
       <Container className="gap-2">
         <SubHeading>Explore our</SubHeading>
-        <section className="flex flex-col gap-2 md:flex-row md:justify-between md:gap-6">
+        <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
           <Heading>Councils</Heading>
 
-          <div className="text-sm text-white md:max-w-2xl">
+          <div className="text-sm text-white md:col-span-2">
             At JoinMUN, each council is thoughtfully curated to reflect pressing real-world issues,
             offering delegates the space to debate. Our councils are designed to stimulate critical
             thinking, encourage collaboration, and develop articulate, confident leaders.
@@ -18,16 +30,68 @@ const Councils = () => {
         </section>
       </Container>
 
+      <Carousel
+        opts={{
+          align: "center",
+          breakpoints: {
+            "(min-width: 640px)": { align: "end" },
+          },
+        }}
+        className="relative w-full"
+      >
+        <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
+          {COUNCILS.map((theme, index) => (
+            <CarouselItem
+              key={index}
+              className="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4"
+            >
+              <CouncilCard {...theme} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="block md:hidden" />
+        <CarouselNext className="right-2 z-10 block md:hidden" />
+      </Carousel>
+
+      {/* image + overlay */}
       <Image
         src={`/assets/home/councils.webp`}
         alt="JOINMUN Council Image"
         fill
         sizes="80%"
-        className="object-cover -z-10"
+        className="-z-10 object-cover"
       />
-      <div className="absolute inset-0 -z-10 bg-black/50" />
+      <div className="absolute inset-0 -z-10 bg-black/60" />
     </main>
   );
 };
+
+const CouncilCard = (props: Council) => (
+  <article className="bg-gold/5 relative flex h-80 flex-col justify-end overflow-hidden rounded-sm">
+    <Link href={`/councils/${props.slug}`} className="absolute top-4 right-4 w-fit">
+      <Button variant={`insideCard`} className="text-xs hover:cursor-pointer">
+        Read More <ArrowRight />
+      </Button>
+    </Link>
+
+    <div className="z-10 flex w-full items-center-safe gap-3 bg-black/70 p-4 backdrop-blur-sm">
+      <aside className="relative size-14 shrink-0 overflow-hidden rounded-full bg-neutral-200">
+        <Image
+          src={`/assets/councils/${props.src}`}
+          alt={`${props.name} Image`}
+          fill
+          sizes="50%"
+          className="pointer-events-none object-cover"
+        />
+      </aside>
+      <summary className="flex flex-col gap-1 text-white">
+        <h1 className="text-2xl font-bold">{props.name}</h1>
+        <h6 className="text-sm text-pretty">{props.fullname}</h6>
+      </summary>
+    </div>
+
+    <Image src={`/lebron.webp`} alt={props.name} fill sizes="50%" className="-z-10 object-cover" />
+  </article>
+);
 
 export default Councils;

@@ -8,14 +8,16 @@
   --color-background: #232222 !important;
   --color-foreground: #801714;
 
-  --color-gold: #EBCD2E;
-  --color-red: #FF0000;
-  --color-red-normal: #AA1F1B;
+  --color-gold: #ebcd2e;
+  --color-red: #ff0000;
+  --color-red-normal: #aa1f1b;
   --color-red-dark: var(--color-foreground);
   --color-red-dark-hover: #661310;
-  --color-gray: #2C2C2C;
+  --color-gray: #2c2c2c;
   --color-gray-light: #585857;
   --color-red-coming-soon: #661310;
+
+  --container-8xl: 1536px;
 }
 
 @layer utilities {
@@ -28,10 +30,19 @@
   }
 
   .text-gradient-gold {
-    @apply bg-gradient-to-r from-gold w-fit to-white bg-clip-text text-transparent;
+    @apply from-gold w-fit bg-gradient-to-r to-white bg-clip-text text-transparent;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
-
 
 :root {
   /*--background: oklch(1 0 0);*/
@@ -148,5 +159,3 @@
     @apply bg-background text-white;
   }
 }
-
-

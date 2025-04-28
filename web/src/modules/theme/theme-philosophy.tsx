@@ -1,15 +1,16 @@
 import BatikPattern from "@/components/batik-pattern";
 import { Heading, SubHeading } from "@/components/section-heading";
 import Container from "@/components/ui/container";
+import { ThemeCarousel } from "../home/home-theme";
 
 const ThemePhilosophy = () => {
   return (
-    <main className="from-foreground to-red-normal relative -z-10 overflow-hidden bg-gradient-to-b">
+    <main className="from-foreground to-red-normal pb-12 relative z-0 overflow-hidden bg-gradient-to-b">
       <Container className="gap-2">
-        <section className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between md:gap-6">
+        <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
           <Heading>Sumbu Filosofis</Heading>
 
-          <div className="text-sm text-white md:max-w-2xl">
+          <div className="text-sm md:col-span-2 text-white">
             The Imaginary Axis in Yogyakarta symbolizes two journeys in human life, the journey from
             Panggung Krapyak to the Keraton represents the process of personal growth , where one
             discovers their life&apos;s lessons. Meanwhile, the journey from Tugu to the Keraton
@@ -19,6 +20,8 @@ const ThemePhilosophy = () => {
           </div>
         </section>
       </Container>
+
+      <ThemeCarousel />
 
       <BatikPattern />
     </main>
