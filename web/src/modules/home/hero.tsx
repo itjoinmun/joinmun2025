@@ -3,7 +3,7 @@ import Container from "@/components/ui/container";
 import { cn } from "@/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
-import NavbarResolver from "./navbar-resolver";
+import NavbarResolver from "../navbar-resolver";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 
 const Hero = () => {
@@ -23,11 +23,11 @@ const Hero = () => {
   ];
 
   return (
-    <main className="relative flex min-h-screen items-end">
+    <main id="hero" className="relative flex min-h-screen items-end">
       <NavbarResolver />
-      <Container className="justify-end pb-12">
+      <Container className="max-w-[1536px] justify-end pb-12">
         <div className="h-24" />
-        <h1 className="max-w-lg text-3xl font-bold md:text-4xl">
+        <h1 className="max-w-lg text-3xl/normal font-bold md:text-4xl/normal">
           Your Chance to Take on Real-World Issues and Shape Meaningful Change
         </h1>
         <h3>Join an experience that grows your voice and sharpens your mind.</h3>
@@ -57,13 +57,7 @@ const Hero = () => {
           </div>
 
           <div className="flex h-fit items-center justify-center gap-3 md:justify-start">
-            <Image
-              src={`/LOGO.png`}
-              alt="Logo"
-              width={100}
-              height={100}
-              className="size-8 md:size-6"
-            />
+            <Image src={`/MUN-UGM.png`} alt="Logo" width={100} height={100} className="size-8" />
             <h4 className="text-center text-xs font-semibold md:text-base">
               Model United Nations Universitas Gadjah Mada
             </h4>
@@ -74,8 +68,9 @@ const Hero = () => {
       {/* image + overlay */}
       <Image
         src={`/assets/home/hero.webp`}
-        alt="LeBron James"
+        alt="JOINMUN Image"
         fill
+        sizes="100%"
         className="-z-10 object-cover"
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/10 to-black/10" />

@@ -11,19 +11,19 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         primary: "bg-red-normal text-primary-foreground shadow-xs hover:bg-red-dark",
-        gray: "bg-gray text-primary-foreground shadow-xs hover:bg-white hover:text-black",
+        gray: "bg-gray text-primary-foreground shadow-xs hover:bg-gray/80",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "border border-gray-light bg-background shadow-xs hover:bg-gray-light/20 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         insideCard:
           "bg-background/40 text-primary-foreground hover:bg-white hover:text-black shadow-xs",
         gradient:
           "bg-gradient-to-t from-white/20 to-white text-foreground hover:text-red-dark-hover hover:bg-primary-foreground",
-        link: "text-white hover:text-red"
+        link: "text-white hover:text-white/80",
+        ghost:
+          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         // destructive:
         //   "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         //   "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        // ghost:
-        //   "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

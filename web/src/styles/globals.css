@@ -14,6 +14,7 @@
   --color-red-dark: var(--color-foreground);
   --color-red-dark-hover: #661310;
   --color-gray: #2C2C2C;
+  --color-gray-light: #585857;
   --color-red-coming-soon: #661310;
 }
 
@@ -27,7 +28,7 @@
   }
 
   .text-gradient-gold {
-    @apply bg-gradient-to-r from-gold to-white bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-gold w-fit to-white bg-clip-text text-transparent;
   }
 }
 
@@ -141,7 +142,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 scroll-smooth;
   }
   body {
     @apply bg-background text-white;
