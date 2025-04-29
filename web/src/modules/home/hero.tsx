@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import NavbarResolver from "../navbar-resolver";
 import { NumberTicker } from "@/components/magicui/number-ticker";
+import * as motion from "motion/react-client";
 
 const Hero = () => {
   const IDK_SECTION = [
@@ -23,25 +24,45 @@ const Hero = () => {
   ];
 
   return (
-    <main id="hero" className="relative flex min-h-[85vh] md:min-h-screen items-end">
+    <main id="hero" className="relative flex min-h-[85vh] items-end md:min-h-screen">
       <NavbarResolver />
       <Container className="max-w-8xl justify-end pb-12">
         <div className="h-24" />
-        <h1 className="max-w-lg text-3xl/normal font-bold md:text-4xl/normal">
-          Your Chance to Take on Real-World Issues and Shape Meaningful Change
-        </h1>
-        <h3>Join an experience that grows your voice and sharpens your mind.</h3>
-        <Link
-          href={`/signup`}
-          className={cn(buttonVariants({ variant: "primary" }), "mt-2 mb-8 w-fit text-sm md:mb-0")}
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0, type: "spring" }}
+          className="max-w-lg text-3xl/normal font-bold md:text-4xl/normal"
         >
-          Register Now
-        </Link>
+          Your Chance to Take on Real-World Issues and Shape Meaningful Change
+        </motion.h1>
+        <motion.h3
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.2, type: "spring" }}
+        >
+          Join an experience that grows your voice and sharpens your mind.
+        </motion.h3>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4, type: "tween" }}
+        >
+          <Link
+            href={`/signup`}
+            className={cn(
+              buttonVariants({ variant: "primary" }),
+              "mt-2 mb-8 w-fit text-sm md:mb-0",
+            )}
+          >
+            Register Now
+          </Link>
+        </motion.div>
 
         <section className="flex w-full flex-col justify-between gap-6 md:flex-row-reverse md:items-end">
           <div className="mx-auto flex w-full max-w-xs items-end justify-between md:mr-0 md:ml-auto">
             {IDK_SECTION.map((section, index) => (
-              <div key={index} className="flex flex-col items-center gap-2">
+              <div key={index} className="flex min-w-20 flex-col items-center gap-2">
                 <h1 className="text-center text-xl font-bold md:text-2xl">
                   <NumberTicker
                     className="text-white"
@@ -56,12 +77,17 @@ const Hero = () => {
             ))}
           </div>
 
-          <div className="flex h-fit items-center justify-center gap-3 md:justify-start">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1.3, type: "tween" }}
+            className="flex h-fit items-center justify-center gap-3 md:justify-start"
+          >
             <Image src={`/MUN-UGM.png`} alt="Logo" width={100} height={100} className="size-8" />
-            <h4 className="text-center text-xs font-semibold md:text-base">
+            <h4 className="text-center text-xs font-semibold text-pretty md:text-start md:text-base">
               Model United Nations Universitas Gadjah Mada
             </h4>
-          </div>
+          </motion.div>
         </section>
       </Container>
 
@@ -73,7 +99,11 @@ const Hero = () => {
         sizes="100%"
         className="-z-10 object-cover"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/10 to-black/10" />
+      <motion.div 
+      initial={{ opacity: 0}}
+      animate={{ opacity: 100 }}
+      transition={{ duration: 1}}
+      className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/30 to-black/10" />
     </main>
   );
 };

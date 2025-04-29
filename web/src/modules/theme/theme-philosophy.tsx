@@ -10,7 +10,7 @@ const ThemePhilosophy = () => {
         <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
           <Heading>Sumbu Filosofis</Heading>
 
-          <div className="text-sm md:col-span-2 text-white">
+          <div className="text-sm text-pretty md:col-span-2 text-white">
             The Imaginary Axis in Yogyakarta symbolizes two journeys in human life, the journey from
             Panggung Krapyak to the Keraton represents the process of personal growth , where one
             discovers their life&apos;s lessons. Meanwhile, the journey from Tugu to the Keraton

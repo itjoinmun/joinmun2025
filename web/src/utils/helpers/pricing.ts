@@ -1,6 +1,16 @@
 export type PriceOptions = "single" | "double" | "team" | "observer" | "advisor";
 
-export const PRICES = {
+export type PriceOptionType = {
+  name: string;
+  description: string;
+  package: {
+    name: string;
+    price: number;
+    points: string[];
+  }[];
+};
+
+export const PRICES: Record<PriceOptions, PriceOptionType> = {
   ["single"]: {
     name: "Single Delegates",
     description:

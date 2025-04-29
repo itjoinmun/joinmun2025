@@ -11,7 +11,7 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         primary: "bg-red-normal border-none text-primary-foreground shadow-xs hover:bg-red-dark",
-        gray: "bg-gray text-primary-foreground shadow-xs hover:bg-gray/80",
+        gray: "bg-gray text-white shadow-xs hover:bg-gray/80",
         outline:
           "border border-gray-light bg-background shadow-xs hover:bg-gray-light/20 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         insideCard:

@@ -9,7 +9,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         alt="Batik Pattern"
         height={465}
         width={1451}
-        className="absolute inset-x-0 pointer-events-none bottom-0 z-0 rotate-180 opacity-25"
+        className="absolute inset-x-0 pointer-events-none bottom-0 -z-10 rotate-180 opacity-25"
       />
     </main>
   );

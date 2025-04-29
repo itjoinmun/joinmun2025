@@ -1,7 +1,9 @@
 import BackLink from "@/components/back-link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/utils/cn";
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const AuthTemplate = ({
   children,
@@ -15,11 +17,12 @@ const AuthTemplate = ({
   return (
     <main className="relative z-0 grid min-h-screen auto-rows-min grid-cols-1 md:auto-rows-auto md:grid-cols-2">
       {/* back button on top left */}
-      <BackLink className="absolute top-8 left-8 z-10 w-fit">
-        <Button variant="outline" className="">
-          <ChevronLeft className="size-4" /> Back
-        </Button>
-      </BackLink>
+      <Link
+        href="/"
+        className={cn(buttonVariants({ variant: "outline" }), "absolute top-8 left-8 z-10 w-fit")}
+      >
+        <ChevronLeft className="size-4" /> Back
+      </Link>
 
       {/* image + overlay section */}
       <section className="relative flex h-[40vh] items-end justify-center overflow-clip md:order-2 md:h-full">
@@ -37,7 +40,7 @@ const AuthTemplate = ({
       </section>
 
       {/* form and other children elements */}
-      <section className="relative flex h-full flex-col items-center justify-start gap-6 overflow-x-hidden p-6 text-center md:justify-center md:overflow-y-auto md:p-8">
+      <section className="no-scrollbar relative flex h-screen flex-col items-center justify-start gap-6 overflow-x-hidden p-6 text-center md:justify-center md:overflow-y-auto md:p-8">
         {children}
       </section>
     </main>

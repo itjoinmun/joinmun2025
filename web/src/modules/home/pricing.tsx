@@ -35,7 +35,7 @@ const Pricing = () => {
             <h1 className="text-xl leading-snug font-bold md:text-2xl">{PRICES[active].name}</h1>
             <p className="leading-snug">{PRICES[active].description}</p>
 
-            <div className="mt-10 grid w-full auto-rows-fr grid-cols-1 gap-2 md:grid-cols-3 md:gap-6">
+            <div className="mt-10 grid w-full auto-rows-fr grid-cols-1 gap-10 min-h-[50vh] md:grid-cols-3 md:gap-6">
               {PRICES[active].package.map((option, index) => (
                 <PricingCard key={index} {...option} />
               ))}
@@ -58,10 +58,10 @@ const PricingCard = ({
 }) => (
   <article className="bg-gray border-gray-light flex flex-col items-center gap-2 rounded-sm border p-8 text-center">
     <h2 className="text-lg font-bold">{name}</h2>
-    <h1 className="text-4xl font-bold relative">
+    <h1 className="relative text-4xl font-bold">
       <span className="absolute -top-1 -left-4 text-xl">$</span>
       {price}
-      </h1>
+    </h1>
     <ul className="mt-4 w-full list-inside list-disc space-y-1.5 text-start text-sm font-light">
       {points.map((point, index) => (
         <li key={index}>{point}</li>

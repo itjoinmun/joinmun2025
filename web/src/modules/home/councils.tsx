@@ -68,13 +68,13 @@ const Councils = () => {
 
 const CouncilCard = (props: Council) => (
   <article className="bg-gold/5 relative flex h-80 flex-col justify-end overflow-hidden rounded-sm">
-    <Link href={`/councils/${props.slug}`} className="absolute top-4 right-4 w-fit">
+    <Link href={`/councils/${props.slug}`} className="absolute group top-4 right-4 w-fit">
       <Button variant={`insideCard`} className="text-xs hover:cursor-pointer">
-        Read More <ArrowRight />
+        Read More <ArrowRight className="group-hover:translate-x-0.5 transition-transform" />
       </Button>
     </Link>
 
-    <div className="z-10 flex w-full items-center-safe gap-3 bg-black/70 p-4 backdrop-blur-sm">
+    <div className="z-10 flex w-full min-h-[35%] items-center gap-3 bg-black/70 p-4 backdrop-blur-sm">
       <aside className="relative size-14 shrink-0 overflow-hidden rounded-full bg-neutral-200">
         <Image
           src={`/assets/councils/${props.src}`}

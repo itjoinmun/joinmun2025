@@ -49,7 +49,7 @@ const Navbar = () => {
     <nav
       className={`bg-background fixed z-40 flex h-16 items-center transition-all duration-500 ease-out ${
         isScrolled
-          ? "inset-x-0 top-0 md:inset-x-5 md:top-5 md:rounded-2xl md:shadow-2xl"
+          ? "inset-x-0 top-0 md:inset-x-5 md:top-5 md:rounded-2xl md:drop-shadow-2xl"
           : "inset-x-0 top-0"
       }`}
     >
@@ -99,7 +99,7 @@ const MobileNav = () => (
           <section className="flex w-full items-center justify-between gap-4 border-b pb-4">
             <Logo />
             <SheetClose asChild>
-              <Button variant="outline" size={`icon`} className="size-5 rounded-xs border-[1.5px]">
+              <Button variant="outline" size={`icon`} className="size-5 rounded-xs border-2 border-white">
                 <X className="size-4" />
               </Button>
             </SheetClose>
@@ -110,10 +110,10 @@ const MobileNav = () => (
               <Link
                 href={nav.href}
                 key={i}
-                className={`flex w-full items-center justify-between gap-4 text-base`}
+                className={`flex font-medium w-full items-center justify-between gap-4 text-base`}
               >
                 <div>{nav.name}</div>
-                <ChevronRight className="size-5" />
+                <ChevronRight className="text-gray-light size-5" />
               </Link>
             ))}
           </section>
@@ -121,7 +121,7 @@ const MobileNav = () => (
           <section className="mt-auto grid w-full grid-cols-2 gap-2">
             <Link
               href={`/login`}
-              className={cn(buttonVariants({ variant: "outline" }), "w-full bg-white text-black")}
+              className={cn(buttonVariants({ variant: "white" }), "w-full ")}
             >
               Log in
             </Link>
