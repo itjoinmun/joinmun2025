@@ -18,7 +18,13 @@
   --color-red-coming-soon: #661310;
 
   --container-8xl: 1536px;
-  --breakpoint-xs: 
+  
+  /* Breakpoints */
+  --breakpoint-3xs: 20rem;
+  --breakpoint-2xs: 24rem;
+  --breakpoint-xs: 32rem;
+  --breakpoint-3xl: 108rem;
+  --breakpoint-4x: 114rem;
 }
 
 @layer utilities {
