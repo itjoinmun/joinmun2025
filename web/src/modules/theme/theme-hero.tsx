@@ -4,12 +4,12 @@ import Image from "next/image";
 
 const ThemeHero = () => {
   return (
-    <main className="relative flex min-h-[60vh] items-center md:min-h-screen">
+    <main className="relative flex min-h-[80dvh] items-center md:min-h-screen">
       <NavbarResolver />
       <Container className="max-w-8xl mt-[10vh]">
         <h4 className="text-gradient-gold font-semibold">Grand Theme</h4>
         <h1 className="max-w-lg text-3xl/snug font-bold text-pretty md:text-5xl/normal">
-          Renjana Furniture
+          yg bener aja troll
         </h1>
       </Container>
 
