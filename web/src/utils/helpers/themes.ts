@@ -1,4 +1,3 @@
-
 export const THEMES = [
   {
     src: "laut-selatan.webp",
@@ -24,5 +23,20 @@ export const THEMES = [
     src: "merapi.webp",
     title: "Gunung Merapi",
     description: "Return to nature",
+  },
+];
+
+export const IMAGE_INSPIRED = [
+  {
+    src: "alkid.webp",
+    alt: "Alun-Alun Kidul",
+  },
+  {
+    src: "keraton.webp",
+    alt: "Kraton Yogyakarta",
+  },
+  {
+    src: "wayang.webp",
+    alt: "Wayang Kulit",
   },
 ];

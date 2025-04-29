@@ -18,6 +18,7 @@
   --color-red-coming-soon: #661310;
 
   --container-8xl: 1536px;
+  --breakpoint-xs: 
 }
 
 @layer utilities {
