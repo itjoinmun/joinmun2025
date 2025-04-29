@@ -3,8 +3,7 @@ import CompleteLogo from "@/components/dashboard/complete-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
 import { BookOpen, CircleHelp, DollarSign, Globe, Home } from "lucide-react";
-import { AnimatePresence, useMotionValueEvent, useScroll } from "motion/react";
-import * as motion from "motion/react-client";
+import { useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -88,33 +87,41 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     console.log(scrollY.get());
-    setIsScrolled(latest > 190);
+    // setIsScrolled(latest > 190);
+    setIsScrolled(latest > 10);
   });
 
   const MobileNavButtons = ({ className }: { className?: string }) => (
     <nav
       className={cn(
-        "no-scrollbar bg-background flex w-full max-w-full snap-x snap-mandatory gap-2 overflow-auto",
+        "no-scrollbar flex w-full max-w-full snap-x snap-mandatory gap-2 overflow-auto bg-transparent",
         className,
       )}
     >
       {NAV_LINKS.map((link, i) => (
-        <Button
+        <Link
+          href={link.href}
           key={i}
-          variant={pathname === link.href ? "primary" : "gray"}
-          className="shrink-0 snap-start items-center rounded-sm transition-all"
+          className={cn(
+            buttonVariants({ variant: pathname === link.href ? "primary" : "gray" }),
+            "shrink-0 snap-start items-center rounded-sm transition-all",
+          )}
         >
           {link.logo}
           {link.name}
-        </Button>
+        </Link>
       ))}
     </nav>
   );
 
   return (
     <>
-      <header className="flex flex-col gap-6 md:hidden">
-        <section className="flex justify-between gap-4">
+      <header
+        className={`inset bg-background/70 fixed top-0 z-20 flex w-full flex-col gap-6 py-4 backdrop-blur-sm transition-transform ease-out md:hidden ${isScrolled && "-translate-y-22"}`}
+      >
+        <section
+          className={`flex justify-between gap-4 transition-transform ease-out ${isScrolled && ""}`}
+        >
           <CompleteLogo />
         </section>
 
@@ -131,24 +138,28 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
         </nav>
       </header>
 
-      <AnimatePresence>
+      {/* navbar resolver */}
+      <div className={`h-43 w-full md:hidden`} />
+
+      {/* <AnimatePresence>
         {isScrolled && (
-            <motion.div
-            initial={{ y: -100, opacity: 0 }}
+          <motion.div
+            initial={{ y: -5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -100, opacity: 0 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 300, 
-              damping: 25,
-              mass: 0.85
+            exit={{ y: -5, opacity: 0 }}
+            transition={{
+              ease: easeOut,
+              // stiffness: 120,
+              // damping: 20,
+              // mass: 0.85,
             }}
-            className="bg-background/95 backdrop-blur-sm fixed inset-x-4 top-2 z-30 rounded-lg py-2 shadow-xl border border-gray-light/20"
-            >
-            <MobileNavButtons className="bg-transparent" />
-            </motion.div>
+            className="bg-background/70 border-gray-light/20 fixed inset-x-0 top-0 z-30 border-b px-4 py-4 shadow-xl backdrop-blur-sm"
+          >
+            <h1 className="mb-6 text-2xl font-bold">Dashboard</h1>
+            <MobileNavButtons className="" />
+          </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </>
   );
 };

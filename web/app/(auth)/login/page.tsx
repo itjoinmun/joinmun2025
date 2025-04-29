@@ -10,14 +10,14 @@ const LoginPage = () => {
       src="/assets/auth/login.webp"
       caption="We must work closely together to make this year a year of global action, one that will be remembered as the dawn of a new era of sustainable development."
     >
-      <section className="mt-24 flex flex-col items-center gap-0 *:text-center md:gap-2">
+      <section className=" flex flex-col items-center gap-0 *:text-center md:gap-2">
         <h1 className="text-gradient-gold text-xl md:text-2xl">Welcome Back</h1>
         <h1 className="text-gradient-gold text-xl font-bold md:text-2xl">Enter Your Acount</h1>
       </section>
 
       <LoginForm />
 
-      <p className="mb-12 text-sm">
+      <p className="text-sm">
         Don't have an account?{" "}
         <Link
           href={`/signup`}

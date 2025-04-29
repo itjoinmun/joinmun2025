@@ -53,10 +53,10 @@ const Timeline = () => {
 
       <Carousel
         opts={{
-          align: "center",
-          breakpoints: {
-            "(min-width: 640px)": { align: "end" },
-          },
+          align: "end",
+          // breakpoints: {
+          //   "(min-width: 640px)": { align: "end" },
+          // },
         }}
         className="relative w-full"
       >

@@ -40,7 +40,7 @@ const AuthTemplate = ({
       </section>
 
       {/* form and other children elements */}
-      <section className="no-scrollbar relative flex h-screen flex-col items-center justify-start gap-6 overflow-x-hidden p-6 text-center md:justify-center md:overflow-y-auto md:p-8">
+      <section className="no-scrollbar relative flex pb-36 md:pb-12 flex-col items-center justify-start gap-6 overflow-x-hidden p-6 text-center md:pt-24  md:h-screen md:justify-center md:overflow-y-auto md:p-8">
         {children}
       </section>
     </main>
