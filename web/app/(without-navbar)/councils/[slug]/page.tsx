@@ -4,11 +4,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import Container from "@/components/ui/container";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import NotFound from "../../../not-found";
 import CouncilData from "@/modules/councils/council-data";
 import CouncilLeaders from "@/modules/councils/council-leaders";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
+import NotFound from "../../../not-found";
 
 const CouncilPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params;

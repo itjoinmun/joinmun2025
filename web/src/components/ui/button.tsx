@@ -14,15 +14,14 @@ const buttonVariants = cva(
         gray: "bg-gray text-white shadow-xs hover:bg-gray/80",
         outline:
           "border border-gray-light bg-background shadow-xs hover:bg-gray-light/20 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        insideCard:
-          "bg-background/80 text-primary-foreground hover:bg-background shadow-xs",
+        insideCard: "bg-background/80 text-primary-foreground hover:bg-background shadow-xs",
         gradient:
           "bg-gradient-to-t from-white/20 to-white text-foreground hover:text-red-dark-hover hover:bg-primary-foreground",
         link: "text-white hover:text-white/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+        ghost: "hover:bg-transparent hover:bg-gray-light/20 dark:hover:bg-accent/50",
         white: "bg-white text-black shadow-xs hover:bg-white/80",
-          
+        warning: "bg-gold text-black hover:bg-gold/80",
+
         // destructive:
         //   "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         //   "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
