@@ -10,15 +10,15 @@ import * as motion from "motion/react-client";
 const Hero = () => {
   const IDK_SECTION = [
     {
-      header: 100,
+      header: 180,
       description: "Participants",
     },
     {
-      header: 100,
+      header: 7,
       description: "Councils",
     },
     {
-      header: 100,
+      header: 10,
       description: "Years",
     },
   ];
@@ -70,7 +70,7 @@ const Hero = () => {
                     delay={index * 0.2}
                     // startValue={50}
                   />
-                  +
+                    {section.description !== "Councils" && <span className={cn()}>+</span>}
                 </h1>
                 <h3 className="text-center text-sm md:text-base">{section.description}</h3>
               </div>

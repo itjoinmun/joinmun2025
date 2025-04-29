@@ -18,7 +18,7 @@
   --color-red-coming-soon: #661310;
 
   --container-8xl: 1536px;
-  
+
   /* Breakpoints */
   --breakpoint-3xs: 20rem;
   --breakpoint-2xs: 24rem;
@@ -48,6 +48,46 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+  }
+}
+
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    display: block;
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #232222;
+    border-radius: 5px;
+    fill-opacity: 20;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    /* background: #232222; */
+    background: #fff;
+    border-radius: 10px;
+    /* border: 0.5px solid #006582;  */
+  }
+}
+
+/* Hide scrollbar for < lg screens */
+@media (max-width: 767px) {
+  /* For Webkit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* For Firefox */
+  html {
+    scrollbar-width: none;
+    overflow-y: scroll;
+  }
+
+  /* For Internet Explorer and Edge */
+  body {
+    -ms-overflow-style: none;
+    font-family: "Poppins", sans-serif;
   }
 }
 
