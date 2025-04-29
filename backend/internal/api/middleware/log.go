@@ -22,6 +22,7 @@ func ReqLoggingMiddleware() gin.HandlerFunc {
 			Int("status", c.Writer.Status()).
 			Dur("duration", duration).
 			Str("timestamp", timestamp).
-			Str("ip_address", c.ClientIP())
+			Str("ip_address", c.ClientIP()).
+			Msg("Request completed")
 	}
 }
