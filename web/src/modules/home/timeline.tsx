@@ -35,44 +35,51 @@ const TIMELINE_CONTENT = [
 
 const Timeline = () => {
   return (
-    <main
-      id="rundown"
-      className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12"
-    >
-      <Container className="gap-2">
-        <SubHeading>Save The Date</SubHeading>
-        <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-          <Heading>Timeline</Heading>
+    <>
+      <div
+        id="rundown"
+        className="invisible h-0 scroll-mt-12 md:scroll-mt-[6.5rem]"
+        aria-hidden="true"
+      />
+      <main className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12">
+        <Container className="gap-2">
+          <SubHeading>Save The Date</SubHeading>
+          <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
+            <Heading>Timeline</Heading>
 
-          <div className="text-sm text-white md:col-span-2">
-            Get a clear view of all the important dates, from registration to the conference days.
-            This timeline helps you stay prepared at every stage.
-          </div>
-        </section>
-      </Container>
+            <div className="text-sm text-white md:col-span-2">
+              Get a clear view of all the important dates, from registration to the conference days.
+              This timeline helps you stay prepared at every stage.
+            </div>
+          </section>
+        </Container>
 
-      <Carousel
-        opts={{
-          align: "end",
-          // breakpoints: {
-          //   "(min-width: 640px)": { align: "end" },
-          // },
-        }}
-        className="relative w-full"
-      >
-        <CarouselContent className="-ml-4 px-4 md:-ml-6 md:px-6 lg:px-8">
-          {TIMELINE_CONTENT.map((timeline, index) => (
-            <CarouselItem key={index} className="basis-1/2 pl-4 sm:basis-1/4 md:pl-6 lg:basis-1/5">
-              <TimelineCard {...timeline} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="block md:hidden" />
-        <CarouselNext className="right-2 z-10 block md:hidden" />
-      </Carousel>
+        <Carousel
+          opts={{
+            align: "end",
+            // breakpoints: {
+            //   "(min-width: 640px)": { align: "end" },
+            // },
+          }}
+          className="relative w-full"
+        >
+          <CarouselContent className="-ml-4 px-4 md:-ml-6 md:px-6 lg:px-8">
+            {TIMELINE_CONTENT.map((timeline, index) => (
+              <CarouselItem
+                key={index}
+                className="basis-1/2 pl-4 sm:basis-1/4 md:pl-6 lg:basis-1/5"
+              >
+                <TimelineCard {...timeline} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="block md:hidden" />
+          <CarouselNext className="right-2 z-10 block md:hidden" />
+        </Carousel>
 
-      <BatikPattern />
-    </main>
+        <BatikPattern />
+      </main>
+    </>
   );
 };
 

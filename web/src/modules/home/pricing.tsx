@@ -9,41 +9,48 @@ const Pricing = () => {
   const [active, setActive] = useState<PriceOptions>("single");
 
   return (
-    <main id="pricing" className="relative z-0 overflow-hidden pb-12">
-      <Container className="gap-2">
-        <section className="flex flex-col items-center gap-2">
-          <Heading>Pricing</Heading>
+    <>
+      <div
+        id="pricing"
+        className="invisible h-0 scroll-mt-12 md:scroll-mt-[6.5rem]"
+        aria-hidden="true"
+      />
+      <main className="relative z-0 overflow-hidden pb-12">
+        <Container className="gap-2">
+          <section className="flex flex-col items-center gap-2">
+            <Heading>Pricing</Heading>
 
-          <div className="text-center text-sm text-white md:max-w-2xl">
-            Find the Right Fit — We&apos;ve Got Options For You.
-          </div>
-
-          <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center md:gap-10">
-            {Object.entries(PRICES).map(([key, value]) => (
-              <Button
-                key={key}
-                onClick={() => setActive(key as PriceOptions)}
-                variant={active === key ? "primary" : "outline"}
-                className="shrink-0 snap-start transition-all"
-              >
-                {value.name}
-              </Button>
-            ))}
-          </nav>
-
-          <div className="mt-8 flex w-full flex-col items-start gap-2">
-            <h1 className="text-xl leading-snug font-bold md:text-2xl">{PRICES[active].name}</h1>
-            <p className="leading-snug">{PRICES[active].description}</p>
-
-            <div className="mt-10 grid w-full auto-rows-fr grid-cols-1 gap-10 min-h-[50vh] md:grid-cols-3 md:gap-6">
-              {PRICES[active].package.map((option, index) => (
-                <PricingCard key={index} {...option} />
-              ))}
+            <div className="text-center text-sm text-white md:max-w-2xl">
+              Find the Right Fit — We&apos;ve Got Options For You.
             </div>
-          </div>
-        </section>
-      </Container>
-    </main>
+
+            <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center md:gap-10">
+              {Object.entries(PRICES).map(([key, value]) => (
+                <Button
+                  key={key}
+                  onClick={() => setActive(key as PriceOptions)}
+                  variant={active === key ? "primary" : "outline"}
+                  className="shrink-0 snap-start transition-all"
+                >
+                  {value.name}
+                </Button>
+              ))}
+            </nav>
+
+            <div className="mt-8 flex w-full flex-col items-start gap-2">
+              <h1 className="text-xl leading-snug font-bold md:text-2xl">{PRICES[active].name}</h1>
+              <p className="leading-snug">{PRICES[active].description}</p>
+
+              <div className="mt-10 grid min-h-[50vh] w-full auto-rows-fr grid-cols-1 gap-10 md:grid-cols-3 md:gap-6">
+                {PRICES[active].package.map((option, index) => (
+                  <PricingCard key={index} {...option} />
+                ))}
+              </div>
+            </div>
+          </section>
+        </Container>
+      </main>
+    </>
   );
 };
 

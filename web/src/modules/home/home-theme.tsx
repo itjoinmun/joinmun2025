@@ -14,31 +14,37 @@ import { THEMES } from "@/utils/helpers/themes";
 import Image from "next/image";
 import Link from "next/link";
 
-
 const HomeTheme = () => {
   return (
-    <main id="theme" className="bg-background pb-12 relative z-0 overflow-hidden">
-      <Container className="gap-2">
-        <SubHeading>Grand Theme</SubHeading>
-        <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-          <Heading>Renjana Furniture</Heading>
-          <div className="flex md:col-span-2 flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl">
-            JoinMUN is a 3-day event that brings together participants for diplomatic discussions.
-            During the conference, delegates represent different countries and participate in
-            workshops to enhance their skills. The event aims to foster collaboration, critical
-            thinking, and international awareness.
-            <Link
-              href={`/theme`}
-              className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
-            >
-              Read More
-            </Link>
-          </div>
-        </section>
-      </Container>
+    <>
+      <div
+        id="theme"
+        className="invisible h-0 scroll-mt-12 md:scroll-mt-[6.5rem]"
+        aria-hidden="true"
+      />
+      <main className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12">
+        <Container className="gap-2">
+          <SubHeading>Grand Theme</SubHeading>
+          <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
+            <Heading>Renjana Furniture</Heading>
+            <div className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-2 md:max-w-2xl">
+              JoinMUN is a 3-day event that brings together participants for diplomatic discussions.
+              During the conference, delegates represent different countries and participate in
+              workshops to enhance their skills. The event aims to foster collaboration, critical
+              thinking, and international awareness.
+              <Link
+                href={`/theme`}
+                className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
+              >
+                Read More
+              </Link>
+            </div>
+          </section>
+        </Container>
 
-      <ThemeCarousel />
-    </main>
+        <ThemeCarousel />
+      </main>
+    </>
   );
 };
 
