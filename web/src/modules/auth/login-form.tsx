@@ -6,7 +6,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,8 +33,8 @@ const LoginForm = () => {
       password: "",
     },
   });
-
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const onSubmit = (_values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
       // post to backend api

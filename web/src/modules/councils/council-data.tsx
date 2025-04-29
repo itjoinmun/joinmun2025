@@ -22,7 +22,7 @@ const CouncilData = (props: Council) => {
         <hr className="border-gray-light my-2 w-full border-b-2" />
 
         <div className="flex flex-col gap-3 *:text-pretty md:flex-row md:gap-6">
-          <p className="font-bold md:text-lg">"{props.quote}"</p>
+          <p className="font-bold md:text-lg">&quot;{props.quote}&quot;</p>
           <p className="text-sm md:text-base">{props.description}</p>
         </div>
       </div>

@@ -2,19 +2,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { cn } from "@/utils/cn";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 
@@ -56,7 +54,9 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = (
+    // values: z.infer<typeof loginSchema>
+  ) => {
     setPending(true);
     try {
       // post to backend api

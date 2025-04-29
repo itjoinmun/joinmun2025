@@ -1,4 +1,3 @@
-import BatikPattern from "@/components/batik-pattern";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -17,7 +16,7 @@ const ParticipantStatus = () => {
             <>
               <div className="flex flex-col gap-3 md:max-w-1/2">
                 <h1 className="text-2xl leading-normal">
-                  You Haven't Been Identified as a Participant. <Bold>Register Now</Bold>!
+                  You Haven&apos;t Been Identified as a Participant. <Bold>Register Now</Bold>!
                 </h1>
                 <p className="text-sm">
                   Register as <Bold>Single Delegates</Bold>, <Bold>Double Delegates</Bold>,{" "}

@@ -1,6 +1,5 @@
 import { Heading, SubHeading } from "@/components/section-heading";
 import Container from "@/components/ui/container";
-import { Leaf } from "lucide-react";
 import Image from "next/image";
 
 const RECOGNIZED_VALUE = [
