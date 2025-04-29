@@ -26,7 +26,7 @@ const HomeTheme = () => {
         <Container className="gap-2">
           <SubHeading>Grand Theme</SubHeading>
           <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-            <Heading>Renjana Furniture</Heading>
+            <Heading>stop troll</Heading>
             <div className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-2 md:max-w-2xl">
               JoinMUN is a 3-day event that brings together participants for diplomatic discussions.
               During the conference, delegates represent different countries and participate in

@@ -20,7 +20,7 @@ const CouncilPage = async ({ params }: { params: Promise<{ slug: string }> }) =>
   return (
     <main className="relative min-h-screen">
       <Container className="gap-12">
-        <Link href="/" className={cn(buttonVariants({ variant: "gray" }), 'w-fit')}>
+        <Link href="/#councils" className={cn(buttonVariants({ variant: "gray" }), 'w-fit')}>
             <ArrowLeft />
             Back
         </Link>
