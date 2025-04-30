@@ -22,7 +22,7 @@ const DashboardPage = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <main className={cn(`flex flex-col gap-8`)}>{children}</main>;
+  return <main className={cn(`flex flex-col gap-8`, className)}>{children}</main>;
 };
 
 const DashboardPageHeader = ({
@@ -55,4 +55,5 @@ const DashboardPageDescription = ({
   return <p className={cn(className, "text-base")}>{children}</p>;
 };
 
-export { DashboardPage, DashboardPageHeader, DashboardPageTitle, DashboardPageDescription };
+export { DashboardPage, DashboardPageDescription, DashboardPageHeader, DashboardPageTitle };
+

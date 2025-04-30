@@ -41,13 +41,13 @@ export const PRICES: Record<PriceOptions, PriceOptionType> = {
     package: [],
   },
   ["observer"]: {
-    name: "Observer Delegates",
+    name: "Observer",
     description:
       "One delegate, no country. You will be an observer in the council, without a specific country assignment.",
     package: [],
   },
   ["advisor"]: {
-    name: "Advisor Delegates",
+    name: "Faculty Advisor",
     description:
       "One advisor, no country. You will be an advisor in the council, without a specific country assignment.",
     package: [],

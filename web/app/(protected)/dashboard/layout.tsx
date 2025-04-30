@@ -4,7 +4,7 @@ import UserProfileInfo from "@/modules/dashboard/user-profile-info";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="relative flex h-screen flex-col gap-6 md:flex-row md:gap-0 md:overflow-hidden">
+    <main className="relative flex h-screen flex-col gap-6 md:flex-row md:gap-0 md:overflow-clip">
       <DashboardContainer className="shrink-0 pb-0 md:w-80 md:py-4 md:pr-0">
         <DashboardNav />
       </DashboardContainer>

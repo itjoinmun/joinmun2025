@@ -1,5 +1,6 @@
 import Councils from "@/modules/home/councils";
 import Events from "@/modules/home/events";
+import Footer from "@/modules/home/footer";
 import Hero from "@/modules/home/hero";
 import HomeTheme from "@/modules/home/home-theme";
 import Pricing from "@/modules/home/pricing";
@@ -16,6 +17,7 @@ export default function Home() {
       <Events />
       <Councils />
       <Pricing />
+      <Footer />
       <Welcome />
       <Test />
     </>

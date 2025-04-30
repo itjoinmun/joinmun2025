@@ -21,7 +21,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-transparent hover:bg-gray-light/20 dark:hover:bg-accent/50",
         white: "bg-white text-black shadow-xs hover:bg-white/80",
         warning: "bg-gold text-black hover:bg-gold/80",
-        warningOutline: "bg-red-dark border border-gold text-gold",
+        warningOutline: "bg-red-dark border border-gold text-gold hover:bg-red-dark-hover",
 
         // destructive:
         //   "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",

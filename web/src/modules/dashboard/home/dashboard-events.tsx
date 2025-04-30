@@ -4,7 +4,7 @@ import {
   DashboardModuleHeader,
   DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 

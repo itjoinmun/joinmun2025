@@ -1,3 +1,4 @@
+import BatikPattern from "@/components/batik-pattern";
 import {
   DashboardModule,
   DashboardModuleHeader,
@@ -55,18 +56,18 @@ const ParticipantStatus = () => {
         </div>
 
         {/* First absolute child with overflow hidden */}
-        {/* <div className="absolute inset-0 -z-10 overflow-hidden">
-          <BatikPattern square className="left-0 inset-y-0 h-full rotate-90" />
-        </div> */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <BatikPattern className="opacity-30" />
+        </div>
 
         {/* Second absolute child with overflow visible */}
         <div className="absolute inset-0 -z-20 overflow-visible">
           <Image
-            src={`/assets/dashboard/home/dashboard-girl.webp`}
+            src={`/assets/dashboard/home/nisa.webp`}
             alt="Dashboard Image"
-            width={500}
-            height={500}
-            className="absolute right-0 bottom-0 size-60 md:size-80"
+            width={250}
+            height={250}
+            className="absolute right-0 bottom-0"
           />
         </div>
       </section>

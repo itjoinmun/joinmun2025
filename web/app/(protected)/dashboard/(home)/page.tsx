@@ -16,6 +16,7 @@ const DashboardHome = () => {
       {/* call in modules here */}
       <ParticipantStatus />
       <DashboardEvents />
+      <div className="w-screen" />
     </DashboardPage>
   );
 };

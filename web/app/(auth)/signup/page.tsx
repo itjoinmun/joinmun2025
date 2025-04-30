@@ -7,7 +7,7 @@ import Link from "next/link";
 const SignupPage = () => {
   return (
     <AuthTemplate
-      src="/lebron.webp"
+      src="/assets/auth/register.webp"
       caption="Today’s real borders are not between nations, but between powerful and powerless, free and fettered, privileged and humiliated."
     >
       <section className="flex flex-col items-center gap-0 *:text-center md:gap-2">
