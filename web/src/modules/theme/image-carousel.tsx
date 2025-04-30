@@ -22,7 +22,7 @@ export const ImageCarousel = () => {
     >
       <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
         {IMAGE_INSPIRED.map((image, index) => (
-          <CarouselItem key={index} className="pl-2 2xs:basis-1/2 md:basis-1/3 md:pl-4">
+          <CarouselItem key={index} className="2xs:basis-1/2 pl-2 md:basis-1/3 md:pl-4">
             <ImageCard {...image} />
           </CarouselItem>
         ))}

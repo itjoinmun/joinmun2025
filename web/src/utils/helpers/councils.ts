@@ -5,22 +5,29 @@ export type Council = {
   src: string;
   quote: string;
   description: string;
+  chairs: {
+    name: string;
+    role: string;
+    image: string;
+    experiences: string[];
+  }[];
 };
 
 export const COUNCILS = [
   {
     slug: "un-women",
     name: "UN Women",
-    fullname: "Equality and the Empwerment of Women",
+    fullname: "UN Women",
     src: "UN Women.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
-    description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     chairs: [
       {
         name: "Olivia Davis",
         role: "Head Chair",
         image: "olivia-davis-1.jpg",
-        pastExperience: [
+        experiences: [
           "Best Delegate Winner",
           "Best Delegate",
           "Chair of WHO in ABCMUN 2023",
@@ -31,7 +38,7 @@ export const COUNCILS = [
         name: "Sophia Lee",
         role: "Vice Chair",
         image: "sophia-lee.jpg",
-        pastExperience: [
+        experiences: [
           "Co-Chair of UNICEF 2022",
           "Outstanding Delegate",
           "Chair of UNHRC in UGM MUN 2023",
@@ -41,7 +48,7 @@ export const COUNCILS = [
         name: "Emily Chen",
         role: "Assistant Chair",
         image: "emily-chen.jpg",
-        pastExperience: ["Delegate of UNDP 2021", "Best Position Paper"],
+        experiences: ["Delegate of UNDP 2021", "Best Position Paper"],
       },
     ],
   },
@@ -57,7 +64,7 @@ export const COUNCILS = [
         name: "lebron",
         role: "yg punya lakers",
         image: "olivia-davis-1.jpg",
-        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
     ],
   },
@@ -73,7 +80,7 @@ export const COUNCILS = [
         name: "lebron",
         role: "yg punya lakers",
         image: "olivia-davis-1.jpg",
-        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
     ],
   },
@@ -90,7 +97,7 @@ export const COUNCILS = [
         name: "lebron",
         role: "yg punya lakers",
         image: "olivia-davis-1.jpg",
-        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
     ],
   },
@@ -106,7 +113,7 @@ export const COUNCILS = [
         name: "lebron",
         role: "yg punya lakers",
         image: "olivia-davis-1.jpg",
-        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
     ],
   },
@@ -122,7 +129,7 @@ export const COUNCILS = [
         name: "lebron",
         role: "yg punya lakers",
         image: "olivia-davis-1.jpg",
-        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
     ],
   },
@@ -138,7 +145,7 @@ export const COUNCILS = [
         name: "lebron",
         role: "yg punya lakers",
         image: "olivia-davis-1.jpg",
-        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
     ],
   },

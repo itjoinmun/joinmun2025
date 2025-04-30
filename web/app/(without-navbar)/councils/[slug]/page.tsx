@@ -18,15 +18,16 @@ const CouncilPage = async ({ params }: { params: Promise<{ slug: string }> }) =>
 
   return (
     <main className="relative min-h-screen">
-      <Container className="gap-12">
-        <Link href="/#councils" className={cn(buttonVariants({ variant: "gray" }), 'w-fit')}>
-            <ArrowLeft />
-            Back
+      <Container className="gap-12 pb-0">
+        <Link href="/#councils" className={cn(buttonVariants({ variant: "gray" }), "w-fit")}>
+          <ArrowLeft />
+          Back
         </Link>
 
         <CouncilData {...council} />
-        <CouncilLeaders {...council} />
       </Container>
+
+      <CouncilLeaders {...council} />
 
       {/* image + overlay */}
       <Image
