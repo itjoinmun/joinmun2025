@@ -24,7 +24,7 @@ const AuthTemplate = ({
       </Link>
 
       {/* image + overlay section */}
-      <section className="relative flex h-[40vh] items-end justify-center overflow-clip md:order-2 md:h-full">
+      <section className="relative flex h-60 items-end justify-center overflow-clip md:order-2 md:h-full">
         <Image
           src={src || `/lebron.webp`}
           alt="JOINMUN Image"

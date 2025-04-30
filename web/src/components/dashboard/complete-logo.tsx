@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const CompleteLogo = () => {
   return (
-    <Link href={`/dashboard`} className="flex items-center gap-3">
+    <Link href={`/dashboard`} className="flex select-none items-center gap-3">
       <Image src={`/LOGO.png`} alt="JOINMUN" width={100} height={100} priority className="size-9" />
 
       <div className="flex flex-col gap-1">

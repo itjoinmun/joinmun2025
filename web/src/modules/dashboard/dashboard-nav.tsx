@@ -57,7 +57,7 @@ const DesktopNav = ({ pathname }: { pathname: string }) => (
     <h2>Menu</h2>
 
     {/* nav links */}
-    <ul className="no-scrollbar mb-8 flex max-h-full flex-col gap-1.5 overflow-y-auto">
+    <ul className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto">
       {NAV_LINKS.map((link) => (
         <li key={link.name}>
           <Link
@@ -86,9 +86,8 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    console.log(scrollY.get());
     // setIsScrolled(latest > 190);
-    setIsScrolled(latest > 10);
+    setIsScrolled(latest > 60);
   });
 
   const MobileNavButtons = ({ className }: { className?: string }) => (

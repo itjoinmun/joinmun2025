@@ -1,13 +1,22 @@
+import {
+  DashboardPage,
+  DashboardPageHeader,
+  DashboardPageTitle,
+} from "@/components/dashboard/dashboard-page";
+import DashboardEvents from "@/modules/dashboard/home/dashboard-events";
 import ParticipantStatus from "@/modules/dashboard/home/participant-status";
 
 const DashboardHome = () => {
   return (
-    <main className="flex flex-col gap-6">
-      <h1 className="text-gold text-base">Home</h1>
+    <DashboardPage className="flex flex-col gap-6">
+      <DashboardPageHeader>
+        <DashboardPageTitle>Home</DashboardPageTitle>
+      </DashboardPageHeader>
 
-      <section className="h-screen"></section>
+      {/* call in modules here */}
       <ParticipantStatus />
-    </main>
+      <DashboardEvents />
+    </DashboardPage>
   );
 };
 

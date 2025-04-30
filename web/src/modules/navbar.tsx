@@ -44,7 +44,6 @@ const Navbar = () => {
     setIsScrolled(latest > 10);
   });
 
-
   return (
     <nav
       className={`bg-background fixed z-40 flex h-16 items-center transition-all duration-500 ease-out ${
@@ -95,11 +94,15 @@ const MobileNav = () => (
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <SheetDescription className="sr-only">Sidebar for mobile view</SheetDescription>
         </SheetHeader>
-        <Container className="mb-8 py-5 justify-between h-full px-8">
+        <Container className="mb-8 h-full justify-between px-8 py-5">
           <section className="flex w-full items-center justify-between gap-4 border-b pb-4">
             <Logo />
             <SheetClose asChild>
-              <Button variant="outline" size={`icon`} className="size-5 rounded-xs border-2 border-white">
+              <Button
+                variant="outline"
+                size={`icon`}
+                className="size-5 rounded-xs border-2 border-white"
+              >
                 <X className="size-4" />
               </Button>
             </SheetClose>
@@ -107,22 +110,20 @@ const MobileNav = () => (
 
           <section className="flex flex-col gap-6 pt-4">
             {NAV_LINKS.map((nav, i) => (
-              <Link
-                href={nav.href}
-                key={i}
-                className={`flex font-medium w-full items-center justify-between gap-4 text-base`}
-              >
-                <div>{nav.name}</div>
-                <ChevronRight className="text-gray-light size-5" />
-              </Link>
+              <SheetClose key={i} asChild>
+                <Link
+                  href={nav.href}
+                  className={`flex w-full items-center justify-between gap-4 text-base font-medium`}
+                >
+                  <div>{nav.name}</div>
+                  <ChevronRight className="text-gray-light size-5" />
+                </Link>
+              </SheetClose>
             ))}
           </section>
 
           <section className="mt-auto grid w-full grid-cols-2 gap-2">
-            <Link
-              href={`/login`}
-              className={cn(buttonVariants({ variant: "white" }), "w-full ")}
-            >
+            <Link href={`/login`} className={cn(buttonVariants({ variant: "white" }), "w-full")}>
               Log in
             </Link>
             <Link href={`/signup`} className={cn(buttonVariants({ variant: "gray" }), "w-full")}>
