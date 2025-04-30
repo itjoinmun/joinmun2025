@@ -1,6 +1,6 @@
 import { Heading } from "@/components/section-heading";
 import Container from "@/components/ui/container";
-import { ImageCarousel } from "@/components/image-carousel";
+import { ImageCarousel } from "@/modules/theme/image-carousel";
 
 const ThemeInspired = () => {
   return (

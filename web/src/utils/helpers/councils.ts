@@ -15,6 +15,35 @@ export const COUNCILS = [
     src: "UN Women.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    chairs: [
+      {
+        name: "Olivia Davis",
+        role: "Head Chair",
+        image: "olivia-davis-1.jpg",
+        pastExperience: [
+          "Best Delegate Winner",
+          "Best Delegate",
+          "Chair of WHO in ABCMUN 2023",
+          "Best Delegate",
+        ],
+      },
+      {
+        name: "Sophia Lee",
+        role: "Vice Chair",
+        image: "sophia-lee.jpg",
+        pastExperience: [
+          "Co-Chair of UNICEF 2022",
+          "Outstanding Delegate",
+          "Chair of UNHRC in UGM MUN 2023",
+        ],
+      },
+      {
+        name: "Emily Chen",
+        role: "Assistant Chair",
+        image: "emily-chen.jpg",
+        pastExperience: ["Delegate of UNDP 2021", "Best Position Paper"],
+      },
+    ],
   },
   {
     slug: "who",
@@ -23,6 +52,14 @@ export const COUNCILS = [
     src: "WHO.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
+    ],
   },
   {
     slug: "ecofin",
@@ -31,6 +68,14 @@ export const COUNCILS = [
     src: "ECOFIN.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
+    ],
   },
   {
     slug: "unsc",
@@ -40,6 +85,14 @@ export const COUNCILS = [
     quote: "Reviving Collective Security: Refroming the UNSC to Address Modern Threats",
     description:
       "The UNSC is responsible for maintaining international peace and security. It has the authority to impose sanctions, authorize military action, and establish peacekeeping missions.",
+    chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
+    ],
   },
   {
     slug: "crisis",
@@ -48,6 +101,14 @@ export const COUNCILS = [
     src: "UN.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
+    ],
   },
   {
     slug: "brics",
@@ -56,13 +117,29 @@ export const COUNCILS = [
     src: "BRICS+.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
+    ],
   },
   {
-    slug: 'press',
-    name: 'Press',
-    fullname: 'Press',
-    src: 'UN.webp',
-    quote: 'lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.',
-    description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.',
+    slug: "press",
+    name: "Press",
+    fullname: "Press",
+    src: "UN.webp",
+    quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
+    chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        pastExperience: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
+    ],
   },
 ];
