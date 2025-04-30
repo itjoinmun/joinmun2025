@@ -61,11 +61,11 @@ const Events = () => {
 
 const EventCard = (props: Event) => (
   <div className="relative flex min-h-96 flex-col justify-end gap-0 p-6">
-    <div className="bg-gray/40 backdrop-blur-sm absolute top-2 right-2 flex aspect-square size-12 items-center justify-center rounded-sm p-1 text-center text-sm text-white">
+    <div className="bg-gray/40 absolute top-2 right-2 flex aspect-square size-12 items-center justify-center rounded-sm p-1 text-center text-sm text-white backdrop-blur-sm">
       {props.date}
     </div>
-    <h1 className="font-semibold leading-snug">{props.title}</h1>
-    <h3 className="text-sm leading-snug mt-1">{props.location}</h3>
+    <h1 className="leading-snug font-semibold">{props.title}</h1>
+    <h3 className="mt-1 text-sm leading-snug">{props.location}</h3>
 
     {/* image + overlay */}
     <Image

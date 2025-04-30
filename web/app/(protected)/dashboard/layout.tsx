@@ -9,7 +9,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <DashboardNav />
       </DashboardContainer>
       <section className="max-h-screen w-full md:overflow-y-auto">
-        <DashboardContainer className="pt-0 md:px-6 gap-6 md:pt-6">
+        <DashboardContainer className="gap-6 pt-0 md:px-6 md:pt-6">
           <header className="hidden items-center justify-between gap-8 md:flex">
             <h1 className="text-2xl font-bold">Dashboard</h1>
             <UserProfileInfo />

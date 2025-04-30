@@ -22,8 +22,8 @@ const CouncilData = (props: Council) => {
         <hr className="border-gray-light my-2 w-full border-b" />
 
         <div className="flex flex-col gap-3 *:text-pretty md:flex-row md:gap-6">
-          <p className="font-bold md:text-lg w-full md:w-2/6">&quot;{props.quote}&quot;</p>
-          <p className="text-sm md:text-base w-full md:w-4/6">{props.description}</p>
+          <p className="w-full font-bold md:w-2/6 md:text-lg">&quot;{props.quote}&quot;</p>
+          <p className="w-full text-sm md:w-4/6 md:text-base">{props.description}</p>
         </div>
       </div>
     </section>

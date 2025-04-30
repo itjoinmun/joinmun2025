@@ -70,7 +70,7 @@ const Hero = () => {
                     delay={index * 0.2}
                     // startValue={50}
                   />
-                    {section.description !== "Councils" && <span className={cn()}>+</span>}
+                  {section.description !== "Councils" && <span className={cn()}>+</span>}
                 </h1>
                 <h3 className="text-center text-sm md:text-base">{section.description}</h3>
               </div>
@@ -99,11 +99,12 @@ const Hero = () => {
         sizes="100%"
         className="-z-10 object-cover"
       />
-      <motion.div 
-      initial={{ opacity: 0}}
-      animate={{ opacity: 100 }}
-      transition={{ duration: 1}}
-      className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/30 to-black/10" />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 100 }}
+        transition={{ duration: 1 }}
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/30 to-black/10"
+      />
     </main>
   );
 };

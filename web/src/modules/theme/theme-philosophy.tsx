@@ -5,12 +5,12 @@ import { ThemeCarousel } from "../home/home-theme";
 
 const ThemePhilosophy = () => {
   return (
-    <main className="from-foreground to-red-normal pb-12 relative z-0 overflow-hidden bg-gradient-to-b">
+    <main className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12">
       <Container className="gap-2">
         <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
           <Heading>Sumbu Filosofis</Heading>
 
-          <div className="text-sm text-pretty md:col-span-2 text-white">
+          <div className="text-sm text-pretty text-white md:col-span-2">
             The Imaginary Axis in Yogyakarta symbolizes two journeys in human life, the journey from
             Panggung Krapyak to the Keraton represents the process of personal growth , where one
             discovers their life&apos;s lessons. Meanwhile, the journey from Tugu to the Keraton

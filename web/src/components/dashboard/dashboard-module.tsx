@@ -39,7 +39,7 @@ const DashboardModuleHeader = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <header className={cn(className, "leading-snug space-y-1")}>{children}</header>;
+  return <header className={cn(className, "space-y-1 leading-snug")}>{children}</header>;
 };
 
 const DashboardModuleTitle = ({
@@ -59,7 +59,7 @@ const DashboardModuleDescription = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <header className={cn(className, "font-normal text-sm")}>{children}</header>;
+  return <header className={cn(className, "text-sm font-normal")}>{children}</header>;
 };
 
 const DashboardModuleContent = ({

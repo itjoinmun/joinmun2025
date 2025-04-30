@@ -23,7 +23,7 @@ const BackLink = ({
         {children}
       </Link>
     );
-  
+
   return (
     <div onClick={handleBack} className={cn(className)}>
       {children}

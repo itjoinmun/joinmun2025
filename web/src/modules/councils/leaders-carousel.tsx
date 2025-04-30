@@ -114,15 +114,17 @@ const LeaderCard = ({
                   className="pointer-events-none object-cover"
                 />
                 <div className="absolute bottom-4 left-4 z-10 lg:bottom-2 lg:left-2">
-                  <h1 className="sm:text-lg font-bold text-white lg:hidden">{role}</h1>
-                  <h1 className="font-medium text-white text-sm sm:text-base lg:text-lg lg:font-bold">{name}</h1>
+                  <h1 className="font-bold text-white sm:text-lg lg:hidden">{role}</h1>
+                  <h1 className="text-sm font-medium text-white sm:text-base lg:text-lg lg:font-bold">
+                    {name}
+                  </h1>
                 </div>
                 <div className="bg-gradient-from-transparent absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent" />
               </div>
 
-              <div className="bg-gray flex w-3/5 flex-col justify-start rounded-md p-2 2xs:p-4">
+              <div className="bg-gray 2xs:p-4 flex w-3/5 flex-col justify-start rounded-md p-2">
                 <h3 className="self-start text-white">Past Experience</h3>
-                <ul className="mt-3 flex flex-wrap gap-2 text-[10px] xs:text-xs text-white">
+                <ul className="xs:text-xs mt-3 flex flex-wrap gap-2 text-[10px] text-white">
                   {experiences.map((experience, index) => (
                     <li
                       key={index}

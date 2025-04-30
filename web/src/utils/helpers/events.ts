@@ -2,7 +2,7 @@ export type Event = {
   title: string;
   location: string;
   date: string;
-  src: string; 
+  src: string;
 };
 
 export type EventSection = {
@@ -18,7 +18,7 @@ export const EVENTS: EventSection[] = [
         title: "Roadshow",
         location: "high schools and universities in Yogyakarta",
         date: "09 Mei",
-        src: "/lebron.webp", 
+        src: "/lebron.webp",
       },
     ],
   },

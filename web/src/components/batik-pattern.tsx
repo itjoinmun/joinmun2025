@@ -2,7 +2,7 @@ import { cn } from "@/utils/cn";
 import Image from "next/image";
 
 const BatikPattern = ({ className, square }: { className?: string; square?: boolean }) => {
-  const batikClass = 'pointer-events-none -z-10 absolute'
+  const batikClass = "pointer-events-none -z-10 absolute";
 
   if (square) {
     return (
@@ -11,7 +11,7 @@ const BatikPattern = ({ className, square }: { className?: string; square?: bool
         alt="Batik Pattern"
         width={500}
         height={500}
-        className={cn(batikClass, "left-0 -top-12 -z-10", className)}
+        className={cn(batikClass, "-top-12 left-0 -z-10", className)}
       />
     );
   }

@@ -39,9 +39,9 @@ const ThemeUnesco = () => {
               width={650}
               height={714}
               loading="lazy"
-              className="aspect-[354/219] w-full shadow-lg lg:aspect-auto lg:max-w-[32%] lg:h-full"
+              className="aspect-[354/219] w-full shadow-lg lg:aspect-auto lg:h-full lg:max-w-[32%]"
             />
-            <div className="flex flex-col gap-y-2 self-center h-fit">
+            <div className="flex h-fit flex-col gap-y-2 self-center">
               {RECOGNIZED_VALUE.map((item, index) => (
                 <div key={index} className="mb-4 flex items-center gap-x-3 lg:gap-x-7">
                   <Image
@@ -52,8 +52,10 @@ const ThemeUnesco = () => {
                     className="w-11 text-white lg:w-14"
                   />
                   <div className="flex flex-col">
-                    <h3 className="mb-1 lg:mb-3 text-lg font-semibold">{item.title}</h3>
-                    <p className="text-primary-foreground text-xs md:text-sm xl:text-base">{item.subtitle}</p>
+                    <h3 className="mb-1 text-lg font-semibold lg:mb-3">{item.title}</h3>
+                    <p className="text-primary-foreground text-xs md:text-sm xl:text-base">
+                      {item.subtitle}
+                    </p>
                   </div>
                 </div>
               ))}

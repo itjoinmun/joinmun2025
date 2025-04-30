@@ -54,19 +54,19 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (
+  const onSubmit = () =>
     // values: z.infer<typeof loginSchema>
-  ) => {
-    setPending(true);
-    try {
-      // post to backend api
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setPending(false);
-    }
-    // do something
-  };
+    {
+      setPending(true);
+      try {
+        // post to backend api
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setPending(false);
+      }
+      // do something
+    };
 
   return (
     <Form {...form}>
