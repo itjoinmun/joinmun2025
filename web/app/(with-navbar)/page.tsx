@@ -7,6 +7,7 @@ import Pricing from "@/modules/home/pricing";
 import Timeline from "@/modules/home/timeline";
 import { Test } from "@/modules/temp";
 import Welcome from "@/modules/welcome";
+import WelcomingRemarks from "@/modules/welcoming-remarks";
 
 export default function Home() {
   return (
@@ -14,12 +15,13 @@ export default function Home() {
       <Hero />
       <Timeline />
       <HomeTheme />
+      <WelcomingRemarks />
       <Events />
       <Councils />
       <Pricing />
-      <Footer />
-      <Welcome />
-      <Test />
+      {/* <WelcomingRemarks /> */}
+      {/* <Welcome /> */}
+      {/* <Test /> */}
     </>
   );
 }

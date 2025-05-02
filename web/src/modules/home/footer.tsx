@@ -159,7 +159,7 @@ const TopFooter = () => {
   return (
     <div className="mb-14">
       {/* <div> */}
-      <div className="mr-auto flex items-center justify-start gap-x-5 select-none md:w-full xl:w-auto md:gap-x-2">
+      <div className="mr-auto flex items-center justify-start gap-x-5 select-none md:w-full md:gap-x-2 xl:w-auto">
         <div className="relative aspect-[846/701] min-w-20 md:w-10">
           <Image
             src={`/LOGO.png`}
@@ -171,7 +171,7 @@ const TopFooter = () => {
           />
         </div>
 
-        <h1 className="xs:block text-xl text-nowrap font-bold sm:text-2xl md:block md:text-xl">
+        <h1 className="xs:block text-xl font-bold text-nowrap sm:text-2xl md:block md:text-xl">
           JOINMUN
         </h1>
         <h1 className="hidden w-auto text-xl font-bold text-wrap sm:text-2xl md:hidden">

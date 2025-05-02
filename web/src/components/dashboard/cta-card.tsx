@@ -12,11 +12,17 @@ const CTACard = ({
   href: string;
 }) => {
   return (
-    <article className="bg-background rounded-md flex flex-col gap-1 p-4">
+    <article className="bg-background flex flex-col gap-1 rounded-md p-4">
       <h1 className="text-lg/snug font-bold">{title}</h1>
-      <hr className="border-b-2 border-gray my-2" />
-      <p className="text-sm/snug mb-auto">{description}</p>
-      <Link href={href} className={cn(buttonVariants({ variant: "primary" }), "ml-auto justify-self-end mt-2 w-fit")}>
+      <hr className="border-gray my-2 border-b-2" />
+      <p className="mb-auto text-sm/snug">{description}</p>
+      <Link
+        href={href}
+        className={cn(
+          buttonVariants({ variant: "primary" }),
+          "mt-2 ml-auto w-fit justify-self-end",
+        )}
+      >
         Enter
       </Link>
     </article>

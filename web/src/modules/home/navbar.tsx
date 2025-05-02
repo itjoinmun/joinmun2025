@@ -39,13 +39,13 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`bg-background fixed z-40 transition-all h-16 flex items-center duration-500 ease-in-out ${
+      className={`bg-background fixed z-40 flex h-16 items-center transition-all duration-500 ease-in-out ${
         isScrolled
           ? "inset-x-0 top-0 md:inset-x-5 md:top-5 md:rounded-2xl md:shadow-md"
           : "inset-x-0 top-0"
       }`}
     >
-      <Container className="flex-row max-w-none items-center py-0 justify-between gap-8">
+      <Container className="max-w-none flex-row items-center justify-between gap-8 py-0">
         <Logo />
 
         <DesktopNav />
@@ -64,11 +64,11 @@ const DesktopNav = () => (
       </Link>
     ))}
 
-    {/* login + signup */}
+    {/* login + register */}
     <Link href={`/login`} className={buttonVariants({ variant: "outline" })}>
       Log in
     </Link>
-    <Link href={`/signup`} className={buttonVariants({ variant: "gray" })}>
+    <Link href={`/register`} className={buttonVariants({ variant: "gray" })}>
       Register
     </Link>
   </div>

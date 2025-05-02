@@ -4,7 +4,7 @@ import RegisterForm from "@/modules/auth/register-form";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 
-const SignupPage = () => {
+const RegisterPage = () => {
   return (
     <AuthTemplate
       src="/assets/auth/register.webp"
@@ -33,4 +33,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default RegisterPage;

@@ -49,7 +49,7 @@ const Hero = () => {
           transition={{ duration: 1, delay: 0.4, type: "tween" }}
         >
           <Link
-            href={`/signup`}
+            href={`/register`}
             className={cn(
               buttonVariants({ variant: "primary" }),
               "mt-2 mb-8 w-fit text-sm md:mb-0",

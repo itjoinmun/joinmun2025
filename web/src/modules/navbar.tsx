@@ -71,11 +71,11 @@ const DesktopNav = () => (
       </Link>
     ))}
 
-    {/* login + signup */}
+    {/* login + register */}
     <Link href={`/login`} className={buttonVariants({ variant: "outline" })}>
       Log in
     </Link>
-    <Link href={`/signup`} className={buttonVariants({ variant: "gray" })}>
+    <Link href={`/register`} className={buttonVariants({ variant: "gray" })}>
       Register
     </Link>
   </div>
@@ -126,7 +126,7 @@ const MobileNav = () => (
             <Link href={`/login`} className={cn(buttonVariants({ variant: "white" }), "w-full")}>
               Log in
             </Link>
-            <Link href={`/signup`} className={cn(buttonVariants({ variant: "gray" }), "w-full")}>
+            <Link href={`/register`} className={cn(buttonVariants({ variant: "gray" }), "w-full")}>
               Register
             </Link>
           </section>

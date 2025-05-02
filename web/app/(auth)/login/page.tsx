@@ -20,7 +20,7 @@ const LoginPage = () => {
       <p className="text-sm">
         Don&apos;t have an account?{" "}
         <Link
-          href={`/signup`}
+          href={`/register`}
           className={cn(
             buttonVariants({ variant: "link" }),
             "inline w-fit px-0 font-bold hover:underline hover:underline-offset-2",

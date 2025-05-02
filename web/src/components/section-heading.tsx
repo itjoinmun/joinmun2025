@@ -17,4 +17,4 @@ const SubHeading = ({ children, className }: { children: React.ReactNode; classN
   return <h3 className={cn("text-gradient-gold", className)}>{children}</h3>;
 };
 
-export { Heading, SubHeading }; 
+export { Heading, SubHeading };

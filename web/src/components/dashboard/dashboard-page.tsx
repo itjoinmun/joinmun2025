@@ -56,4 +56,3 @@ const DashboardPageDescription = ({
 };
 
 export { DashboardPage, DashboardPageDescription, DashboardPageHeader, DashboardPageTitle };
-
