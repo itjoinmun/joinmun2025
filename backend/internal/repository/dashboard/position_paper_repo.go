@@ -22,7 +22,7 @@ func (r *positionPaperRepo) GetPositionPaperByDelegateEmail(email string) (*dash
 	return &paper, nil
 }
 
-func (r *positionPaperRepo) InsertPositionPaper(positionPaper dashboard.PositionPaper) (int, error) {
+func (r *positionPaperRepo) InsertPositionPaper(positionPaper *dashboard.PositionPaper) (int, error) {
 	query := `INSERT INTO position_papers (mun_delegate_email, mun_team_id, submission_file, submission_date, submission_status) 
               VALUES ($1, $2, $3, $4, $5) RETURNING position_paper_id`
 	var id int
@@ -43,7 +43,7 @@ func (r *positionPaperRepo) InsertPositionPaper(positionPaper dashboard.Position
 	return id, nil
 }
 
-func (r *positionPaperRepo) UpdatePositionPaper(positionPaper dashboard.PositionPaper) error {
+func (r *positionPaperRepo) UpdatePositionPaper(positionPaper *dashboard.PositionPaper) error {
 	query := `UPDATE position_papers 
               SET submission_file = $1, submission_date = $2, submission_status = $3 
               WHERE mun_delegate_email = $4 AND mun_team_id = $5`

@@ -16,46 +16,36 @@ func (r *paymentRepo) GetPaymentByID(paymentID int) (*dashboard.Payment, error) 
 	query := `SELECT * FROM payments WHERE payment_id = $1`
 	err := r.db.Get(&payment, query, paymentID)
 	if err != nil {
-		logger.LogError(err, "Failed to get payment", map[string]interface{}{"paymentID": paymentID})
+		logger.LogError(err, "Failed to get payment", map[string]interface{}{"paymentID": paymentID, "layer": "repository", "operation": "repo.GetPaymentByID"})
 		return nil, err
 	}
+	logger.LogDebug("Payment retrieved successfully", map[string]interface{}{"paymentID": paymentID, "layer": "repository", "operation": "repo.GetPaymentByID"})
 	return &payment, nil
 }
 
-func (r *paymentRepo) GetPaymentsByTeamID(teamID int) ([]dashboard.Payment, error) {
-	var payments []dashboard.Payment
+func (r *paymentRepo) GetPaymentsByMUNTeamID(teamID string) (*dashboard.Payment, error) {
+	var payments dashboard.Payment
 	query := `SELECT * FROM payments WHERE mun_team_id = $1`
 	err := r.db.Select(&payments, query, teamID)
 	if err != nil {
-		logger.LogError(err, "Failed to get payments for team", map[string]interface{}{"teamID": teamID})
+		logger.LogError(err, "Failed to get payments for team", map[string]interface{}{"teamID": teamID, "layer": "repository", "operation": "repo.GetPaymentsByteamID"})
 		return nil, err
 	}
-	return payments, nil
+	logger.LogDebug("Payments retrieved successfully", map[string]interface{}{"teamID": teamID, "layer": "repository", "operation": "repo.GetPaymentsByteamID"})
+	return &payments, nil
 }
 
-func (r *paymentRepo) InsertPayment(payment dashboard.Payment) (int, error) {
-	query := `INSERT INTO payments (mun_team_id, package, payment_file, payment_status, payment_date, payment_amount) 
-              VALUES ($1, $2, $3, $4, $5, $6) RETURNING payment_id`
-	var id int
-	err := r.db.QueryRow(
-		query,
-		payment.MUNTeamID,
-		payment.Package,
-		payment.PaymentFile,
-		payment.PaymentStatus,
-		payment.PaymentDate,
-		payment.PaymentAmount,
-	).Scan(&id)
+func (r *paymentRepo) UpdatePaymentStatus(teamID int) error {
+	query := `UPDATE payments SET payment_status = 'Paid' WHERE mun_team_id = $1`
+	_, err := r.db.Exec(query, teamID)
 	if err != nil {
-		logger.LogError(err, "Failed to insert payment", map[string]interface{}{
-			"teamID": payment.MUNTeamID,
-		})
-		return 0, err
+		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"teamID": teamID, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
 	}
-	return id, nil
+	logger.LogDebug("Payment status updated successfully", map[string]interface{}{"teamID": teamID, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
+	return err
 }
 
-func (r *paymentRepo) UpdatePayment(payment dashboard.Payment) error {
+func (r *paymentRepo) UpdatePaymentForTeam(payment *dashboard.Payment) error {
 	query := `UPDATE payments 
               SET package = $1, payment_file = $2, payment_status = $3, payment_date = $4, payment_amount = $5 
               WHERE payment_id = $6 AND mun_team_id = $7`

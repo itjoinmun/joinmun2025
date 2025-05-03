@@ -22,7 +22,7 @@ func (r *observerRepo) GetObserverByEmail(email string) (*dashboard.Observer, er
 	return &observer, nil
 }
 
-func (r *observerRepo) InsertObserver(observer dashboard.Observer) (int, error) {
+func (r *observerRepo) InsertObserver(observer *dashboard.Observer) (int, error) {
 	query := `INSERT INTO observers (observer_email, biodata_responses_id) 
               VALUES ($1, $2) RETURNING observer_id`
 	var id int

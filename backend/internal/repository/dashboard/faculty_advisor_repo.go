@@ -22,7 +22,7 @@ func (r *facultyAdvisorRepo) GetFacultyAdvisorByEmail(email string) (*dashboard.
 	return &advisor, nil
 }
 
-func (r *facultyAdvisorRepo) InsertFacultyAdvisor(advisor dashboard.FacultyAdvisor) (int, error) {
+func (r *facultyAdvisorRepo) InsertFacultyAdvisor(advisor *dashboard.FacultyAdvisor) (int, error) {
 	query := `INSERT INTO faculty_advisors (faculty_advisor_email, biodata_responses_id) 
               VALUES ($1, $2) RETURNING faculty_advisor_id`
 	var id int
@@ -51,7 +51,7 @@ func (r *facultyAdvisorRepo) GetFacultyAdvisorsByTeamID(teamID int) ([]dashboard
 	return advisors, nil
 }
 
-func (r *facultyAdvisorRepo) AddFacultyAdvisorToTeam(teamAdvisor dashboard.MUNFacultyAdvisors) error {
+func (r *facultyAdvisorRepo) AddFacultyAdvisorToTeam(teamAdvisor *dashboard.MUNFacultyAdvisors) error {
 	query := `INSERT INTO mun_faculty_advisors (faculty_advisor_email, mun_team_id) VALUES ($1, $2)`
 	_, err := r.db.Exec(query, teamAdvisor.FacultyAdvisorEmail, teamAdvisor.MUNTeamID)
 	if err != nil {

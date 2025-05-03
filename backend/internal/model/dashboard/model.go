@@ -48,6 +48,7 @@ type MUNDelegates struct {
 	Country          string    `json:"country" db:"country" binding:"required"`
 	Confirmed        bool      `json:"confirmed" db:"confirmed" binding:"required"`
 	ConfirmedDate    time.Time `json:"confirmed_date" db:"confirmed_date"`
+	PaymentID        int       `json:"payment_id" db:"payment_id"`
 }
 
 type MUNTeams struct {
