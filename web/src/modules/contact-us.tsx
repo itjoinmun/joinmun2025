@@ -1,39 +1,40 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Container from "@/components/ui/container";
+import { Heading, SubHeading } from "@/components/section-heading";
 
-export default function () {
+export default function ContactUs() {
   return (
-    <main className="flex gap-[38px] px-6 py-20">
-      <div className="flex w-[754px] flex-col gap-7 text-left">
-        <div className="flex flex-col gap-4">
-          <p className="from-gold w-fit bg-gradient-to-r to-white bg-clip-text text-[18px] leading-[24px] font-[500] text-transparent">
-            Contact Us
-          </p>
-          <p className="from-gold w-fit bg-gradient-to-r to-white bg-clip-text text-[38px] leading-[51px] font-[700] text-transparent">
-            Get in Touch With Us
-          </p>
-          <p className="w-[642px] text-[18px] leading-[24px] font-[500]">
-            Have questions or need assistance? Our team is here to help. Don’t hesitate to reach out
-            — we’ll get back to you as soon as possible.
-          </p>
+    <main className="">
+      <Container>
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-6 lg:max-w-[754px]">
+            <div className="flex flex-col gap-4">
+              <SubHeading>Contact Us</SubHeading>
+              <Heading>Get in Touch With Us</Heading>
+              <p className="text-base font-medium text-pretty">
+                Have questions or need assistance? Our team is here to help. Don&apos;t hesitate to
+                reach out — we&apos;ll get back to you as soon as possible.
+              </p>
+            </div>
+
+            <Link href={"/"} className="w-fit">
+              <Button variant={"primary"} className="cursor-pointer">
+                Contact Us
+              </Button>
+            </Link>
+          </div>
+
+          <Image
+            src={"/assets/contact-us/LEF07703.jpg"}
+            alt="KKM07434"
+            className="w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]"
+            width={546}
+            height={345}
+          />
         </div>
-
-        {/* Button Contact Us */}
-        <Link href={"/"} className={"mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100"}>
-          <Button variant={"primary"} size={"longer"} className="cursor-pointer">
-            Contact Us
-          </Button>
-        </Link>
-      </div>
-
-      <Image
-        src={"/assets/contact-us/LEF07703.jpg"}
-        alt="LEF07703"
-        className="h-[345] object-cover"
-        width={607}
-        height={345}
-      />
+      </Container>
     </main>
   );
 }

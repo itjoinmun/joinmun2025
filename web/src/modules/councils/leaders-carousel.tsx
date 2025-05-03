@@ -2,12 +2,10 @@
 import {
   Dialog,
   DialogContent,
-  DialogOverlay,
   DialogTrigger,
   DialogTitle,
   DialogHeader,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Carousel,
@@ -17,7 +15,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Council } from "@/utils/helpers/councils";
-import { ArrowUpRightIcon, X } from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
 import Image from "next/image";
 
 export const LeaderCarousel = (props: Council) => {
@@ -108,7 +106,8 @@ const LeaderCard = ({
                 <Image
                   // src={`/assets/councils/${image}`}
                   src={`/lebron.webp`}
-                  alt={`${name}'s Image`}
+                  alt={`${image}'s Image`}
+                  // alt={`${name}'s Image`}
                   fill
                   sizes="33%"
                   className="pointer-events-none object-cover"

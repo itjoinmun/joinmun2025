@@ -1,27 +1,27 @@
-import Councils from "@/modules/home/councils";
-import Events from "@/modules/home/events";
-import Footer from "@/modules/home/footer";
 import Hero from "@/modules/home/hero";
-import HomeTheme from "@/modules/home/home-theme";
-import Pricing from "@/modules/home/pricing";
+import AboutUs from "@/modules/about-us";
 import Timeline from "@/modules/home/timeline";
-import { Test } from "@/modules/temp";
-import Welcome from "@/modules/welcome";
+import HomeTheme from "@/modules/home/home-theme";
 import WelcomingRemarks from "@/modules/welcoming-remarks";
+import Events from "@/modules/home/events";
+import Councils from "@/modules/home/councils";
+import ContactUs from "@/modules/contact-us";
+import Pricing from "@/modules/home/pricing";
+import { Test } from "@/modules/temp";
 
 export default function Home() {
   return (
     <>
       <Hero />
+      <AboutUs />
       <Timeline />
       <HomeTheme />
       <WelcomingRemarks />
       <Events />
       <Councils />
+      <ContactUs />
       <Pricing />
-      {/* <WelcomingRemarks /> */}
-      {/* <Welcome /> */}
-      {/* <Test /> */}
+      <Test />
     </>
   );
 }

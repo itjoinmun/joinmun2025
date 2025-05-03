@@ -17,7 +17,7 @@ export default function WelcomingRemarks() {
           <Image
             src={"/assets/welcoming-remarks/KKM07434.jpg"}
             alt="KKM07434"
-            className="w-full object-cover md:max-w-[40rem] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]"
+            className="w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]"
             width={546}
             height={345}
           />

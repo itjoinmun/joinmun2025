@@ -4,6 +4,17 @@ import { Instagram, Linkedin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+interface FooterLink {
+  name: string;
+  link: string;
+  icon?: React.ReactNode;
+}
+
+interface FooterSection {
+  title: string;
+  content: FooterLink[];
+}
+
 const TikTok = () => {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" height={24} width={24}>
@@ -20,7 +31,7 @@ const TikTok = () => {
   );
 };
 
-const FOOTOER_CONTENT = [
+const FOOTER_CONTENT: FooterSection[] = [
   {
     title: "Event Info",
     content: [
@@ -71,7 +82,7 @@ const Footer = () => {
         <div className="mx-auto block w-fit px-10 sm:px-16 md:hidden">
           <TopFooter />
           <div className="2xs:gap-x-6 xs:gap-x-16 grid grid-cols-2 gap-x-3 gap-y-14 sm:gap-x-24">
-            {FOOTOER_CONTENT.map((section, idx) => (
+            {FOOTER_CONTENT.map((section, idx) => (
               <div key={idx} className="w-fit">
                 <h3 className="mb-2 text-lg font-semibold sm:text-xl">{section.title}</h3>
                 {section.title === "Follow Us" ? (
@@ -111,7 +122,7 @@ const Footer = () => {
           <div className="col-span-2 lg:ml-10">
             <TopFooter />
           </div>
-          {FOOTOER_CONTENT.map((section, idx) => (
+          {FOOTER_CONTENT.map((section, idx) => (
             <div key={idx}>
               <h3
                 className={cn("mb-2 text-sm font-bold text-nowrap", {
