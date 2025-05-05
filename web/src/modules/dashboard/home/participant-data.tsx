@@ -1,5 +1,6 @@
 import {
   DashboardModule,
+  DashboardModuleContent,
   DashboardModuleHeader,
   DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
@@ -47,7 +48,7 @@ const ParticipantData = () => {
         <DashboardModuleTitle>Participant Data</DashboardModuleTitle>
       </DashboardModuleHeader>
 
-      <div className="overflow-hidden rounded-lg p-4 bg-gray">
+      <DashboardModuleContent className="overflow-scroll max-h-96 no-scrollbar">
       <Table>
           <TableHeader>
             <TableRow className="bg-background hover:bg-background">
@@ -57,9 +58,9 @@ const ParticipantData = () => {
               <TableHead>Country</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-neutral-400">
+          <TableBody className="bg-blue-100">
             {dummyData.map((participant, index) => (
-              <TableRow key={participant.id} className="hover:bg-neutral-400/90">
+              <TableRow key={participant.id} className="hover:bg-blue-100/80">
                 <TableCell
                   className={cn(
                     "font-medium",
@@ -77,7 +78,7 @@ const ParticipantData = () => {
             ))}
           </TableBody>
         </Table>
-      </div>
+      </DashboardModuleContent>
     </DashboardModule>
   );
 };

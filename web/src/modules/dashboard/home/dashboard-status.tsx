@@ -49,6 +49,48 @@ interface StatusCardProps {
   cardDescription: string;
 }
 
+const DashboardStatus = () => {
+  const regInfo = getRegistrationStatusInfo(currentUserState.registrationStatus);
+  const codeInfo = getDelegateCodeInfo(currentUserState.delegateCode);
+  const paperInfo = getPaperSubmissionInfo(currentUserState.paperSubmission);
+  const infoInfo = getInformationCenterInfo(currentUserState.informationCenter);
+
+  return (
+    <DashboardModule className="">
+      <section className="mt-3 grid md:auto-rows-fr grid-cols-1 gap-4 lg:grid-cols-2">
+        <StatusCard
+          cardHeader="Registration Status"
+          cardDescription="Track your registration progress from initial signup to payment verification"
+          title="Current Status"
+          status={regInfo.status}
+          description={regInfo.description}
+        />
+        <StatusCard
+          cardHeader="Delegate Code"
+          cardDescription="Your unique identifier for the JOINMUN 2025 conference"
+          title="Code Status"
+          status={codeInfo.status}
+          description={codeInfo.description}
+        />
+        <StatusCard
+          cardHeader="Paper Submission"
+          cardDescription="Submit and manage your position papers for the conference"
+          title="Submission Status"
+          status={paperInfo.status}
+          description={paperInfo.description}
+        />
+        <StatusCard
+          cardHeader="Information Center"
+          cardDescription="Stay updated with important announcements and conference details"
+          title="Update Status"
+          status={infoInfo.status}
+          description={infoInfo.description}
+        />
+      </section>
+    </DashboardModule>
+  );
+};
+
 const StatusCard = ({
   // title,
   status,
@@ -57,27 +99,23 @@ const StatusCard = ({
   cardDescription,
 }: StatusCardProps) => {
   return (
-    <div
+    <DashboardModule
       className={cn(
         "flex flex-col gap-3 transition-all",
         // variantStyles[variant],
       )}
     >
-      <div className="space-1 flex flex-col items-baseline justify-between 2xl:flex-row">
-        <DashboardModuleHeader>
-          <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
-        </DashboardModuleHeader>
-        {/* <p className="hidden text-xs opacity-75 2xl:flex">{cardDescription}</p> */}
-        <DashboardModuleDescription className="opacity-80">
+      <DashboardModuleHeader className="shrink-0 flex flex-col 2xl:justify-between 2xl:*:max-w-1/2 2xl:flex-row text-nowrap">
+        <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
+        <DashboardModuleDescription className="opacity-80 text-wrap">
           {cardDescription}
         </DashboardModuleDescription>
-      </div>
-
-      <DashboardModuleContent>
-        <p className="text-base opacity-90">{description}</p>
+      </DashboardModuleHeader>
+      <DashboardModuleContent className="mt-auto">
+        <p className="text-sm opacity-90">{description}</p>
         {/* <p className="text-xs opacity-75">{description}</p> */}
       </DashboardModuleContent>
-    </div>
+    </DashboardModule>
   );
 };
 
@@ -195,48 +233,6 @@ const getInformationCenterInfo = (status: InformationCenterStatus) => {
         variant: "success" as const,
       };
   }
-};
-
-const DashboardStatus = () => {
-  const regInfo = getRegistrationStatusInfo(currentUserState.registrationStatus);
-  const codeInfo = getDelegateCodeInfo(currentUserState.delegateCode);
-  const paperInfo = getPaperSubmissionInfo(currentUserState.paperSubmission);
-  const infoInfo = getInformationCenterInfo(currentUserState.informationCenter);
-
-  return (
-    <DashboardModule className="">
-      <section className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <StatusCard
-          cardHeader="Registration Status"
-          cardDescription="Track your registration progress from initial signup to payment verification"
-          title="Current Status"
-          status={regInfo.status}
-          description={regInfo.description}
-        />
-        <StatusCard
-          cardHeader="Delegate Code"
-          cardDescription="Your unique identifier for the JOINMUN 2025 conference"
-          title="Code Status"
-          status={codeInfo.status}
-          description={codeInfo.description}
-        />
-        <StatusCard
-          cardHeader="Paper Submission"
-          cardDescription="Submit and manage your position papers for the conference"
-          title="Submission Status"
-          status={paperInfo.status}
-          description={paperInfo.description}
-        />
-        <StatusCard
-          cardHeader="Information Center"
-          cardDescription="Stay updated with important announcements and conference details"
-          title="Update Status"
-          status={infoInfo.status}
-          description={infoInfo.description}
-        />
-      </section>
-    </DashboardModule>
-  );
 };
 
 export default DashboardStatus;
