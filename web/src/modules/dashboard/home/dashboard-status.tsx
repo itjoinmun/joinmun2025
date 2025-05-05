@@ -3,6 +3,7 @@ import {
   DashboardModuleHeader,
   DashboardModuleTitle,
   DashboardModuleDescription,
+  DashboardModuleContent,
 } from "@/components/dashboard/dashboard-module";
 import { cn } from "@/utils/cn";
 
@@ -67,49 +68,50 @@ const StatusCard = ({
           <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
         </DashboardModuleHeader>
         {/* <p className="hidden text-xs opacity-75 2xl:flex">{cardDescription}</p> */}
-        <DashboardModuleDescription className="opacity-80">{cardDescription}</DashboardModuleDescription>
+        <DashboardModuleDescription className="opacity-80">
+          {cardDescription}
+        </DashboardModuleDescription>
       </div>
 
-      <div className="space-y-2 rounded-md bg-white/5 p-3">
-        {/* <h3 className="font-semibold">{title}</h3> */}
-        <p className="text-base opacity-90">{status}</p>
-        <p className="text-xs opacity-75">{description}</p>
-      </div>
+      <DashboardModuleContent>
+        <p className="text-base opacity-90">{description}</p>
+        {/* <p className="text-xs opacity-75">{description}</p> */}
+      </DashboardModuleContent>
     </div>
   );
 };
 
 const getRegistrationStatusInfo = (status: RegistrationStatus) => {
   switch (status) {
+    // Belum Daftar
     case "not_registered":
       return {
         status: "Not Registered",
-        description: "You haven't started the registration process yet",
-        variant: "error" as const,
+        description: "You haven't registered, <b>Register Now</b>",
       };
+    // Sudah Daftar
     case "waiting_verification":
       return {
         status: "Waiting for Verification",
-        description: "Your registration is being reviewed by our team",
-        variant: "warning" as const,
+        description: "Waiting For Verification",
       };
+    // Belum Verified
     case "verified_pending_payment":
       return {
         status: "Payment Required",
-        description: "Your registration is verified. Please proceed with payment",
-        variant: "info" as const,
+        description: "Verified, Go To Payment",
       };
+    // Pendaftaran Sudah Verified
     case "payment_checking":
       return {
         status: "Payment Being Checked",
-        description: "We're verifying your payment",
-        variant: "warning" as const,
+        description: "Verified, Go To Payment",
       };
+    // Payment Sudah Verified
     case "payment_verified":
       return {
         status: "Fully Registered",
         description: "Your registration is complete",
-        variant: "success" as const,
       };
   }
 };

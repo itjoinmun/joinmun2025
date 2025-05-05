@@ -48,7 +48,7 @@ const ParticipantData = () => {
       </DashboardModuleHeader>
 
       <div className="overflow-hidden rounded-lg p-4 bg-gray">
-        <Table>
+      <Table>
           <TableHeader>
             <TableRow className="bg-background hover:bg-background">
               <TableHead className="first:rounded-tl-lg last:rounded-tr-lg">Name</TableHead>
