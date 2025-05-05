@@ -4,6 +4,8 @@ import {
   DashboardPageTitle,
 } from "@/components/dashboard/dashboard-page";
 import DashboardEvents from "@/modules/dashboard/home/dashboard-events";
+import InformationCenter from "@/modules/dashboard/home/dashboard-status";
+import ParticipantData from "@/modules/dashboard/home/participant-data";
 import ParticipantStatus from "@/modules/dashboard/home/participant-status";
 
 const DashboardHome = () => {
@@ -15,6 +17,8 @@ const DashboardHome = () => {
 
       {/* call in modules here */}
       <ParticipantStatus />
+      <InformationCenter />
+      <ParticipantData />
       <DashboardEvents />
       <div className="w-screen" />
     </DashboardPage>
