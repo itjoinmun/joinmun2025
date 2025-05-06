@@ -5,6 +5,7 @@ import (
 	dashboardRepo "backend/internal/repository/dashboard"
 	dashboardUtils "backend/pkg/utils/dashboard"
 	"backend/pkg/utils/logger"
+	"sync"
 )
 
 type DashboardService interface {
@@ -16,6 +17,7 @@ type DashboardService interface {
 		munResponses []dashboard.MUNResponses) (retErr error)
 
 	GetParticipantData(email string) ([]dashboard.MUNDelegates, error)
+	GetQuestions() (biodataQuestions []dashboard.BiodataQuestions, healthQuestions []dashboard.HealthQuestions, munQuestions []dashboard.MUNQuestions, err error)
 }
 
 type dashboardService struct {
@@ -89,42 +91,62 @@ func (s *dashboardService) InsertDelegates(
 		}
 	}()
 
-	// insert biodata responses
-	err = s.responseRepo.InsertBiodataResponses(tx, biodataResponses)
-	if err != nil {
-		logger.LogError(err, "Failed to insert biodata responses", map[string]interface{}{
-			"layer":     "service",
-			"operation": "service.InsertDelegates",
-			"error":     err,
-		})
+	// Create error channel and wait group for concurrent operations
+	errChan := make(chan error, 3)
+	var wg sync.WaitGroup
+	wg.Add(3)
+
+	// Concurrently insert biodata responses
+	go func() {
+		defer wg.Done()
+		err := s.responseRepo.InsertBiodataResponses(tx, biodataResponses)
+		if err != nil {
+			logger.LogError(err, "Failed to insert biodata responses", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.InsertDelegates",
+				"error":     err,
+			})
+			errChan <- err
+		}
+	}()
+
+	// Concurrently insert health responses
+	go func() {
+		defer wg.Done()
+		err := s.responseRepo.InsertHealthResponses(tx, healthResponses)
+		if err != nil {
+			logger.LogError(err, "Failed to insert health responses", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.InsertDelegates",
+				"error":     err,
+			})
+			errChan <- err
+		}
+	}()
+
+	// Concurrently insert MUN responses
+	go func() {
+		defer wg.Done()
+		err := s.responseRepo.InsertMUNResponses(tx, munResponses)
+		if err != nil {
+			logger.LogError(err, "Failed to insert MUN responses", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.InsertDelegates",
+				"error":     err,
+			})
+			errChan <- err
+		}
+	}()
+
+	// Wait for all goroutines to complete
+	wg.Wait()
+	close(errChan)
+
+	// Check if any errors occurred during concurrent operations
+	for err := range errChan {
 		retErr = err
 		return retErr
 	}
-
-	// insert health responses
-	err = s.responseRepo.InsertHealthResponses(tx, healthResponses)
-	if err != nil {
-		logger.LogError(err, "Failed to insert health responses", map[string]interface{}{
-			"layer":     "service",
-			"operation": "service.InsertDelegates",
-			"error":     err,
-		})
-		retErr = err
-		return retErr
-	}
-
-	// insert mun responses
-	err = s.responseRepo.InsertMUNResponses(tx, munResponses)
-	if err != nil {
-		logger.LogError(err, "Failed to insert MUN responses", map[string]interface{}{
-			"layer":     "service",
-			"operation": "service.InsertDelegates",
-			"error":     err,
-		})
-		retErr = err
-		return retErr
-	}
-
 	// insert delegates and make teams
 	_, err = s.delegateRepo.InsertTeamWithDelegates(tx, team, delegates)
 	if err != nil {
@@ -173,4 +195,89 @@ func (s *dashboardService) GetParticipantData(email string) ([]dashboard.MUNDele
 	}
 
 	return delegates, nil
+}
+
+// AI GENERATED CODE #VIBECODER
+func (s *dashboardService) GetQuestions() (biodataQuestions []dashboard.BiodataQuestions, healthQuestions []dashboard.HealthQuestions, munQuestions []dashboard.MUNQuestions, err error) {
+	var wg sync.WaitGroup
+	wg.Add(3)
+
+	// Create channels to collect results and errors
+	biodataCh := make(chan []dashboard.BiodataQuestions, 1)
+	healthCh := make(chan []dashboard.HealthQuestions, 1)
+	munCh := make(chan []dashboard.MUNQuestions, 1)
+	errCh := make(chan error, 3)
+
+	// Concurrently fetch biodata questions
+	go func() {
+		defer wg.Done()
+		questions, err := s.questionRepo.GetBiodataQuestions()
+		if err != nil {
+			logger.LogError(err, "Failed to get biodata questions", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.GetQuestions",
+				"error":     err,
+			})
+			errCh <- err
+			return
+		}
+		biodataCh <- questions
+	}()
+
+	// Concurrently fetch health questions
+	go func() {
+		defer wg.Done()
+		questions, err := s.questionRepo.GetHealthQuestions()
+		if err != nil {
+			logger.LogError(err, "Failed to get health questions", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.GetQuestions",
+				"error":     err,
+			})
+			errCh <- err
+			return
+		}
+		healthCh <- questions
+	}()
+
+	// Concurrently fetch MUN questions
+	go func() {
+		defer wg.Done()
+		questions, err := s.questionRepo.GetMUNQuestions()
+		if err != nil {
+			logger.LogError(err, "Failed to get MUN questions", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.GetQuestions",
+				"error":     err,
+			})
+			errCh <- err
+			return
+		}
+		munCh <- questions
+	}()
+
+	// Wait for all goroutines to complete
+	wg.Wait()
+	close(biodataCh)
+	close(healthCh)
+	close(munCh)
+	close(errCh)
+
+	// Check if any errors occurred
+	if len(errCh) > 0 {
+		return nil, nil, nil, <-errCh // Return the first error
+	}
+
+	// Collect results
+	if len(biodataCh) > 0 {
+		biodataQuestions = <-biodataCh
+	}
+	if len(healthCh) > 0 {
+		healthQuestions = <-healthCh
+	}
+	if len(munCh) > 0 {
+		munQuestions = <-munCh
+	}
+
+	return biodataQuestions, healthQuestions, munQuestions, nil
 }

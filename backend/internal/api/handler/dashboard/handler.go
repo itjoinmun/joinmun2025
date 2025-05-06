@@ -2,8 +2,12 @@ package dashboard
 
 import (
 	dashboardModel "backend/internal/model/dashboard"
+	"backend/internal/s3"
 	dashboardService "backend/internal/service/dashboard"
 	"backend/pkg/utils/dashboard"
+	"encoding/json"
+	"fmt"
+	"os"
 
 	"net/http"
 
@@ -22,18 +26,85 @@ func NewDashboardHandler(dashboardService dashboardService.DashboardService) *Da
 
 // register the delegates will accept
 func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
+
 	type DelegateWithResponses struct {
 		dashboardModel.MUNDelegates
 		BiodataResponses []dashboardModel.BiodataResponses
 		HealthResponses  []dashboardModel.HealthResponses
 		MUNResponses     []dashboardModel.MUNResponses
 	}
-
 	var req struct {
 		Delegates []DelegateWithResponses
 		Team      dashboardModel.MUNTeams
 	}
+	bucketName := os.Getenv("AWS_BUCKET_NAME")
+	uploader, err := s3.NewS3Uploader(bucketName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to initialize S3 uploader"})
+		return
+	}
 
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid multipart form"})
+		return
+	}
+
+	// Parse JSON part
+	jsonPart := form.Value["json"]
+	if len(jsonPart) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing JSON part"})
+		return
+	}
+	if err := json.Unmarshal([]byte(jsonPart[0]), &req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON", "details": err.Error()})
+		return
+	}
+
+	// Handle file uploads
+	for di, d := range req.Delegates {
+		for bi, b := range d.BiodataResponses {
+			// Get the question type from the biodata questions
+			// We need to look up the question type for this question ID
+			questionType := ""
+			biodataQuestions, _, _, err := h.dashboardService.GetQuestions()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get questions", "details": err.Error()})
+				return
+			}
+
+			for _, q := range biodataQuestions {
+				if q.BiodataQuestionID == b.BiodataQuestionID {
+					questionType = q.QuestionType
+					break
+				}
+			}
+
+			if questionType == "file" {
+				fileKey := fmt.Sprintf("%s_%d", b.DelegateEmail, b.BiodataQuestionID)
+				files, exists := form.File[fileKey]
+				if !exists || len(files) == 0 {
+					c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Missing file for question %d", b.BiodataQuestionID)})
+					return
+				}
+
+				fileHeader := files[0]
+				file, err := fileHeader.Open()
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
+					return
+				}
+				defer file.Close()
+
+				key, err := uploader.UploadFile(file, fileHeader, b.DelegateEmail)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload to S3", "details": err.Error()})
+					return
+				}
+				req.Delegates[di].BiodataResponses[bi].BiodataAnswerText = key
+			}
+		}
+	}
 	delegates := make([]dashboardModel.MUNDelegates, 0, len(req.Delegates))
 	for _, d := range req.Delegates {
 		delegates = append(delegates, d.MUNDelegates)
@@ -56,12 +127,6 @@ func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 			m.DelegateEmail = d.MUNDelegates.MUNDelegateEmail
 			munResponses = append(munResponses, m)
 		}
-	}
-
-	// Bind the JSON request to the struct
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input", "details": err.Error()})
-		return
 	}
 
 	if len(req.Delegates) == 0 {
@@ -94,4 +159,19 @@ func (h *DashboardHandler) ParticipantDataHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, participantData)
+}
+
+func (h *DashboardHandler) GetQuestionsHandler(c *gin.Context) {
+	// Get the questions from the service
+	biodataQuestions, healthQuestions, munQuestions, err := h.dashboardService.GetQuestions()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get questions", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"biodata_questions": biodataQuestions,
+		"health_questions":  healthQuestions,
+		"mun_questions":     munQuestions,
+	})
 }
