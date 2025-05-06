@@ -7,6 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ContextUser struct {
+	UserID   int
+	Email    string
+	Username string
+	Role     string
+}
+
 func ValidateAccessTokenMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// if the request is a GET request and the path is /api/v1/auth/logout, skip the middleware
@@ -34,14 +41,6 @@ func ValidateAccessTokenMiddleware() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid access token", "details": err.Error()})
 			c.Abort()
 			return
-		}
-
-		// set the user information in the context
-		type ContextUser struct {
-			UserID   int
-			Email    string
-			Username string
-			Role     string
 		}
 
 		user := &ContextUser{
