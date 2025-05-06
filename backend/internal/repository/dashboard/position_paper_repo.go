@@ -23,13 +23,12 @@ func (r *positionPaperRepo) GetPositionPaperByDelegateEmail(email string) (*dash
 }
 
 func (r *positionPaperRepo) InsertPositionPaper(positionPaper *dashboard.PositionPaper) (int, error) {
-	query := `INSERT INTO position_papers (mun_delegate_email, mun_team_id, submission_file, submission_date, submission_status) 
-              VALUES ($1, $2, $3, $4, $5) RETURNING position_paper_id`
+	query := `INSERT INTO position_papers (mun_delegate_email, submission_file, submission_date, submission_status) 
+              VALUES ($1, $2, $3, $4) RETURNING position_paper_id`
 	var id int
 	err := r.db.QueryRow(
 		query,
 		positionPaper.MUNDelegateEmail,
-		positionPaper.MUNTeamID,
 		positionPaper.SubmissionFile,
 		positionPaper.SubmissionDate,
 		positionPaper.SubmissionStatus,
@@ -46,14 +45,13 @@ func (r *positionPaperRepo) InsertPositionPaper(positionPaper *dashboard.Positio
 func (r *positionPaperRepo) UpdatePositionPaper(positionPaper *dashboard.PositionPaper) error {
 	query := `UPDATE position_papers 
               SET submission_file = $1, submission_date = $2, submission_status = $3 
-              WHERE mun_delegate_email = $4 AND mun_team_id = $5`
+              WHERE mun_delegate_email = $4`
 	_, err := r.db.Exec(
 		query,
 		positionPaper.SubmissionFile,
 		positionPaper.SubmissionDate,
 		positionPaper.SubmissionStatus,
 		positionPaper.MUNDelegateEmail,
-		positionPaper.MUNTeamID,
 	)
 	if err != nil {
 		logger.LogError(err, "Failed to update position paper", map[string]interface{}{

@@ -16,6 +16,7 @@ type QuestionRepo interface {
 
 // ResponseRepo handles access to all response-related models
 type ResponseRepo interface {
+	BeginTransaction() (*sqlx.Tx, error) // Begin a transaction
 	// Get responses by delegate email (this is used for the delegate dashboard)
 	GetBiodataResponsesByDelegateEmail(delegateEmail string) ([]dashboard.BiodataResponses, error)
 	GetHealthResponsesByDelegateEmail(delegateEmail string) ([]dashboard.HealthResponses, error)
@@ -29,19 +30,19 @@ type ResponseRepo interface {
 
 // DelegateRepo handles delegate-specific operations
 type DelegateRepo interface {
-	GetDelegateByEmail(email string) (*dashboard.MUNDelegates, error)                                                                                     // Use this for the delegate dashboard
-	GetDelegatesByTeamID(teamID int) ([]dashboard.MUNDelegates, error)                                                                                    // We join with team members to get the delegates
-	InsertDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDelegates) (int, error)                                                                            // insert a new delegate
-	InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDelegates) error                                                                                // batch insert delegates
-	UpdateDelegateStatus(tx *sqlx.Tx, delegate *dashboard.MUNDelegates) error                                                                             // update the status, for ADMIN
-	GetTeamByID(teamID int) (*dashboard.MUNTeams, error)                                                                                                  // Get team by ID
-	InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (int, error)                                                                                        // Insert a new team (this will be used for the team dashboard, triggered by the delegates insertion also)
-	InsertTeamAndPaymentWithDelegates(tx *sqlx.Tx, team *dashboard.MUNTeams, delegates []dashboard.MUNDelegates, payment *dashboard.Payment) (int, error) // create  a relationship between team and delegates (using insert team and insert delegates)
-	// Team member operations
-	// GetTeamMembers(teamID int) ([]dashboard.MUNTeamMembers, error) // redundant, we can get this from GetDelegatesByTeamID
+	BeginTransaction() (*sqlx.Tx, error)                                                                               // Begin a transaction
+	GetDelegateByEmail(email string) (*dashboard.MUNDelegates, error)                                                  // Use this for the delegate dashboard
+	GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDelegates, error)                                              // We join with team members to get the delegates
+	GetTeamByID(teamID string) (*dashboard.MUNTeams, error)                                                            // Get team by ID
+	GetTeamIDByDelegateEmail(delegateEmail string) (string, error)                                                     // Get teams by delegate email (this is used for the team dashboard)
+	InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDelegates) error                                             // batch insert delegates
+	InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (string, error)                                                  // Insert a new team (this will be used for the team dashboard, triggered by the delegates insertion also)
+	InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNTeams, delegates []dashboard.MUNDelegates) (string, error) // create  a relationship between team and delegates (using insert team and insert delegates)
 
-	// Initial payment operation
-	MakeInitialPayment(tx *sqlx.Tx, payment *dashboard.Payment, teamID int) (int, error)
+	UpdateDelegateStatus(tx *sqlx.Tx, delegateEmail string) error // update the delegate status, for ADMIN
+
+	// update the delegate country and council
+	UpdateDelegateCountryAndCouncil(tx *sqlx.Tx, country, council, delegateEmail string) error // update the country and council for a delegate (this is used for the team dashboard)
 }
 
 // FacultyAdvisorRepo handles faculty advisor operations
@@ -50,14 +51,20 @@ type FacultyAdvisorRepo interface {
 	InsertFacultyAdvisor(advisor *dashboard.FacultyAdvisor) (int, error)      // Faculty advisor registration
 
 	// Team associations
-	GetFacultyAdvisorsByTeamID(teamID int) ([]dashboard.MUNFacultyAdvisors, error) // useful for the team dsahboard
-	AddFacultyAdvisorToTeam(teamAdvisor *dashboard.MUNFacultyAdvisors) error       // later the faculty advisor must add themselves to the team using the team code
+	GetFacultyAdvisorsByTeamID(teamID string) ([]dashboard.MUNFacultyAdvisors, error) // useful for the team dsahboard
+	AddFacultyAdvisorToTeam(teamAdvisor *dashboard.MUNFacultyAdvisors) error          // later the faculty advisor must add themselves to the team using the team code
+
+	// admin functions
+	UpdateFacultyAdvisorStatus(advisorEmail string, status string) error // update the status of the faculty advisor (ADMIN function)
 }
 
 // ObserverRepo handles observer operations
 type ObserverRepo interface {
 	GetObserverByEmail(email string) (*dashboard.Observer, error) // Observer dashboard
 	InsertObserver(observer *dashboard.Observer) (int, error)     // Observer registration
+
+	// handler for admin
+	UpdateObserverStatus(observerEmail, status string) error // update the status of the observer (ADMIN function)
 }
 
 // PositionPaperRepo handles position paper operations
@@ -69,11 +76,11 @@ type PositionPaperRepo interface {
 
 // PaymentRepo handles payment operations
 type PaymentRepo interface {
-	GetPaymentByID(paymentID int) (*dashboard.Payment, error)         // Get payment by ID, for the payment page
-	GetPaymentsByMUNTeamID(teamID string) (*dashboard.Payment, error) // Get payments by team ID, for the team dashboard
-	// must make a function for initial payment (maybe in the delegate repo)
-	UpdatePaymentStatus(teamID int) error                  // update payment status (ADMIN function)
-	UpdatePaymentForTeam(payment *dashboard.Payment) error // update payment for uploading the payment receipt (delegate function)
+	MakeInitialPayment(tx *sqlx.Tx, payment *dashboard.Payment, delegateEmail string) (int, error) // initial payment for the team
+	GetPaymentByDelegateEmail(delegateEmail string) (*dashboard.Payment, error)                    // Get payments by team ID, for the team dashboard
+
+	UpdatePaymentStatus(delegateEmail string) error // update payment status (ADMIN function)
+	UploadPayment(payment *dashboard.Payment) error // update payment for uploading the payment receipt (delegate function)
 }
 
 // Factory functions to create repository implementations

@@ -13,6 +13,17 @@ type responseRepo struct {
 	db *sqlx.DB
 }
 
+func (r *responseRepo) BeginTransaction() (*sqlx.Tx, error) {
+	tx, err := r.db.Beginx()
+	if err != nil {
+		logger.LogError(err, "Failed to start transaction", map[string]interface{}{"layer": "repository", "operation": "BeginTransaction"})
+		return nil, err
+	}
+
+	logger.LogDebug("Transaction started", map[string]interface{}{"layer": "repository", "operation": "BeginTransaction"})
+	return tx, nil
+}
+
 func (r *responseRepo) GetBiodataResponsesByDelegateEmail(delegateEmail string) ([]dashboard.BiodataResponses, error) {
 	var responses []dashboard.BiodataResponses
 	query := `SELECT * FROM biodata_responses WHERE delegate_email = $1`
@@ -106,13 +117,13 @@ func (r *responseRepo) InsertMUNResponses(tx *sqlx.Tx, responses []dashboard.MUN
 		return nil
 	}
 
-	query := `INSERT INTO mun_responses (delegate_email, mun_response_priority, mun_response_country, mun_response_council, mun_council_response_reason) VALUES `
+	query := `INSERT INTO mun_responses (delegate_email, mun_answer_text) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
 
 	for i, res := range responses {
-		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d, $%d, $%d)", i*5+1, i*5+2, i*5+3, i*5+4, i*5+5))
-		args = append(args, res.DelegateEmail, res.MUNResponsePriority, res.MUNResponseCountry, res.MUNResponseCouncil, res.MUNCouncilResponseReason)
+		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
+		args = append(args, res.DelegateEmail, res.MUNAnswerText)
 	}
 
 	query += strings.Join(valueStrings, ",")

@@ -5,12 +5,24 @@ import (
 	"backend/pkg/utils/logger"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type delegateRepo struct {
 	db *sqlx.DB
+}
+
+func (r *delegateRepo) BeginTransaction() (*sqlx.Tx, error) {
+	tx, err := r.db.Beginx()
+	if err != nil {
+		logger.LogError(err, "Failed to start transaction", map[string]interface{}{"layer": "repository", "operation": "BeginTransaction"})
+		return nil, err
+	}
+
+	logger.LogDebug("Transaction started", map[string]interface{}{"layer": "repository", "operation": "BeginTransaction"})
+	return tx, nil
 }
 
 func (r *delegateRepo) GetDelegateByEmail(email string) (*dashboard.MUNDelegates, error) {
@@ -25,12 +37,13 @@ func (r *delegateRepo) GetDelegateByEmail(email string) (*dashboard.MUNDelegates
 	return &delegate, nil
 }
 
-func (r *delegateRepo) GetDelegatesByTeamID(teamID int) ([]dashboard.MUNDelegates, error) {
+func (r *delegateRepo) GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDelegates, error) {
 	var delegates []dashboard.MUNDelegates
 	query := `SELECT md.type, md.mun_delegate_email
 	, md.council
 	, md.country
 	, md.confirmed 
+	, md.confirmed_date
 	FROM mun_delegates md 
 	JOIN mun_team_members mtm ON md.mun_delegate_email = mtm.mun_delegate_email WHERE mtm.mun_team_id = $1`
 	err := r.db.Select(&delegates, query, teamID)
@@ -42,54 +55,26 @@ func (r *delegateRepo) GetDelegatesByTeamID(teamID int) ([]dashboard.MUNDelegate
 	return delegates, nil
 }
 
-func (r *delegateRepo) InsertDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDelegates) (int, error) {
-	query := `INSERT INTO mun_delegates (mun_delegate_email, type, council, country, confirmed, confirmed_date) 
-              VALUES ($1, $2, $3, $4, $5, $6) RETURNING mun_delegate_id`
-	var id int
-	err := tx.QueryRow(
-		query,
-		delegate.MUNDelegateEmail,
-		delegate.Type,
-		delegate.Council,
-		delegate.Country,
-		delegate.Confirmed,
-		delegate.ConfirmedDate,
-	).Scan(&id)
-	if err != nil {
-		logger.LogError(err, "Failed to insert delegate", map[string]interface{}{
-			"email":     delegate.MUNDelegateEmail,
-			"layer":     "repository",
-			"operation": "repo.InsertDelegate",
-		})
-		return 0, err
-	}
-	logger.LogDebug("Delegate inserted successfully", map[string]interface{}{
-		"layer":     "repository",
-		"operation": "repo.InsertDelegate",
-		"email":     delegate.MUNDelegateEmail,
-	})
-	return id, nil
-}
-
 func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDelegates) error {
 	if len(delegates) == 0 {
 		return nil
 	}
 
-	query := `INSERT INTO mun_delegates (mun_delegate_email, type, council, country, confirmed) VALUES `
+	query := `INSERT INTO mun_delegates (mun_delegate_email, type, council, country, confirmed, confirmed_date) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
 
 	for i, d := range delegates {
-		valueStrings = append(valueStrings, fmt.Sprintf("($%d,$%d,$%d,$%d,$%d)",
-			i*5+1, i*5+2, i*5+3, i*5+4, i*5+5,
+		valueStrings = append(valueStrings, fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d)",
+			i*6+1, i*6+2, i*6+3, i*6+4, i*6+5, i*6+6,
 		))
 		args = append(args,
 			d.MUNDelegateEmail,
-			d.Type,
-			d.Council,
-			d.Country,
-			d.Confirmed,
+			nil,
+			nil,
+			nil,
+			nil,
+			time.Time{},
 		)
 	}
 
@@ -103,27 +88,27 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 	return nil
 }
 
-func (r *delegateRepo) UpdateDelegateStatus(tx *sqlx.Tx, delegate *dashboard.MUNDelegates) error {
-	query := `UPDATE mun_delegates SET confirmed = $1 WHERE mun_delegate_email = $2`
-	_, err := tx.Exec(query, delegate.Confirmed, delegate.MUNDelegateEmail)
+func (r *delegateRepo) UpdateDelegateStatus(tx *sqlx.Tx, delegateEmail string) error {
+	query := `UPDATE mun_delegates SET confirmed = $1, confirmed_date = $2 WHERE mun_delegate_email = $3`
+	_, err := tx.Exec(query, true, time.Now(), delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update delegate status", map[string]interface{}{
 			"layer":         "repository",
 			"operation":     "repo.UpdateDelegateStatus",
-			"delegateEmail": delegate.MUNDelegateEmail,
+			"delegateEmail": delegateEmail,
 		})
 		return err
 	}
 	logger.LogDebug("Delegate status updated successfully", map[string]interface{}{
 		"layer":         "repository",
 		"operation":     "repo.UpdateDelegateStatus",
-		"delegateEmail": delegate.MUNDelegateEmail,
+		"delegateEmail": delegateEmail,
 	})
 
 	return nil
 }
 
-func (r *delegateRepo) GetTeamByID(teamID int) (*dashboard.MUNTeams, error) {
+func (r *delegateRepo) GetTeamByID(teamID string) (*dashboard.MUNTeams, error) {
 	var team dashboard.MUNTeams
 	query := `SELECT * FROM mun_teams WHERE mun_team_id = $1`
 	err := r.db.Get(&team, query, teamID)
@@ -134,19 +119,29 @@ func (r *delegateRepo) GetTeamByID(teamID int) (*dashboard.MUNTeams, error) {
 	return &team, nil
 }
 
-func (r *delegateRepo) InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (int, error) {
-	query := `INSERT INTO mun_teams (mun_team_id, faculty_advisor_email, payment_id) VALUES ($1, $2, $3) RETURNING mun_team_id`
-	var teamID int
-	err := tx.QueryRow(query, team.MUNTeamID, team.FacultyAdvisorEmail, team.PaymentID).Scan(&teamID)
+func (r *delegateRepo) GetTeamIDByDelegateEmail(delegateEmail string) (string, error) {
+	var teamID string
+	query := `SELECT mun_team_id FROM mun_team_members WHERE mun_delegate_email = $1`
+	err := r.db.Get(&teamID, query, delegateEmail)
+	if err != nil {
+		logger.LogError(err, "Failed to get team by delegate email", map[string]interface{}{"layer": "repository", "operation": "repo.GetTeamsByDelegateEmail", "delegateEmail": delegateEmail})
+		return "", err
+	}
+	logger.LogDebug("Team retrieved successfully", map[string]interface{}{"layer": "repository", "operation": "repo.GetTeamsByDelegateEmail", "delegateEmail": delegateEmail})
+	return teamID, nil
+}
+
+func (r *delegateRepo) InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (string, error) {
+	query := `INSERT INTO mun_teams (mun_team_id, mun_team_lead) VALUES ($1, $2) RETURNING mun_team_id`
+	var teamID string
+	err := tx.QueryRow(query, team.MUNTeamID, team.MUNTeamLead).Scan(&teamID)
 	if err != nil {
 		logger.LogError(err, "Failed to insert team", map[string]interface{}{
 			"teamID":    team.MUNTeamID,
-			"email":     team.FacultyAdvisorEmail,
-			"paymentID": team.PaymentID,
 			"layer":     "repository",
 			"operation": "repo.InsertTeam",
 		})
-		return 0, err
+		return "", err
 	}
 	logger.LogDebug("Team inserted successfully", map[string]interface{}{
 		"layer":     "repository",
@@ -156,18 +151,16 @@ func (r *delegateRepo) InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (int, e
 	return teamID, nil
 }
 
-func (r *delegateRepo) InsertTeamAndPaymentWithDelegates(tx *sqlx.Tx, team *dashboard.MUNTeams, delegates []dashboard.MUNDelegates, payment *dashboard.Payment) (int, error) {
+func (r *delegateRepo) InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNTeams, delegates []dashboard.MUNDelegates) (string, error) {
 	// 1. Insert the team
 	teamID, err := r.InsertTeam(tx, team)
 	if err != nil {
 		logger.LogError(err, "Failed to insert team", map[string]interface{}{
 			"teamID":    team.MUNTeamID,
-			"email":     team.FacultyAdvisorEmail,
-			"paymentID": team.PaymentID,
 			"layer":     "repository",
 			"operation": "repo.InsertTeam",
 		})
-		return 0, err
+		return "", err
 	}
 
 	// 2. Insert the delegates
@@ -175,24 +168,12 @@ func (r *delegateRepo) InsertTeamAndPaymentWithDelegates(tx *sqlx.Tx, team *dash
 	if err != nil {
 		logger.LogError(err, "Failed to insert delegates", map[string]interface{}{
 			"teamID":    teamID,
-			"email":     team.FacultyAdvisorEmail,
-			"paymentID": team.PaymentID,
 			"layer":     "repository",
 			"operation": "repo.InsertDelegates",
 		})
-		return 0, err
+		return "", err
 	}
 
-	// 3. Make initial payment
-	_, err = r.MakeInitialPayment(tx, payment, teamID)
-	if err != nil {
-		logger.LogError(err, "Failed to make initial payment", map[string]interface{}{
-			"teamID":    teamID,
-			"layer":     "repository",
-			"operation": "repo.MakeInitialPayment",
-		})
-		return 0, err
-	}
 	// 3. Link each delegate to the team
 	query := `INSERT INTO mun_team_members (mun_team_id, mun_delegate_email) VALUES `
 	args := []interface{}{}
@@ -211,7 +192,7 @@ func (r *delegateRepo) InsertTeamAndPaymentWithDelegates(tx *sqlx.Tx, team *dash
 			"layer":     "repository",
 			"operation": "InsertTeamWithDelegates",
 		})
-		return 0, err
+		return "", err
 	}
 
 	logger.LogDebug("Team and delegates inserted successfully", map[string]interface{}{
@@ -223,30 +204,50 @@ func (r *delegateRepo) InsertTeamAndPaymentWithDelegates(tx *sqlx.Tx, team *dash
 	return teamID, nil
 }
 
-func (r *delegateRepo) MakeInitialPayment(tx *sqlx.Tx, payment *dashboard.Payment, teamID int) (int, error) {
-	query := `INSERT INTO payments (mun_team_id, package, payment_file, payment_status, payment_date, payment_amount) 
-			  VALUES ($1, $2, $3, $4, $5, $6) RETURNING payment_id`
-	var id int
-	err := tx.QueryRow(
-		query,
-		teamID,
-		payment.Package,
-		payment.PaymentFile,
-		"pending",
-		nil,
-		nil,
-	).Scan(&id)
+func (r *delegateRepo) UpdateDelegateCountryAndCouncil(tx *sqlx.Tx, country, council, delegateEmail string) error {
+	query := `UPDATE mun_delegates SET country = $1, council = $2, council_date = $3 WHERE mun_delegate_email = $4`
+	_, err := tx.Exec(query, country, council, time.Now(), delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to insert initial payment", map[string]interface{}{
-			"teamID":    teamID,
-			"layer":     "repository",
-			"operation": "repo.MakeInitialPayment",
+		logger.LogError(err, "Failed to update delegate country and council", map[string]interface{}{
+			"layer":         "repository",
+			"operation":     "repo.UpdateDelegateCountryAndCouncil",
+			"delegateEmail": delegateEmail,
 		})
-		return 0, err
+		return err
 	}
-	logger.LogDebug("Initial payment inserted successfully", map[string]interface{}{
-		"layer":     "repository",
-		"operation": "repo.MakeInitialPayment",
+	logger.LogDebug("Delegate country and council updated successfully", map[string]interface{}{
+		"layer":         "repository",
+		"operation":     "repo.UpdateDelegateCountryAndCouncil",
+		"delegateEmail": delegateEmail,
 	})
-	return id, nil
+	return nil
+}
+
+func (r *delegateRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail string) error {
+	query1 := `UPDATE mun_delegates SET pair = $1 WHERE mun_delegate_email = $2`
+	_, err := tx.Exec(query1, pairingEmail, delegateEmail)
+	if err != nil {
+		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
+			"layer":         "repository",
+			"operation":     "repo.UpdatePairing",
+			"delegateEmail": delegateEmail,
+		})
+		return err
+	}
+
+	query2 := `UPDATE mun_delegates SET pair = $1 WHERE mun_delegate_email = $2`
+	_, err = tx.Exec(query2, delegateEmail, pairingEmail)
+	if err != nil {
+		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
+			"layer":         "repository",
+			"operation":     "repo.UpdatePairing",
+			"delegateEmail": pairingEmail,
+		})
+	}
+	logger.LogDebug("Pairing updated successfully", map[string]interface{}{
+		"layer":         "repository",
+		"operation":     "repo.UpdatePairing",
+		"delegateEmail": delegateEmail,
+	})
+	return nil
 }
