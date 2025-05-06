@@ -1,4 +1,4 @@
-export type PriceOptions = "single" | "double" | "team" | "observer" | "advisor";
+export type PriceOptions = "single" | "team" | "observer" | "advisor";
 
 export type PriceOptionType = {
   name: string;
@@ -19,6 +19,22 @@ export const PRICES: Record<PriceOptions, PriceOptionType> = {
       {
         name: "Accomodation",
         price: 50,
+        points: ["List item", "List item"],
+      },
+      {
+        name: "Non-Accommodation",
+        price: 50,
+        points: ["List item", "List item", "List item"],
+      },
+    ],
+  },
+  ["team"]: {
+    name: "Delegations team",
+    description: "Two or more delegates, one country.",
+    package: [
+      {
+        name: "Accomodation",
+        price: 50,
         points: ["List item", "List item", "List item"],
       },
       {
@@ -28,28 +44,38 @@ export const PRICES: Record<PriceOptions, PriceOptionType> = {
       },
     ],
   },
-  ["double"]: {
-    name: "Double Delegates",
-    description:
-      "Two delegates, one country. You and a partner will represent the same country in the council.",
-    package: [],
-  },
-  ["team"]: {
-    name: "Team Delegates",
-    description:
-      "Three or more delegates, one country. You and your team will represent the same country in the council.",
-    package: [],
-  },
   ["observer"]: {
     name: "Observer",
     description:
       "One delegate, no country. You will be an observer in the council, without a specific country assignment.",
-    package: [],
+    package: [
+      {
+        name: "Accomodation",
+        price: 50,
+        points: ["List item", "List item", "List item"],
+      },
+      {
+        name: "Non-Accommodation",
+        price: 50,
+        points: ["List item", "List item", "List item"],
+      },
+    ],
   },
   ["advisor"]: {
     name: "Faculty Advisor",
     description:
       "One advisor, no country. You will be an advisor in the council, without a specific country assignment.",
-    package: [],
+    package: [
+      {
+        name: "Accomodation",
+        price: 50,
+        points: ["List item", "List item", "List item"],
+      },
+      {
+        name: "Non-Accommodation",
+        price: 50,
+        points: ["List item", "List item", "List item"],
+      },
+    ],
   },
 };

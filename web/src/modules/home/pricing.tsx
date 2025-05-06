@@ -24,7 +24,7 @@ const Pricing = () => {
               Find the Right Fit — We&apos;ve Got Options For You.
             </div>
 
-            <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center md:gap-10">
+            <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
               {Object.entries(PRICES).map(([key, value]) => (
                 <Button
                   key={key}
@@ -41,7 +41,7 @@ const Pricing = () => {
               <h1 className="text-xl leading-snug font-bold md:text-2xl">{PRICES[active].name}</h1>
               <p className="leading-snug">{PRICES[active].description}</p>
 
-              <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6">
+              <div className="mt-10 md:px-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-2 md:gap-6">
                 {PRICES[active].package.map((option, index) => (
                   <PricingCard key={index} {...option} />
                 ))}
