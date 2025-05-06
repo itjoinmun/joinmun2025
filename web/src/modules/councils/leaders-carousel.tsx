@@ -17,6 +17,8 @@ import {
 import { Council } from "@/utils/helpers/councils";
 import { ArrowUpRightIcon } from "lucide-react";
 import Image from "next/image";
+import { isReveal } from "../home/councils";
+import { cn } from "@/utils/cn";
 
 export const LeaderCarousel = (props: Council) => {
   return (
@@ -24,14 +26,20 @@ export const LeaderCarousel = (props: Council) => {
       opts={{
         align: "start",
       }}
-      className="relative w-full px-20"
+      className="relative w-full px-20 mb-20"
     >
       <CarouselContent className="">
-        {props.chairs.map((chair, index) => (
-          <CarouselItem key={index} className="xs:basis-1/2">
-            <LeaderCard {...chair} />
-          </CarouselItem>
-        ))}
+        {isReveal
+          ? props.chairs.map((chair, index) => (
+              <CarouselItem key={index} className="xs:basis-1/2">
+                <LeaderCard {...chair} />
+              </CarouselItem>
+            ))
+          : props.chairs.slice(0, 2).map((chair, index) => (
+              <CarouselItem key={index} className="xs:basis-1/2">
+                <LeaderCard {...chair} />
+              </CarouselItem>
+            ))}
       </CarouselContent>
       <CarouselPrevious className="block border" />
       <CarouselNext className="z-10 block border" />
@@ -53,54 +61,83 @@ const LeaderCard = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="pointer-events-auto relative flex h-56 gap-2 rounded-lg bg-black/50 lg:pointer-events-none lg:bg-transparent">
+        <div
+          className={cn(
+            "relative flex h-56 gap-2 rounded-lg bg-black/50 lg:pointer-events-none lg:bg-transparent",
+            isReveal ? "pointer-events-auto" : "pointer-events-none",
+          )}
+        >
           {/* Image Section */}
+
+          {/* Arrow Href */}
           <div className="relative h-full w-full overflow-hidden rounded-md lg:w-1/3">
-            <div className="bg-gray/80 hover:bg-gray/60 absolute top-4 right-4 z-10 cursor-pointer rounded-full p-2 lg:hidden">
-              <ArrowUpRightIcon color="white" />
-            </div>
+            {isReveal ? (
+              <div className="bg-gray/80 hover:bg-gray/60 absolute top-4 right-4 z-10 cursor-pointer rounded-full p-2 lg:hidden">
+                <ArrowUpRightIcon color="white" />
+              </div>
+            ) : (
+              ""
+            )}
 
             <Image
               // src={`/assets/councils/${image}`}
-              src={`/lebron.webp`}
+              src={isReveal ? `/lebron.webp` : `/assets/councils/chairs-placeholder.png`}
               alt={`${name}'s Image`}
               fill
-              sizes="33%"
+              sizes="100%"
               className="pointer-events-none object-cover"
             />
+
+            {/* Text in Image */}
             <div className="absolute bottom-4 left-4 z-10 lg:bottom-2 lg:left-2">
-              <h1 className="text-lg font-bold text-white lg:hidden">{role}</h1>
-              <h1 className="font-medium text-white lg:text-lg lg:font-bold">{name}</h1>
+              <h1 className="xs:text-base text-sm font-bold text-white md:text-lg lg:hidden">
+                {isReveal ? role : "To be Announced"}
+              </h1>
+              <h1 className="font-medium text-white lg:text-lg lg:font-bold">
+                {isReveal ? name : ""}
+              </h1>
             </div>
             <div className="bg-gradient-from-transparent absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent" />
           </div>
 
           {/* Role & Experience Section */}
-          <div className="bg-gray hidden w-2/3 flex-col justify-start rounded-md p-4 lg:flex">
-            <h2 className="text-lg font-bold text-white">{role}</h2>
+          {/* Di Mobile tidak ada, di Desktop (> lg) ada */}
+          <div className={cn("bg-gray hidden w-2/3 flex-col justify-start rounded-md p-4 lg:flex")}>
+            {isReveal ? (
+              <>
+                <h2 className="text-lg font-bold text-white">{role}</h2>
 
-            <hr className="border-gray-light my-2 w-full border-b" />
+                <hr className="border-gray-light my-2 w-full border-b" />
 
-            <h3 className="text-sm">Past Experience</h3>
-            <ul className="mt-2 flex flex-wrap gap-2 text-xs text-white">
-              {experiences.map((experience, index) => (
-                <li
-                  key={index}
-                  className="rounded-full border border-neutral-500 bg-neutral-700/50 px-2.5 py-1 text-nowrap"
-                >
-                  {experience}
-                </li>
-              ))}
-            </ul>
+                <h3 className="text-sm">Past Experience</h3>
+                <ul className="mt-2 flex flex-wrap gap-2 text-xs text-white">
+                  {experiences.map((experience, index) => (
+                    <li
+                      key={index}
+                      className="rounded-full border border-neutral-500 bg-neutral-700/50 px-2.5 py-1 text-nowrap"
+                    >
+                      {experience}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="font-medium text-center my-auto">
+                To be Announced
+                <br />
+                Revealing Soon
+              </p>
+            )}
           </div>
         </div>
       </DialogTrigger>
-
-      <DialogContent className="2xs:scale-95 xs:scale-100 scale-110 border-0 bg-transparent">
+      {/* src={isReveal ? `/lebron.webp` : `/assets/councils/chairs-placeholder.webp`} */}
+      {/* POP UP SAAT DI MOBILE */}
+      <DialogContent className="2xs:scale-95 xs:scale-100 border-0 bg-transparent">
         <DialogHeader>
           <DialogTitle className="hidden">{""}</DialogTitle>
           <DialogDescription className="flex">
-            <div className="relative flex h-56 w-full gap-2 rounded-lg bg-transparent">
+            <div className="xs:h-56 relative flex w-full gap-2 rounded-lg bg-transparent">
               {/* Image Section */}
               <div className="relative h-full w-2/5 overflow-hidden rounded-md *:text-start">
                 <Image
@@ -127,7 +164,7 @@ const LeaderCard = ({
                   {experiences.map((experience, index) => (
                     <li
                       key={index}
-                      className="rounded-full border border-neutral-500 bg-neutral-700/50 px-2.5 py-1"
+                      className="rounded-full border border-neutral-500 bg-neutral-700/50 px-2.5 py-1 text-start"
                     >
                       {experience}
                     </li>

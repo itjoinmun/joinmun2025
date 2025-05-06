@@ -66,6 +66,12 @@ export const COUNCILS = [
         image: "olivia-davis-1.jpg",
         experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
     ],
   },
   {
@@ -76,6 +82,12 @@ export const COUNCILS = [
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
       {
         name: "lebron",
         role: "yg punya lakers",
@@ -99,6 +111,12 @@ export const COUNCILS = [
         image: "olivia-davis-1.jpg",
         experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
     ],
   },
   {
@@ -109,6 +127,12 @@ export const COUNCILS = [
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
       {
         name: "lebron",
         role: "yg punya lakers",
@@ -131,6 +155,12 @@ export const COUNCILS = [
         image: "olivia-davis-1.jpg",
         experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
       },
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
     ],
   },
   {
@@ -141,6 +171,12 @@ export const COUNCILS = [
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [
+      {
+        name: "lebron",
+        role: "yg punya lakers",
+        image: "olivia-davis-1.jpg",
+        experiences: ["goated", "Best Delegate", "Chair of WHO in ABCMUN 2023", "Best Delegate"],
+      },
       {
         name: "lebron",
         role: "yg punya lakers",
