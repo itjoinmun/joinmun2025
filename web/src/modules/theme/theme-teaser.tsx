@@ -24,7 +24,7 @@ const ThemeTeaser = () => {
       <Container className="max-w-4xl pt-0 2xl:max-w-6xl">
         {/* Video Player */}
         <HeroVideoDialog
-          className="z-[1000] block dark:hidden"
+          className="block dark:hidden"
           animationStyle="from-bottom"
           // videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb&autoplay=1&mute=1"
           videoSrc="/assets/theme/like him.mp4?autoplay=1&mute=1"

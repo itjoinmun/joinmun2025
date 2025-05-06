@@ -64,13 +64,14 @@ const EventCard = (props: Event) => (
     <div className="bg-gray/40 absolute top-2 right-2 flex aspect-square size-12 items-center justify-center rounded-sm p-1 text-center text-sm text-white backdrop-blur-sm">
       {props.date}
     </div>
-    <h1 className="leading-snug font-semibold">{props.title}</h1>
-    <h3 className="mt-1 text-sm leading-snug">{props.location}</h3>
+    <h1 className="text-lg leading-snug font-semibold">{props.title}</h1>
+    <div className="bg-red-normal mt-2 flex w-full items-center justify-center rounded-md">
+      <h3 className="py-1 text-sm leading-snug">{props.location}</h3>
+    </div>
 
     {/* image + overlay */}
     <Image
-      // src={`/assets/home/events/${props.src}`}
-      src={`/lebron.webp`}
+      src={`/assets/home/event/${props.src}`}
       alt={`${props.title}`}
       fill
       sizes="50%"

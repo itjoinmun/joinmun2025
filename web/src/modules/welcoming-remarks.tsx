@@ -7,7 +7,7 @@ export default function WelcomingRemarks() {
   return (
     <main className="bg-foreground relative z-0 min-h-[100dvhx]">
       <Container>
-        <div className="bg-orange-blur/60 pointer-events-none absolute lg:left-125 z-1 h-[350px] w-screen lg:-translate-x-1/2 translate-y-5 rounded-full blur-3xl lg:w-[1000px]" />
+        <div className="bg-orange-blur/60 pointer-events-none absolute z-1 h-[20px] w-[80vw] translate-y-5 rounded-full blur-3xl lg:left-125 lg:h-[350px] lg:w-[1000px] lg:-translate-x-1/2" />
         {/* Background Batik */}
 
         <div className="w- z-10 flex flex-col gap-5 lg:flex-row lg:gap-[38px]">

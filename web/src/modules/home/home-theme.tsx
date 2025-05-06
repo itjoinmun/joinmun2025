@@ -11,8 +11,10 @@ import {
 import Container from "@/components/ui/container";
 import { cn } from "@/utils/cn";
 import { THEMES } from "@/utils/helpers/themes";
+import { main } from "motion/react-client";
 import Image from "next/image";
 import Link from "next/link";
+import { isThemeReveal } from "../../../app/(with-navbar)/theme/page";
 
 const HomeTheme = () => {
   return (
@@ -22,28 +24,58 @@ const HomeTheme = () => {
         className="invisible h-0 scroll-mt-12 md:scroll-mt-[6.5rem]"
         aria-hidden="true"
       />
-      <main className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12">
-        <Container className="gap-2">
-          <SubHeading>Grand Theme</SubHeading>
-          <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-            <Heading>stop troll</Heading>
-            <div className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-2 md:max-w-2xl">
-              JoinMUN is a 3-day event that brings together participants for diplomatic discussions.
-              During the conference, delegates represent different countries and participate in
-              workshops to enhance their skills. The event aims to foster collaboration, critical
-              thinking, and international awareness.
-              <Link
-                href={`/theme`}
-                className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
-              >
-                Read More
-              </Link>
-            </div>
-          </section>
-        </Container>
+      {isThemeReveal ? (
+        <main className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12">
+          <Container className="gap-2">
+            <SubHeading>Grand Theme</SubHeading>
+            <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
+              <Heading>stop troll</Heading>
+              <div className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-2 md:max-w-2xl">
+                JoinMUN is a 3-day event that brings together participants for diplomatic
+                discussions. During the conference, delegates represent different countries and
+                participate in workshops to enhance their skills. The event aims to foster
+                collaboration, critical thinking, and international awareness.
+                <Link
+                  href={`/theme`}
+                  className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
+                >
+                  Read More
+                </Link>
+              </div>
+            </section>
+          </Container>
 
-        <ThemeCarousel />
-      </main>
+          <ThemeCarousel />
+        </main>
+      ) : (
+        <div className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]">
+          {/* Background solid color */}
+          <div className="bg-background absolute inset-0" />
+
+          {/* Background image */}
+          <div
+            className="absolute inset-0 h-full w-full"
+            style={{
+              backgroundImage: `url('/assets/theme/coming-soon-theme.webp')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              opacity: 0.8,
+            }}
+          />
+
+          {/* Top gradient overlay */}
+          <div className="from-background via-background absolute top-0 right-0 left-0 z-10 h-32 bg-gradient-to-b via-30% to-transparent" />
+
+          {/* Bottom gradient overlay */}
+          <div className="from-background via-background absolute right-0 bottom-0 left-0 z-10 h-32 bg-gradient-to-t via-30% to-transparent" />
+
+          {/* Centered text */}
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center">
+            <Heading className="text-gradient-gold">Soon to Be Revealed</Heading>
+            <Heading className="scale-75">Grand Theme is Coming.</Heading>
+          </div>
+        </div>
+      )}
     </>
   );
 };

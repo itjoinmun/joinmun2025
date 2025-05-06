@@ -8,7 +8,7 @@ export default function ComingSoon() {
   return (
     <main
       className={
-        "relative flex min-h-[100dvh] w-screen items-center justify-center overflow-x-hidden *:text-center"
+        "relative flex min-h-[100dvh] w-screen items-center justify-center overflow-x-hidden *:text-center bg-foreground"
       }
     >
       {/* Background Batik */}

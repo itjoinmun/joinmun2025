@@ -12,23 +12,23 @@ import {
 
 const TIMELINE_CONTENT = [
   {
-    date: "23 - 30 Mei",
+    date: "1 - 30 June",
     title: "Early Bird Registration",
   },
   {
-    date: "31 Mei - 2 Juni",
+    date: "14 July - 14 Aug",
     title: "Regular Wave Registration",
   },
   {
-    date: "31 Mei - 2 Juni",
-    title: "Late Registration",
+    date: "18 Aug - 18 Sep",
+    title: "Late Wave Registration",
   },
   {
     date: "31 Mei - 2 Juni",
     title: "Roadshow",
   },
   {
-    date: "31 Mei - 2 Juni",
+    date: "24 - 25 October",
     title: "Main Event",
   },
 ];
@@ -67,7 +67,7 @@ const Timeline = () => {
             {TIMELINE_CONTENT.map((timeline, index) => (
               <CarouselItem
                 key={index}
-                className="basis-1/2 pl-4 sm:basis-1/4 md:pl-6 lg:basis-1/5"
+                className="2xs:basis-1/2 pl-4 sm:basis-1/4 md:pl-6 lg:basis-1/5"
               >
                 <TimelineCard {...timeline} />
               </CarouselItem>
