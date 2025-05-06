@@ -7,6 +7,15 @@ import { useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
+import DashboardContainer from "@/components/dashboard/dashboard-container";
 
 const logoStyle = "size-5";
 
@@ -43,10 +52,50 @@ const DashboardNav = () => {
   return (
     <>
       <MobileNav pathname={pathname} />
-      <DesktopNav pathname={pathname} />
+      <DummyNav pathname={pathname} />
+      {/* <DesktopNav pathname={pathname} /> */}
     </>
   );
 };
+
+const DummyNav = ({ pathname }: { pathname: string }) => (
+  <Sidebar className="h-full bg-blue-200 hidden md:block">
+    <DashboardContainer className="bg-gray m-2 flex h-full w-auto flex-col gap-4 rounded-md py-4">
+      <SidebarHeader>
+        <CompleteLogo />
+      </SidebarHeader>
+
+      <hr className="border-gray-light border-b" />
+
+      <SidebarContent>
+        <h2>Menu</h2>
+
+        <SidebarGroup className="no-scrollbar mb-1 px-0 flex max-h-full flex-col gap-1.5 overflow-y-auto">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              scroll={false}
+              className={cn(
+                buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
+                "h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal",
+                `${pathname === link.href && "hover:bg-red-normal"}`,
+              )}
+            >
+              {link.logo} {link.name}
+            </Link>
+          ))}
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="mt-auto">
+        <Button variant="default" className="w-full">
+          Logout
+        </Button>
+      </SidebarFooter>
+    </DashboardContainer>
+  </Sidebar>
+);
 
 const DesktopNav = ({ pathname }: { pathname: string }) => (
   <aside className="bg-gray hidden h-full flex-col gap-4 rounded-md p-6 md:flex">
@@ -82,7 +131,6 @@ const DesktopNav = ({ pathname }: { pathname: string }) => (
   </aside>
 );
 
-// Define MobileNavButtons outside of MobileNav
 const MobileNavButtons = ({ pathname, className }: { pathname: string; className?: string }) => (
   <nav
     className={cn(
@@ -138,7 +186,7 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
       </header>
 
       {/* navbar resolver */}
-      <div className={cn(`h-45 w-full transition-all ease-out md:hidden`, isScrolled && "h-30")} />
+      <div className={cn(`h-54 shrink-0 w-full transition-all ease-out md:hidden`, isScrolled && "h-30")} />
     </>
   );
 };

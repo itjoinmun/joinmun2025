@@ -20,7 +20,6 @@ const DashboardHome = () => {
       <InformationCenter />
       <ParticipantData />
       <DashboardEvents />
-      <div className="w-screen" />
     </DashboardPage>
   );
 };

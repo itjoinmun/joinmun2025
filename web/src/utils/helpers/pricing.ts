@@ -29,7 +29,7 @@ export const PRICES: Record<PriceOptions, PriceOptionType> = {
     ],
   },
   ["team"]: {
-    name: "Delegations team",
+    name: "Delegations Team",
     description: "Two or more delegates, one country.",
     package: [
       {
