@@ -59,8 +59,8 @@ const DashboardNav = () => {
 };
 
 const DummyNav = ({ pathname }: { pathname: string }) => (
-  <Sidebar className="h-full bg-blue-200 hidden md:block">
-    <DashboardContainer className="bg-gray m-2 flex h-full w-auto flex-col gap-4 rounded-md py-4">
+  <Sidebar className="hidden h-full md:block">
+    <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4">
       <SidebarHeader>
         <CompleteLogo />
       </SidebarHeader>
@@ -70,7 +70,7 @@ const DummyNav = ({ pathname }: { pathname: string }) => (
       <SidebarContent>
         <h2>Menu</h2>
 
-        <SidebarGroup className="no-scrollbar mb-1 px-0 flex max-h-full flex-col gap-1.5 overflow-y-auto">
+        <SidebarGroup className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto px-0">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.name}
@@ -186,7 +186,12 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
       </header>
 
       {/* navbar resolver */}
-      <div className={cn(`h-54 shrink-0 w-full transition-all ease-out md:hidden`, isScrolled && "h-30")} />
+      <div
+        className={cn(
+          `h-54 w-full shrink-0 transition-all ease-out md:hidden`,
+          isScrolled && "h-30",
+        )}
+      />
     </>
   );
 };
