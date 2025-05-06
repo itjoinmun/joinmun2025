@@ -28,10 +28,10 @@ func NewDashboardHandler(dashboardService dashboardService.DashboardService) *Da
 func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 
 	type DelegateWithResponses struct {
-		dashboardModel.MUNDelegates
-		BiodataResponses []dashboardModel.BiodataResponses
-		HealthResponses  []dashboardModel.HealthResponses
-		MUNResponses     []dashboardModel.MUNResponses
+		MUNDelegates     dashboardModel.MUNDelegates       `json:"mun_delegates"`
+		BiodataResponses []dashboardModel.BiodataResponses `json:"biodata_responses"`
+		HealthResponses  []dashboardModel.HealthResponses  `json:"health_responses"`
+		MUNResponses     []dashboardModel.MUNResponses     `json:"mun_responses"`
 	}
 	var req struct {
 		Delegates []DelegateWithResponses
@@ -61,17 +61,18 @@ func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 		return
 	}
 
+	biodataQuestions, _, _, err := h.dashboardService.GetQuestions()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get questions", "details": err.Error()})
+		return
+	}
+
 	// Handle file uploads
 	for di, d := range req.Delegates {
 		for bi, b := range d.BiodataResponses {
 			// Get the question type from the biodata questions
 			// We need to look up the question type for this question ID
 			questionType := ""
-			biodataQuestions, _, _, err := h.dashboardService.GetQuestions()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get questions", "details": err.Error()})
-				return
-			}
 
 			for _, q := range biodataQuestions {
 				if q.BiodataQuestionID == b.BiodataQuestionID {

@@ -99,7 +99,7 @@ func (r *responseRepo) InsertHealthResponses(tx *sqlx.Tx, responses []dashboard.
 
 	for i, res := range responses {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
-		args = append(args, res.HealthQuestionsID, res.HealthAnswerText)
+		args = append(args, res.DelegateEmail, res.HealthQuestionsID, res.HealthAnswerText)
 	}
 
 	query += strings.Join(valueStrings, ",")
@@ -117,13 +117,13 @@ func (r *responseRepo) InsertMUNResponses(tx *sqlx.Tx, responses []dashboard.MUN
 		return nil
 	}
 
-	query := `INSERT INTO mun_responses (delegate_email, mun_answer_text) VALUES `
+	query := `INSERT INTO mun_responses (delegate_email, mun_question_id, mun_answer_text) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
 
 	for i, res := range responses {
-		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
-		args = append(args, res.DelegateEmail, res.MUNAnswerText)
+		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
+		args = append(args, res.DelegateEmail, res.MUNQuestionID, res.MUNAnswerText)
 	}
 
 	query += strings.Join(valueStrings, ",")

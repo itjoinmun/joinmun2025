@@ -91,6 +91,20 @@ func (s *dashboardService) InsertDelegates(
 		}
 	}()
 
+	// insert delegates and make teams
+	_, err = s.delegateRepo.InsertTeamWithDelegates(tx, team, delegates)
+	if err != nil {
+		logger.LogError(err, "Failed to insert team with delegates", map[string]interface{}{
+			"delegates": delegates,
+			"team":      team,
+			"layer":     "service",
+			"operation": "service.InsertDelegates",
+			"error":     err,
+		})
+		retErr = err
+		return retErr
+	}
+
 	// Create error channel and wait group for concurrent operations
 	errChan := make(chan error, 3)
 	var wg sync.WaitGroup
@@ -144,19 +158,6 @@ func (s *dashboardService) InsertDelegates(
 
 	// Check if any errors occurred during concurrent operations
 	for err := range errChan {
-		retErr = err
-		return retErr
-	}
-	// insert delegates and make teams
-	_, err = s.delegateRepo.InsertTeamWithDelegates(tx, team, delegates)
-	if err != nil {
-		logger.LogError(err, "Failed to insert team with delegates", map[string]interface{}{
-			"delegates": delegates,
-			"team":      team,
-			"layer":     "service",
-			"operation": "service.InsertDelegates",
-			"error":     err,
-		})
 		retErr = err
 		return retErr
 	}

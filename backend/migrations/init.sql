@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS mun_faculty_advisors (
 -- Questionnaire Tables
 CREATE TABLE IF NOT EXISTS biodata_questions (
     biodata_question_id SERIAL PRIMARY KEY,
-    question_type VARCHAR(16) CHECK (question_type IN ('file', 'dropdown', 'text')),
+    biodata_question_type VARCHAR(16) CHECK (biodata_question_type IN ('file', 'dropdown', 'text')),
     biodata_question_text TEXT NOT NULL
 );
 
@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS health_responses (
 -- MUN Questions/Responses
 CREATE TABLE IF NOT EXISTS mun_questions (
     mun_question_id SERIAL PRIMARY KEY,
-    question_type VARCHAR(16) CHECK (question_type IN ('file', 'dropdown', 'text')),
-    mun_question_text TEXT NOT NULL,
+    mun_question_type VARCHAR(16) CHECK (mun_question_type IN ('file', 'dropdown', 'text')),
+    mun_question_text TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS mun_responses (
