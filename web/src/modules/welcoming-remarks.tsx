@@ -7,17 +7,21 @@ export default function WelcomingRemarks() {
   return (
     <main className="bg-foreground relative z-0 min-h-[100dvhx]">
       <Container>
-        {/* Background Batik */}
 
-        <div className="w- z-10 flex flex-col gap-5 lg:flex-row lg:gap-[38px]">
+      <div className="bg-orange-blur/60 pointer-events-none absolute left-125 z-1 w-[1000px] h-[350px] -translate-x-1/2 translate-y-5   rounded-full blur-3xl" />
+        {/* Background Batik */}
+    
+        <div className="w- z-10 flex flex-col gap-5 lg:flex-row lg:gap-[38px] ">
+          
           <div className="flex flex-col gap-2 lg:hidden">
             <SubHeading>Hear From Our Leaders</SubHeading>
             <Heading>Welcoming Remarks</Heading>
           </div>
+          
           <Image
             src={"/assets/welcoming-remarks/KKM07434.jpg"}
             alt="KKM07434"
-            className="w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]"
+            className="w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw] "
             width={546}
             height={345}
           />
@@ -42,7 +46,7 @@ export default function WelcomingRemarks() {
         </div>
       </Container>
       {/* Ellipse Blur */}
-      <div className="bg-orange-blur/30 pointer-events-none absolute left-1/2 z-30 h-[350px] w-1/2 -translate-x-1/2 rounded-full blur-3xl" />
+      <div className="bg-orange-blur/70 pointer-events-none absolute left-1/2 z-30 h-[350px] w-1/2 -translate-x-1/2 rounded-full blur-3xl" />
       <BatikPattern />
     </main>
   );
