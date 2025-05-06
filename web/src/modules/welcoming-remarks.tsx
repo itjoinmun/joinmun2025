@@ -7,6 +7,7 @@ export default function WelcomingRemarks() {
   return (
     <main className="bg-foreground relative z-0 min-h-[100dvhx]">
       <Container>
+        <div className="bg-orange-blur/60 pointer-events-none absolute lg:left-125 z-1 h-[350px] w-screen lg:-translate-x-1/2 translate-y-5 rounded-full blur-3xl lg:w-[1000px]" />
         {/* Background Batik */}
 
         <div className="w- z-10 flex flex-col gap-5 lg:flex-row lg:gap-[38px]">
@@ -14,6 +15,7 @@ export default function WelcomingRemarks() {
             <SubHeading>Hear From Our Leaders</SubHeading>
             <Heading>Welcoming Remarks</Heading>
           </div>
+
           <Image
             src={"/assets/welcoming-remarks/KKM07434.jpg"}
             alt="KKM07434"
@@ -42,7 +44,7 @@ export default function WelcomingRemarks() {
         </div>
       </Container>
       {/* Ellipse Blur */}
-      <div className="bg-orange-blur/30 pointer-events-none absolute left-1/2 z-30 h-[350px] w-1/2 -translate-x-1/2 rounded-full blur-3xl" />
+      {/* <div className="bg-orange-blur/70 pointer-events-none absolute left-1/2 z-30 h-[350px] w-full lg:w-1/2 -translate-x-1/2 rounded-full blur-3xl" /> */}
       <BatikPattern />
     </main>
   );
