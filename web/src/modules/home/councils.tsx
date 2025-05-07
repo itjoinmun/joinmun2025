@@ -13,7 +13,7 @@ import { Council, COUNCILS } from "@/utils/helpers/councils";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { isCouncilReveal } from "@/utils/helpers/reveal";
+import { isCouncilsReveal } from "@/utils/helpers/reveal";
 
 const Councils = () => {
   return (
@@ -25,9 +25,9 @@ const Councils = () => {
       />
       <main className="relative z-0 overflow-hidden pb-12">
         <Container className="gap-2">
-          <SubHeading>{isCouncilReveal ? "Explore our" : "Coming Soon"}</SubHeading>
+          <SubHeading>{isCouncilsReveal ? "Explore our" : "Coming Soon"}</SubHeading>
           <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-            <Heading>{isCouncilReveal ? "Councils" : "The Council"}</Heading>
+            <Heading>{isCouncilsReveal ? "Councils" : "The Council"}</Heading>
 
             <div className="text-sm text-white md:col-span-2">
               At JOINMUN, each council is thoughtfully curated to reflect pressing real-world
@@ -47,7 +47,7 @@ const Councils = () => {
           className="relative w-full"
         >
           <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
-            {(isCouncilReveal ? COUNCILS : COUNCILS.slice(-4)).map((theme, index) => (
+            {(isCouncilsReveal ? COUNCILS : COUNCILS.slice(-4)).map((theme, index) => (
               <CarouselItem
                 key={index}
                 className="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4"
@@ -76,7 +76,7 @@ const Councils = () => {
 
 const CouncilCard = (props: Council) => (
   <article className="bg-gold/5 relative flex h-80 flex-col justify-end overflow-hidden rounded-sm xl:h-[380px]">
-    {isCouncilReveal ? (
+    {isCouncilsReveal ? (
       <Link href={`/councils/${props.slug}`} className="group absolute top-4 right-4 w-fit">
         <Button variant={`insideCard`} className="text-xs hover:cursor-pointer">
           Read More <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
@@ -86,7 +86,7 @@ const CouncilCard = (props: Council) => (
       ""
     )}
 
-    {isCouncilReveal ? (
+    {isCouncilsReveal ? (
       <div className="z-10 flex min-h-[35%] w-full items-center gap-3 bg-black/70 p-4 backdrop-blur-sm">
         <aside className="relative size-14 shrink-0 overflow-hidden rounded-full bg-neutral-200">
           <Image
@@ -110,8 +110,8 @@ const CouncilCard = (props: Council) => (
     )}
 
     <Image
-      src={isCouncilReveal ? `/lebron.webp` : `/assets/councils/coming-soon-council.webp`}
-      alt={isCouncilReveal ? props.name : ""}
+      src={isCouncilsReveal ? `/lebron.webp` : `/assets/councils/coming-soon-council.webp`}
+      alt={isCouncilsReveal ? props.name : ""}
       fill
       sizes="100%"
       className="-z-10 object-cover"
