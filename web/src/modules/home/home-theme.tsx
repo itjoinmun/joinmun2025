@@ -10,11 +10,10 @@ import {
 } from "@/components/ui/carousel";
 import Container from "@/components/ui/container";
 import { cn } from "@/utils/cn";
+import { isThemeReveal } from "@/utils/helpers/reveal";
 import { THEMES } from "@/utils/helpers/themes";
-import { main } from "motion/react-client";
 import Image from "next/image";
 import Link from "next/link";
-import { isThemeReveal } from "../../../app/(with-navbar)/theme/page";
 
 const HomeTheme = () => {
   return (

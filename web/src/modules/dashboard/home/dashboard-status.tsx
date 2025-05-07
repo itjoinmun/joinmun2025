@@ -93,7 +93,7 @@ const DashboardStatus = () => {
 
 const StatusCard = ({
   // title,
-  status,
+  // status,
   description,
   cardHeader,
   cardDescription,

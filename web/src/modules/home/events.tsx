@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
+import Link from "next/link";
 
 const Events = () => {
   return (
@@ -65,9 +66,20 @@ const EventCard = (props: Event) => (
       {props.date}
     </div>
     <h1 className="text-lg leading-snug font-semibold">{props.title}</h1>
-    <div className="bg-red-normal mt-2 flex w-full items-center justify-center rounded-md">
-      <h3 className="py-1 text-sm leading-snug">{props.location}</h3>
-    </div>
+    {props.loc === "" ? (
+      <div className="bg-red-normal mt-2 flex w-full items-center justify-center rounded-md">
+        <h3 className="py-1 text-sm leading-snug">{props.location}</h3>
+      </div>
+    ) : (
+      <Link
+        href={props.loc || "#"}
+        target="_blank"
+        rel="noopener noreferer"
+        className="bg-red-normal mt-2 flex w-full items-center justify-center rounded-md"
+      >
+        <h3 className="py-1 text-sm leading-snug">{props.location}</h3>
+      </Link>
+    )}
 
     {/* image + overlay */}
     <Image

@@ -24,15 +24,18 @@ const Hero = () => {
   ];
 
   return (
-    <main id="hero" className="relative flex min-h-[85vh] items-end md:min-h-screen">
+    <main
+      id="hero"
+      className="xs:min-h-[85vh] relative flex min-h-screen items-end md:min-h-screen"
+    >
       <NavbarResolver />
       <Container className="max-w-8xl justify-end pb-12">
-        <div className="h-24" />
+        <div className="xs:h-24" />
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0, type: "spring" }}
-          className="max-w-lg text-3xl/normal font-bold md:text-4xl/normal"
+          className="2xs:text-3xl/normal max-w-lg text-2xl font-bold md:text-4xl/normal"
         >
           Your Chance to Take on Real-World Issues and Shape Meaningful Change
         </motion.h1>
@@ -52,7 +55,7 @@ const Hero = () => {
             href={`/register`}
             className={cn(
               buttonVariants({ variant: "primary" }),
-              "mt-2 mb-8 w-fit text-sm md:mb-0",
+              "2xs:mb-72 xs:mb-8 mt-2 mb-48 w-fit text-sm md:mb-0",
             )}
           >
             Register Now
@@ -84,7 +87,7 @@ const Hero = () => {
             className="flex h-fit items-center justify-center gap-3 md:justify-start"
           >
             <Image src={`/MUN-UGM.png`} alt="Logo" width={100} height={100} className="size-8" />
-            <h4 className="text-center text-xs font-semibold text-pretty md:text-start md:text-base">
+            <h4 className="text-start text-xs font-semibold text-pretty md:text-base">
               Model United Nations Universitas Gadjah Mada
             </h4>
           </motion.div>
@@ -93,11 +96,13 @@ const Hero = () => {
 
       {/* image + overlay */}
       <Image
-        src={`/assets/home/hero.webp`}
+        src={`/assets/home/background-hero.webp`}
         alt="JOINMUN Image"
         fill
         sizes="100%"
-        className="-z-10 object-cover"
+        // className="absolute inset-0 -z-10 object-cover right-24 object-right"
+        className="object-center-left absolute inset-0 -z-10 object-cover"
+        style={{ objectPosition: "77% center" }}
       />
       <motion.div
         initial={{ opacity: 0 }}

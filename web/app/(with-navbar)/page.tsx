@@ -6,8 +6,7 @@ import WelcomingRemarks from "@/modules/welcoming-remarks";
 import Events from "@/modules/home/events";
 import Councils from "@/modules/home/councils";
 import ContactUs from "@/modules/contact-us";
-import Pricing from "@/modules/home/pricing";
-import { Test } from "@/modules/temp";
+// import Pricing from "@/modules/home/pricing";
 
 export default function Home() {
   return (
@@ -20,8 +19,7 @@ export default function Home() {
       <Events />
       <Councils />
       <ContactUs />
-      <Pricing />
-      <Test />
+      {/* <Pricing /> */}
     </>
   );
 }

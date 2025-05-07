@@ -13,7 +13,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
 
@@ -97,39 +96,39 @@ const DummyNav = ({ pathname }: { pathname: string }) => (
   </Sidebar>
 );
 
-const DesktopNav = ({ pathname }: { pathname: string }) => (
-  <aside className="bg-gray hidden h-full flex-col gap-4 rounded-md p-6 md:flex">
-    <CompleteLogo />
+// const DesktopNav = ({ pathname }: { pathname: string }) => (
+//   <aside className="bg-gray hidden h-full flex-col gap-4 rounded-md p-6 md:flex">
+//     <CompleteLogo />
 
-    <hr className="border-gray-light/50 my-1 border-b" />
+//     <hr className="border-gray-light/50 my-1 border-b" />
 
-    <h2>Menu</h2>
+//     <h2>Menu</h2>
 
-    {/* nav links */}
-    <ul className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto">
-      {NAV_LINKS.map((link) => (
-        <li key={link.name}>
-          <Link
-            href={link.href}
-            scroll={false}
-            className={cn(
-              buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
-              "h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal",
-              `${pathname === link.href && "hover:bg-red-normal"}`,
-            )}
-          >
-            {link.logo} {link.name}
-          </Link>{" "}
-        </li>
-      ))}
-    </ul>
+//     {/* nav links */}
+//     <ul className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto">
+//       {NAV_LINKS.map((link) => (
+//         <li key={link.name}>
+//           <Link
+//             href={link.href}
+//             scroll={false}
+//             className={cn(
+//               buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
+//               "h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal",
+//               `${pathname === link.href && "hover:bg-red-normal"}`,
+//             )}
+//           >
+//             {link.logo} {link.name}
+//           </Link>{" "}
+//         </li>
+//       ))}
+//     </ul>
 
-    {/* logout */}
-    <Button variant="default" className="mt-auto w-full">
-      Logout
-    </Button>
-  </aside>
-);
+//     {/* logout */}
+//     <Button variant="default" className="mt-auto w-full">
+//       Logout
+//     </Button>
+//   </aside>
+// );
 
 const MobileNavButtons = ({ pathname, className }: { pathname: string; className?: string }) => (
   <nav

@@ -13,8 +13,7 @@ import { Council, COUNCILS } from "@/utils/helpers/councils";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-
-export const isCouncilReveal = process.env.NEXT_PUBLIC_COUNCILS_REVEAL === "true";
+import { isCouncilReveal } from "@/utils/helpers/reveal";
 
 const Councils = () => {
   return (

@@ -17,8 +17,8 @@ import {
 import { Council } from "@/utils/helpers/councils";
 import { ArrowUpRightIcon } from "lucide-react";
 import Image from "next/image";
-import { isCouncilReveal } from "../home/councils";
 import { cn } from "@/utils/cn";
+import { isCouncilReveal } from "@/utils/helpers/reveal";
 
 export const LeaderCarousel = (props: Council) => {
   return (
