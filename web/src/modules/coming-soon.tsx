@@ -3,82 +3,121 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Instagram, Linkedin } from "lucide-react";
 import Container from "@/components/ui/container";
+import * as motion from "motion/react-client";
 
 export default function ComingSoon() {
   return (
-    <main
-      className={
-        "relative flex min-h-[100dvh] w-screen items-center justify-center overflow-x-hidden *:text-center bg-foreground"
-      }
-    >
+    <main className="bg-foreground relative flex min-h-[100dvh] w-screen items-center justify-center overflow-x-hidden *:text-center">
       {/* Background Batik */}
-      <Image
-        src={"/assets/coming-soon/batik-2.webp"}
-        alt={""}
-        className={"absolute top-0 z-10 min-h-[85vh] object-cover lg:h-auto lg:w-full"}
-        width={2163}
-        height={1220}
-      />
-      {/* Ellipse Blur */}
-      <div className="bg-orange-blur/30 pointer-events-none absolute left-1/2 z-30 h-[350px] w-1/2 -translate-x-1/2 rounded-full blur-3xl" />
-      {/* Pattern Wave Kiri */}
-      <Image
-        src={"/assets/coming-soon/wave.webp"}
-        alt={""}
-        className={
-          "3xl:left-48 absolute -left-8 z-40 -translate-x-1/2 translate-y-[6.5rem] sm:translate-y-14 md:translate-y-24 lg:-left-24 lg:-translate-y-12 xl:-left-16 2xl:left-24"
-        }
-        width={850}
-        height={126}
-      />
-      {/* Pattern Wave Kanan */}
-      <Image
-        src={"/assets/coming-soon/wave.webp"}
-        alt={""}
-        className={
-          "3xl:right-48 absolute -right-8 z-40 translate-x-1/2 translate-y-[6.5rem] rotate-180 overflow-x-clip sm:translate-y-14 md:translate-y-24 lg:-right-24 lg:-translate-y-12 xl:-right-16 2xl:right-24"
-        }
-        width={850}
-        height={126}
-      />
-      {/* Center Component */}
-      <Container
-        className={
-          "relative z-50 flex flex-col items-center justify-center overflow-x-hidden sm:gap-0"
-        }
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2 }}
+        className="absolute top-0 z-10 min-h-[85vh] w-full select-none"
       >
-        <h1
-          className={
-            "font-outfit text-gradient-top from-white/20 to-white text-[56px] leading-none font-semibold md:text-[72px] md:leading-normal lg:text-[80px] xl:text-[90px]"
-          }
+        <Image
+          src="/assets/coming-soon/batik-2.webp"
+          alt=""
+          // className="object-cover lg:h-auto lg:w-full"
+          className="pointer-events-none  z-10 h-[80vh] w-[140vw] object-cover"
+          width={2163}
+          height={1220}
+        />
+      </motion.div>
+
+      {/* Ellipse Blur */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5, duration: 1 }}
+        className="bg-orange-blur/30 pointer-events-none absolute left-1/2 z-30 h-[350px] w-1/2 -translate-x-1/2 rounded-full blur-3xl select-none"
+      />
+
+      {/* Pattern Wave Kiri */}
+      <motion.div
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.6, duration: 1 }}
+        className="3xl:left-48 absolute -left-8 z-40 -translate-x-1/2 translate-y-[6.5rem] select-none sm:translate-y-14 md:translate-y-24 lg:-left-24 lg:-translate-y-12 xl:-left-16 2xl:left-24"
+      >
+        <Image src="/assets/coming-soon/wave.webp" alt="" width={850} height={126} />
+      </motion.div>
+
+      {/* Pattern Wave Kanan */}
+      <motion.div
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.6, duration: 1 }}
+        className="3xl:right-48 absolute -right-8 z-40 translate-x-1/2 translate-y-[6.5rem] rotate-180 overflow-x-clip select-none sm:translate-y-14 md:translate-y-24 lg:-right-24 lg:-translate-y-12 xl:-right-16 2xl:right-24"
+      >
+        <Image src="/assets/coming-soon/wave.webp" alt="" width={850} height={126} />
+      </motion.div>
+
+      {/* Center Component */}
+      <Container className="relative z-50 flex flex-col items-center justify-center overflow-x-hidden sm:gap-0">
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 1 }}
+          className="font-outfit text-gradient-top from-white/20 to-white text-[56px] leading-none font-semibold md:text-[72px] md:leading-normal lg:text-[80px] xl:text-[90px]"
         >
           COMING
           <br className="block sm:hidden" /> SOON
-        </h1>
-        <p className="text-xs lg:text-[120%]">
-          We&#39;re putting the final touches on a premier platform <br className="block" />
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 1 }}
+          className="text-xs lg:text-[120%]"
+        >
+          We&#39;re putting the final touches on a premier platform{" "}
+          <br className="2xs:block hidden" />
           where youth, diplomacy, and innovation meet.
-        </p>
-        {/* Button Go Home */}
-        <Link href={"/"} className={"mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100"}>
-          <Button variant={"gradient"} size={"longer"} className="cursor-pointer">
-            Go Home
-          </Button>
-        </Link>
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.3, duration: 0.7 }}
+          className="mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100"
+        >
+          <Link href="/">
+            <Button variant="gradient" size="longer" className="cursor-pointer">
+              Go Home
+            </Button>
+          </Link>
+        </motion.div>
       </Container>
+
       {/* Socials */}
-      <div className="absolute right-0 bottom-10 left-0 mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+        className="2xs:bottom-10 absolute right-0 bottom-2 left-0 mx-auto"
+      >
         <div className="flex flex-col items-center justify-center gap-4">
           <h1 className="text-lg font-semibold">Stay Connected</h1>
           <div className="flex gap-4">
             {Socials.map((social, index) => (
-              <Link key={index} href={social.link} className={"z-50 flex gap-4"}>
-                <span className="flex h-10 w-10 items-center justify-center">{social.icon}</span>
-              </Link>
+              <motion.a
+                whileHover={{ scale: 1.2 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                key={index}
+                href={social.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="z-50 flex gap-4"
+              >
+                <span className="flex h-10 w-10 items-center justify-center text-white">
+                  {social.icon}
+                </span>
+              </motion.a>
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </main>
   );
 }
