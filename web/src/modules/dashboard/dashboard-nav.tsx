@@ -2,7 +2,7 @@
 import CompleteLogo from "@/components/dashboard/complete-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/utils/cn";
-import { BookOpen, CircleHelp, DollarSign, Globe, Home } from "lucide-react";
+import { BookOpen, CircleHelp, DollarSign, Globe, Home, LogOut } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,6 +15,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
+import Image from "next/image";
 
 const logoStyle = "size-5";
 
@@ -59,15 +60,29 @@ const DashboardNav = () => {
 
 const DummyNav = ({ pathname }: { pathname: string }) => (
   <Sidebar className="hidden h-full md:block">
-    <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4">
-      <SidebarHeader>
-        <CompleteLogo />
+    <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4 group-data-[collapsible=icon]:p-2">
+      <SidebarHeader className="mt-2 w-auto">
+        <Link href={`/dashboard`} className="flex w-full items-center gap-3 select-none">
+          <Image
+            src={`/LOGO.png`}
+            alt="JOINMUN"
+            width={846}
+            height={701}
+            priority
+            className="aspect-[846/701] size-9 h-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:h-full group-data-[collapsible=none]:w-full"
+          />
+
+          <div className="mr-1 flex flex-col gap-1 group-data-[collapsible=icon]:hidden">
+            <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
+            <h3 className="text-xs text-nowrap">Model United Nations UGM</h3>
+          </div>
+        </Link>
       </SidebarHeader>
 
       <hr className="border-gray-light border-b" />
 
       <SidebarContent>
-        <h2>Menu</h2>
+        <h2 className="group-data-[collapsible=icon]:hidden">Menu</h2>
 
         <SidebarGroup className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto px-0">
           {NAV_LINKS.map((link) => (
@@ -77,11 +92,12 @@ const DummyNav = ({ pathname }: { pathname: string }) => (
               scroll={false}
               className={cn(
                 buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
-                "h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal",
+                "group h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal group-data-[collapsible=icon]:px-0",
                 `${pathname === link.href && "hover:bg-red-normal"}`,
               )}
             >
-              {link.logo} {link.name}
+              <span className="group-data-[collapsible=icon]:mx-auto">{link.logo}</span>
+              <span className="block group-data-[collapsible=icon]:hidden">{link.name}</span>
             </Link>
           ))}
         </SidebarGroup>
@@ -89,7 +105,7 @@ const DummyNav = ({ pathname }: { pathname: string }) => (
 
       <SidebarFooter className="mt-auto">
         <Button variant="default" className="w-full">
-          Logout
+          <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
         </Button>
       </SidebarFooter>
     </DashboardContainer>
