@@ -26,7 +26,7 @@ const Hero = () => {
   return (
     <main
       id="hero"
-      className="xs:min-h-[85vh] relative flex min-h-screen items-end md:min-h-screen"
+      className="xs:min-h-[85vh] lg:min-h-screen relative flex min-h-screen items-end md:min-h-screen"
     >
       <NavbarResolver />
       <Container className="max-w-8xl justify-end pb-12">
