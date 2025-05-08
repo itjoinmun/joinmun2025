@@ -21,11 +21,8 @@ func NewHandlerContainer(db *sqlx.DB) *HandlerContainer {
 	tokenRepo := userRepoI.NewRefreshTokenRepo(db)
 	userRepo := userRepoI.NewUserRepo(db)
 	delegateRepo := dashboardRepoI.NewDelegateRepo(db)
-	facultyAdvisorRepo := dashboardRepoI.NewFacultyAdvisorRepo(db)
-	observerRepo := dashboardRepoI.NewObserverRepo(db)
 	responseRepo := dashboardRepoI.NewResponseRepo(db)
 	positionPaperRepo := dashboardRepoI.NewPositionPaperRepo(db)
-	paymentRepo := dashboardRepoI.NewPaymentRepo(db)
 	questionRepo := dashboardRepoI.NewQuestionRepo(db)
 	tokenService := userServiceI.NewRefreshTokenService(tokenRepo, userRepo)
 	userService := userServiceI.NewUserService(userRepo, tokenService)
@@ -33,15 +30,15 @@ func NewHandlerContainer(db *sqlx.DB) *HandlerContainer {
 
 	dashboardService := dashboardServiceI.NewDashboardService(
 		positionPaperRepo,
-		observerRepo,
 		questionRepo,
-		facultyAdvisorRepo,
 		delegateRepo,
-		paymentRepo,
 		responseRepo,
 	)
 
-	dashboardHandler := dashboardHandlerI.NewDashboardHandler(dashboardService)
+	dashboardHandler, err := dashboardHandlerI.NewDashboardHandler(dashboardService)
+	if err != nil {
+		panic(err)
+	}
 
 	return &HandlerContainer{
 		UserHandler:      userHandler,

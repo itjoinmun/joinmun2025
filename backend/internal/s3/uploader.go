@@ -68,3 +68,11 @@ func (u *S3Uploader) UploadFile(file multipart.File, header *multipart.FileHeade
 
 	return key, nil
 }
+
+func (u *S3Uploader) DeleteFile(key string) error {
+	_, err := u.Client.DeleteObject(context.Background(), &s3.DeleteObjectInput{
+		Bucket: aws.String(u.BucketName),
+		Key:    aws.String(key),
+	})
+	return err
+}
