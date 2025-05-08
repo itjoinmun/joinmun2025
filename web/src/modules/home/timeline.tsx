@@ -24,7 +24,7 @@ const TIMELINE_CONTENT = [
     title: "Late Wave Registration",
   },
   {
-    date: "31 Mei - 2 Juni",
+    date: "Coming Soon",
     title: "Roadshow",
   },
   {
@@ -44,10 +44,10 @@ const Timeline = () => {
       <main className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12">
         <Container className="gap-2">
           <SubHeading>Save The Date</SubHeading>
-          <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-            <Heading>Timeline</Heading>
+          <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
+            <Heading className="col-span-2">Timeline</Heading>
 
-            <div className="text-sm text-white md:col-span-2">
+            <div className="text-sm text-white md:col-span-3">
               Get a clear view of all the important dates, from registration to the conference days.
               This timeline helps you stay prepared at every stage.
             </div>

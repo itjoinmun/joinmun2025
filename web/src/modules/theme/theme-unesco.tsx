@@ -27,7 +27,7 @@ const ThemeUnesco = () => {
   return (
     <main className="bg-background relative -z-10 overflow-hidden">
       <Container className="gap-2">
-        <SubHeading>Why The Cosmological Axis of Yogyakarta</SubHeading>
+        <SubHeading>Why The Sumbu Filosofi of Yogyakarta</SubHeading>
         <section className="grid grid-cols-1 gap-y-2">
           <Heading>Recognized by UNESCO</Heading>
           <div className="mt-7 flex flex-col gap-x-11 gap-y-8 lg:flex-row">
@@ -35,7 +35,7 @@ const ThemeUnesco = () => {
               src="/assets/theme/recognized.webp"
               // placeholder="blur"
               // blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDUwMCAzMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNkZGQiIC8+PC9zdmc+"
-              alt="The Cosmological Axis of Yogyakarta"
+              alt="The Sumbu Filosofi of Yogyakarta"
               width={650}
               height={714}
               loading="lazy"

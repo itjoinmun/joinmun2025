@@ -10,7 +10,7 @@ const ThemeInspired = () => {
           <Heading>What Inspired Us</Heading>
 
           <div className="text-sm text-white">
-            This year, JOINMUN adopts the profound concept of the Cosmological Axis of Yogyakarta—a
+            This year, JOINMUN adopts the profound concept of the Sumbu Filosofi of Yogyakarta—a
             sacred line that connects the Southern Ocean, the Yogyakarta Palace, and Mount Merapi.
           </div>
 

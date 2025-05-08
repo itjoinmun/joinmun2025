@@ -18,7 +18,7 @@ export const EVENTS: EventSection[] = [
       {
         title: "Roadshow",
         location: "at Several Places",
-        date: "09 Mei",
+        date: "?",
         src: "pre-event-roadshow.webp",
         loc: "",
       },

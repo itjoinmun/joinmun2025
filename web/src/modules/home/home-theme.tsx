@@ -63,15 +63,29 @@ const HomeTheme = () => {
           />
 
           {/* Top gradient overlay */}
-          <div className="from-background via-background absolute top-0 right-0 left-0 z-10 h-32 bg-gradient-to-b via-30% to-transparent" />
+          <div className="from-background via-background absolute top-0 right-0 left-0 z-10 h-[22rem] bg-gradient-to-b via-40% to-transparent lg:h-84" />
 
           {/* Bottom gradient overlay */}
-          <div className="from-background via-background absolute right-0 bottom-0 left-0 z-10 h-32 bg-gradient-to-t via-30% to-transparent" />
+          <div className="from-background via-background absolute right-0 bottom-0 left-0 z-10 h-20 bg-gradient-to-t via-30% to-transparent md:h-32" />
 
           {/* Centered text */}
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center">
-            <Heading className="text-gradient-gold">Soon to Be Revealed</Heading>
-            <Heading className="scale-75">Grand Theme is Coming.</Heading>
+
+          {/* <Heading className="scale-75">Grand Theme is Coming.</Heading> */}
+          <div className="absolute inset-x-0 z-20 flex flex-col items-center justify-center">
+            <Container className="h-full min-h-[85dvh] gap-2 md:min-h-[70vh]">
+              <SubHeading>Coming Soon</SubHeading>
+              <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
+                <Heading className="col-span-2">2025 JOINMUN Theme</Heading>
+                <div className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-3">
+                  Get ready to witness the big reveal of this year&apos;s theme —This year,
+                  we&apos;re taking inspiration from something deeply rooted — in place, in meaning,
+                  and in movement.
+                </div>
+              </section>
+              <div className="my-auto flex h-full flex-col items-center justify-center">
+                <Heading className="text-gradient-gold mt-auto">Soon to Be Revealed</Heading>
+              </div>
+            </Container>
           </div>
         </div>
       )}

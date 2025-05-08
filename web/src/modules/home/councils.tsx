@@ -26,10 +26,10 @@ const Councils = () => {
       <main className="relative z-0 overflow-hidden pb-12">
         <Container className="gap-2">
           <SubHeading>{isCouncilsReveal ? "Explore our" : "Coming Soon"}</SubHeading>
-          <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-            <Heading>{isCouncilsReveal ? "Councils" : "The Council"}</Heading>
+          <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
+            <Heading className="col-span-2">{isCouncilsReveal ? "Councils" : "The Council"}</Heading>
 
-            <div className="text-sm text-white md:col-span-2">
+            <div className="text-sm text-white md:col-span-3">
               At JOINMUN, each council is thoughtfully curated to reflect pressing real-world
               issues, offering delegates the space to debate. Our councils are designed to stimulate
               critical thinking, encourage collaboration, and develop articulate, confident leaders.

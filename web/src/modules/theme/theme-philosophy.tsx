@@ -8,7 +8,7 @@ const ThemePhilosophy = () => {
     <main className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12">
       <Container className="gap-2">
         <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-          <Heading>Sumbu Filosofis</Heading>
+          <Heading>Sumbu Filosofi</Heading>
 
           <div className="text-sm text-pretty text-white md:col-span-2">
             The Imaginary Axis in Yogyakarta symbolizes two journeys in human life, the journey from
