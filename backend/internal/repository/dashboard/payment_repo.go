@@ -11,6 +11,9 @@ type paymentRepo struct {
 	db *sqlx.DB
 }
 
+func (r *paymentRepo) DB() *sqlx.DB {
+	return r.db
+}
 func (r *paymentRepo) GetPaymentByID(paymentID int) (*dashboard.Payment, error) {
 	var payment dashboard.Payment
 	query := `SELECT * FROM payments WHERE payment_id = $1`
@@ -86,8 +89,8 @@ func (r *paymentRepo) MakeInitialPayment(tx *sqlx.Tx, payment *dashboard.Payment
 		payment.Package,
 		payment.PaymentFile,
 		"pending",
-		nil,
-		nil,
+		payment.PaymentDate,
+		payment.PaymentAmount,
 	).Scan(&id)
 	if err != nil {
 		logger.LogError(err, "Failed to insert initial payment", map[string]interface{}{

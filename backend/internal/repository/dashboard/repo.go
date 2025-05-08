@@ -30,44 +30,22 @@ type ResponseRepo interface {
 
 // DelegateRepo handles delegate-specific operations
 type DelegateRepo interface {
-	BeginTransaction() (*sqlx.Tx, error)                                                                               // Begin a transaction
+	DB() *sqlx.DB                                                                                                      // Get the database connection
 	GetDelegateByEmail(email string) (*dashboard.MUNDelegates, error)                                                  // Use this for the delegate dashboard
 	GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDelegates, error)                                              // We join with team members to get the delegates
 	GetTeamByID(teamID string) (*dashboard.MUNTeams, error)                                                            // Get team by ID
 	GetTeamIDByDelegateEmail(delegateEmail string) (string, error)                                                     // Get teams by delegate email (this is used for the team dashboard)
+	InsertOneDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDelegates) (string, error)                                   // Insert a new delegate
 	InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDelegates) error                                             // batch insert delegates
 	InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (string, error)                                                  // Insert a new team (this will be used for the team dashboard, triggered by the delegates insertion also)
 	InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNTeams, delegates []dashboard.MUNDelegates) (string, error) // create  a relationship between team and delegates (using insert team and insert delegates)
-
-	UpdateDelegateStatus(tx *sqlx.Tx, delegateEmail string) error // update the delegate status, for ADMIN
-
+	InsertMeToTeam(teamID string, delegateEmail string) error                                                          // add a delegate to a team (this is used for the team dashboard)
+	UpdateDelegateStatus(delegateEmail string) error                                                                   // update the delegate status, for ADMIN
+	UpdatePairing(tx *sqlx.Tx, delegateEmail, pair string) error                                                       // update the pairing of a delegate (this is used for the team dashboard)
 	// update the delegate country and council
-	UpdateDelegateCountryAndCouncil(tx *sqlx.Tx, country, council, delegateEmail string) error // update the country and council for a delegate (this is used for the team dashboard)
+	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error // update the country and council for a delegate (this is used for the team dashboard)
 }
 
-// FacultyAdvisorRepo handles faculty advisor operations
-type FacultyAdvisorRepo interface {
-	GetFacultyAdvisorByEmail(email string) (*dashboard.FacultyAdvisor, error) // Faculty advisor dashboard
-	InsertFacultyAdvisor(advisor *dashboard.FacultyAdvisor) (int, error)      // Faculty advisor registration
-
-	// Team associations
-	GetFacultyAdvisorsByTeamID(teamID string) ([]dashboard.MUNFacultyAdvisors, error) // useful for the team dsahboard
-	AddFacultyAdvisorToTeam(teamAdvisor *dashboard.MUNFacultyAdvisors) error          // later the faculty advisor must add themselves to the team using the team code
-
-	// admin functions
-	UpdateFacultyAdvisorStatus(advisorEmail string, status string) error // update the status of the faculty advisor (ADMIN function)
-}
-
-// ObserverRepo handles observer operations
-type ObserverRepo interface {
-	GetObserverByEmail(email string) (*dashboard.Observer, error) // Observer dashboard
-	InsertObserver(observer *dashboard.Observer) (int, error)     // Observer registration
-
-	// handler for admin
-	UpdateObserverStatus(observerEmail, status string) error // update the status of the observer (ADMIN function)
-}
-
-// PositionPaperRepo handles position paper operations
 type PositionPaperRepo interface {
 	GetPositionPaperByDelegateEmail(email string) (*dashboard.PositionPaper, error) // useful for the delegate dashboard
 	InsertPositionPaper(positionPaper *dashboard.PositionPaper) (int, error)        // insert a new position paper (delegate function)
@@ -76,6 +54,7 @@ type PositionPaperRepo interface {
 
 // PaymentRepo handles payment operations
 type PaymentRepo interface {
+	DB() *sqlx.DB                                                                                  // Get the database connection
 	MakeInitialPayment(tx *sqlx.Tx, payment *dashboard.Payment, delegateEmail string) (int, error) // initial payment for the team
 	GetPaymentByDelegateEmail(delegateEmail string) (*dashboard.Payment, error)                    // Get payments by team ID, for the team dashboard
 
@@ -98,14 +77,6 @@ func NewPositionPaperRepo(db *sqlx.DB) PositionPaperRepo {
 
 func NewDelegateRepo(db *sqlx.DB) DelegateRepo {
 	return &delegateRepo{db: db}
-}
-
-func NewFacultyAdvisorRepo(db *sqlx.DB) FacultyAdvisorRepo {
-	return &facultyAdvisorRepo{db: db}
-}
-
-func NewObserverRepo(db *sqlx.DB) ObserverRepo {
-	return &observerRepo{db: db}
 }
 
 func NewPaymentRepo(db *sqlx.DB) PaymentRepo {

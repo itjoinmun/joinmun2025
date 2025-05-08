@@ -47,6 +47,8 @@ type MUNDelegates struct {
 	Confirmed        *bool      `json:"confirmed" db:"confirmed"`
 	ConfirmedDate    *time.Time `json:"confirmed_date" db:"confirmed_date"`
 	CouncilDate      *time.Time `json:"council_date" db:"council_date"`
+	InsertDate       *time.Time `json:"insert_date" db:"insert_date"`
+	ParticipantType  *string    `json:"participant_type" db:"participant_type" binding:"omitempty,oneof=delegate observer faculty_advisor"`
 }
 
 type MUNTeams struct {
@@ -59,28 +61,11 @@ type MUNTeamMembers struct {
 	MUNDelegateEmail string `json:"mun_delegate_email" db:"mun_delegate_email" binding:"required,email"`
 }
 
-type MUNFacultyAdvisors struct {
-	MUNTeamID           string `json:"mun_team_id" db:"mun_team_id" binding:"required"`
-	FacultyAdvisorEmail string `json:"faculty_advisor_email" db:"faculty_advisor_email" binding:"required,email"`
-}
-
 type PositionPaper struct {
 	MUNDelegateEmail string    `json:"mun_delegate_email" db:"mun_delegate_email" binding:"required,email"`
 	SubmissionFile   string    `json:"submission_file" db:"submission_file" binding:"required"`
 	SubmissionDate   time.Time `json:"submission_date" db:"submission_date"`
 	SubmissionStatus string    `json:"submission_status" db:"submission_status" binding:"required oneof=pending accepted rejected"`
-}
-
-type Observer struct {
-	ObserverEmail string    `json:"observer_email" db:"observer_email" binding:"required,email"` // Changed from int to string
-	Confirmed     bool      `json:"confirmed" db:"confirmed" binding:"omitempty"`
-	ConfirmedDate time.Time `json:"confirmed_date" db:"confirmed_date"`
-}
-
-type FacultyAdvisor struct {
-	FacultyAdvisorEmail string    `json:"faculty_advisor_email" db:"faculty_advisor_email" binding:"required,email"` // Changed from int to string
-	Confirmed           bool      `json:"confirmed" db:"confirmed" binding:"omitempty"`
-	ConfirmedDate       time.Time `json:"confirmed_date" db:"confirmed_date"`
 }
 
 type Payment struct {
