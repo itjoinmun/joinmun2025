@@ -48,8 +48,8 @@ const ParticipantData = () => {
         <DashboardModuleTitle>Participant Data</DashboardModuleTitle>
       </DashboardModuleHeader>
 
-      <DashboardModuleContent className="overflow-scroll max-h-96 no-scrollbar">
-      <Table>
+      <DashboardModuleContent className="no-scrollbar max-h-96 overflow-scroll">
+        <Table>
           <TableHeader>
             <TableRow className="bg-background hover:bg-background">
               <TableHead className="first:rounded-tl-lg last:rounded-tr-lg">Name</TableHead>

@@ -6,7 +6,6 @@ import ThemeTeaser from "@/modules/theme/theme-teaser";
 import ThemeUnesco from "@/modules/theme/theme-unesco";
 import { isThemeReveal } from "@/utils/helpers/reveal";
 
-
 const ThemePage = () => {
   return (
     <>

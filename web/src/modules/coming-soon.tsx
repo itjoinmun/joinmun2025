@@ -19,7 +19,7 @@ export default function ComingSoon() {
           src="/assets/coming-soon/batik-2.webp"
           alt=""
           // className="object-cover lg:h-auto lg:w-full"
-          className="pointer-events-none  z-10 h-[80vh] w-[140vw] object-cover"
+          className="pointer-events-none z-10 h-[80vh] w-[140vw] object-cover"
           width={2163}
           height={1220}
         />

@@ -27,7 +27,9 @@ const Councils = () => {
         <Container className="gap-2">
           <SubHeading>{isCouncilsReveal ? "Explore our" : "Coming Soon"}</SubHeading>
           <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
-            <Heading className="col-span-2">{isCouncilsReveal ? "Councils" : "The Council"}</Heading>
+            <Heading className="col-span-2">
+              {isCouncilsReveal ? "Councils" : "The Council"}
+            </Heading>
 
             <div className="text-sm text-white md:col-span-3">
               At JOINMUN, each council is thoughtfully curated to reflect pressing real-world
