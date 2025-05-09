@@ -80,7 +80,7 @@ export default function ComingSoon() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.3, duration: 0.7 }}
-          className="mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100"
+          className="mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100 invisible"
         >
           <Link href="/">
             <Button variant="gradient" size="longer" className="cursor-pointer">
