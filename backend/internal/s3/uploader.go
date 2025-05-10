@@ -48,13 +48,13 @@ func NewS3Uploader(bucketName string) (*S3Uploader, error) {
 	}, nil
 }
 
-func (u *S3Uploader) UploadFile(file multipart.File, header *multipart.FileHeader, delegateEmail string) (string, error) {
+func (u *S3Uploader) UploadFile(file multipart.File, header *multipart.FileHeader, delegateEmail string, fileType string) (string, error) {
 	buf := bytes.NewBuffer(nil)
 	if _, err := buf.ReadFrom(file); err != nil {
 		return "", err
 	}
 
-	key := fmt.Sprintf("uploads/%s_%d%s", delegateEmail, time.Now().Unix(), filepath.Ext(header.Filename))
+	key := fmt.Sprintf("%s/%s_%d%s", fileType, delegateEmail, time.Now().Unix(), filepath.Ext(header.Filename))
 
 	_, err := u.Client.PutObject(context.Background(), &s3.PutObjectInput{
 		Bucket: aws.String(u.BucketName),

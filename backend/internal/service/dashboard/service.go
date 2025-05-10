@@ -33,20 +33,17 @@ type DashboardService interface {
 }
 
 type dashboardService struct {
-	positionRepo dashboardRepo.PositionPaperRepo
 	questionRepo dashboardRepo.QuestionRepo
 	delegateRepo dashboardRepo.DelegateRepo
 	responseRepo dashboardRepo.ResponseRepo
 }
 
 func NewDashboardService(
-	positionRepo dashboardRepo.PositionPaperRepo,
 	questionRepo dashboardRepo.QuestionRepo,
 	delegateRepo dashboardRepo.DelegateRepo,
 	responseRepo dashboardRepo.ResponseRepo,
 ) DashboardService {
 	return &dashboardService{
-		positionRepo: positionRepo,
 		questionRepo: questionRepo,
 		delegateRepo: delegateRepo,
 		responseRepo: responseRepo,

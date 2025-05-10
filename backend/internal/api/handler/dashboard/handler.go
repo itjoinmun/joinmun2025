@@ -7,7 +7,7 @@ import (
 	"backend/pkg/utils/dashboard"
 	"encoding/json"
 	"fmt"
-	"os"
+	"path/filepath"
 
 	"net/http"
 
@@ -19,12 +19,7 @@ type DashboardHandler struct {
 	uploader         *s3.S3Uploader
 }
 
-func NewDashboardHandler(dashboardService dashboardService.DashboardService) (*DashboardHandler, error) {
-	bucketName := os.Getenv("AWS_BUCKET_NAME")
-	uploader, err := s3.NewS3Uploader(bucketName)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize S3 uploader: %v", err)
-	}
+func NewDashboardHandler(dashboardService dashboardService.DashboardService, uploader *s3.S3Uploader) (*DashboardHandler, error) {
 	return &DashboardHandler{
 		dashboardService: dashboardService,
 		uploader:         uploader,
@@ -131,6 +126,16 @@ func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 					return
 				}
 
+				// Check if it's an allowed image format
+				ext := filepath.Ext(fileHeader.Filename)
+				allowedExts := map[string]bool{
+					".jpg": true, ".jpeg": true, ".png": true, ".pdf": true,
+				}
+				if !allowedExts[ext] {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "File format not allowed. Please upload JPG, JPEG, PNG, or PDF"})
+					return
+				}
+
 				file, err := fileHeader.Open()
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file", "details": err.Error()})
@@ -139,7 +144,7 @@ func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 				}
 
 				// Upload file to S3
-				key, err := h.uploader.UploadFile(file, fileHeader, delegateEmail)
+				key, err := h.uploader.UploadFile(file, fileHeader, delegateEmail, "delegate_biodata")
 				file.Close()
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload to S3", "details": err.Error()})
@@ -275,7 +280,7 @@ func (h *DashboardHandler) InsertAdvisorOrObserverHandler(c *gin.Context) {
 			}
 
 			// Upload file to S3
-			key, err := h.uploader.UploadFile(file, fileHeader, advisorOrObserverEmail)
+			key, err := h.uploader.UploadFile(file, fileHeader, advisorOrObserverEmail, "facc_biodata")
 			file.Close()
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload to S3", "details": err.Error()})

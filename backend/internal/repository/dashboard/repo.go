@@ -46,22 +46,6 @@ type DelegateRepo interface {
 	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error // update the country and council for a delegate (this is used for the team dashboard)
 }
 
-type PositionPaperRepo interface {
-	GetPositionPaperByDelegateEmail(email string) (*dashboard.PositionPaper, error) // useful for the delegate dashboard
-	InsertPositionPaper(positionPaper *dashboard.PositionPaper) (int, error)        // insert a new position paper (delegate function)
-	UpdatePositionPaper(positionPaper *dashboard.PositionPaper) error               // not necessary, no need for update
-}
-
-// PaymentRepo handles payment operations
-type PaymentRepo interface {
-	DB() *sqlx.DB                                                                                  // Get the database connection
-	MakeInitialPayment(tx *sqlx.Tx, payment *dashboard.Payment, delegateEmail string) (int, error) // initial payment for the team
-	GetPaymentByDelegateEmail(delegateEmail string) (*dashboard.Payment, error)                    // Get payments by team ID, for the team dashboard
-
-	UpdatePaymentStatus(delegateEmail string) error // update payment status (ADMIN function)
-	UploadPayment(payment *dashboard.Payment) error // update payment for uploading the payment receipt (delegate function)
-}
-
 // Factory functions to create repository implementations
 func NewQuestionRepo(db *sqlx.DB) QuestionRepo {
 	return &questionRepo{db: db}
@@ -71,14 +55,6 @@ func NewResponseRepo(db *sqlx.DB) ResponseRepo {
 	return &responseRepo{db: db}
 }
 
-func NewPositionPaperRepo(db *sqlx.DB) PositionPaperRepo {
-	return &positionPaperRepo{db: db}
-}
-
 func NewDelegateRepo(db *sqlx.DB) DelegateRepo {
 	return &delegateRepo{db: db}
-}
-
-func NewPaymentRepo(db *sqlx.DB) PaymentRepo {
-	return &paymentRepo{db: db}
 }

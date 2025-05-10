@@ -4,6 +4,7 @@ import (
 	"backend/internal/api/handler"
 	"backend/internal/api/middleware"
 	"backend/internal/api/router"
+	"backend/internal/s3"
 	"backend/pkg/utils/logger"
 	"context"
 	"net/http"
@@ -63,8 +64,15 @@ func main() {
 		gin.SetMode(gin.DebugMode)
 	}
 
+	// S3 Uploader
+	bucketName := os.Getenv("AWS_BUCKET_NAME")
+	uploader, err := s3.NewS3Uploader(bucketName)
+	if err != nil {
+		logger.Log.Fatal().Err(err).Msg("Failed to initialize S3 uploader")
+	}
+
 	// Setup repositories and services
-	allHandler := handler.NewHandlerContainer(db)
+	allHandler := handler.NewHandlerContainer(db, uploader)
 
 	// setup router
 	r := gin.New()
