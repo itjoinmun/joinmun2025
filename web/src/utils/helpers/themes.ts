@@ -34,8 +34,6 @@ export const THEMES = [
     title: "Laut Selatan",
     description: "A cleansing threshold",
   },
-  
-  
 ];
 
 export const IMAGE_INSPIRED = [

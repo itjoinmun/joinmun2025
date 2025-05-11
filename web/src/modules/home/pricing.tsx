@@ -41,7 +41,7 @@ const Pricing = () => {
               <h1 className="text-xl leading-snug font-bold md:text-2xl">{PRICES[active].name}</h1>
               <p className="leading-snug">{PRICES[active].description}</p>
 
-              <div className="mt-10 md:px-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-2 md:gap-6">
+              <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-2 md:gap-6 md:px-10">
                 {PRICES[active].package.map((option, index) => (
                   <PricingCard key={index} {...option} />
                 ))}

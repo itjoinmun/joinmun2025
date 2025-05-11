@@ -69,7 +69,9 @@ const ThemeTrailer = () => {
                 className="mx-auto mt-10 max-w-28"
               />
               <Heading>Coming Soon</Heading>
-              <p className="mb-10 text-center">You've been waiting. We've been building.</p>
+              <p className="mb-10 text-center">
+                You&apos;ve been waiting. We&apos;ve been building.
+              </p>
             </div>
           )}
         </div>

@@ -131,7 +131,7 @@ const ThemeCard = ({
 }) => {
   return (
     <div className="relative flex h-80 flex-col justify-end gap-0 px-5 py-4">
-      <h1 className="font-semibold text-lg">{title}</h1>
+      <h1 className="text-lg font-semibold">{title}</h1>
       {/* <h3>{description}</h3> */}
 
       {/* image + overlay */}

@@ -57,7 +57,7 @@ const DashboardStatus = () => {
 
   return (
     <DashboardModule className="">
-      <section className="mt-3 grid md:auto-rows-fr grid-cols-1 gap-4 lg:grid-cols-2">
+      <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">
         <StatusCard
           cardHeader="Registration Status"
           cardDescription="Track your registration progress from initial signup to payment verification"
@@ -105,9 +105,9 @@ const StatusCard = ({
         // variantStyles[variant],
       )}
     >
-      <DashboardModuleHeader className="shrink-0 flex flex-col 2xl:justify-between 2xl:*:max-w-1/2 2xl:flex-row text-nowrap">
+      <DashboardModuleHeader className="flex shrink-0 flex-col text-nowrap 2xl:flex-row 2xl:justify-between 2xl:*:max-w-1/2">
         <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
-        <DashboardModuleDescription className="opacity-80 text-wrap">
+        <DashboardModuleDescription className="text-wrap opacity-80">
           {cardDescription}
         </DashboardModuleDescription>
       </DashboardModuleHeader>
