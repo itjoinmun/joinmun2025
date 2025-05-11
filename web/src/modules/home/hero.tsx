@@ -100,6 +100,7 @@ const Hero = () => {
         alt="JOINMUN Image"
         fill
         sizes="100%"
+        priority
         // className="absolute inset-0 -z-10 object-cover right-24 object-right"
         className="object-center-left absolute inset-0 -z-10 object-cover"
         style={{ objectPosition: "77% center" }}

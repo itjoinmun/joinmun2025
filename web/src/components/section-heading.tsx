@@ -4,7 +4,7 @@ const Heading = ({ children, className }: { children: React.ReactNode; className
   return (
     <h1
       className={cn(
-        "text-gradient-gold shrink-0 text-3xl/snug font-bold md:text-4xl/snug",
+        "text-gradient-gold shrink-0 text-3xl/snug font-bold xl:text-4xl/snug",
         className,
       )}
     >
