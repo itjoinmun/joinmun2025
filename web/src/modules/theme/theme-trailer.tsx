@@ -1,0 +1,81 @@
+"use client";
+
+import HeroVideoDialog from "@/components/magicui/hero-video-dialog";
+import { Heading, SubHeading } from "@/components/section-heading";
+import Container from "@/components/ui/container";
+import { cn } from "@/utils/cn";
+import { isThemeReveal, isTrailerReveal } from "@/utils/helpers/reveal";
+import Image from "next/image";
+const ThemeTrailer = () => {
+  return (
+    <main className="bg-background relative max-h-[100dvh] overflow-hidden bg-gradient-to-b">
+      {/* <main className="relative max-h-[100dvh] overflow-hidden bg-background"> */}
+      <Container className="gap-2">
+        <SubHeading>Story Behind The Theme</SubHeading>
+        <section
+          className={cn("grid grid-cols-1 gap-2 md:gap-12", isThemeReveal ? "md:grid-cols-5" : "")}
+        >
+          <Heading className={cn(isThemeReveal ? "md:col-span-2" : "")}>
+            2025 JOINMUN Trailer
+          </Heading>
+
+          <div className={cn(isThemeReveal ? "text-sm text-white md:col-span-3" : "hidden")}>
+            Now that the theme is out, let this trailer walk you through the feeling, message, and
+            inspiration behind it — captured in one short visual journey.
+          </div>
+        </section>
+
+        <div className="border-gold relative mx-auto mt-10 w-full rounded-xl border p-6 pt-0 md:border-2 md:p-12 lg:w-4xl 2xl:w-6xl">
+          <Image
+            src="/assets/theme/pattern.webp"
+            alt="Pattern JOINMUN 2025"
+            height={392}
+            width={392}
+            className="absolute top-3 right-3 z-50 max-w-24 md:top-6 md:right-6 md:max-w-36 lg:top-3 lg:right-3 lg:max-w-64"
+          />
+          <Image
+            src="/assets/theme/pattern.webp"
+            alt="Pattern JOINMUN 2025"
+            height={392}
+            width={392}
+            className="absolute bottom-3 left-3 z-50 max-w-24 rotate-180 md:bottom-6 md:left-6 md:max-w-36 lg:bottom-3 lg:left-3 lg:max-w-64"
+          />
+          {isTrailerReveal ? (
+            <>
+              <HeroVideoDialog
+                className="z-20 block dark:hidden"
+                animationStyle="from-bottom"
+                // videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb&autoplay=1&mute=1"
+                videoSrc="/assets/theme/like him.mp4?autoplay=1&mute=1"
+                thumbnailSrc="/assets/theme/teaser-thumbnail.webp"
+                thumbnailAlt="JOINMUN 2025 Teaser"
+              />
+              {/* Video Player */}
+              <HeroVideoDialog
+                className="hidden max-h-full w-auto dark:block"
+                animationStyle="top-in-bottom-out"
+                videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
+                thumbnailSrc="/assets/theme/teaser-thumbnail.webp"
+                thumbnailAlt="JOINMUN 2025 Teaser"
+              />
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2">
+              <Image
+                src="/assets/theme/tugu.webp"
+                alt="Pattern JOINMUN 2025"
+                height={232}
+                width={394}
+                className="mx-auto mt-10 max-w-28"
+              />
+              <Heading>Coming Soon</Heading>
+              <p className="mb-10 text-center">You've been waiting. We've been building.</p>
+            </div>
+          )}
+        </div>
+      </Container>
+    </main>
+  );
+};
+
+export default ThemeTrailer;

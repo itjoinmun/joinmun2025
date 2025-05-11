@@ -28,7 +28,7 @@ const TIMELINE_CONTENT = [
     title: "Roadshow",
   },
   {
-    date: "24 - 25 October",
+    date: "31 Oct - 2 Nov",
     title: "Main Event",
   },
 ];
