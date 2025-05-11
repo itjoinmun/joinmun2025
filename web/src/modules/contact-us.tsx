@@ -19,7 +19,12 @@ export default function ContactUs() {
               </p>
             </div>
 
-            <Link href={"/"} className="w-fit">
+            <Link
+              href={"https://ig.me/m/joinmun.ugm"}
+              target="_blank"
+              rel="noopener noreferer"
+              className="w-fit"
+            >
               <Button variant={"primary"} className="cursor-pointer">
                 Contact Us
               </Button>
