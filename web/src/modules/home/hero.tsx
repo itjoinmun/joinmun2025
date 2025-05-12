@@ -1,9 +1,9 @@
 import { buttonVariants } from "@/components/ui/button";
 import Container from "@/components/ui/container";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import Image from "next/image";
 import Link from "next/link";
-import NavbarResolver from "../navbar-resolver";
+import NavbarResolver from "../../components/Layout/navbar-resolver";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import * as motion from "motion/react-client";
 

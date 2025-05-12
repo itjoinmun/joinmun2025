@@ -1,9 +1,9 @@
 "use client";
 
 import HeroVideoDialog from "@/components/magicui/hero-video-dialog";
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { isThemeReveal, isTrailerReveal } from "@/utils/helpers/reveal";
 import Image from "next/image";
 const ThemeTrailer = () => {

@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 
 const Heading = ({ children, className }: { children: React.ReactNode; className?: string }) => {
   return (

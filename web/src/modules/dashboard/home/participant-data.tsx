@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 
 interface ParticipantTableData {
   id: string;

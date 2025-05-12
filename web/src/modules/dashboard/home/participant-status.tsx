@@ -1,4 +1,4 @@
-import BatikPattern from "@/components/batik-pattern";
+import BatikPattern from "@/components/Element/batik-pattern";
 import {
   DashboardModule,
   DashboardModuleHeader,

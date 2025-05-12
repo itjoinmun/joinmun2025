@@ -1,5 +1,5 @@
 "use client";
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Carousel,
@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Container from "@/components/ui/container";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { isThemeReveal } from "@/utils/helpers/reveal";
 import { THEMES } from "@/utils/helpers/themes";
 import Image from "next/image";

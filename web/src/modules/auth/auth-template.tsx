@@ -1,5 +1,5 @@
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

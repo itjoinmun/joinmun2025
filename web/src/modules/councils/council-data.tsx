@@ -1,4 +1,4 @@
-import { Heading } from "@/components/section-heading";
+import { Heading } from "@/components/Layout/section-heading";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Council } from "@/utils/helpers/councils";
 
@@ -6,7 +6,7 @@ const CouncilData = (props: Council) => {
   return (
     <section className="bg-gray flex gap-6 p-4 md:items-center md:p-6">
       <Avatar className="hidden size-24 md:flex">
-        <AvatarImage src={`/assets/councils/${props.src}`} />
+        <AvatarImage src={`/assets/councils/logo/${props.logo}`} />
         <AvatarFallback>{props.name}</AvatarFallback>
       </Avatar>
       <div className="flex w-full flex-col gap-2">

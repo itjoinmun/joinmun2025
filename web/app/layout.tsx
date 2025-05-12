@@ -1,13 +1,8 @@
 import "@/styles/globals.css";
-import { cn } from "@/utils/cn";
-import { outfit, plusJakartaSans } from "@/utils/fonts";
+import { cn } from "@/utils/helpers/cn";
+import { outfit, plusJakartaSans } from "@/utils/helpers/fonts";
 import getMetadata from "@/utils/helpers/metadata";
 import type { Metadata } from "next";
-
-// export const metadata: Metadata = {
-//   title: "JOINMUN 2025",
-//   description: "Jogjakarta International Model United Nations 2025",
-// };
 
 export const metadata: Metadata = getMetadata({
   title: "Jogjakarta International Model United Nations 2025",

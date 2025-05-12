@@ -1,4 +1,4 @@
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import Image from "next/image";
 

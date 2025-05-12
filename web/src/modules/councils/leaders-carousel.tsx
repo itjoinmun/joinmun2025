@@ -17,7 +17,7 @@ import {
 import { Council } from "@/utils/helpers/councils";
 import { ArrowUpRightIcon } from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { isChairsReveal } from "@/utils/helpers/reveal";
 
 export const LeaderCarousel = (props: Council) => {
@@ -81,7 +81,11 @@ const LeaderCard = ({
 
             <Image
               // src={`/assets/councils/${image}`}
-              src={isChairsReveal ? `/lebron.webp` : `/assets/councils/chairs-placeholder.png`}
+              src={
+                isChairsReveal
+                  ? `/lebron.webp`
+                  : `/assets/councils/coming-soon/chairs-placeholder.png`
+              }
               alt={`${name}'s Image`}
               fill
               sizes="100%"

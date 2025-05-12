@@ -6,7 +6,7 @@ import Image from "next/image";
 import CouncilData from "@/modules/councils/council-data";
 import CouncilLeaders from "@/modules/councils/council-leaders";
 import Link from "next/link";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import NotFound from "../../../not-found";
 
 const CouncilPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
@@ -32,7 +32,7 @@ const CouncilPage = async ({ params }: { params: Promise<{ slug: string }> }) =>
       {/* image + overlay */}
       <Image
         // src={council.src}
-        src={`/lebron.webp`}
+        src={`/assets/councils/header.webp`}
         alt={council.fullname}
         width={1000}
         height={500}

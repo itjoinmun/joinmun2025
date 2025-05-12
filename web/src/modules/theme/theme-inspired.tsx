@@ -1,4 +1,4 @@
-import { Heading } from "@/components/section-heading";
+import { Heading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import { ImageCarousel } from "@/modules/theme/image-carousel";
 

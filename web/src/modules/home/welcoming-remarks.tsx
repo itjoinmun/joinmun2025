@@ -1,5 +1,5 @@
-import BatikPattern from "@/components/batik-pattern";
-import { Heading, SubHeading } from "@/components/section-heading";
+import BatikPattern from "@/components/Element/batik-pattern";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import Image from "next/image";
 

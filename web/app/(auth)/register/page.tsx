@@ -1,7 +1,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import AuthTemplate from "@/modules/auth/auth-template";
 import RegisterForm from "@/modules/auth/register-form";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import Link from "next/link";
 
 const RegisterPage = () => {

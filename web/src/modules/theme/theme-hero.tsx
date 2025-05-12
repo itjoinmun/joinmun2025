@@ -1,5 +1,5 @@
 import Container from "@/components/ui/container";
-import NavbarResolver from "../navbar-resolver";
+import NavbarResolver from "../../components/Layout/navbar-resolver";
 import Image from "next/image";
 
 const ThemeHero = () => {
@@ -8,7 +8,7 @@ const ThemeHero = () => {
       <NavbarResolver />
       <Container className="max-w-8xl mt-[10vh]">
         <h4 className="text-gradient-gold font-semibold">Event Theme</h4>
-        <h1 className="max-w-lg text-3xl/snug font-bold text-pretty md:text-5xl/normal">
+        <h1 className="max-w-2xl text-3xl/snug font-bold text-pretty md:text-4xl/normal">
           Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and Enduring
           Security
         </h1>

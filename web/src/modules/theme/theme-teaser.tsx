@@ -1,8 +1,8 @@
 "use client";
 
-import BatikPattern from "@/components/batik-pattern";
+import BatikPattern from "@/components/Element/batik-pattern";
 import HeroVideoDialog from "@/components/magicui/hero-video-dialog";
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 
 const ThemeTeaser = () => {

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import Logo from "../../components/logo";
+import Logo from "../../components/Layout/logo";
 import Container from "../../components/ui/container";
 import { buttonVariants } from "../../components/ui/button";
 import { useMotionValueEvent, useScroll } from "motion/react";
