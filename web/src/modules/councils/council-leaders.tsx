@@ -1,4 +1,4 @@
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { Council } from "@/utils/helpers/councils";
 import { LeaderCarousel } from "./leaders-carousel";
 import Container from "@/components/ui/container";

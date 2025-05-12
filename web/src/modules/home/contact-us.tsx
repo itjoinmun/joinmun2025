@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Container from "@/components/ui/container";
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 
 export default function ContactUs() {
   return (
@@ -19,7 +19,12 @@ export default function ContactUs() {
               </p>
             </div>
 
-            <Link href={"/"} className="w-fit">
+            <Link
+              href={"https://ig.me/m/joinmun.ugm"}
+              target="_blank"
+              rel="noopener noreferer"
+              className="w-fit"
+            >
               <Button variant={"primary"} className="cursor-pointer">
                 Contact Us
               </Button>

@@ -1,5 +1,5 @@
 "use client";
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import Image from "next/image";
 import {
@@ -92,7 +92,7 @@ const CouncilCard = (props: Council) => (
       <div className="z-10 flex min-h-[35%] w-full items-center gap-3 bg-black/70 p-4 backdrop-blur-sm">
         <aside className="relative size-14 shrink-0 overflow-hidden rounded-full bg-neutral-200">
           <Image
-            src={`/assets/councils/${props.src}`}
+            src={`/assets/councils/logo/${props.logo}`}
             alt={`${props.name} Image`}
             fill
             sizes="50%"
@@ -101,7 +101,8 @@ const CouncilCard = (props: Council) => (
         </aside>
         <summary className="flex flex-col gap-1 text-white">
           <h1 className="text-xl font-bold xl:text-2xl">{props.name}</h1>
-          <h6 className="text-xs text-pretty xl:text-sm">{props.fullname}</h6>
+          {/* <h6 className="text-xs text-pretty xl:text-sm">{props.fullname}</h6> */}
+          <h6 className="text-xs text-pretty xl:text-sm">{props.delegate}</h6>
         </summary>
       </div>
     ) : (
@@ -112,8 +113,12 @@ const CouncilCard = (props: Council) => (
     )}
 
     <Image
-      src={isCouncilsReveal ? `/lebron.webp` : `/assets/councils/coming-soon-council.webp`}
-      alt={isCouncilsReveal ? props.name : ""}
+      src={
+        isCouncilsReveal
+          ? `/assets/councils/thumbnail/${props.src}`
+          : `/assets/councils/coming-soon/coming-soon-council.webp`
+      }
+      alt={isCouncilsReveal ? props.name : "Councils JOINMUN 2025"}
       fill
       sizes="100%"
       className="-z-10 object-cover"

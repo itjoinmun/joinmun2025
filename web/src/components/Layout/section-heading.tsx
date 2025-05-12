@@ -1,10 +1,10 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 
 const Heading = ({ children, className }: { children: React.ReactNode; className?: string }) => {
   return (
     <h1
       className={cn(
-        "text-gradient-gold shrink-0 text-3xl/snug font-bold xl:text-4xl/snug",
+        "text-gradient-gold shrink-0 text-3xl/snug font-bold 2xl:text-4xl/snug",
         className,
       )}
     >

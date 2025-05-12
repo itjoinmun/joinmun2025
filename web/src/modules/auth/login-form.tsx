@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 

@@ -1,4 +1,4 @@
-package router
+package dashboard
 
 import (
 	"backend/internal/api/handler/dashboard"
@@ -13,8 +13,10 @@ func InitializeDashboardRoutes(r *gin.Engine, dashboardHandler *dashboard.Dashbo
 	dashboardGroup.Use(middleware.ValidateAccessTokenMiddleware())
 	{
 		dashboardGroup.GET("/participants", dashboardHandler.ParticipantDataHandler)
+		dashboardGroup.GET("/questions", dashboardHandler.GetQuestionsHandler)
 		dashboardGroup.POST("/delegates", dashboardHandler.InsertDelegatesHandler)
+		dashboardGroup.POST("/advisor-or-observer", dashboardHandler.InsertAdvisorOrObserverHandler)
+		dashboardGroup.POST("/join-team", dashboardHandler.LinkToTeamHandler)
 	}
-
 	return r
 }

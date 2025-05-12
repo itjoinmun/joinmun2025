@@ -1,8 +1,10 @@
 export type Council = {
   slug: string;
+  delegate: string;
   name: string;
   fullname: string;
   src: string;
+  logo: string;
   quote: string;
   description: string;
   chairs: {
@@ -16,9 +18,11 @@ export type Council = {
 export const COUNCILS = [
   {
     slug: "un-women",
+    delegate: "Single",
     name: "UN Women",
     fullname: "UN Women",
-    src: "UN Women.webp",
+    src: "un-women.webp",
+    logo: "UN Women.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
@@ -54,9 +58,11 @@ export const COUNCILS = [
   },
   {
     slug: "who",
+    delegate: "Single",
     name: "WHO",
     fullname: "World Health Organization",
-    src: "WHO.webp",
+    src: "who.webp",
+    logo: "WHO.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [
@@ -76,9 +82,11 @@ export const COUNCILS = [
   },
   {
     slug: "ecofin",
+    delegate: "Single",
     name: "ECOFIN",
     fullname: "Economic and Financial Committee",
-    src: "ECOFIN.webp",
+    src: "ecofin.webp",
+    logo: "ECOFIN.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [
@@ -98,9 +106,11 @@ export const COUNCILS = [
   },
   {
     slug: "unsc",
+    delegate: "Double",
     name: "UNSC",
     fullname: "United Nations Security Council",
-    src: "UN.webp",
+    src: "unsc.webp",
+    logo: "UN.webp",
     quote: "Reviving Collective Security: Refroming the UNSC to Address Modern Threats",
     description:
       "The UNSC is responsible for maintaining international peace and security. It has the authority to impose sanctions, authorize military action, and establish peacekeeping missions.",
@@ -121,9 +131,11 @@ export const COUNCILS = [
   },
   {
     slug: "crisis",
+    delegate: "Single",
     name: "Crisis",
     fullname: "Crisis Council",
-    src: "UN.webp",
+    src: "crisis.webp",
+    logo: "UN.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [
@@ -143,9 +155,11 @@ export const COUNCILS = [
   },
   {
     slug: "brics",
+    delegate: "Double",
     name: "BRICS+",
     fullname: "BRICS+",
-    src: "BRICS+.webp",
+    src: "brics.webp",
+    logo: "BRICS+.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [
@@ -165,9 +179,11 @@ export const COUNCILS = [
   },
   {
     slug: "press",
+    delegate: "Single",
     name: "Press",
     fullname: "Press",
-    src: "UN.webp",
+    src: "press.webp",
+    logo: "UN.webp",
     quote: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     description: "lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
     chairs: [

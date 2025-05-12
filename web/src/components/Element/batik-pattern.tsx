@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import Image from "next/image";
 
 const BatikPattern = ({ className, square }: { className?: string; square?: boolean }) => {

@@ -1,5 +1,5 @@
 import Container from "@/components/ui/container";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { Instagram, Linkedin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -76,7 +76,7 @@ const FOOTER_CONTENT: FooterSection[] = [
 
 const Footer = () => {
   return (
-    <footer className="bg-background pt-8">
+    <footer className="bg-background md:pt-8">
       <Container>
         {/* Mobile Layout */}
         <div className="mx-auto block w-fit px-10 sm:px-16 md:hidden">
@@ -182,15 +182,16 @@ const TopFooter = () => {
           />
         </div>
 
-        <h1 className="xs:block text-xl font-bold text-nowrap sm:text-2xl md:block md:text-xl">
+        <h1 className="xs:block text-xl font-bold text-nowrap sm:text-2xl md:hidden md:text-xl">
           JOINMUN
         </h1>
-        <h1 className="hidden w-auto text-xl font-bold text-wrap sm:text-2xl md:hidden">
-          Jogjakarta International Model United Nations 2025
+        <h1 className="ml-3 hidden w-auto text-xl font-bold text-wrap sm:text-2xl md:block">
+          JOINMUN 2025
         </h1>
       </div>
-      <h3 className="mt-4 w-full text-xs text-pretty">
-        Lorem ipsum dolor sit amet consectetur. Ac at consectetur ac praesent.
+      <h3 className="mt-4 w-full text-sm">
+        Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and Enduring
+        Security
       </h3>
     </div>
   );

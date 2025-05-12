@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 
 /** 
  * Example usage of DashboardPage components

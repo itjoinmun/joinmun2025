@@ -32,7 +32,9 @@ CREATE TABLE IF NOT EXISTS mun_delegates (
     pair VARCHAR(255),
     confirmed BOOLEAN DEFAULT FALSE,
     confirmed_date TIMESTAMP,
-    council_date TIMESTAMP
+    council_date TIMESTAMP,
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    participant_type VARCHAR(32) CHECK (participant_type IN ('delegate', 'observer', 'faculty_advisor'))
 );
 
 CREATE TABLE IF NOT EXISTS mun_team_members (
@@ -94,18 +96,6 @@ CREATE TABLE IF NOT EXISTS position_paper (
     submission_file TEXT NOT NULL,
     submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     submission_status VARCHAR(8) NOT NULL CHECK (submission_status IN ('pending', 'accepted', 'rejected'))
-);
-
-CREATE TABLE IF NOT EXISTS observer (
-    observer_email VARCHAR(255) PRIMARY KEY CHECK (observer_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-    confirmed BOOLEAN DEFAULT FALSE,
-    confirmed_date TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS faculty_advisor (
-    faculty_advisor_email VARCHAR(255) PRIMARY KEY CHECK (faculty_advisor_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-    confirmed BOOLEAN DEFAULT FALSE,
-    confirmed_date TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS payment (

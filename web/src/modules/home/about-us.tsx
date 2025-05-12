@@ -1,6 +1,6 @@
 import Container from "@/components/ui/container";
 import Image from "next/image";
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import * as motion from "motion/react-client";
 
 export default function AboutUs() {
@@ -45,9 +45,14 @@ export default function AboutUs() {
               viewport={{ once: true }}
               className="text-justify"
             >
-              Lorem ipsum dolor sit amet consectetur. Arcu scelerisque ultrices egestas ultrices
-              aliquam arcu et egestas. Magnis ac parturient ac netus a eu. In risus tristique id
-              consequat. Nibh pharetra gravida facilisis lacus faucibus scelerisque est luctus.
+              JOINMUN 2025 (Jogja International Model United Nations) is an international MUN
+              conference hosted in Yogyakarta, Indonesia, uniting youth voices to confront
+              today&apos;s most pressing global issues.
+              <br />
+              <br />
+              This year&apos;s conference challenges delegates to reimagine global justice and
+              contribute to building a fairer, safer world. Join future leaders, spark real
+              conversations, and reshape what&apos;s possible — only at JOINMUN 2025.
             </motion.p>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import AuthTemplate from "@/modules/auth/auth-template";
 import LoginForm from "@/modules/auth/login-form";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import Link from "next/link";
 
 const LoginPage = () => {

@@ -1,5 +1,5 @@
-import BatikPattern from "@/components/batik-pattern";
-import { Heading } from "@/components/section-heading";
+import BatikPattern from "@/components/Element/batik-pattern";
+import { Heading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import { ThemeCarousel } from "../home/home-theme";
 

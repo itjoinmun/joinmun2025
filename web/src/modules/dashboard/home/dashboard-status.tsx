@@ -5,7 +5,7 @@ import {
   DashboardModuleDescription,
   DashboardModuleContent,
 } from "@/components/dashboard/dashboard-module";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 
 type RegistrationStatus =
   | "not_registered"

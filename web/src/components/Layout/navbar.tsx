@@ -8,13 +8,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { ChevronRight, Menu, X } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
-import Logo from "../components/logo";
-import { Button, buttonVariants } from "../components/ui/button";
+import Logo from "./logo";
+import { Button, buttonVariants } from "../ui/button";
 import Container from "@/components/ui/container";
 
 const NAV_LINKS = [

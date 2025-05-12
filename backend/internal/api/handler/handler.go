@@ -9,42 +9,51 @@ import (
 	dashboardRepoI "backend/internal/repository/dashboard"
 	dashboardServiceI "backend/internal/service/dashboard"
 
+	paymentHandlerI "backend/internal/api/handler/payment"
+	paymentRepoI "backend/internal/repository/payment"
+	paymentServiceI "backend/internal/service/payment"
+
+	"backend/internal/s3"
+
 	"github.com/jmoiron/sqlx"
 )
 
 type HandlerContainer struct {
 	UserHandler      *userHandlerI.UserHandler
 	DashboardHandler *dashboardHandlerI.DashboardHandler
+	PaymentHandler   *paymentHandlerI.PaymentHandler
 }
 
-func NewHandlerContainer(db *sqlx.DB) *HandlerContainer {
+func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer {
 	tokenRepo := userRepoI.NewRefreshTokenRepo(db)
 	userRepo := userRepoI.NewUserRepo(db)
 	delegateRepo := dashboardRepoI.NewDelegateRepo(db)
-	facultyAdvisorRepo := dashboardRepoI.NewFacultyAdvisorRepo(db)
-	observerRepo := dashboardRepoI.NewObserverRepo(db)
 	responseRepo := dashboardRepoI.NewResponseRepo(db)
-	positionPaperRepo := dashboardRepoI.NewPositionPaperRepo(db)
-	paymentRepo := dashboardRepoI.NewPaymentRepo(db)
 	questionRepo := dashboardRepoI.NewQuestionRepo(db)
+	paymentRepo := paymentRepoI.NewPaymentRepo(db)
 	tokenService := userServiceI.NewRefreshTokenService(tokenRepo, userRepo)
 	userService := userServiceI.NewUserService(userRepo, tokenService)
 	userHandler := userHandlerI.NewUserHandler(userService, tokenService)
 
 	dashboardService := dashboardServiceI.NewDashboardService(
-		positionPaperRepo,
-		observerRepo,
 		questionRepo,
-		facultyAdvisorRepo,
 		delegateRepo,
-		paymentRepo,
 		responseRepo,
 	)
+	dashboardHandler, err := dashboardHandlerI.NewDashboardHandler(dashboardService, uploader)
+	if err != nil {
+		panic(err)
+	}
 
-	dashboardHandler := dashboardHandlerI.NewDashboardHandler(dashboardService)
+	paymentService := paymentServiceI.NewPaymentService(delegateRepo, paymentRepo)
+	paymentHandler, err := paymentHandlerI.NewPaymentHandler(paymentService, uploader)
+	if err != nil {
+		panic(err)
+	}
 
 	return &HandlerContainer{
 		UserHandler:      userHandler,
 		DashboardHandler: dashboardHandler,
+		PaymentHandler:   paymentHandler,
 	}
 }

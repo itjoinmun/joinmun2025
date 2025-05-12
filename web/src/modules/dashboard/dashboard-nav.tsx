@@ -1,7 +1,7 @@
 "use client";
 import CompleteLogo from "@/components/dashboard/complete-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { BookOpen, CircleHelp, DollarSign, Globe, Home, LogOut } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";

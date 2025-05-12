@@ -55,3 +55,29 @@ func ValidateAccessTokenMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func ValidateAdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user, exists := c.Get("user")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
+			c.Abort()
+			return
+		}
+
+		contextUser, ok := user.(*ContextUser)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user context"})
+			c.Abort()
+			return
+		}
+
+		if contextUser.Role != "admin" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Access denied"})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}

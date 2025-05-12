@@ -1,5 +1,5 @@
 "use client";
-import { Heading, SubHeading } from "@/components/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Carousel,
@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Container from "@/components/ui/container";
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import { isThemeReveal } from "@/utils/helpers/reveal";
 import { THEMES } from "@/utils/helpers/themes";
 import Image from "next/image";
@@ -26,10 +26,13 @@ const HomeTheme = () => {
       {isThemeReveal ? (
         <main className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12">
           <Container className="gap-2">
-            <SubHeading>Grand Theme</SubHeading>
-            <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-              <Heading>lorem ipsum</Heading>
-              <div className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-2 md:max-w-2xl">
+            <SubHeading>Event Theme</SubHeading>
+            <section className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-12">
+              <Heading className="">
+                Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and
+                Enduring Security
+              </Heading>
+              <div className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl">
                 JOINMUN is a 3-day event that brings together participants for diplomatic
                 discussions. During the conference, delegates represent different countries and
                 participate in workshops to enhance their skills. The event aims to foster
@@ -120,16 +123,16 @@ export const ThemeCarousel = () => {
 const ThemeCard = ({
   title = "Card Title",
   src,
-  description = "A short description",
+  // description = "A short description",
 }: {
   title?: string;
   src: string;
   description?: string;
 }) => {
   return (
-    <div className="relative flex h-80 flex-col justify-end gap-0 p-6">
-      <h1 className="font-semibold">{title}</h1>
-      <h3>{description}</h3>
+    <div className="relative flex h-80 flex-col justify-end gap-0 px-5 py-4">
+      <h1 className="text-lg font-semibold">{title}</h1>
+      {/* <h3>{description}</h3> */}
 
       {/* image + overlay */}
       <Image

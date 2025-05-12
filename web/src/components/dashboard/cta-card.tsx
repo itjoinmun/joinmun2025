@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@/utils/helpers/cn";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 
