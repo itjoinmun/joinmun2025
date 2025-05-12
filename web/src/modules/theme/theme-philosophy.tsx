@@ -3,26 +3,20 @@ import { Heading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import { ThemeCarousel } from "../home/home-theme";
 import * as motion from "motion/react-client";
+import { fadeInVariants } from "@/utils/helpers/animation-variants";
 
 const ThemePhilosophy = () => {
   return (
     <main className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12">
       <Container className="gap-2">
         <section className="grid grid-cols-1 gap-2 md:grid-cols-3 md:gap-12">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.8 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <Heading className="">Sumbu Filosofi</Heading>
-          </motion.div>
+          <Heading className="">Sumbu Filosofi</Heading>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            variants={fadeInVariants}
+            initial="hidden"
+            whileInView={"visible"}
             viewport={{ once: true, amount: 0.8 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
             className="text-sm text-pretty text-white md:col-span-2"
           >
             The Imaginary Axis in Yogyakarta symbolizes two journeys in human life, the journey from

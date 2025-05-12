@@ -1,11 +1,11 @@
 "use client";
-import { Heading, SubHeading } from "@/components/Layout/section-heading";
+import { Heading } from "@/components/Layout/section-heading";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
 import { PriceOptions, PRICES } from "@/utils/helpers/pricing";
 import { isPriceReveal } from "@/utils/helpers/reveal";
 import { useState } from "react";
-import * as motion from "motion/react-client";
+import ComingSoon from "../coming-soon";
 
 const Pricing = () => {
   const [active, setActive] = useState<PriceOptions>("single");
@@ -23,36 +23,41 @@ const Pricing = () => {
             <section className="flex flex-col items-center gap-2">
               <Heading>Pricing</Heading>
 
-            <div className="text-center text-sm text-white md:max-w-2xl">
-              Find the Right Fit — We&apos;ve Got Options For You.
-            </div>
-
-            <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
-              {Object.entries(PRICES).map(([key, value]) => (
-                <Button
-                  key={key}
-                  onClick={() => setActive(key as PriceOptions)}
-                  variant={active === key ? "primary" : "outline"}
-                  className="shrink-0 snap-start transition-all"
-                >
-                  {value.name}
-                </Button>
-              ))}
-            </nav>
-
-            <div className="mt-8 flex w-full flex-col items-start gap-2">
-              <h1 className="text-xl leading-snug font-bold md:text-2xl">{PRICES[active].name}</h1>
-              <p className="leading-snug">{PRICES[active].description}</p>
-
-              <div className="mt-10 md:px-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6">
-                {PRICES[active].package.map((option, index) => (
-                  <PricingCard key={index} {...option} />
-                ))}
+              <div className="text-center text-sm text-white md:max-w-2xl">
+                Find the Right Fit — We&apos;ve Got Options For You.
               </div>
-            </div>
-          </section>
-        </Container>
-      </main>
+
+              <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
+                {Object.entries(PRICES).map(([key, value]) => (
+                  <Button
+                    key={key}
+                    onClick={() => setActive(key as PriceOptions)}
+                    variant={active === key ? "primary" : "outline"}
+                    className="shrink-0 snap-start transition-all"
+                  >
+                    {value.name}
+                  </Button>
+                ))}
+              </nav>
+
+              <div className="mt-8 flex w-full flex-col items-start gap-2">
+                <h1 className="text-xl leading-snug font-bold md:text-2xl">
+                  {PRICES[active].name}
+                </h1>
+                <p className="leading-snug">{PRICES[active].description}</p>
+
+                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6 md:px-10">
+                  {PRICES[active].package.map((option, index) => (
+                    <PricingCard key={index} {...option} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          </Container>
+        </main>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

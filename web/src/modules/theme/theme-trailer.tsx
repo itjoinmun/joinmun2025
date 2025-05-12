@@ -7,40 +7,30 @@ import { cn } from "@/utils/helpers/cn";
 import { isThemeReveal, isTrailerReveal } from "@/utils/helpers/reveal";
 import Image from "next/image";
 import * as motion from "motion/react-client";
+import { fadeInVariants } from "@/utils/helpers/animation-variants";
 
 const ThemeTrailer = () => {
   return (
-    <main className="bg-background relative max-h-[100dvh] overflow-hidden bg-gradient-to-b">
+    <main className="bg-background relative overflow-hidden bg-gradient-to-b">
       <Container className="gap-2">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
-        >
-          <SubHeading>Story Behind The Theme</SubHeading>
-        </motion.div>
+        <SubHeading>Story Behind The Theme</SubHeading>
 
         <section
           className={cn("grid grid-cols-1 gap-2 md:gap-12", isThemeReveal ? "md:grid-cols-5" : "")}
         >
-          <motion.div
+          <div
             className={cn(isThemeReveal ? "md:col-span-2" : "")}
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
           >
             <Heading>2025 JOINMUN Trailer</Heading>
-          </motion.div>
+          </div>
 
           {isThemeReveal && (
             <motion.div
               className="text-sm text-white md:col-span-3"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
+              variants={fadeInVariants}
+              initial={'hidden'}
+              whileInView={'visible'}
+              viewport={{ once: true, amount: 0.8}}
             >
               Now that the theme is out, let this trailer walk you through the feeling, message, and
               inspiration behind it — captured in one short visual journey.
