@@ -34,7 +34,7 @@ func InitLogger() {
 	}
 
 	// Local or other environments → Log to both file and stdout
-	logPath := "/var/log"
+	logPath := "/var/log/joinmun_backend"
 	if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
 		log.Printf("ERROR: Failed to create log directory '%s': %v", logPath, err)
 		return

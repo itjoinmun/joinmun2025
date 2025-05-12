@@ -1,0 +1,40 @@
+services:
+  # auth service
+  # Database for the auth service
+  backend-db:
+      image: postgres:17.2-alpine
+      env_file:
+          - backend/.env
+      volumes:
+          - ./backend/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql # init script
+          - joinmun-backend-data:/var/lib/postgresql/data
+      networks:
+          - joinmun-network
+      healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U joinmun -d joinmun_backend_db"]
+          interval: 5s
+          timeout: 5s
+          retries: 5
+
+  # API for the auth service
+  backend-api:
+      build: ./backend
+      env_file:
+          - backend/.env
+          - .env
+      depends_on:
+          backend-db:
+              condition: service_healthy # Ensure DB is ready
+      volumes:
+        - ./backend/var/log/joinmun_backend:/var/log/joinmun_backend
+      networks:
+          - joinmun-network
+      ports:
+          - ${BACKEND_PORT}:${BACKEND_PORT}
+
+networks:
+  joinmun-network:
+
+volumes:
+  joinmun-backend-data:
+

@@ -19,7 +19,7 @@ export default function ComingSoon() {
           src="/assets/coming-soon/batik-2.webp"
           alt=""
           // className="object-cover lg:h-auto lg:w-full"
-          className="pointer-events-none  z-10 h-[80vh] w-[140vw] object-cover"
+          className="pointer-events-none z-10 h-[80vh] w-[140vw] object-cover"
           width={2163}
           height={1220}
         />
@@ -80,7 +80,7 @@ export default function ComingSoon() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.3, duration: 0.7 }}
-          className="mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100 invisible"
+          className="invisible mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100"
         >
           <Link href="/">
             <Button variant="gradient" size="longer" className="cursor-pointer">
