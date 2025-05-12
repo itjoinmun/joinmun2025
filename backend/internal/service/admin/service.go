@@ -5,6 +5,7 @@ import (
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
 	"backend/pkg/utils"
+	emailUtils "backend/pkg/utils/email"
 	"backend/pkg/utils/logger"
 	"fmt"
 
@@ -69,6 +70,16 @@ func (s *adminService) UpdateParticipantStatus(email string) (retErr error) {
 			"email":     email,
 		})
 		retErr = fmt.Errorf("email %s is not a delegate", email)
+		return retErr
+	}
+	err = emailUtils.SendBiodataApprovalEmail(email)
+	if err != nil {
+		logger.LogError(err, "Failed to send biodata approval email", map[string]interface{}{
+			"layer":     "service",
+			"operation": "service.UpdateParticipantStatus",
+			"error":     err,
+		})
+		retErr = err
 		return retErr
 	}
 	err = s.adminRepo.UpdateDelegateStatus(email)
@@ -188,6 +199,12 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail string) error {
 	if payment.PaymentStatus == "paid" {
 		logger.LogError(nil, "Payment already updated", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 		return fmt.Errorf("payment already updated for delegate email: %s", delegateEmail)
+	}
+
+	err = emailUtils.SendPaymentApprovalEmail(delegateEmail)
+	if err != nil {
+		logger.LogError(err, "Failed to send payment approval email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+		return err
 	}
 
 	err = s.adminRepo.UpdatePaymentStatus(delegateEmail)
