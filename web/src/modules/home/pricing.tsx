@@ -23,93 +23,36 @@ const Pricing = () => {
             <section className="flex flex-col items-center gap-2">
               <Heading>Pricing</Heading>
 
-              <div className="text-center text-sm text-white md:max-w-2xl">
-                Find the Right Fit — We&apos;ve Got Options For You.
-              </div>
+            <div className="text-center text-sm text-white md:max-w-2xl">
+              Find the Right Fit — We&apos;ve Got Options For You.
+            </div>
 
-              <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
-                {Object.entries(PRICES).map(([key, value]) => (
-                  <Button
-                    key={key}
-                    onClick={() => setActive(key as PriceOptions)}
-                    variant={active === key ? "primary" : "outline"}
-                    className="shrink-0 snap-start transition-all"
-                  >
-                    {value.name}
-                  </Button>
+            <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
+              {Object.entries(PRICES).map(([key, value]) => (
+                <Button
+                  key={key}
+                  onClick={() => setActive(key as PriceOptions)}
+                  variant={active === key ? "primary" : "outline"}
+                  className="shrink-0 snap-start transition-all"
+                >
+                  {value.name}
+                </Button>
+              ))}
+            </nav>
+
+            <div className="mt-8 flex w-full flex-col items-start gap-2">
+              <h1 className="text-xl leading-snug font-bold md:text-2xl">{PRICES[active].name}</h1>
+              <p className="leading-snug">{PRICES[active].description}</p>
+
+              <div className="mt-10 md:px-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6">
+                {PRICES[active].package.map((option, index) => (
+                  <PricingCard key={index} {...option} />
                 ))}
-              </nav>
-
-              <div className="mt-8 flex w-full flex-col items-start gap-2">
-                <h1 className="text-xl leading-snug font-bold md:text-2xl">
-                  {PRICES[active].name}
-                </h1>
-                <p className="leading-snug">{PRICES[active].description}</p>
-
-                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-2 md:gap-6 md:px-10">
-                  {PRICES[active].package.map((option, index) => (
-                    <PricingCard key={index} {...option} />
-                  ))}
-                </div>
               </div>
-            </section>
-          </Container>
-        </main>
-      ) : (
-        <motion.div
-          className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          {/* Background solid color */}
-          <div className="bg-background absolute inset-0" />
-
-          {/* Background image */}
-          <motion.div
-            className="absolute inset-0 h-full w-full"
-            initial={{ scale: 1.1, opacity: 0.4 }}
-            animate={{ scale: 1, opacity: 0.8 }}
-            transition={{ duration: 2 }}
-            style={{
-              backgroundImage: `url('/assets/theme/coming-soon-theme.webp')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              opacity: 0.8,
-            }}
-          />
-
-          {/* Top gradient overlay */}
-          <div className="from-background via-background absolute top-0 right-0 left-0 z-10 h-[22rem] bg-gradient-to-b via-40% to-transparent lg:h-84" />
-
-          {/* Bottom gradient overlay */}
-          <div className="from-background via-background absolute right-0 bottom-0 left-0 z-10 h-20 bg-gradient-to-t via-30% to-transparent md:h-32" />
-
-          {/* Centered text */}
-
-          {/* <Heading className="scale-75">Grand Theme is Coming.</Heading> */}
-          <div className="absolute inset-x-0 z-20 flex flex-col items-center justify-center">
-            <Container className="h-full min-h-[85dvh] gap-2 *:text-center md:min-h-[70vh]">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 1.2,
-                  delay: 1.2,
-                  type: "spring",
-                  stiffness: 80,
-                }}
-                className="my-auto flex h-full flex-col items-center justify-center"
-              >
-                <SubHeading>Stay tuned.</SubHeading>
-                <Heading className="text-gradient-gold mt-auto">
-                  Pricing details will be revealed soon
-                </Heading>
-              </motion.div>
-            </Container>
-          </div>
-        </motion.div>
-      )}
+            </div>
+          </section>
+        </Container>
+      </main>
     </>
   );
 };

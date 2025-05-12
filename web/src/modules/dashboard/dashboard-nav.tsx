@@ -2,7 +2,7 @@
 import CompleteLogo from "@/components/dashboard/complete-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/utils/helpers/cn";
-import { BookOpen, CircleHelp, DollarSign, Globe, Home, LogOut } from "lucide-react";
+import { BookOpen, CircleHelp, DollarSign, Globe, Home, Hourglass, LogOut } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
 import Image from "next/image";
+import { cn } from "@/utils/helpers/cn";
 
 const logoStyle = "size-5";
 
@@ -39,6 +40,11 @@ const NAV_LINKS = [
     name: "Pricing",
     href: "/dashboard/pricing",
     logo: <DollarSign className={logoStyle} />,
+  },
+  {
+    name: "Timeline",
+    href: "/dashboard/timeline",
+    logo: <Hourglass className={logoStyle} />,
   },
   {
     name: "Help and Support",
@@ -89,7 +95,6 @@ const DummyNav = ({ pathname }: { pathname: string }) => (
             <Link
               key={link.name}
               href={link.href}
-              scroll={false}
               className={cn(
                 buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
                 "group h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal group-data-[collapsible=icon]:px-0",

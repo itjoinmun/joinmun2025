@@ -13,7 +13,7 @@ const ParticipantStatus = () => {
   return (
     <DashboardModule className="flex flex-col gap-6">
       <DashboardModuleHeader>
-        <DashboardModuleTitle>Participant Status</DashboardModuleTitle>
+        <DashboardModuleTitle>Participant Status bro</DashboardModuleTitle>
       </DashboardModuleHeader>
 
       <section className="from-red-dark-hover/60 to-red-dark relative z-0 w-full rounded-md bg-gradient-to-b p-3 text-pretty md:p-6">

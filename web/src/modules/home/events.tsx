@@ -116,19 +116,17 @@ const EventCard = (props: Event & { index: number; sectionIndex: number }) => (
 
     {props.loc === "" ? (
       <div className="bg-red-normal mt-2 flex w-full items-center justify-center rounded-md">
-        <h3 className="py-1 text-sm leading-snug">{props.location}</h3>
+        <h3 className="py-1.5 text-sm leading-snug">{props.location}</h3>
       </div>
     ) : (
-      <div>
-        <Link
-          href={props.loc || "#"}
-          target="_blank"
-          rel="noopener noreferer"
-          className="bg-red-normal mt-2 flex w-full items-center justify-center rounded-md"
-        >
-          <h3 className="py-1 text-sm leading-snug">{props.location}</h3>
-        </Link>
-      </div>
+      <Link
+        href={props.loc || "#"}
+        target="_blank"
+        rel="noopener noreferer"
+        className="bg-red-normal mt-2 flex w-full items-center justify-center rounded-md"
+      >
+        <h3 className="py-1.5 text-sm leading-snug">{props.location}</h3>
+      </Link>
     )}
 
     {/* image + overlay */}
