@@ -5,6 +5,7 @@ import Container from "@/components/ui/container";
 import { PriceOptions, PRICES } from "@/utils/helpers/pricing";
 import { isPriceReveal } from "@/utils/helpers/reveal";
 import { useState } from "react";
+import * as motion from "motion/react-client";
 
 const Pricing = () => {
   const [active, setActive] = useState<PriceOptions>("single");
@@ -55,13 +56,21 @@ const Pricing = () => {
           </Container>
         </main>
       ) : (
-        <div className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]">
+        <motion.div
+          className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
           {/* Background solid color */}
           <div className="bg-background absolute inset-0" />
 
           {/* Background image */}
-          <div
+          <motion.div
             className="absolute inset-0 h-full w-full"
+            initial={{ scale: 1.1, opacity: 0.4 }}
+            animate={{ scale: 1, opacity: 0.8 }}
+            transition={{ duration: 2 }}
             style={{
               backgroundImage: `url('/assets/theme/coming-soon-theme.webp')`,
               backgroundSize: "cover",
@@ -81,15 +90,25 @@ const Pricing = () => {
           {/* <Heading className="scale-75">Grand Theme is Coming.</Heading> */}
           <div className="absolute inset-x-0 z-20 flex flex-col items-center justify-center">
             <Container className="h-full min-h-[85dvh] gap-2 *:text-center md:min-h-[70vh]">
-              <div className="my-auto flex h-full flex-col items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 1.2,
+                  delay: 1.2,
+                  type: "spring",
+                  stiffness: 80,
+                }}
+                className="my-auto flex h-full flex-col items-center justify-center"
+              >
                 <SubHeading>Stay tuned.</SubHeading>
                 <Heading className="text-gradient-gold mt-auto">
                   Pricing details will be revealed soon
                 </Heading>
-              </div>
+              </motion.div>
             </Container>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   );

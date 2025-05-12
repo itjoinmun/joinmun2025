@@ -24,7 +24,7 @@ type DashboardService interface {
 		healthResponse []dashboard.HealthResponses,
 		biodataResponse []dashboard.BiodataResponses,
 	) (retErr error)
-	LinkMeToTeam(teamID string, delegateEmail string) (retErr error)
+	LinkMeToTeam(delegateEmail, teamID string) (retErr error)
 	GetParticipantData(email string) ([]dashboard.MUNDelegates, error)
 	GetQuestions() (biodataQuestions []dashboard.BiodataQuestions, healthQuestions []dashboard.HealthQuestions, munQuestions []dashboard.MUNQuestions, err error)
 	UpdateParticipantStatus(email string) (retErr error)
@@ -341,7 +341,7 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 	})
 }
 
-func (s *dashboardService) LinkMeToTeam(teamID string, delegateEmail string) (retErr error) {
+func (s *dashboardService) LinkMeToTeam(delegateEmail, teamID string) (retErr error) {
 	// Check if the delegate is a faculty advisor
 	me, err := s.delegateRepo.GetDelegateByEmail(delegateEmail)
 	if err != nil {

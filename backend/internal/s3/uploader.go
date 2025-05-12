@@ -76,3 +76,16 @@ func (u *S3Uploader) DeleteFile(key string) error {
 	})
 	return err
 }
+
+func (u *S3Uploader) GeneratePresignedURL(key string) (string, error) {
+	presigner := s3.NewPresignClient(u.Client)
+	params := &s3.GetObjectInput{
+		Bucket: &u.BucketName,
+		Key:    &key,
+	}
+	req, err := presigner.PresignGetObject(context.Background(), params, s3.WithPresignExpires(15*time.Minute))
+	if err != nil {
+		return "", err
+	}
+	return req.URL, nil
+}

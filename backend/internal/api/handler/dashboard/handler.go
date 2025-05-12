@@ -356,7 +356,6 @@ func (h *DashboardHandler) LinkToTeamHandler(c *gin.Context) {
 		return
 	}
 	userEmail := userContext.Email
-
 	// Get the team ID from the request body
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})

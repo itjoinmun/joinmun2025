@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { isCouncilsReveal } from "@/utils/helpers/reveal";
+import * as motion from "motion/react-client";
 
 const Councils = () => {
   return (
@@ -25,42 +26,76 @@ const Councils = () => {
       />
       <main className="relative z-0 overflow-hidden pb-12">
         <Container className="gap-2">
-          <SubHeading>{isCouncilsReveal ? "Explore our" : "Coming Soon"}</SubHeading>
-          <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
-            <Heading className="col-span-2">
-              {isCouncilsReveal ? "Councils" : "The Council"}
-            </Heading>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5 }}
+          >
+            <SubHeading>{isCouncilsReveal ? "Explore our" : "Coming Soon"}</SubHeading>
+          </motion.div>
 
-            <div className="text-sm text-white md:col-span-3">
+          <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="col-span-2"
+            >
+              <Heading>{isCouncilsReveal ? "Councils" : "The Council"}</Heading>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-sm text-white md:col-span-3"
+            >
               At JOINMUN, each council is thoughtfully curated to reflect pressing real-world
               issues, offering delegates the space to debate. Our councils are designed to stimulate
               critical thinking, encourage collaboration, and develop articulate, confident leaders.
-            </div>
+            </motion.div>
           </section>
         </Container>
 
-        <Carousel
-          opts={{
-            align: "center",
-            breakpoints: {
-              "(min-width: 640px)": { align: "end" },
-            },
-          }}
-          className="relative w-full"
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
         >
-          <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
-            {(isCouncilsReveal ? COUNCILS : COUNCILS.slice(-4)).map((theme, index) => (
-              <CarouselItem
-                key={index}
-                className="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4"
-              >
-                <CouncilCard {...theme} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="block md:hidden" />
-          <CarouselNext className="right-2 z-10 block md:hidden" />
-        </Carousel>
+          <Carousel
+            opts={{
+              align: "center",
+              breakpoints: {
+                "(min-width: 640px)": { align: "end" },
+              },
+            }}
+            className="relative w-full"
+          >
+            <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
+              {(isCouncilsReveal ? COUNCILS : COUNCILS.slice(-4)).map((theme, index) => (
+                <CarouselItem
+                  key={index}
+                  className="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.1 * index }}
+                  >
+                    <CouncilCard {...theme} />
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="block md:hidden" />
+            <CarouselNext className="right-2 z-10 block md:hidden" />
+          </Carousel>
+        </motion.div>
 
         {/* image + overlay */}
         <Image
@@ -79,17 +114,23 @@ const Councils = () => {
 const CouncilCard = (props: Council) => (
   <article className="bg-gold/5 relative flex h-80 flex-col justify-end overflow-hidden rounded-sm xl:h-[380px]">
     {isCouncilsReveal ? (
-      <Link href={`/councils/${props.slug}`} className="group absolute top-4 right-4 w-fit">
-        <Button variant={`insideCard`} className="text-xs hover:cursor-pointer">
-          Read More <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
-        </Button>
-      </Link>
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        className="absolute top-4 right-4 w-fit"
+      >
+        <Link href={`/councils/${props.slug}`} className="group">
+          <Button variant={`insideCard`} className="text-xs hover:cursor-pointer">
+            Read More <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
+          </Button>
+        </Link>
+      </motion.div>
     ) : (
       ""
     )}
 
     {isCouncilsReveal ? (
-      <div className="z-10 flex min-h-[35%] w-full items-center gap-3 bg-black/70 p-4 backdrop-blur-sm">
+      <div className="z-10 flex min-h-[30%] w-full items-center gap-3 bg-black/70 px-4 py-2 backdrop-blur-sm">
         <aside className="relative size-14 shrink-0 overflow-hidden rounded-full bg-neutral-200">
           <Image
             src={`/assets/councils/logo/${props.logo}`}
@@ -106,10 +147,14 @@ const CouncilCard = (props: Council) => (
         </summary>
       </div>
     ) : (
-      <div className="z-10 flex min-h-[35%] w-full flex-col items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0.8 }}
+        whileHover={{ opacity: 1 }}
+        className="z-10 flex min-h-[30%] w-full flex-col items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      >
         <h1 className="text-xl font-bold">To be Announced</h1>
         <h6 className="text-xs text-pretty">The Council Awaits. Stay Tuned.</h6>
-      </div>
+      </motion.div>
     )}
 
     <Image
