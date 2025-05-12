@@ -13,7 +13,7 @@ import {
 
 const TIMELINE_CONTENT = [
   {
-    date: "1 - 30 June",
+    date: "Coming Soon",
     title: "Early Bird Registration",
   },
   {
