@@ -10,7 +10,6 @@ import (
 type PositionPaperRepo interface {
 	GetPositionPaperByDelegateEmail(email string) (*position.PositionPaper, error) // useful for the delegate dashboard
 	InsertPositionPaper(positionPaper *position.PositionPaper) (int, error)        // insert a new position paper (delegate function)
-	UpdatePositionPaper(positionPaper *position.PositionPaper) error               // not necessary, no need for update
 }
 
 type positionPaperRepo struct {
@@ -50,23 +49,4 @@ func (r *positionPaperRepo) InsertPositionPaper(positionPaper *position.Position
 		return 0, err
 	}
 	return id, nil
-}
-
-func (r *positionPaperRepo) UpdatePositionPaper(positionPaper *position.PositionPaper) error {
-	query := `UPDATE position_papers 
-              SET submission_file = $1, submission_date = $2, submission_status = $3 
-              WHERE mun_delegate_email = $4`
-	_, err := r.db.Exec(
-		query,
-		positionPaper.SubmissionFile,
-		positionPaper.SubmissionDate,
-		positionPaper.SubmissionStatus,
-		positionPaper.MUNDelegateEmail,
-	)
-	if err != nil {
-		logger.LogError(err, "Failed to update position paper", map[string]interface{}{
-			"delegateEmail": positionPaper.MUNDelegateEmail,
-		})
-	}
-	return err
 }
