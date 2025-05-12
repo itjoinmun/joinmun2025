@@ -17,11 +17,11 @@ const TIMELINE_CONTENT = [
     title: "Early Bird Registration",
   },
   {
-    date: "14 July - 14 Aug",
+    date: "Coming Soon",
     title: "Regular Wave Registration",
   },
   {
-    date: "18 Aug - 18 Sep",
+    date: "Coming Soon",
     title: "Late Wave Registration",
   },
   {
