@@ -2,6 +2,7 @@ import BatikPattern from "@/components/Element/batik-pattern";
 import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import Image from "next/image";
+import * as motion from "motion/react-client";
 
 export default function WelcomingRemarks() {
   return (
@@ -11,10 +12,16 @@ export default function WelcomingRemarks() {
         {/* Background Batik */}
 
         <div className="w- z-10 flex flex-col gap-5 lg:flex-row lg:gap-[38px]">
-          <div className="flex flex-col gap-2 lg:hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-2 lg:hidden"
+          >
             <SubHeading>Hear From Our Leaders</SubHeading>
             <Heading>Welcoming Remarks</Heading>
-          </div>
+          </motion.div>
 
           <Image
             src={"/assets/welcoming-remarks/KKM07434.jpg"}
@@ -25,12 +32,24 @@ export default function WelcomingRemarks() {
           />
 
           <div className="flex flex-col gap-2 text-left">
-            <div className="hidden flex-col gap-2 lg:flex">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+              className="hidden flex-col gap-2 lg:flex"
+            >
               <SubHeading>Hear From Our Leaders</SubHeading>
               <Heading>Welcoming Remarks</Heading>
-            </div>
+            </motion.div>
 
-            <p className="text-justify">
+            <motion.p
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+              className="text-justify"
+            >
               Welcome to JOINMUN, where ideas converge, collaboration thrives, and connections are
               made. We are truly honored to welcome all our esteemed guests, delegates, and
               participants who have taken the time to be here with us today. <br />
@@ -39,12 +58,10 @@ export default function WelcomingRemarks() {
               etc. This gathering would not be the same without the valuable perspectives,
               expertise, and energy each of you brings. Thank you for being part of this special
               occasion. We look forward to a meaningful and inspiring time together.
-            </p>
+            </motion.p>
           </div>
         </div>
       </Container>
-      {/* Ellipse Blur */}
-      {/* <div className="bg-orange-blur/70 pointer-events-none absolute left-1/2 z-30 h-[350px] w-full lg:w-1/2 -translate-x-1/2 rounded-full blur-3xl" /> */}
       <BatikPattern />
     </main>
   );

@@ -1,4 +1,5 @@
 "use client";
+import * as motion from "motion/react-client";
 import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -24,44 +25,95 @@ const HomeTheme = () => {
         aria-hidden="true"
       />
       {isThemeReveal ? (
-        <main className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12">
+        <motion.main
+          className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.7 }}
+          transition={{ duration: 1.2 }}
+        >
           <Container className="gap-2">
-            <SubHeading>Event Theme</SubHeading>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.8 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <SubHeading>Event Theme</SubHeading>
+            </motion.div>
+
             <section className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-12">
-              <Heading className="">
-                Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and
-                Enduring Security
-              </Heading>
-              <div className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.8 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <Heading className="">
+                  Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and
+                  Enduring Security
+                </Heading>
+              </motion.div>
+
+              <motion.div
+                className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl"
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.8 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+              >
                 JOINMUN is a 3-day event that brings together participants for diplomatic
                 discussions. During the conference, delegates represent different countries and
                 participate in workshops to enhance their skills. The event aims to foster
                 collaboration, critical thinking, and international awareness.
-                <Link
-                  href={`/theme`}
-                  className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.6 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Read More
-                </Link>
-              </div>
+                  <Link
+                    href={`/theme`}
+                    className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
+                  >
+                    Read More
+                  </Link>
+                </motion.div>
+              </motion.div>
             </section>
           </Container>
 
-          <ThemeCarousel />
-        </main>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+          >
+            <ThemeCarousel />
+          </motion.div>
+        </motion.main>
       ) : (
-        <div className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]">
+        <motion.div
+          className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
           {/* Background solid color */}
           <div className="bg-background absolute inset-0" />
 
           {/* Background image */}
-          <div
+          <motion.div
             className="absolute inset-0 h-full w-full"
+            initial={{ scale: 1.1, opacity: 0.4 }}
+            animate={{ scale: 1, opacity: 0.8 }}
+            transition={{ duration: 2 }}
             style={{
               backgroundImage: `url('/assets/theme/coming-soon-theme.webp')`,
               backgroundSize: "cover",
               backgroundPosition: "center",
-              opacity: 0.8,
             }}
           />
 
@@ -72,25 +124,55 @@ const HomeTheme = () => {
           <div className="from-background via-background absolute right-0 bottom-0 left-0 z-10 h-20 bg-gradient-to-t via-30% to-transparent md:h-32" />
 
           {/* Centered text */}
-
-          {/* <Heading className="scale-75">Grand Theme is Coming.</Heading> */}
           <div className="absolute inset-x-0 z-20 flex flex-col items-center justify-center">
             <Container className="h-full min-h-[85dvh] gap-2 md:min-h-[70vh]">
-              <SubHeading>Coming Soon</SubHeading>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                <SubHeading>Coming Soon</SubHeading>
+              </motion.div>
+
               <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
-                <Heading className="col-span-2">2025 JOINMUN Theme</Heading>
-                <div className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-3">
+                <motion.div
+                  className="col-span-2"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                >
+                  <Heading>2025 JOINMUN Theme</Heading>
+                </motion.div>
+
+                <motion.div
+                  className="flex flex-col gap-4 text-sm text-pretty text-white md:col-span-3"
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.9, delay: 0.9 }}
+                >
                   Get ready to witness the big reveal of this year&apos;s theme —This year,
                   we&apos;re taking inspiration from something deeply rooted — in place, in meaning,
                   and in movement.
-                </div>
+                </motion.div>
               </section>
+
               <div className="my-auto flex h-full flex-col items-center justify-center">
-                <Heading className="text-gradient-gold mt-auto">Soon to Be Revealed</Heading>
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 1.2,
+                    delay: 1.2,
+                    type: "spring",
+                    stiffness: 80,
+                  }}
+                >
+                  <Heading className="text-gradient-gold mt-auto">Soon to Be Revealed</Heading>
+                </motion.div>
               </div>
             </Container>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   );
@@ -110,7 +192,7 @@ export const ThemeCarousel = () => {
       <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
         {THEMES.map((theme, index) => (
           <CarouselItem key={index} className="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/5">
-            <ThemeCard {...theme} />
+            <ThemeCard {...theme} index={index} />
           </CarouselItem>
         ))}
       </CarouselContent>
@@ -123,16 +205,29 @@ export const ThemeCarousel = () => {
 const ThemeCard = ({
   title = "Card Title",
   src,
-  // description = "A short description",
+  index = 0,
 }: {
   title?: string;
   src: string;
-  description?: string;
+  index?: number;
 }) => {
   return (
-    <div className="relative flex h-80 flex-col justify-end gap-0 px-5 py-4">
-      <h1 className="text-lg font-semibold">{title}</h1>
-      {/* <h3>{description}</h3> */}
+    <motion.div
+      className="relative flex h-80 flex-col justify-end gap-0 px-5 py-4"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
+    >
+      <motion.h1
+        className="text-lg font-semibold"
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.3, delay: 0.2 * (index + 1) }}
+      >
+        {title}
+      </motion.h1>
 
       {/* image + overlay */}
       <Image
@@ -142,8 +237,14 @@ const ThemeCard = ({
         sizes="50%"
         className="pointer-events-none -z-10 object-cover"
       />
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/40 to-black/20" />
-    </div>
+      <motion.div
+        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/40 to-black/20"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+      />
+    </motion.div>
   );
 };
 
