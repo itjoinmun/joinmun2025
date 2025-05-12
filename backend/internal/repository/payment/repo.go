@@ -12,8 +12,7 @@ type PaymentRepo interface {
 	MakeInitialPayment(tx *sqlx.Tx, payment *payment.Payment, delegateEmail string) (int, error) // initial payment for the team
 	GetPaymentByDelegateEmail(delegateEmail string) (*payment.Payment, error)                    // Get payments by team ID, for the team payment
 
-	UpdatePaymentStatus(delegateEmail string) error // update payment status (ADMIN function)
-	UploadPayment(payment *payment.Payment) error   // update payment for uploading the payment receipt (delegate function)
+	UploadPayment(payment *payment.Payment) error // update payment for uploading the payment receipt (delegate function)
 }
 
 type paymentRepo struct {
@@ -48,16 +47,6 @@ func (r *paymentRepo) GetPaymentByDelegateEmail(delegateEmail string) (*payment.
 	}
 	logger.LogDebug("Payments retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.GetPaymentsBydelegateEmail"})
 	return &payments, nil
-}
-
-func (r *paymentRepo) UpdatePaymentStatus(delegateEmail string) error {
-	query := `UPDATE payments SET payment_status = 'paid' WHERE mun_delegate_email = $1`
-	_, err := r.db.Exec(query, delegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
-	}
-	logger.LogDebug("Payment status updated successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
-	return err
 }
 
 func (r *paymentRepo) UploadPayment(payment *payment.Payment) error {

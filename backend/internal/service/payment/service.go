@@ -14,7 +14,6 @@ import (
 type PaymentService interface {
 	GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.Payment, error)
 	InsertPayment(payment *paymentModel.Payment) error
-	UpdatePaymentStatus(delegateEmail string) error
 }
 
 type paymentService struct {
@@ -81,27 +80,4 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		logger.LogDebug("Payment inserted successfully", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return nil
 	})
-}
-
-func (s *paymentService) UpdatePaymentStatus(delegateEmail string) error {
-	// Check if the payment exists
-	payment, err := s.paymentRepo.GetPaymentByDelegateEmail(delegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to get payment by delegate email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
-		return err
-	}
-
-	if payment.PaymentStatus == "paid" {
-		logger.LogError(nil, "Payment already updated", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
-		return fmt.Errorf("payment already updated for delegate email: %s", delegateEmail)
-	}
-
-	err = s.paymentRepo.UpdatePaymentStatus(delegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
-		return err
-	}
-
-	logger.LogDebug("Payment status updated successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
-	return nil
 }

@@ -40,10 +40,6 @@ type DelegateRepo interface {
 	InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (string, error)                                                  // Insert a new team (this will be used for the team dashboard, triggered by the delegates insertion also)
 	InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNTeams, delegates []dashboard.MUNDelegates) (string, error) // create  a relationship between team and delegates (using insert team and insert delegates)
 	InsertMeToTeam(teamID string, delegateEmail string) error                                                          // add a delegate to a team (this is used for the team dashboard)
-	UpdateDelegateStatus(delegateEmail string) error                                                                   // update the delegate status, for ADMIN
-	UpdatePairing(tx *sqlx.Tx, delegateEmail, pair string) error                                                       // update the pairing of a delegate (this is used for the team dashboard)
-	// update the delegate country and council
-	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error // update the country and council for a delegate (this is used for the team dashboard)
 }
 
 // Factory functions to create repository implementations

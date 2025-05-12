@@ -29,6 +29,6 @@ func InitializeRoutes(r *gin.Engine, h *handler.HandlerContainer) *gin.Engine {
 	paymentRoutes.InitializePaymentRoutes(r, h.PaymentHandler)
 
 	// Admin routes
-	adminRoutes.InitializeAdminRoutes(r, h.DashboardHandler, h.PaymentHandler)
+	adminRoutes.InitializeAdminRoutes(r, h.AdminHandler)
 	return r
 }
