@@ -1,5 +1,5 @@
 "use client";
-import { Heading } from "@/components/Layout/section-heading";
+import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
 import { PriceOptions, PRICES } from "@/utils/helpers/pricing";

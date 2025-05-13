@@ -19,7 +19,7 @@ The technology we use include:
 Before beginning to develop, make sure you have [Docker](https://www.docker.com/products/docker-desktop/) installed on your local machine. Then you can start the development server with:
 
 ```
-docker compose up --build
+docker compose -f compose.dev.yaml up --build
 ```
 
 ## Contributing
