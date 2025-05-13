@@ -16,7 +16,7 @@ export default function AboutUs() {
             viewport={{ once: true }}
           >
             <SubHeading>About Us</SubHeading>
-            <Heading>JOINMUN: Where Youth Drive Impact</Heading>
+            <Heading>JOINMUN: Where Youth Drives Impact</Heading>
           </motion.div>
 
           <div className="relative w-full object-cover md:max-h-[450px] shrink-0 aspect-[5/4] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
