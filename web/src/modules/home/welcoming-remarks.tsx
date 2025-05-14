@@ -23,7 +23,7 @@ export default function WelcomingRemarks() {
             <Heading>Welcoming Remarks</Heading>
           </motion.div>
 
-          <div className="relative aspect-[5/4] shrink-0 w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
+          <div className="relative aspect-[5/3] shrink-0 w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
             <Image
               src={"/assets/welcoming-remarks/KKM07434.jpg"}
               alt="KKM07434"
