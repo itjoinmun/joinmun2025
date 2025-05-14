@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/sidebar";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
 import Image from "next/image";
-import { cn } from "@/utils/helpers/cn";
 
 const logoStyle = "size-5";
 
