@@ -23,6 +23,7 @@ export default function RootLayout({
           name="google-site-verification"
           content="7nd1GeM2rKgHgw3IK89kDHxOgJcJsMUUHNqgRNd98nw"
         />
+        <meta name="keywords" content="JOINMUN, event, MUN, joinmun, MUN 2025, mun event" />
         <Script
           id="json-ld"
           type="application/ld+json"
