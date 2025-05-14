@@ -48,36 +48,35 @@ const Councils = () => {
           </section>
         </Container>
 
-        <Carousel
-          opts={{
-            align: "center",
-            breakpoints: {
-              "(min-width: 640px)": { align: "end" },
-            },
-          }}
-          className="relative w-full"
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
         >
-          <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
-            {(isCouncilsReveal ? COUNCILS : COUNCILS.slice(-4)).map((theme, index) => (
-              <CarouselItem
-                key={index}
-                className="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4"
-              >
-                <motion.div
-                variants={slideInItemVariants}
-                  initial={'hidden'}
-                  whileInView={'visible'}
-                  custom={index}
-                  viewport={{ once: true }}
+          <Carousel>
+            <CarouselContent className="-ml-2 px-4 md:-ml-4 md:px-6 lg:px-8">
+              {(isCouncilsReveal ? COUNCILS : COUNCILS.slice(-4)).map((theme, index) => (
+                <CarouselItem
+                  key={index}
+                  className="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4 lg:basis-1/4"
                 >
-                  <CouncilCard {...theme} />
-                </motion.div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="block md:hidden" />
-          <CarouselNext className="right-2 z-10 block md:hidden" />
-        </Carousel>
+                  <motion.div
+                    variants={slideInItemVariants}
+                    initial={"hidden"}
+                    whileInView={"visible"}
+                    custom={index}
+                    viewport={{ once: true }}
+                  >
+                    <CouncilCard {...theme} />
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="block md:hidden" />
+            <CarouselNext className="right-2 z-10 block md:hidden" />
+          </Carousel>
+        </motion.div>
 
         {/* image + overlay */}
         <Image

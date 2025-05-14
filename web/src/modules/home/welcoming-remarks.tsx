@@ -12,10 +12,16 @@ export default function WelcomingRemarks() {
         {/* Background Batik */}
 
         <div className="w- z-10 flex flex-col gap-5 lg:flex-row lg:gap-[38px]">
-          <div className="flex flex-col gap-2 lg:hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-2 lg:hidden"
+          >
             <SubHeading>Hear From Our Leaders</SubHeading>
             <Heading>Welcoming Remarks</Heading>
-          </div>
+          </motion.div>
 
           <div className="relative aspect-[5/4] shrink-0 w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
             <Image

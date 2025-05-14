@@ -11,12 +11,17 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-import Link from "next/link";
 import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-variants";
 
 const Events = () => {
   return (
-    <main className="bg-background relative z-0 overflow-hidden pb-24">
+    <motion.main
+      className="bg-background relative z-0 overflow-hidden pb-24"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 1 }}
+    >
       <Container className="gap-2">
         <SubHeading>Explore our</SubHeading>
 
@@ -41,7 +46,14 @@ const Events = () => {
       </Container>
 
       {EVENTS.map((event, i) => (
-        <section key={i} className="flex flex-col gap-4">
+        <motion.section
+          key={i}
+          className="flex flex-col gap-4"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.8, delay: 0.2 * (i + 1) }}
+        >
           <Container className="py-5">
             <h3 className="w-full border-b pb-4 font-bold">{event.section}</h3>
           </Container>
@@ -68,9 +80,9 @@ const Events = () => {
             <CarouselPrevious className="block md:hidden" />
             <CarouselNext className="right-2 z-10 block md:hidden" />
           </Carousel>
-        </section>
+        </motion.section>
       ))}
-    </main>
+    </motion.main>
   );
 };
 

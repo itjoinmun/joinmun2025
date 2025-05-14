@@ -26,7 +26,13 @@ const HomeTheme = () => {
         aria-hidden="true"
       />
       {isThemeReveal ? (
-        <main className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12">
+        <motion.main
+          className="bg-background relative z-0 scroll-mt-20 overflow-hidden pb-12"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.7 }}
+          transition={{ duration: 1.2 }}
+        >
           <Container className="gap-2">
             <SubHeading>Event Theme</SubHeading>
 
@@ -65,7 +71,7 @@ const HomeTheme = () => {
           </Container>
 
             <ThemeCarousel />
-        </main>
+        </motion.main>
       ) : (
         <motion.div
           className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]"

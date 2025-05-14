@@ -14,15 +14,15 @@ import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-v
 
 const TIMELINE_CONTENT = [
   {
-    date: "1 - 30 June",
+    date: "Coming Soon",
     title: "Early Bird Registration",
   },
   {
-    date: "14 July - 14 Aug",
+    date: "Coming Soon",
     title: "Regular Wave Registration",
   },
   {
-    date: "18 Aug - 18 Sep",
+    date: "Coming Soon",
     title: "Late Wave Registration",
   },
   {
@@ -43,7 +43,13 @@ const Timeline = () => {
         className="invisible h-0 scroll-mt-12 md:scroll-mt-[6.5rem]"
         aria-hidden="true"
       />
-      <main className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12">
+      <motion.main
+        className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6 }}
+      >
         <Container className="gap-2">
           <SubHeading>Save The Date</SubHeading>
 
@@ -90,7 +96,7 @@ const Timeline = () => {
         </div>
 
         <BatikPattern />
-      </main>
+      </motion.main>
     </>
   );
 };
@@ -106,7 +112,13 @@ const TimelineCard = ({ date, title, index }: { date: string; title: string; ind
       viewport={{ once: true }}
     >
       <h2 className="w-full text-center">{date}</h2>
-      <div className="my-2 w-full border-b" />
+      <motion.div
+        className="my-2 w-full border-b"
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 0.4, delay: 0.2 * (index + 1) }}
+      />
       <h1 className="my-auto text-center text-lg/snug font-bold">{title}</h1>
     </motion.div>
   );
