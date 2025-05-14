@@ -19,7 +19,7 @@ export default function AboutUs() {
             <Heading>JOINMUN: Where Youth Drives Impact</Heading>
           </motion.div>
 
-          <div className="relative w-full object-cover md:max-h-[450px] shrink-0 aspect-[5/4] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
+          <div className="relative aspect-[5/3] w-full shrink-0 object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
             <Image
               src="/assets/about-us/NKO02971.jpg"
               alt="NKO02971"
@@ -30,9 +30,7 @@ export default function AboutUs() {
           </div>
 
           <div className="flex flex-col gap-4 text-left">
-            <div
-              className="hidden flex-col gap-2 lg:flex"
-            >
+            <div className="hidden flex-col gap-2 lg:flex">
               <SubHeading>About Us</SubHeading>
               <Heading>JOINMUN: Where Youth Drive Impact</Heading>
             </div>

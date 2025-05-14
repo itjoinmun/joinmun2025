@@ -31,13 +31,15 @@ export default function ContactUs() {
             </Link>
           </div>
 
-          <Image
-            src={"/assets/contact-us/LEF07703.jpg"}
-            alt="KKM07434"
-            className="w-full object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]"
-            width={546}
-            height={345}
-          />
+          <div className="relative aspect-[5/3] w-full shrink-0 object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
+            <Image
+              src="/assets/contact-us/LEF07703.jpg"
+              alt="NKO02971"
+              className="object-cover"
+              fill
+              sizes="100%"
+            />
+          </div>
         </div>
       </Container>
     </main>
