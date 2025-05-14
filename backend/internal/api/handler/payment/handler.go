@@ -129,35 +129,3 @@ func (h *PaymentHandler) SubmitPaymentHandler(c *gin.Context) {
 		"payment_file": payment.PaymentFile,
 	})
 }
-
-// UpdatePaymentStatusHandler allows admins to update payment status
-func (h *PaymentHandler) UpdatePaymentStatusHandler(c *gin.Context) {
-	userContext, ok := dashboard.GetUserFromContext(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	// Only admins can update payment status
-	if userContext.Role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
-		return
-	}
-
-	var req struct {
-		DelegateEmail string `json:"delegate_email" binding:"required,email"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
-
-	// Update payment status
-	if err := h.paymentService.UpdatePaymentStatus(req.DelegateEmail); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update payment status", "details": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Payment status updated successfully"})
-}

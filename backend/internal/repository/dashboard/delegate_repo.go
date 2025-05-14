@@ -109,26 +109,6 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 	return nil
 }
 
-func (r *delegateRepo) UpdateDelegateStatus(delegateEmail string) error {
-	query := `UPDATE mun_delegates SET confirmed = $1, confirmed_date = $2 WHERE mun_delegate_email = $3`
-	_, err := r.db.Exec(query, true, time.Now(), delegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to update delegate status", map[string]interface{}{
-			"layer":         "repository",
-			"operation":     "repo.UpdateDelegateStatus",
-			"delegateEmail": delegateEmail,
-		})
-		return err
-	}
-	logger.LogDebug("Delegate status updated successfully", map[string]interface{}{
-		"layer":         "repository",
-		"operation":     "repo.UpdateDelegateStatus",
-		"delegateEmail": delegateEmail,
-	})
-
-	return nil
-}
-
 func (r *delegateRepo) GetTeamByID(teamID string) (*dashboard.MUNTeams, error) {
 	var team dashboard.MUNTeams
 	query := `SELECT * FROM mun_teams WHERE mun_team_id = $1`
@@ -223,54 +203,6 @@ func (r *delegateRepo) InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNT
 	})
 
 	return teamID, nil
-}
-
-func (r *delegateRepo) UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error {
-	query := `UPDATE mun_delegates SET country = $1, council = $2, council_date = $3, type = $4 WHERE mun_delegate_email = $5`
-	_, err := r.db.Exec(query, country, council, time.Now(), "single_delegate", delegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to update delegate country and council", map[string]interface{}{
-			"layer":         "repository",
-			"operation":     "repo.UpdateDelegateCountryAndCouncil",
-			"delegateEmail": delegateEmail,
-		})
-		return err
-	}
-	logger.LogDebug("Delegate country and council updated successfully", map[string]interface{}{
-		"layer":         "repository",
-		"operation":     "repo.UpdateDelegateCountryAndCouncil",
-		"delegateEmail": delegateEmail,
-	})
-	return nil
-}
-
-func (r *delegateRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail string) error {
-	query1 := `UPDATE mun_delegates SET pair = $1, type = $2 WHERE mun_delegate_email = $3`
-	_, err := tx.Exec(query1, pairingEmail, "double_delegate", delegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
-			"layer":         "repository",
-			"operation":     "repo.UpdatePairing",
-			"delegateEmail": delegateEmail,
-		})
-		return err
-	}
-
-	query2 := `UPDATE mun_delegates SET pair = $1, type = $2 WHERE mun_delegate_email = $3`
-	_, err = tx.Exec(query2, delegateEmail, "double_delegate", pairingEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
-			"layer":         "repository",
-			"operation":     "repo.UpdatePairing",
-			"delegateEmail": pairingEmail,
-		})
-	}
-	logger.LogDebug("Pairing updated successfully", map[string]interface{}{
-		"layer":         "repository",
-		"operation":     "repo.UpdatePairing",
-		"delegateEmail": delegateEmail,
-	})
-	return nil
 }
 
 func (r *delegateRepo) InsertMeToTeam(teamID, delegateEmail string) error {

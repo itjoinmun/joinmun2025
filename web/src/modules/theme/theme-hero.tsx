@@ -8,20 +8,15 @@ const ThemeHero = () => {
     <main className="relative flex min-h-[80dvh] items-center md:min-h-screen">
       <NavbarResolver />
       <Container className="max-w-8xl mt-[10vh]">
-        <motion.h4
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+        <h4
           className="text-gradient-gold font-semibold"
         >
           Event Theme
-        </motion.h4>
+        </h4>
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, type: "tween", ease: 'easeOut' }}
           className="max-w-2xl text-3xl/snug font-bold text-pretty md:text-4xl/normal"
         >
           Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and Enduring

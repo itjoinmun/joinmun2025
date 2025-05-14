@@ -1,28 +1,27 @@
 package admin
 
 import (
-	"backend/internal/api/handler/dashboard"
-	"backend/internal/api/handler/payment"
+	"backend/internal/api/handler/admin"
 	"backend/internal/api/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-func InitializeAdminRoutes(r *gin.Engine, dashboardHandler *dashboard.DashboardHandler, paymentHandler *payment.PaymentHandler) *gin.Engine {
+func InitializeAdminRoutes(r *gin.Engine, adminHandler *admin.AdminHandler) *gin.Engine {
 	// admin routes
 	admin := r.Group("/api/v1/admin")
 	admin.Use(middleware.ValidateAccessTokenMiddleware())
 	admin.Use(middleware.ValidateAdminMiddleware())
 	adminDashboard := admin.Group("/dashboard")
 	{
-		adminDashboard.POST("/update-participant-status", dashboardHandler.UpdateParticipantStatusHandler)
-		adminDashboard.POST("/update-participant-cc", dashboardHandler.UpdateDelegateCountryAndCouncilHandler)
-		adminDashboard.POST("/make-pairing", dashboardHandler.MakePairingHandler)
+		adminDashboard.POST("/update-participant-status", adminHandler.UpdateParticipantStatusHandler)
+		adminDashboard.POST("/update-participant-cc", adminHandler.UpdateDelegateCountryAndCouncilHandler)
+		adminDashboard.POST("/make-pairing", adminHandler.MakePairingHandler)
 	}
 
 	adminPayment := admin.Group("/payment")
 	{
-		adminPayment.POST("/update-payment-status", paymentHandler.UpdatePaymentStatusHandler)
+		adminPayment.POST("/update-payment-status", adminHandler.UpdatePaymentStatusHandler)
 	}
 
 	return r

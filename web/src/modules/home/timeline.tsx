@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-variants";
 
 const TIMELINE_CONTENT = [
   {
@@ -50,31 +51,20 @@ const Timeline = () => {
         transition={{ duration: 0.6 }}
       >
         <Container className="gap-2">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.5 }}
-          >
-            <SubHeading>Save The Date</SubHeading>
-          </motion.div>
+          <SubHeading>Save The Date</SubHeading>
 
           <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.6 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="col-span-2"
-            >
+            <div className="col-span-2">
               <Heading>Timeline</Heading>
-            </motion.div>
+            </div>
 
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.6 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              variants={fadeInVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{
+                once: true,
+              }}
               className="text-sm text-white md:col-span-3"
             >
               Get a clear view of all the important dates, from registration to the conference days.
@@ -83,12 +73,7 @@ const Timeline = () => {
           </section>
         </Container>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
+        <div>
           <Carousel
             opts={{
               align: "end",
@@ -108,7 +93,7 @@ const Timeline = () => {
             <CarouselPrevious className="block md:hidden" />
             <CarouselNext className="right-2 z-10 block md:hidden" />
           </Carousel>
-        </motion.div>
+        </div>
 
         <BatikPattern />
       </motion.main>
@@ -120,10 +105,11 @@ const TimelineCard = ({ date, title, index }: { date: string; title: string; ind
   return (
     <motion.div
       className="flex h-full flex-col items-center gap-1 rounded-xs bg-gradient-to-br from-white/40 to-white/10 p-4 backdrop-blur-sm"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      variants={slideInItemVariants}
+      initial='hidden'
+      whileInView='visible'
+      custom={index}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
     >
       <h2 className="w-full text-center">{date}</h2>
       <motion.div

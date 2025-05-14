@@ -5,7 +5,7 @@ import Container from "@/components/ui/container";
 import { PriceOptions, PRICES } from "@/utils/helpers/pricing";
 import { isPriceReveal } from "@/utils/helpers/reveal";
 import { useState } from "react";
-import * as motion from "motion/react-client";
+import * as motion from 'motion/react-client'
 
 const Pricing = () => {
   const [active, setActive] = useState<PriceOptions>("single");
@@ -46,7 +46,7 @@ const Pricing = () => {
                 </h1>
                 <p className="leading-snug">{PRICES[active].description}</p>
 
-                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-2 md:gap-6 md:px-10">
+                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6 md:px-10">
                   {PRICES[active].package.map((option, index) => (
                     <PricingCard key={index} {...option} />
                   ))}

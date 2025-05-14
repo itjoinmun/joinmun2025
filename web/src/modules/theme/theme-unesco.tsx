@@ -32,24 +32,20 @@ const ThemeUnesco = () => {
       <Container className="gap-2">
         <SubHeading>Why The Sumbu Filosofi of Yogyakarta</SubHeading>
 
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="grid grid-cols-1 gap-y-2"
-        >
+        <section className="grid grid-cols-1 gap-y-2">
           <Heading>Recognized by UNESCO</Heading>
 
           <div className="mt-7 flex flex-col gap-x-11 gap-y-8 lg:flex-row">
-            <Image
-              src="/assets/theme/recognized.webp"
-              alt="The Sumbu Filosofi of Yogyakarta"
-              width={650}
-              height={714}
-              loading="lazy"
-              className="aspect-[354/219] w-full shadow-lg lg:aspect-auto lg:h-full lg:max-w-[32%]"
-            />
+            <div className="aspect-[354/219] relative shrink-0 w-full shadow-lg lg:aspect-auto lg:h-full lg:max-w-[32%]">
+              <Image
+                src="/assets/theme/recognized.webp"
+                alt="The Sumbu Filosofi of Yogyakarta"
+                fill
+                sizes="100%"
+                loading="lazy"
+                className="object-cover"
+              />
+            </div>
 
             <div className="flex h-fit flex-col gap-y-2 self-center">
               {RECOGNIZED_VALUE.map((item, index) => (
@@ -78,7 +74,7 @@ const ThemeUnesco = () => {
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
       </Container>
     </main>
   );

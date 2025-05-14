@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import ComingSoon from "@/modules/coming-soon";
 import DashboardNav from "@/modules/dashboard/dashboard-nav";
 import UserProfileInfo from "@/modules/dashboard/user-profile-info";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { isRegistrationOpen } from "@/utils/helpers/reveal";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
@@ -16,8 +17,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             <section className="max-h-screen w-full md:overflow-y-auto">
               <DashboardContainer className="gap-6 pt-0 md:px-6 md:pt-6">
                 <header className="hidden w-full items-center justify-between gap-8 md:flex">
-                  <div className="flex items-baseline gap-4">
-                    <SidebarTrigger />
+                  <div className="flex group items-baseline gap-4">
+                    <SidebarToggle />
                     <h1 className="text-2xl font-bold">Dashboard</h1>
                   </div>
                   <UserProfileInfo />
@@ -33,5 +34,18 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     </>
   );
 };
+
+const SidebarToggle = ({ className }: { className?: string }) => (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <SidebarTrigger className={className} />
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>Toggle Sidebar</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
 
 export default DashboardLayout;

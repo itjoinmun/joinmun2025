@@ -1,0 +1,15 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://joinmun.id/sitemap.xml
+
+# Disallow admin and private routes
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Crawl-delay
+Crawl-delay: 10 

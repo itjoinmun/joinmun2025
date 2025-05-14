@@ -27,7 +27,7 @@ const loginSchema = z
     confirm_password: z
       .string()
       .min(8, {
-        message: "Password password must be at least 8 characters.", // Password must be at least 8 characters.
+        message: "Password must be at least 8 characters.", // Password must be at least 8 characters.
       })
       .nonempty("Confirm password is required"),
   })

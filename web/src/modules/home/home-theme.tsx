@@ -15,6 +15,7 @@ import { isThemeReveal } from "@/utils/helpers/reveal";
 import { THEMES } from "@/utils/helpers/themes";
 import Image from "next/image";
 import Link from "next/link";
+import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-variants";
 
 const HomeTheme = () => {
   return (
@@ -33,46 +34,30 @@ const HomeTheme = () => {
           transition={{ duration: 1.2 }}
         >
           <Container className="gap-2">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.8 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <SubHeading>Event Theme</SubHeading>
-            </motion.div>
+            <SubHeading>Event Theme</SubHeading>
 
             <section className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-12">
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.8 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                <Heading className="">
-                  Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and
-                  Enduring Security
-                </Heading>
-              </motion.div>
+              <Heading className="">
+                Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and
+                Enduring Security
+              </Heading>
 
               <motion.div
                 className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.8 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
+                variants={fadeInVariants}
+                initial='hidden'
+                whileInView={'visible'}
+                viewport={{ once: true }}
               >
                 JOINMUN is a 3-day event that brings together participants for diplomatic
                 discussions. During the conference, delegates represent different countries and
                 participate in workshops to enhance their skills. The event aims to foster
                 collaboration, critical thinking, and international awareness.
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.6 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.7, delay: 1, type: 'tween' }}
                 >
                   <Link
                     href={`/theme`}
@@ -85,14 +70,7 @@ const HomeTheme = () => {
             </section>
           </Container>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-          >
             <ThemeCarousel />
-          </motion.div>
         </motion.main>
       ) : (
         <motion.div
@@ -214,15 +192,16 @@ const ThemeCard = ({
   return (
     <motion.div
       className="relative flex h-80 flex-col justify-end gap-0 px-5 py-4"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      variants={slideInItemVariants}
+      initial={'hidden'}
+      whileInView={'visible'}
+      custom={index}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
     >
       <motion.h1
         className="text-lg font-semibold"
         initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        animate={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.3, delay: 0.2 * (index + 1) }}
       >
@@ -240,9 +219,9 @@ const ThemeCard = ({
       <motion.div
         className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/40 to-black/20"
         initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
+        animate={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+        transition={{ duration: 1.2, delay: 0.15 * (index + 1), type: 'tween' }}
       />
     </motion.div>
   );

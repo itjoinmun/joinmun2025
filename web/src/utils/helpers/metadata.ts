@@ -6,11 +6,35 @@ export default function getMetadata({
     title,
     description,
     metadataBase: new URL("https://joinmun.id/"),
+    keywords: [
+      "JOINMUN",
+      "Model United Nations",
+      "MUN",
+      "Jogjakarta",
+      "International Conference",
+      "Youth Leadership",
+      "Diplomacy",
+      "UN Simulation",
+      "Indonesia MUN",
+    ],
+    authors: [{ name: "JOINMUN Team" }],
+    creator: "JOINMUN",
+    publisher: "JOINMUN",
+    category: "Education",
+    classification: "Conference",
+    referrer: "origin-when-cross-origin" as const,
 
     // Robots meta tag
     robots: {
-      index: true, // Allow indexing
-      follow: true, // Allow link-following
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large" as const,
+        "max-snippet": -1,
+      },
     },
 
     // For mobile optimization
@@ -35,6 +59,16 @@ export default function getMetadata({
       ],
       locale: "id_ID",
       type: "website",
+    },
+
+    // Twitter metadata
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`/metadata/web-app-manifest-512x512.png`],
+      creator: "@joinmun",
+      site: "@joinmun",
     },
 
     // Favicon and icon definitions
