@@ -36,14 +36,13 @@ const HomeTheme = () => {
           <Container className="gap-2">
             <SubHeading>Event Theme</SubHeading>
 
-            <section className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-12">
-              <Heading className="">
-                Redefining Justice, Reshaping Destiny: Uniting for a World of True Equity and
-                Enduring Security
+            <section className="grid grid-cols-1 gap-2 md:grid-cols-5 md:gap-12">
+              <Heading className="col-span-2">
+                Sumbu Filosofi
               </Heading>
 
               <motion.div
-                className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl"
+                className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl col-span-3"
                 variants={fadeInVariants}
                 initial='hidden'
                 whileInView={'visible'}
