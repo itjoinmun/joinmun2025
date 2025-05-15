@@ -108,6 +108,7 @@ export default function WelcomingRemarks() {
               alt="Pattern JOINMUN 2025"
               height={3946}
               width={2247}
+              priority
               className="w-full"
             />
           </motion.div>
