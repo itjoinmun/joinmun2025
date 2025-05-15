@@ -11,3 +11,5 @@ export const isTrailerReveal = process.env.NEXT_PUBLIC_TRAILER_REVEAL === "true"
 export const isPriceReveal = process.env.NEXT_PUBLIC_PRICE_REVEAL === "true";
 
 export const isWebsiteRelease = process.env.NEXT_PUBLIC_WEBSITE_RELEASE === "true";
+
+export const isTeaserReveal = process.env.NEXT_PUBLIC_TEASER_REVEAL === "true";
