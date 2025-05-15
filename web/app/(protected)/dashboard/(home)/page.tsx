@@ -7,9 +7,9 @@ import DashboardEvents from "@/modules/dashboard/home/dashboard-events";
 import InformationCenter from "@/modules/dashboard/home/dashboard-status";
 import ParticipantData from "@/modules/dashboard/home/participant-data";
 import ParticipantStatus from "@/modules/dashboard/home/participant-status";
+import Playground from "@/modules/dashboard/playground";
 
 const DashboardHome = () => {
-
   return (
     <DashboardPage className="flex flex-col gap-6">
       <DashboardPageHeader>
@@ -21,6 +21,7 @@ const DashboardHome = () => {
       <InformationCenter />
       <ParticipantData />
       <DashboardEvents />
+      <Playground />
     </DashboardPage>
   );
 };
