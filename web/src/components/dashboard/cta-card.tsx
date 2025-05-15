@@ -12,7 +12,7 @@ const CTACard = ({
   href: string;
 }) => {
   return (
-    <article className="bg-background md:min-h-45 flex flex-col gap-1 rounded-md p-4">
+    <article className="bg-background flex flex-col gap-1 rounded-md p-4 md:min-h-45">
       <h1 className="text-lg/snug font-bold">{title}</h1>
       <hr className="border-gray my-2 border-b-2" />
       <p className="mb-auto text-sm/snug">{description}</p>

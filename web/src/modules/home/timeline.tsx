@@ -106,8 +106,8 @@ const TimelineCard = ({ date, title, index }: { date: string; title: string; ind
     <motion.div
       className="flex h-full flex-col items-center gap-1 rounded-xs bg-gradient-to-br from-white/40 to-white/10 p-4 backdrop-blur-sm"
       variants={slideInItemVariants}
-      initial='hidden'
-      whileInView='visible'
+      initial="hidden"
+      whileInView="visible"
       custom={index}
       viewport={{ once: true }}
     >

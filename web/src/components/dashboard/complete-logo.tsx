@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const CompleteLogo = () => {
   return (
-    <Link href={`/dashboard`} className="flex w-full items-center gap-3 select-none mb-[-8]">
+    <Link href={`/dashboard`} className="mb-[-8] flex w-full items-center gap-3 select-none">
       <Image
         src={`/LOGO.png`}
         alt="JOINMUN"
