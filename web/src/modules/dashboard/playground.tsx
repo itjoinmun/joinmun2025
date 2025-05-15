@@ -21,12 +21,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CheckCircle2, AlertCircle, CreditCard, CircleCheckBig } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-
-import { useState } from "react";
 
 // Fixed Role Modal
 const FixedRoleModal = () => {

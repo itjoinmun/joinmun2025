@@ -45,7 +45,7 @@ export default function AboutUs() {
               viewport={{ once: true }}
               className="text-justify"
             >
-              Jogja International Model United Nations is one of Indonesia's most prestigious
+              Jogja International Model United Nations is one of Indonesia&apos;s most prestigious
               international MUN with hundreds of delegates from over 10 countries worldwide. In its
               14th year, JOINMUN blends the core values of the UN with the richness of Javanese
               culture, serving as a platform for aspiring diplomats and changemakers.

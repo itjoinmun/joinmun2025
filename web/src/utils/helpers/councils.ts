@@ -196,7 +196,7 @@ export const COUNCILS = [
     logo: "UN.webp",
     explanation:
       "As the official body providing access to UN news, the UN Press Corps serves its function as the leading voice of track 9 diplomacy: shaping public opinion. Represented by the United Nations Correspondents Association, the UN Press Corps maintains its transparency within journalism in spite of the changing political landscape. Since its inception, the Press Corps has remained an unbiased bridge between the institution and society.<br /><br />Acting as journalists, delegates in the Press Council will handle tasks beyond reporting news: uncovering affairs, development, and crises across all committees. Journalists shall represent various prominent media outlets, these journalists will embody different editorial styles and political leanings, conveying nuance and distinctiveness to the conference&apos;s media coverage. Within their duties, journalists will be granted press passes, allowing them to carry out interviews and investigations with delegates and chairs, and delve into important matters of the conference. The Press Council aims to simulate the multifaceted dynamics of the Press Corps, creating an analytical and articulate journalistic atmosphere.",
-    topic: "Coming Soon",
+    topic: "",
     chairs: [
       {
         name: "lebron",
