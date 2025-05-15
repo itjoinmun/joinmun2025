@@ -241,7 +241,8 @@ func (s *adminService) GetDelegateHealthResponses(delegateType string, limit, of
 			url, err := s.uploader.GeneratePresignedURL(responses[i].HealthAnswerText)
 			if err != nil {
 				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": responses[i].HealthAnswerText})
-				continue // optionally skip this one or set it to empty
+				responses[i].HealthAnswerText = "" // optionally skip this one or set it to empty
+				continue                           // optionally skip this one or set it to empty
 			}
 			responses[i].HealthAnswerText = url
 		}
@@ -264,7 +265,8 @@ func (s *adminService) GetDelegateMUNResponses(delegateType string, limit, offse
 			url, err := s.uploader.GeneratePresignedURL(responses[i].MUNAnswerText)
 			if err != nil {
 				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": responses[i].MUNAnswerText})
-				continue // optionally skip this one or set it to empty
+				responses[i].MUNAnswerText = "" // optionally skip this one or set it to empty
+				continue                        // optionally skip this one or set it to empty
 			}
 			responses[i].MUNAnswerText = url
 		}
@@ -287,7 +289,8 @@ func (s *adminService) GetDelegateBiodataResponses(delegateType string, limit, o
 			url, err := s.uploader.GeneratePresignedURL(responses[i].BiodataAnswerText)
 			if err != nil {
 				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": responses[i].BiodataAnswerText})
-				continue // optionally skip this one or set it to empty
+				responses[i].BiodataAnswerText = "" // optionally skip this one or set it to empty
+				continue                            // optionally skip this one or set it to empty
 			}
 			responses[i].BiodataAnswerText = url
 		}
@@ -310,7 +313,8 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType string, limit, o
 			url, err := s.uploader.GeneratePresignedURL(payments[i].PaymentFile)
 			if err != nil {
 				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": payments[i].PaymentFile})
-				continue // optionally skip this one or set it to empty
+				payments[i].PaymentFile = "" // optionally skip this one or set it to empty
+				continue                     // optionally skip this one or set it to empty
 			}
 			payments[i].PaymentFile = url
 		}
