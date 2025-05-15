@@ -41,35 +41,29 @@ const HomeTheme = () => {
                 Sumbu Filosofi
               </Heading>
 
-              <motion.div
-                className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl col-span-3"
-                variants={fadeInVariants}
-                initial='hidden'
-                whileInView={'visible'}
-                viewport={{ once: true }}
-              >
-                JOINMUN is a 3-day event that brings together participants for diplomatic
-                discussions. During the conference, delegates represent different countries and
-                participate in workshops to enhance their skills. The event aims to foster
-                collaboration, critical thinking, and international awareness.
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
+              <div className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl">
+                <motion.p
+                  variants={fadeInVariants}
+                  initial="hidden"
+                  whileInView={"visible"}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.7, delay: 1, type: 'tween' }}
                 >
-                  <Link
-                    href={`/theme`}
-                    className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
-                  >
-                    Read More
-                  </Link>
-                </motion.div>
-              </motion.div>
+                  JOINMUN is a 3-day event that brings together participants for diplomatic
+                  discussions. During the conference, delegates represent different countries and
+                  participate in workshops to enhance their skills. The event aims to foster
+                  collaboration, critical thinking, and international awareness.
+                </motion.p>
+                <Link
+                  href={`/theme`}
+                  className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
+                >
+                  Read More
+                </Link>
+              </div>
             </section>
           </Container>
 
-            <ThemeCarousel />
+          <ThemeCarousel />
         </motion.main>
       ) : (
         <motion.div
@@ -192,8 +186,8 @@ const ThemeCard = ({
     <motion.div
       className="relative flex h-80 flex-col justify-end gap-0 px-5 py-4"
       variants={slideInItemVariants}
-      initial={'hidden'}
-      whileInView={'visible'}
+      initial={"hidden"}
+      whileInView={"visible"}
       custom={index}
       viewport={{ once: true }}
     >
@@ -220,7 +214,7 @@ const ThemeCard = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.15 * (index + 1), type: 'tween' }}
+        transition={{ duration: 1.2, delay: 0.15 * (index + 1), type: "tween" }}
       />
     </motion.div>
   );

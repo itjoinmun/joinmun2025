@@ -1,10 +1,10 @@
 "use client";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ComingSoon from "@/modules/coming-soon";
 import DashboardNav from "@/modules/dashboard/dashboard-nav";
 import UserProfileInfo from "@/modules/dashboard/user-profile-info";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { isRegistrationOpen } from "@/utils/helpers/reveal";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {

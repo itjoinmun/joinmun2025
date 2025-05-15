@@ -3,12 +3,17 @@ services:
         container_name: joinmun-web
         build:
             context: ./web
-            dockerfile: dev.Dockerfile
+            dockerfile: Dockerfile.dev 
 
         # Set environment variables based on the .env file
         env_file:
             # - .env
             - web/.env
+
+        environment:
+            - WATCHPACK_POLLING=true
+            # - CHOKIDAR_USEPOLLING=true
+            - NODE_ENV=development
 
         volumes:
             - ./web:/app
