@@ -17,6 +17,10 @@ import (
 	adminRepoI "backend/internal/repository/admin"
 	adminServiceI "backend/internal/service/admin"
 
+	positionHandlerI "backend/internal/api/handler/position"
+	positionRepoI "backend/internal/repository/position"
+	positionServiceI "backend/internal/service/position"
+
 	"backend/internal/s3"
 
 	"github.com/jmoiron/sqlx"
@@ -27,6 +31,7 @@ type HandlerContainer struct {
 	DashboardHandler *dashboardHandlerI.DashboardHandler
 	PaymentHandler   *paymentHandlerI.PaymentHandler
 	AdminHandler     *adminHandlerI.AdminHandler
+	PositionHandler  *positionHandlerI.PositionHandler
 }
 
 func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer {
@@ -60,9 +65,17 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer
 		panic(err)
 	}
 
+	// POSITION
+	positionRepo := positionRepoI.NewPositionPaperRepo(db)
+	positionService := positionServiceI.NewPositionService(uploader, positionRepo, paymentRepo, delegateRepo)
+	positionHandler, err := positionHandlerI.NewPositionHandler(positionService, uploader)
+	if err != nil {
+		panic(err)
+	}
+
 	// ADMIN
 	adminRepo := adminRepoI.NewAdminRepo(db)
-	adminService := adminServiceI.NewAdminService(adminRepo, delegateRepo, paymentRepo)
+	adminService := adminServiceI.NewAdminService(uploader, adminRepo, delegateRepo, paymentRepo)
 	adminHandler, err := adminHandlerI.NewAdminHandler(adminService)
 	if err != nil {
 		panic(err)
@@ -73,5 +86,6 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer
 		DashboardHandler: dashboardHandler,
 		PaymentHandler:   paymentHandler,
 		AdminHandler:     adminHandler,
+		PositionHandler:  positionHandler,
 	}
 }

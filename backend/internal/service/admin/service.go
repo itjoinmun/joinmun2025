@@ -1,9 +1,14 @@
 package admin
 
 import (
+	delegateModel "backend/internal/model/dashboard"
+	paymentModel "backend/internal/model/payment"
+	positionModel "backend/internal/model/position"
 	adminRepo "backend/internal/repository/admin"
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
+	"backend/internal/s3"
+
 	"backend/pkg/utils"
 	emailUtils "backend/pkg/utils/email"
 	"backend/pkg/utils/logger"
@@ -17,16 +22,24 @@ type AdminService interface {
 	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error
 	MakePairing(delegateEmail, pair string) error
 	UpdatePaymentStatus(email string) error
+	GetDelegateHealthResponses(delegateType string, limit, offset int) ([]delegateModel.HealthResponseWithQuestion, error)
+	GetDelegateMUNResponses(limit, offset int) ([]delegateModel.MUNResponseWithQuestion, error)
+	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]delegateModel.BiodataResponseWithQuestion, error)
+	GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]paymentModel.PaymentResponse, error)
+	GetDelegates(delegateType string, limit, offset int) ([]delegateModel.MUNDelegates, error)
+	GetPositionPapers(limit, offset int) ([]positionModel.PositionPaper, error)
 }
 
 type adminService struct {
+	uploader     *s3.S3Uploader
 	delegateRepo delegateRepo.DelegateRepo
 	adminRepo    adminRepo.AdminRepo
 	paymentRepo  paymentRepo.PaymentRepo
 }
 
-func NewAdminService(adminRepo adminRepo.AdminRepo, delegateRepo delegateRepo.DelegateRepo, paymentRepo paymentRepo.PaymentRepo) AdminService {
+func NewAdminService(uploader *s3.S3Uploader, adminRepo adminRepo.AdminRepo, delegateRepo delegateRepo.DelegateRepo, paymentRepo paymentRepo.PaymentRepo) AdminService {
 	return &adminService{
+		uploader:     uploader,
 		delegateRepo: delegateRepo,
 		adminRepo:    adminRepo,
 		paymentRepo:  paymentRepo,
@@ -215,4 +228,134 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail string) error {
 
 	logger.LogDebug("Payment status updated successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 	return nil
+}
+
+func (s *adminService) GetDelegateHealthResponses(delegateType string, limit, offset int) ([]delegateModel.HealthResponseWithQuestion, error) {
+	responses, err := s.adminRepo.GetDelegateHealthResponses(delegateType, limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get delegate health responses", map[string]interface{}{"layer": "service", "operation": "GetDelegateHealthResponses"})
+		return nil, err
+	}
+
+	// Modify file answers to be presigned URLs
+	for i := range responses {
+		if responses[i].HealthQuestionType == "file" {
+			url, err := s.uploader.GeneratePresignedURL(responses[i].HealthAnswerText)
+			if err != nil {
+				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": responses[i].HealthAnswerText})
+				responses[i].HealthAnswerText = "" // optionally skip this one or set it to empty
+				continue                           // optionally skip this one or set it to empty
+			}
+			responses[i].HealthAnswerText = url
+		}
+	}
+
+	logger.LogDebug("Delegate health responses retrieved and processed successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegateHealthResponses"})
+	return responses, nil
+}
+
+func (s *adminService) GetDelegateMUNResponses(limit, offset int) ([]delegateModel.MUNResponseWithQuestion, error) {
+	responses, err := s.adminRepo.GetDelegateMUNResponses(limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get delegate MUN responses", map[string]interface{}{"layer": "service", "operation": "GetDelegateMUNResponses"})
+		return nil, err
+	}
+
+	// Modify file answers to be presigned URLs
+	for i := range responses {
+		if responses[i].MUNQuestionType == "file" {
+			url, err := s.uploader.GeneratePresignedURL(responses[i].MUNAnswerText)
+			if err != nil {
+				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": responses[i].MUNAnswerText})
+				responses[i].MUNAnswerText = "" // optionally skip this one or set it to empty
+				continue                        // optionally skip this one or set it to empty
+			}
+			responses[i].MUNAnswerText = url
+		}
+	}
+
+	logger.LogDebug("Delegate MUN responses retrieved and processed successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegateMUNResponses"})
+	return responses, nil
+}
+
+func (s *adminService) GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]delegateModel.BiodataResponseWithQuestion, error) {
+	responses, err := s.adminRepo.GetDelegateBiodataResponses(delegateType, limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get delegate biodata responses", map[string]interface{}{"layer": "service", "operation": "GetDelegateBiodataResponses"})
+		return nil, err
+	}
+
+	// Modify file answers to be presigned URLs
+	for i := range responses {
+		if responses[i].BiodataQuestionType == "file" {
+			url, err := s.uploader.GeneratePresignedURL(responses[i].BiodataAnswerText)
+			if err != nil {
+				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": responses[i].BiodataAnswerText})
+				responses[i].BiodataAnswerText = "" // optionally skip this one or set it to empty
+				continue                            // optionally skip this one or set it to empty
+			}
+			responses[i].BiodataAnswerText = url
+		}
+	}
+
+	logger.LogDebug("Delegate biodata responses retrieved and processed successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegateBiodataResponses"})
+	return responses, nil
+}
+
+func (s *adminService) GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]paymentModel.PaymentResponse, error) {
+	payments, err := s.adminRepo.GetDelegatePaymentResponses(delegateType, limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get delegate payment responses", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
+		return nil, err
+	}
+
+	// Modify file answers to be presigned URLs
+	for i := range payments {
+		if payments[i].PaymentFile != "" {
+			url, err := s.uploader.GeneratePresignedURL(payments[i].PaymentFile)
+			if err != nil {
+				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": payments[i].PaymentFile})
+				payments[i].PaymentFile = "" // optionally skip this one or set it to empty
+				continue                     // optionally skip this one or set it to empty
+			}
+			payments[i].PaymentFile = url
+		}
+	}
+
+	logger.LogDebug("Delegate payment responses retrieved and processed successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
+	return payments, nil
+}
+
+func (s *adminService) GetDelegates(delegateType string, limit, offset int) ([]delegateModel.MUNDelegates, error) {
+	delegates, err := s.adminRepo.GetDelegates(delegateType, limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get delegates", map[string]interface{}{"layer": "service", "operation": "GetDelegates"})
+		return nil, err
+	}
+
+	logger.LogDebug("Delegates retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegates"})
+	return delegates, nil
+}
+
+func (s *adminService) GetPositionPapers(limit, offset int) ([]positionModel.PositionPaper, error) {
+	positionPapers, err := s.adminRepo.GetPositionPapers(limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get position papers", map[string]interface{}{"layer": "service", "operation": "GetPositionPapers"})
+		return nil, err
+	}
+
+	// Modify file answers to be presigned URLs
+	for i := range positionPapers {
+		if positionPapers[i].SubmissionFile != "" {
+			url, err := s.uploader.GeneratePresignedURL(positionPapers[i].SubmissionFile)
+			if err != nil {
+				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": positionPapers[i].SubmissionFile})
+				positionPapers[i].SubmissionFile = "" // optionally skip this one or set it to empty
+				continue                              // optionally skip this one or set it to empty
+			}
+			positionPapers[i].SubmissionFile = url
+		}
+	}
+	logger.LogDebug("Position papers retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetPositionPapers"})
+	return positionPapers, nil
 }

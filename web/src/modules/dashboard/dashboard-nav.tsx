@@ -1,12 +1,7 @@
 "use client";
 import CompleteLogo from "@/components/dashboard/complete-logo";
+import DashboardContainer from "@/components/dashboard/dashboard-container";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/utils/helpers/cn";
-import { BookOpen, CircleHelp, DollarSign, Globe, Home, Hourglass, LogOut } from "lucide-react";
-import { useMotionValueEvent, useScroll } from "motion/react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,8 +9,13 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import DashboardContainer from "@/components/dashboard/dashboard-container";
+import { cn } from "@/utils/helpers/cn";
+import { BookOpen, CircleHelp, DollarSign, Globe, Home, Hourglass, LogOut } from "lucide-react";
+import { useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const logoStyle = "size-5";
 
