@@ -85,5 +85,4 @@ type MUNResponseWithQuestion struct {
 	MUNAnswerText   string `db:"mun_answer_text"`
 	MUNQuestionType string `db:"mun_question_type"`
 	MUNQuestionText string `db:"mun_question_text"`
-	ParticipantType string `db:"participant_type"`
 }

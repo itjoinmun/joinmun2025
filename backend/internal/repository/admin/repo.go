@@ -3,6 +3,7 @@ package admin
 import (
 	"backend/internal/model/dashboard"
 	"backend/internal/model/payment"
+	"backend/internal/model/position"
 	"backend/pkg/utils/logger"
 	"time"
 
@@ -16,10 +17,11 @@ type AdminRepo interface {
 	UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail string) error
 	UpdatePaymentStatus(delegateEmail string) error
 	GetDelegateHealthResponses(delegateType string, limit, offset int) ([]dashboard.HealthResponseWithQuestion, error)
-	GetDelegateMUNResponses(delegateType string, limit, offset int) ([]dashboard.MUNResponseWithQuestion, error)
+	GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error)
 	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]dashboard.BiodataResponseWithQuestion, error)
 	GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]payment.PaymentResponse, error)
 	GetDelegates(delegateType string, limit, offset int) ([]dashboard.MUNDelegates, error)
+	GetPositionPapers(limit, offset int) ([]position.PositionPaper, error)
 }
 
 type adminRepo struct {
@@ -152,7 +154,7 @@ func (r *adminRepo) GetDelegateHealthResponses(delegateType string, limit, offse
 	return responses, err
 }
 
-func (r *adminRepo) GetDelegateMUNResponses(delegateType string, limit, offset int) ([]dashboard.MUNResponseWithQuestion, error) {
+func (r *adminRepo) GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error) {
 	var responses []dashboard.MUNResponseWithQuestion
 	query := `
 		SELECT 
@@ -163,12 +165,10 @@ func (r *adminRepo) GetDelegateMUNResponses(delegateType string, limit, offset i
 			q.mun_question_text
 		FROM mun_responses r
 		JOIN mun_questions q ON r.mun_question_id = q.mun_question_id
-		JOIN mun_delegates d ON r.delegate_email = d.mun_delegate_email
-		WHERE d.participant_type = $1
 		ORDER BY r.delegate_email
-		LIMIT $2 OFFSET $3;
+		LIMIT $1 OFFSET $2;
 	`
-	err := r.db.Select(&responses, delegateType, query, limit, offset)
+	err := r.db.Select(&responses, query, limit, offset)
 	return responses, err
 }
 
@@ -220,4 +220,28 @@ func (r *adminRepo) GetDelegates(delegateType string, limit, offset int) ([]dash
 		return nil, err
 	}
 	return delegates, nil
+}
+
+func (r *adminRepo) GetPositionPapers(limit, offset int) ([]position.PositionPaper, error) {
+	var papers []position.PositionPaper
+	query := `
+		SELECT 
+			pp.position_paper_id,
+			pp.mun_delegate_email,
+			pp.submission_file,
+			pp.submission_date,
+			pp.submission_status
+		FROM position_papers pp
+		ORDER BY pp.mun_delegate_email
+		LIMIT $1 OFFSET $2;
+	`
+	err := r.db.Select(&papers, query, limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get position papers", map[string]interface{}{
+			"layer":     "repository",
+			"operation": "repo.GetPositionPapers",
+		})
+		return nil, err
+	}
+	return papers, nil
 }

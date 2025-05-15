@@ -3,6 +3,7 @@ package admin
 import (
 	delegateModel "backend/internal/model/dashboard"
 	paymentModel "backend/internal/model/payment"
+	positionModel "backend/internal/model/position"
 	adminRepo "backend/internal/repository/admin"
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
@@ -22,10 +23,11 @@ type AdminService interface {
 	MakePairing(delegateEmail, pair string) error
 	UpdatePaymentStatus(email string) error
 	GetDelegateHealthResponses(delegateType string, limit, offset int) ([]delegateModel.HealthResponseWithQuestion, error)
-	GetDelegateMUNResponses(delegateType string, limit, offset int) ([]delegateModel.MUNResponseWithQuestion, error)
+	GetDelegateMUNResponses(limit, offset int) ([]delegateModel.MUNResponseWithQuestion, error)
 	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]delegateModel.BiodataResponseWithQuestion, error)
 	GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]paymentModel.PaymentResponse, error)
 	GetDelegates(delegateType string, limit, offset int) ([]delegateModel.MUNDelegates, error)
+	GetPositionPapers(limit, offset int) ([]positionModel.PositionPaper, error)
 }
 
 type adminService struct {
@@ -252,8 +254,8 @@ func (s *adminService) GetDelegateHealthResponses(delegateType string, limit, of
 	return responses, nil
 }
 
-func (s *adminService) GetDelegateMUNResponses(delegateType string, limit, offset int) ([]delegateModel.MUNResponseWithQuestion, error) {
-	responses, err := s.adminRepo.GetDelegateMUNResponses(delegateType, limit, offset)
+func (s *adminService) GetDelegateMUNResponses(limit, offset int) ([]delegateModel.MUNResponseWithQuestion, error) {
+	responses, err := s.adminRepo.GetDelegateMUNResponses(limit, offset)
 	if err != nil {
 		logger.LogError(err, "Failed to get delegate MUN responses", map[string]interface{}{"layer": "service", "operation": "GetDelegateMUNResponses"})
 		return nil, err
@@ -333,4 +335,27 @@ func (s *adminService) GetDelegates(delegateType string, limit, offset int) ([]d
 
 	logger.LogDebug("Delegates retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegates"})
 	return delegates, nil
+}
+
+func (s *adminService) GetPositionPapers(limit, offset int) ([]positionModel.PositionPaper, error) {
+	positionPapers, err := s.adminRepo.GetPositionPapers(limit, offset)
+	if err != nil {
+		logger.LogError(err, "Failed to get position papers", map[string]interface{}{"layer": "service", "operation": "GetPositionPapers"})
+		return nil, err
+	}
+
+	// Modify file answers to be presigned URLs
+	for i := range positionPapers {
+		if positionPapers[i].SubmissionFile != "" {
+			url, err := s.uploader.GeneratePresignedURL(positionPapers[i].SubmissionFile)
+			if err != nil {
+				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": positionPapers[i].SubmissionFile})
+				positionPapers[i].SubmissionFile = "" // optionally skip this one or set it to empty
+				continue                              // optionally skip this one or set it to empty
+			}
+			positionPapers[i].SubmissionFile = url
+		}
+	}
+	logger.LogDebug("Position papers retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetPositionPapers"})
+	return positionPapers, nil
 }

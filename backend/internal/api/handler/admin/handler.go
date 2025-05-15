@@ -235,9 +235,8 @@ func (h *AdminHandler) GetDelegateMUNResponsesHandler(c *gin.Context) {
 	}
 
 	var req struct {
-		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"required"`
-		Offset       int    `json:"offset" binding:"required"`
+		Limit  int `json:"limit" binding:"required"`
+		Offset int `json:"offset" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -245,7 +244,7 @@ func (h *AdminHandler) GetDelegateMUNResponsesHandler(c *gin.Context) {
 		return
 	}
 
-	responses, err := h.adminService.GetDelegateMUNResponses(req.DelegateType, req.Limit, req.Offset)
+	responses, err := h.adminService.GetDelegateMUNResponses(req.Limit, req.Offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate MUN responses", "details": err.Error()})
 		return
@@ -314,6 +313,38 @@ func (h *AdminHandler) GetDelegatesHandler(c *gin.Context) {
 	responses, err := h.adminService.GetDelegates(req.DelegateType, req.Limit, req.Offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses)
+}
+
+func (h *AdminHandler) GetDelegatePositionPaperHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Only admins can get delegate position paper
+	if userContext.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+		return
+	}
+
+	var req struct {
+		Limit  int `json:"limit" binding:"required"`
+		Offset int `json:"offset" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+		return
+	}
+
+	responses, err := h.adminService.GetPositionPapers(req.Limit, req.Offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate position paper", "details": err.Error()})
 		return
 	}
 
