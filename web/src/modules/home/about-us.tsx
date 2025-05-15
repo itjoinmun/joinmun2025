@@ -16,7 +16,8 @@ export default function AboutUs() {
             viewport={{ once: true }}
           >
             <SubHeading>About Us</SubHeading>
-            <Heading>JOINMUN: Where Youth Drives Impact</Heading>
+            <Heading>JOINMUN: Redefining Justice, Reshaping Destiny</Heading>
+            <SubHeading>Uniting for a World of True Equity and Enduring Security</SubHeading>
           </motion.div>
 
           <div className="relative aspect-[5/3] w-full shrink-0 object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
@@ -32,7 +33,10 @@ export default function AboutUs() {
           <div className="flex flex-col gap-4 text-left">
             <div className="hidden flex-col gap-2 lg:flex">
               <SubHeading>About Us</SubHeading>
-              <Heading>JOINMUN: Where Youth Drive Impact</Heading>
+              <Heading>JOINMUN: Redefining Justice, Reshaping Destiny</Heading>
+              <SubHeading className="text-[110%]">
+                Uniting for a World of True Equity and Enduring Security
+              </SubHeading>
             </div>
             <motion.p
               initial={{ opacity: 0 }}
@@ -41,14 +45,18 @@ export default function AboutUs() {
               viewport={{ once: true }}
               className="text-justify"
             >
-              JOINMUN 2025 (Jogja International Model United Nations) is an international MUN
-              conference hosted in Yogyakarta, Indonesia, uniting youth voices to confront
-              today&apos;s most pressing global issues.
+              Jogja International Model United Nations is one of Indonesia's most prestigious
+              international MUN with hundreds of delegates from over 10 countries worldwide. In its
+              14th year, JOINMUN blends the core values of the UN with the richness of Javanese
+              culture, serving as a platform for aspiring diplomats and changemakers.
               <br />
-              <br />
-              This year&apos;s conference challenges delegates to reimagine global justice and
-              contribute to building a fairer, safer world. Join future leaders, spark real
-              conversations, and reshape what&apos;s possible — only at JOINMUN 2025.
+              <br className="lg:hidden xl:block" />
+              In a world characterized by disparity and conflict, justice must surpass mere
+              regulations—we must ensure equity in access to rights, resources, and opportunities.
+              Transforming the future means confronting historical injustices and creating a world
+              where every nation and individual can thrive. Enduring peace is only possible when we
+              address the root causes of inequality together, aiming for a future where justice and
+              security are not privileges, but universal guarantees.
             </motion.p>
           </div>
         </div>
