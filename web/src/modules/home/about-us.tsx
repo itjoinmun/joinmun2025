@@ -20,7 +20,7 @@ export default function AboutUs() {
             <SubHeading>Uniting for a World of True Equity and Enduring Security</SubHeading>
           </motion.div>
 
-          <div className="relative aspect-[5/3] w-full shrink-0 object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
+          <div className="4xl:w-[20vw] relative aspect-[5/3] w-full shrink-0 object-cover md:max-h-[450px] md:self-center lg:w-[40vw] lg:self-auto xl:w-[35vw] 2xl:w-[30vw]">
             <Image
               src="/assets/about-us/NKO02971.jpg"
               alt="NKO02971"

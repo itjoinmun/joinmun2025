@@ -36,7 +36,7 @@ const ThemeUnesco = () => {
           <Heading>Recognized by UNESCO</Heading>
 
           <div className="mt-7 flex flex-col gap-x-11 gap-y-8 lg:flex-row">
-            <div className="aspect-[354/219] relative shrink-0 w-full shadow-lg lg:aspect-auto lg:h-full lg:max-w-[32%]">
+            <div className="relative aspect-[354/219] w-full shrink-0 shadow-lg lg:aspect-auto lg:h-full lg:max-w-[32%]">
               <Image
                 src="/assets/theme/recognized.webp"
                 alt="The Sumbu Filosofi of Yogyakarta"

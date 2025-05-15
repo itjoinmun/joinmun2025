@@ -21,7 +21,7 @@ const CouncilData = (props: Council) => {
         <div className={cn(props.topic && "flex flex-col gap-3 *:text-pretty md:gap-6")}>
           {props.topic && (
             <div className="space-y-4">
-              <p className="font-bold">Topic:</p>
+              <p className="text-lg font-bold">Topic:</p>
               <ReadMoreCouncil
                 html={props.topic}
                 limit={300}
@@ -33,7 +33,7 @@ const CouncilData = (props: Council) => {
           {props.topic && <hr className="border-gray-light my-2 w-full border-b" />}
 
           <div className="space-y-4">
-            <p className="font-bold">Council Explanation:</p>
+            <p className="text-lg font-bold">Council Explanation:</p>
             <ReadMoreCouncil
               html={props.explanation}
               limit={300}

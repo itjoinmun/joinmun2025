@@ -5,7 +5,7 @@ import Container from "@/components/ui/container";
 import { PriceOptions, PRICES } from "@/utils/helpers/pricing";
 import { isPriceReveal } from "@/utils/helpers/reveal";
 import { useState } from "react";
-import * as motion from 'motion/react-client'
+import * as motion from "motion/react-client";
 
 const Pricing = () => {
   const [active, setActive] = useState<PriceOptions>("single");
