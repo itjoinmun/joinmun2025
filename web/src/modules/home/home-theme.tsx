@@ -41,7 +41,7 @@ const HomeTheme = () => {
                 Sumbu Filosofi
               </Heading>
 
-              <div className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl">
+              <div className="flex flex-col gap-4 text-sm text-pretty text-white md:max-w-2xl col-span-3">
                 <motion.p
                   variants={fadeInVariants}
                   initial="hidden"

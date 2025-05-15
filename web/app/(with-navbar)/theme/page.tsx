@@ -5,7 +5,7 @@ import ThemePhilosophy from "@/modules/theme/theme-philosophy";
 import ThemeTeaser from "@/modules/theme/theme-teaser";
 import ThemeTrailer from "@/modules/theme/theme-trailer";
 import ThemeUnesco from "@/modules/theme/theme-unesco";
-import { isThemeReveal } from "@/utils/helpers/reveal";
+import { isTeaserReveal, isThemeReveal } from "@/utils/helpers/reveal";
 
 const ThemePage = () => {
   return (
@@ -16,7 +16,7 @@ const ThemePage = () => {
           <ThemeInspired />
           <ThemePhilosophy />
           <ThemeUnesco />
-          <ThemeTeaser />
+          {isTeaserReveal && <ThemeTeaser />}
           <ThemeTrailer />
         </>
       ) : (
