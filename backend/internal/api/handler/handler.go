@@ -62,7 +62,7 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer
 
 	// ADMIN
 	adminRepo := adminRepoI.NewAdminRepo(db)
-	adminService := adminServiceI.NewAdminService(adminRepo, delegateRepo, paymentRepo)
+	adminService := adminServiceI.NewAdminService(uploader, adminRepo, delegateRepo, paymentRepo)
 	adminHandler, err := adminHandlerI.NewAdminHandler(adminService)
 	if err != nil {
 		panic(err)

@@ -154,3 +154,168 @@ func (h *AdminHandler) UpdatePaymentStatusHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Payment status updated successfully"})
 }
+
+func (h *AdminHandler) GetDelegateBiodataResponsesHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Only admins can get delegate biodata responses
+	if userContext.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+		return
+	}
+
+	var req struct {
+		DelegateType string `json:"delegate_type" binding:"required"`
+		Limit        int    `json:"limit" binding:"required"`
+		Offset       int    `json:"offset" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+		return
+	}
+
+	responses, err := h.adminService.GetDelegateBiodataResponses(req.DelegateType, req.Limit, req.Offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate biodata responses", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses)
+}
+
+func (h *AdminHandler) GetDelegateHealthResponsesHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Only admins can get delegate health responses
+	if userContext.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+		return
+	}
+
+	var req struct {
+		DelegateType string `json:"delegate_type" binding:"required"`
+		Limit        int    `json:"limit" binding:"required"`
+		Offset       int    `json:"offset" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+		return
+	}
+
+	responses, err := h.adminService.GetDelegateHealthResponses(req.DelegateType, req.Limit, req.Offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate health responses", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses)
+}
+
+func (h *AdminHandler) GetDelegateMUNResponsesHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Only admins can get delegate MUN responses
+	if userContext.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+		return
+	}
+
+	var req struct {
+		DelegateType string `json:"delegate_type" binding:"required"`
+		Limit        int    `json:"limit" binding:"required"`
+		Offset       int    `json:"offset" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+		return
+	}
+
+	responses, err := h.adminService.GetDelegateMUNResponses(req.DelegateType, req.Limit, req.Offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate MUN responses", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses)
+}
+
+func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Only admins can get delegates payment
+	if userContext.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+		return
+	}
+
+	var req struct {
+		DelegateType string `json:"delegate_type" binding:"required"`
+		Limit        int    `json:"limit" binding:"required"`
+		Offset       int    `json:"offset" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+		return
+	}
+
+	responses, err := h.adminService.GetDelegatePaymentResponses(req.DelegateType, req.Limit, req.Offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates payment", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses)
+}
+
+func (h *AdminHandler) GetDelegatesHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	// Only admins can get delegates
+	if userContext.Role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+		return
+	}
+
+	var req struct {
+		DelegateType string `json:"delegate_type" binding:"required"`
+		Limit        int    `json:"limit" binding:"required"`
+		Offset       int    `json:"offset" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+		return
+	}
+
+	responses, err := h.adminService.GetDelegates(req.DelegateType, req.Limit, req.Offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses)
+}

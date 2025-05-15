@@ -60,3 +60,30 @@ type MUNTeamMembers struct {
 	MUNTeamID        string `json:"mun_team_id" db:"mun_team_id" binding:"required"`
 	MUNDelegateEmail string `json:"mun_delegate_email" db:"mun_delegate_email" binding:"required,email"`
 }
+
+type BiodataResponseWithQuestion struct {
+	BiodataQuestionID   int    `db:"biodata_question_id"`
+	DelegateEmail       string `db:"delegate_email"`
+	BiodataAnswerText   string `db:"biodata_answer_text"`
+	BiodataQuestionType string `db:"biodata_question_type"`
+	BiodataQuestionText string `db:"biodata_question_text"`
+	ParticipantType     string `db:"participant_type"`
+}
+
+type HealthResponseWithQuestion struct {
+	HealthQuestionsID  int    `db:"health_questions_id"`
+	DelegateEmail      string `db:"delegate_email"`
+	HealthAnswerText   string `db:"health_answer_text"`
+	HealthQuestionType string `db:"health_question_type"`
+	HealthQuestionText string `db:"health_question_text"`
+	ParticipantType    string `db:"participant_type"`
+}
+
+type MUNResponseWithQuestion struct {
+	MUNQuestionID   int    `db:"mun_question_id"`
+	DelegateEmail   string `db:"delegate_email"`
+	MUNAnswerText   string `db:"mun_answer_text"`
+	MUNQuestionType string `db:"mun_question_type"`
+	MUNQuestionText string `db:"mun_question_text"`
+	ParticipantType string `db:"participant_type"`
+}

@@ -5,6 +5,7 @@ import (
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
 	positionRepo "backend/internal/repository/position"
+	"backend/internal/s3"
 	"backend/pkg/utils/logger"
 	"fmt"
 	"time"
@@ -16,17 +17,20 @@ type PositionService interface {
 }
 
 type positionService struct {
+	uploader     *s3.S3Uploader
 	positionRepo positionRepo.PositionPaperRepo
 	paymentRepo  paymentRepo.PaymentRepo
 	delegateRepo delegateRepo.DelegateRepo
 }
 
 func NewPositionService(
+	uploader *s3.S3Uploader,
 	positionRepo positionRepo.PositionPaperRepo,
 	paymentRepo paymentRepo.PaymentRepo,
 	delegateRepo delegateRepo.DelegateRepo,
 ) PositionService {
 	return &positionService{
+		uploader:     uploader,
 		positionRepo: positionRepo,
 		paymentRepo:  paymentRepo,
 		delegateRepo: delegateRepo,
@@ -39,6 +43,13 @@ func (s *positionService) GetPositionPaperByDelegateEmail(delegateEmail string) 
 		logger.LogError(err, "Failed to get position paper by delegate email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPositionPaperByDelegateEmail"})
 		return nil, err
 	}
+	paperUrl, err := s.uploader.GeneratePresignedURL(paper.SubmissionFile)
+	if err != nil {
+		logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPositionPaperByDelegateEmail"})
+		return nil, err
+	}
+
+	paper.SubmissionFile = paperUrl
 	logger.LogDebug("Position paper retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPositionPaperByDelegateEmail"})
 	return paper, nil
 }
