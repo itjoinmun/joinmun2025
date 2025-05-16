@@ -18,6 +18,7 @@ const Pricing = () => {
         aria-hidden="true"
       />
       {isPriceReveal ? (
+        // If price reveal is true, show the pricing page
         <main className="relative z-0 overflow-hidden pb-12">
           <Container className="gap-2">
             <section className="flex flex-col items-center gap-2">
@@ -46,7 +47,7 @@ const Pricing = () => {
                 </h1>
                 <p className="leading-snug">{PRICES[active].description}</p>
 
-                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6 md:px-10">
+                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:px-10">
                   {PRICES[active].package.map((option, index) => (
                     <PricingCard key={index} {...option} />
                   ))}
@@ -56,6 +57,7 @@ const Pricing = () => {
           </Container>
         </main>
       ) : (
+        // If price reveal is false, show the coming soon page
         <motion.div
           className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]"
           initial={{ opacity: 0 }}
@@ -114,31 +116,60 @@ const Pricing = () => {
   );
 };
 
-const PricingCard = ({
-  name,
-  price,
-  points,
-}: {
-  name: string;
-  price: number;
-  points: string[];
-}) => (
-  <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
-    <h2 className="text-lg font-bold">{name}</h2>
-    <h1 className="relative text-4xl font-bold">
-      <span className="absolute -top-1 -left-4 text-xl">$</span>
-      {price}
-    </h1>
-    <ul className="mt-4 mb-auto w-full list-inside list-disc space-y-1.5 text-start text-sm font-light">
-      {points.map((point, index) => (
-        <li key={index}>{point}</li>
-      ))}
-    </ul>
+const PricingCard = (option: any) => {
+  // Team package detection
+  const isTeam = option.delegateRange && option.nonAccommodation && option.accommodation;
 
-    <Button variant="white" className="mt-4 w-full">
-      CTA
-    </Button>
-  </article>
-);
+  if (isTeam) {
+    return (
+      <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
+        <h2 className="text-lg font-bold">{option.name}</h2>
+        <div className="mb-2 text-sm">{option.delegateRange}</div>
+        <hr className="border-gray-light my-2 w-full" />
+        <div className="flex w-full flex-col gap-4">
+          <div>
+            <div className="font-bold">{option.nonAccommodation.label}</div>
+            <div className="relative text-4xl font-bold">
+              <span className="absolute -top-1 right-0 left-0 -translate-x-8 text-xl">$</span>
+              {option.nonAccommodation.price}
+            </div>
+          </div>
+          <div>
+            <div className="font-bold">{option.accommodation.label}</div>
+            <div className="text-xs">{option.accommodation.description}</div>
+            <div className="relative text-4xl font-bold">
+              <span className="absolute -top-1 right-0 left-0 -translate-x-8 text-xl">$</span>
+              {option.accommodation.price}
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 w-full text-left">
+          <div className="mb-1 font-bold">Included Facilities</div>
+          <ul className="list-inside list-disc space-y-1.5 text-sm font-light">
+            {option.points.map((point: string, idx: number) => (
+              <li key={idx}>{point}</li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    );
+  }
+
+  // Default card for single, observer, advisor
+  return (
+    <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
+      <h2 className="text-lg font-bold">{option.name}</h2>
+      <h1 className="relative text-4xl font-bold">
+        <span className="absolute -top-1 -left-4 text-xl">$</span>
+        {option.price}
+      </h1>
+      <ul className="mt-4 mb-auto w-full list-inside list-disc space-y-1.5 text-start text-sm font-light">
+        {option.points.map((point: string, index: number) => (
+          <li key={index}>{point}</li>
+        ))}
+      </ul>
+    </article>
+  );
+};
 
 export default Pricing;
