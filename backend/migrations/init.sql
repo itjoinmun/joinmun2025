@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS health_questions (
 );
 
 CREATE TABLE IF NOT EXISTS health_responses (
-    health_questions_id INT REFERENCES health_questions(health_question_id),
+    health_question_id INT REFERENCES health_questions(health_question_id),
     delegate_email VARCHAR(255) REFERENCES mun_delegates(mun_delegate_email),
     health_answer_text TEXT NOT NULL,
     PRIMARY KEY (health_questions_id, delegate_email)

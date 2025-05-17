@@ -15,9 +15,9 @@ type BiodataResponses struct {
 }
 
 type HealthResponses struct {
-	HealthQuestionsID int    `json:"health_questions_id" db:"health_questions_id" binding:"required"`
-	DelegateEmail     string `json:"delegate_email" db:"delegate_email" binding:"required,email"` // Changed from int to string
-	HealthAnswerText  string `json:"health_answer_text" db:"health_answer_text" binding:"required"`
+	HealthQuestionID int    `json:"health_question_id" db:"health_question_id" binding:"required"`
+	DelegateEmail    string `json:"delegate_email" db:"delegate_email" binding:"required,email"` // Changed from int to string
+	HealthAnswerText string `json:"health_answer_text" db:"health_answer_text" binding:"required"`
 }
 
 type HealthQuestions struct {
@@ -71,7 +71,7 @@ type BiodataResponseWithQuestion struct {
 }
 
 type HealthResponseWithQuestion struct {
-	HealthQuestionsID  int    `db:"health_questions_id"`
+	HealthQuestionID   int    `db:"health_question_id"`
 	DelegateEmail      string `db:"delegate_email"`
 	HealthAnswerText   string `db:"health_answer_text"`
 	HealthQuestionType string `db:"health_question_type"`

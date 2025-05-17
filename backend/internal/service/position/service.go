@@ -76,6 +76,20 @@ func (s *positionService) InsertPositionPaper(positionPaper *positionModel.Posit
 		return fmt.Errorf("user not confirmed with email: %s", positionPaper.MUNDelegateEmail)
 	}
 
+	var (
+		userHasCountry bool
+		userHasCouncil bool
+	)
+	if user.Country != nil {
+		userHasCountry = *user.Country != ""
+	}
+	if user.Council != nil {
+		userHasCouncil = *user.Council != ""
+	}
+	if !userHasCountry || !userHasCouncil {
+		logger.LogError(nil, "User country or council not set", map[string]interface{}{"delegateEmail": positionPaper.MUNDelegateEmail, "layer": "service", "operation": "InsertPositionPaper"})
+		return fmt.Errorf("user country or council not set for email: %s", positionPaper.MUNDelegateEmail)
+	}
 	// check if payment is already approved
 	payment, err := s.paymentRepo.GetPaymentByDelegateEmail(positionPaper.MUNDelegateEmail)
 	if err != nil {
@@ -90,11 +104,11 @@ func (s *positionService) InsertPositionPaper(positionPaper *positionModel.Posit
 	positionPaper.SubmissionDate = time.Now()
 	positionPaper.SubmissionStatus = "pending"
 
-	id, err := s.positionRepo.InsertPositionPaper(positionPaper)
+	err = s.positionRepo.InsertPositionPaper(positionPaper)
 	if err != nil {
 		logger.LogError(err, "Failed to insert position paper", map[string]interface{}{"delegateEmail": positionPaper.MUNDelegateEmail, "layer": "service", "operation": "InsertPositionPaper"})
 		return err
 	}
-	logger.LogDebug("Position paper inserted successfully", map[string]interface{}{"positionPaperID": id, "layer": "service", "operation": "InsertPositionPaper"})
+	logger.LogDebug("Position paper inserted successfully", map[string]interface{}{"layer": "service", "operation": "InsertPositionPaper"})
 	return nil
 }

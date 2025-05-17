@@ -12,8 +12,8 @@ func InitializePositionRoutes(r *gin.Engine, positionHandler *position.PositionH
 	positionGroup := r.Group("/api/v1/position")
 	positionGroup.Use(middleware.ValidateAccessTokenMiddleware())
 	{
-		positionGroup.GET("/", positionHandler.GetPositionPaperHandler)
-		positionGroup.POST("/", positionHandler.SubmitPositionPaperHandler)
+		positionGroup.GET("", positionHandler.GetPositionPaperHandler)
+		positionGroup.POST("", positionHandler.SubmitPositionPaperHandler)
 	}
 	return r
 }

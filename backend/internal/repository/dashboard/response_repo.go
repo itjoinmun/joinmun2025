@@ -99,7 +99,7 @@ func (r *responseRepo) InsertHealthResponses(tx *sqlx.Tx, responses []dashboard.
 
 	for i, res := range responses {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
-		args = append(args, res.DelegateEmail, res.HealthQuestionsID, res.HealthAnswerText)
+		args = append(args, res.DelegateEmail, res.HealthQuestionID, res.HealthAnswerText)
 	}
 
 	query += strings.Join(valueStrings, ",")

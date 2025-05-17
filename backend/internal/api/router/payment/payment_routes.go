@@ -12,8 +12,8 @@ func InitializePaymentRoutes(r *gin.Engine, paymentHandler *payment.PaymentHandl
 	paymentGroup := r.Group("/api/v1/payment")
 	paymentGroup.Use(middleware.ValidateAccessTokenMiddleware())
 	{
-		paymentGroup.GET("/", paymentHandler.GetPaymentHandler)
-		paymentGroup.POST("/", paymentHandler.SubmitPaymentHandler)
+		paymentGroup.GET("", paymentHandler.GetPaymentHandler)
+		paymentGroup.POST("", paymentHandler.SubmitPaymentHandler)
 	}
 	return r
 }
