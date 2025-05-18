@@ -26,6 +26,9 @@ DOCKER_COMPOSE=docker compose -f $(COMPOSE_FILE)
 
 # Start containers
 up:
+	$(DOCKER_COMPOSE) up
+
+upb:
 	$(DOCKER_COMPOSE) up --build
 
 # Stop and remove containers
@@ -37,7 +40,7 @@ downv:
 	$(DOCKER_COMPOSE) down -v
 
 # Restart containers
-restart: down up
+restart: down upb
 
 # Restart containers with volume removal
 restartv: downv up
@@ -64,4 +67,4 @@ shell:
 
 # Connect to the database
 db:
-	$(DOCKER_COMPOSE) exec -it $(BACKEND_DB) psql -U $(DB_USERNAME) -d $(DB_DATABASE)
+	docker exec -it $(BACKEND_DB) psql -U $(DB_USERNAME) -d $(DB_DATABASE)
