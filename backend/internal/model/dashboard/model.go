@@ -4,7 +4,7 @@ import "time"
 
 type BiodataQuestions struct {
 	BiodataQuestionID   int    `json:"biodata_question_id" db:"biodata_question_id" binding:"required"`
-	QuestionType        string `json:"biodata_question_type" db:"biodata_question_type" binding:"required,oneof=file text dropdown"`
+	QuestionType        string `json:"biodata_question_type" db:"biodata_question_type" binding:"required,oneof=file text dropdown name"`
 	BiodataQuestionText string `json:"biodata_question_text" db:"biodata_question_text" binding:"required"`
 }
 
@@ -40,6 +40,7 @@ type MUNResponses struct {
 
 type MUNDelegates struct {
 	MUNDelegateEmail string     `json:"mun_delegate_email" db:"mun_delegate_email" binding:"email"` // Changed from int to string
+	MUNDelegateName  string     `json:"mun_delegate_name" db:"mun_delegate_name"`
 	Type             *string    `json:"type" db:"type" binding:"omitempty,oneof=single_delegate double_delegate"`
 	Pair             *string    `json:"pair" db:"pair" binding:"email,omitempty"`
 	Council          *string    `json:"council" db:"council" binding:"omitempty,oneof=UNWOMEN WHO UNSC ECOFIN CRISIS BRICS+ Press"`

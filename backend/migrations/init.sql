@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS mun_teams (
 
 CREATE TABLE IF NOT EXISTS mun_delegates (
     mun_delegate_email VARCHAR(255) PRIMARY KEY UNIQUE CHECK (mun_delegate_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    mun_delegate_name VARCHAR(255),
     type VARCHAR(16) CHECK (type IN ('single_delegate', 'double_delegate')),
     council VARCHAR(8) CHECK (council IN ('UNWOMEN', 'WHO', 'UNSC', 'ECOFIN', 'CRISIS', 'BRICS+', 'Press')),
     country VARCHAR(255),
@@ -65,7 +66,7 @@ CREATE TABLE IF NOT EXISTS biodata_responses (
 
 CREATE TABLE IF NOT EXISTS health_questions (
     health_question_id SERIAL PRIMARY KEY,
-    health_question_type VARCHAR(16) CHECK (health_question_type IN ('file', 'dropdown', 'text')),
+    health_question_type VARCHAR(16) CHECK (health_question_type IN ('file', 'dropdown', 'text', 'name')),
     health_question_text TEXT NOT NULL
 );
 
@@ -126,7 +127,6 @@ INSERT INTO biodata_questions (biodata_question_id, biodata_question_type, bioda
 (6,  'dropdown', 'Gender'),
 (7,  'text', 'Active Contact Number'),
 (8,  'text', 'Line ID'),
-(9,  'text', 'Street Address');
 
 INSERT INTO mun_questions (mun_question_id, mun_question_type, mun_question_text) VALUES
 (1,  'text', 'Previous MUN Experience'),

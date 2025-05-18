@@ -12,6 +12,7 @@ func InitializeDashboardRoutes(r *gin.Engine, dashboardHandler *dashboard.Dashbo
 	dashboardGroup := r.Group("/api/v1/dashboard")
 	dashboardGroup.Use(middleware.ValidateAccessTokenMiddleware())
 	{
+		dashboardGroup.GET("/whoami", dashboardHandler.WhoAmIHandler)
 		dashboardGroup.GET("/participants", dashboardHandler.ParticipantDataHandler)
 		dashboardGroup.GET("/questions", dashboardHandler.GetQuestionsHandler)
 		dashboardGroup.POST("/delegates", dashboardHandler.InsertDelegatesHandler)
