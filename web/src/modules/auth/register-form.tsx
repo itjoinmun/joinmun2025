@@ -15,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Loader } from "lucide-react";
+import { registerUser } from "@/utils/helpers/fetch/auth/auth";
+import { redirect } from "next/navigation";
 
 const loginSchema = z
   .object({
@@ -54,11 +56,19 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = () =>
-    // values: z.infer<typeof loginSchema>
+  const onSubmit = async (values: z.infer<typeof loginSchema>) =>
     {
       setPending(true);
       try {
+        const res = await registerUser({
+          username: values.name,
+          email: values.email,
+          password: values.password,
+        })
+        if (res.ok) {
+          // redirect to dashboard
+          redirect("/login");
+        }
         // post to backend api
       } catch (error) {
         console.error(error);

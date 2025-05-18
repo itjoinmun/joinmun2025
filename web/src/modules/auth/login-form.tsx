@@ -17,6 +17,8 @@ import Link from "next/link";
 import { cn } from "@/utils/helpers/cn";
 import { useState } from "react";
 import { Loader } from "lucide-react";
+import { loginUser } from "@/utils/helpers/fetch/auth/auth";
+import { redirect } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Email format is invalid").nonempty("Email is required"),
@@ -34,9 +36,17 @@ const LoginForm = () => {
     },
   });
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  const onSubmit = (_values: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
+      const res = await loginUser({
+        email: values.email,
+        password: values.password,
+      })
+      if (res.ok) {
+        // redirect to dashboard
+        redirect("/dashboard/home");
+      } 
       // post to backend api
     } catch (error) {
       console.error(error);
