@@ -22,7 +22,7 @@ const logoStyle = "size-5";
 const NAV_LINKS = [
   {
     name: "Home",
-    href: "/dashboard",
+    href: "/dashboard/home",
     logo: <Home className={logoStyle} />,
   },
   {
@@ -95,9 +95,9 @@ const DummyNav = ({ pathname }: { pathname: string }) => (
               key={link.name}
               href={link.href}
               className={cn(
-                buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
+                buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "ghost" }),
                 "group h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal group-data-[collapsible=icon]:px-0",
-                `${pathname === link.href && "hover:bg-red-normal"}`,
+                `${pathname.startsWith(link.href) && "hover:bg-red-normal"}`,
               )}
             >
               <span className="group-data-[collapsible=icon]:mx-auto">{link.logo}</span>
@@ -163,7 +163,7 @@ const MobileNavButtons = ({ pathname, className }: { pathname: string; className
         key={i} // Using index as key is acceptable here as NAV_LINKS is static
         scroll={false} // Add scroll={false} to prevent page scroll reset
         className={cn(
-          buttonVariants({ variant: pathname === link.href ? "primary" : "gray" }),
+          buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "gray" }),
           "shrink-0 snap-start items-center rounded-sm transition-all",
         )}
       >

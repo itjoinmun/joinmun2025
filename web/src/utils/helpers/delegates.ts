@@ -1,4 +1,4 @@
-export type PriceOptions = "single" | "team" | "observer" | "advisor";
+export type DelegateOptions = "single" | "team" | "observer" | "advisor";
 
 export type AccommodationOption = {
   price: string;
@@ -14,7 +14,7 @@ export type TeamPackage = {
   points: string[];
 };
 
-export type PriceOptionType =
+export type Delegate =
   | {
       // For single, observer, advisor
       name: string;
@@ -32,7 +32,7 @@ export type PriceOptionType =
       package: TeamPackage[];
     };
 
-export const PRICES: Record<PriceOptions, PriceOptionType> = {
+export const DELEGATES: Record<DelegateOptions, Delegate> = {
   ["single"]: {
     name: "Single Delegates",
     description:

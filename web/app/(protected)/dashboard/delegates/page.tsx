@@ -20,7 +20,7 @@ const DelegatesPage = () => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Delegates Lumayan </BreadcrumbPage>
+              <BreadcrumbPage>Delegates</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
