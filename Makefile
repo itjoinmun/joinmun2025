@@ -1,53 +1,67 @@
 # Project constants
 PROJECT_NAME=joinmun2025
-COMPOSE_FILE=compose.dev.yaml
-DOCKER_COMPOSE=docker compose -f $(COMPOSE_FILE)
-BACKEND_SERVICE=joinmun2025-backend-api-1
-BACKEND_DB=joinmun2025-backend-db-1
+COMPOSE_DEV_FILE=compose.dev.yaml
+COMPOSE_PROD_FILE=compose.prod.yaml
 DB_USERNAME=joinmun
 DB_DATABASE=joinmun_backend_db
 
-# Commands
-.PHONY: up down downv restart logs build stop ps shell db
+# Mode selection (default: dev)
+MODE ?= dev
+ifeq ($(MODE),dev)
+	COMPOSE_FILE=$(COMPOSE_DEV_FILE)
+	BACKEND_SERVICE=$(PROJECT_NAME)-backend-api-1
+	BACKEND_DB=$(PROJECT_NAME)-backend-db-1
+else ifeq ($(MODE),prod)
+	COMPOSE_FILE=$(COMPOSE_PROD_FILE)
+	BACKEND_SERVICE=$(PROJECT_NAME)-backend-api-1
+	BACKEND_DB=$(PROJECT_NAME)-backend-db-1
+else
+$(error MODE must be either 'dev' or 'prod')
+endif
 
-# Start container (default when u type make)
+DOCKER_COMPOSE=docker compose -f $(COMPOSE_FILE)
+
+# Commands
+.PHONY: up down downv restart restartv logs build stop ps shell db
+
+# Start containers
 up:
 	$(DOCKER_COMPOSE) up --build
 
-# stop and remove containers
+# Stop and remove containers
 down:
 	$(DOCKER_COMPOSE) down
 
-# stop and remove containers and volumes
+# Stop and remove containers and volumes
 downv:
 	$(DOCKER_COMPOSE) down -v
 
-# restart containers
+# Restart containers
 restart: down up
 
-# restart containers, removing volumes
+# Restart containers with volume removal
 restartv: downv up
 
-# build containers
+# Build containers
 build:
 	$(DOCKER_COMPOSE) build
 
-# view logs
+# View logs
 logs:
 	$(DOCKER_COMPOSE) logs -f
 
-# stop containers
+# Stop containers
 stop:
 	$(DOCKER_COMPOSE) stop
 
-# list all containers
+# List all containers
 ps:
 	$(DOCKER_COMPOSE) ps
 
-# ssh into the backend container
+# Open a shell in the backend container
 shell:
 	$(DOCKER_COMPOSE) exec -it $(BACKEND_SERVICE) sh
 
-# ssh into the database container
+# Connect to the database
 db:
 	$(DOCKER_COMPOSE) exec -it $(BACKEND_DB) psql -U $(DB_USERNAME) -d $(DB_DATABASE)
