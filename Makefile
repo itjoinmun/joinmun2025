@@ -25,6 +25,9 @@ downv:
 # restart containers
 restart: down up
 
+# restart containers, removing volumes
+restartv: downv up
+
 # build containers
 build:
 	$(DOCKER_COMPOSE) build
