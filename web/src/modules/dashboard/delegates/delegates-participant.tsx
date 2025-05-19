@@ -20,7 +20,7 @@ const DelegatesParticipant = () => {
             <CTACard
               title={delegate.name}
               description={delegate.description}
-              href={`delegates/${key}/registration/1`}
+              href={`delegates/${key === 'team' ? 'team' : key + '/registration/1'}`}
               key={key}
             />
           ))}

@@ -29,6 +29,7 @@ export type Delegate =
   | {
       // For team
       name: string;
+      type: 'participant' | 'companion';
       description: string;
       package: TeamPackage[];
     };
