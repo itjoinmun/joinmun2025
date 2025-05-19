@@ -15,8 +15,8 @@ const DelegatesParticipant = () => {
       </DashboardModuleHeader>
       <DashboardModuleContent className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Object.entries(DELEGATES)
-          .filter(([_, delegate]) => delegate.type === "participant")
-          .map(([key, delegate], i) => (
+          .filter(([, delegate]) => delegate.type === "participant")
+          .map(([key, delegate]) => (
             <CTACard
               title={delegate.name}
               description={delegate.description}

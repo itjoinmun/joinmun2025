@@ -1,22 +1,21 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { register } from "@/utils/helpers/fetch/auth/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import { registerUser } from "@/utils/helpers/fetch/auth/auth";
 import { redirect } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const loginSchema = z
   .object({
@@ -60,7 +59,7 @@ const RegisterForm = () => {
     {
       setPending(true);
       try {
-        const res = await registerUser({
+        const res = await register({
           username: values.name,
           email: values.email,
           password: values.password,

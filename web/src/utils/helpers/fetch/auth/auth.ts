@@ -26,7 +26,7 @@ export type AuthResponseApi = {
     headers: Headers;
 }
 
-export async function registerUser(data: {
+export async function register(data: {
   username: string;
   email: string;
   password: string;
@@ -51,7 +51,7 @@ export async function registerUser(data: {
   };
 }
 
-export async function loginUser(data: {
+export async function login(data: {
   email: string;
   password: string;
 }, isPublic?: boolean): Promise<AuthResponseApi> {
@@ -111,7 +111,7 @@ export async function resetPassword(data: {
   return res.json();
 }
 
-export async function logoutUser(accessToken: string, isPublic?: boolean): Promise<{ message: string }> {
+export async function logout(accessToken: string, isPublic?: boolean): Promise<{ message: string }> {
   const res = await fetch(`${getBaseUrl(isPublic)}/auth/logout`, {
     method: "POST",
     credentials: "include",

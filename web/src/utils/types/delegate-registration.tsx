@@ -9,8 +9,7 @@ interface DelegateRegistration {
   biodata_responses: BiodataResponse[];
   health_responses: HealthResponse[];
   mun_responses: MunResponse[];
-}
-[];
+};
 
 interface BiodataResponse {
   biodata_question_id: number;

@@ -2,38 +2,35 @@
 
 const API_BASE = process.env.API_URL
 
-export async function fetchOneDelegate(accessToken?: string): Promise<any> {
+// TO DO: tolong benerin type nya sesuai postman siapa aja
+export async function getDelegate(accessToken?: string): Promise<any> {
     const res = await fetch(`${API_BASE}/dashboard/whoami`, {
-        method: "GET",
         headers: {
         "Content-Type": "application/json",
         Cookie: `access_token=${accessToken}`,
         credentials: "include",
         },
-    });
+    }).then(res => res.json());
     
     if (!res.ok) {
         return null
     }
-    
-    const resBody = await res.json();
-    return resBody;
+
+    return res;
 }
 
-export async function fetchDelegates(accessToken?: string): Promise<any> {
+export async function getDelegates(accessToken?: string): Promise<any> {
     const res = await fetch(`${API_BASE}/dashboard/participants`, {
-        method: "GET",
         headers: {
         "Content-Type": "application/json",
         Cookie: `access_token=${accessToken}`,
         credentials: "include",
         },
-    });
+    }).then(res => res.json());
     
     if (!res.ok) {
         return null
     }
-    
-    const resBody = await res.json();
-    return resBody;
+
+    return res;
 }

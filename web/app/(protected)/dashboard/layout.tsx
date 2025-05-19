@@ -9,12 +9,12 @@ import { isRegistrationOpen } from "@/utils/helpers/reveal";
 import { useState } from "react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
     <>
       {isRegistrationOpen ? (
-        <SidebarProvider open={isOpen} onOpenChange={setIsOpen}>
+        <SidebarProvider open={open} onOpenChange={setOpen}>
           <main className="relative flex h-screen w-full flex-col gap-6 md:flex-row md:gap-0 md:overflow-clip">
             <DashboardNav />
             <section className="max-h-screen w-full md:overflow-y-auto">

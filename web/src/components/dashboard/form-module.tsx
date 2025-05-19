@@ -86,6 +86,7 @@ const FormContent = ({
 }: {
   className?: string;
   fields: FormFieldConfig[];
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   onSubmit?: (values: any) => void;
 }) => {
   // 1. Define the zod schema for validation.
@@ -117,7 +118,7 @@ const FormContent = ({
         onSubmit={form.handleSubmit(handleSubmit)}
         className={cn("grid auto-rows-min grid-cols-1 gap-8 md:grid-cols-2 md:gap-12", className)}
       >
-        {fields.map((field, i) => {
+        {fields.map((field) => {
           if (field.type === "file")
             return (
               <FormField
@@ -173,3 +174,4 @@ const FormContent = ({
 };
 
 export { FormContent, FormHeader, RegistrationFormModule };
+

@@ -12,14 +12,13 @@ import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
-const INDEX = 0;
 
-const BiodataForm = ({ slug }: { slug: DelegateOptions }) => {
-  const [formData, setFormData] = usePersistedState<DelegateRegistration | object>(`${slug}Registration`, {});
+const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions, index?: number }) => {
+  const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(`${slug}Registration`, []);
   const router = useRouter();
 
   // Get the saved data from localStorage for this specific form
-  const savedData = formData[INDEX]?.biodata_responses || {};
+  const savedData = formData[index]?.biodata_responses || {};
 
   // Define our form fields array with all metadata
   const formFields: FormFieldConfig[] = [
@@ -95,13 +94,14 @@ const BiodataForm = ({ slug }: { slug: DelegateOptions }) => {
     },
   ];
 
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     // Do something with the form values.
     console.log(values);
     // Parse the slug to prepare for form submission to API
     const userEmail = "andre@gmail.com";
     const newData = {
-      ...formData[INDEX],
+      ...formData[index],
       mun_delegates: {
         mun_delegate_email: userEmail,
         type: "",
@@ -117,7 +117,7 @@ const BiodataForm = ({ slug }: { slug: DelegateOptions }) => {
     };
     setFormData({
       ...formData,
-      [INDEX]: newData,
+      [index]: newData,
     });
     router.push("2");
   };

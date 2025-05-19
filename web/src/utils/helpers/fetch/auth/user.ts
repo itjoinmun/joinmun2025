@@ -36,7 +36,7 @@ export const getRefreshToken = async () => {
   return cookieStore.get('refresh_token')?.value as string
 }
 
-export async function fetchUser(): Promise<User> {
+export async function getUser(): Promise<User> {
   // First try to get user from headers
   const headersList = await headers()
   const username = headersList.get('x-user-username')

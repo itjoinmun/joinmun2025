@@ -12,18 +12,15 @@ import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
-// temporary index
-const INDEX = 0;
-
-const MedicalForm = ({ slug }: { slug: DelegateOptions }) => {
-  const [formData, setFormData] = usePersistedState<DelegateRegistration | object>(
+const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
+  const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
     `${slug}Registration`,
-    {},
+    [],
   );
   const router = useRouter();
 
   // Get the data from localStorage for this specific form
-  const savedData = formData[INDEX]?.health_responses || {};
+  const savedData = formData[index]?.health_responses || {};
 
   // Define our form fields array with all metadata
   const formFields: FormFieldConfig[] = [
@@ -120,6 +117,7 @@ const MedicalForm = ({ slug }: { slug: DelegateOptions }) => {
     },
   ];
 
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     // Do something with the form values.
     console.log(values);
@@ -128,7 +126,7 @@ const MedicalForm = ({ slug }: { slug: DelegateOptions }) => {
 
     // Structure the form data to match the API requirements
     const newData = {
-      ...formData[INDEX],
+      ...formData[index],
       mun_delegates: {
         mun_delegate_email: userEmail,
         type: "",
@@ -146,9 +144,9 @@ const MedicalForm = ({ slug }: { slug: DelegateOptions }) => {
     // Store in localStorage
     setFormData({
       ...formData,
-      [INDEX]: newData,
+      [index]: newData,
     });
-    // router.push("/dashboard/delegates");
+    router.push("/dashboard/delegates");
   };
 
   return (

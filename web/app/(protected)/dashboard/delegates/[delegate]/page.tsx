@@ -1,15 +1,13 @@
 import {
   DashboardModule,
   DashboardModuleContent,
-  DashboardModuleDescription,
   DashboardModuleHeader,
-  DashboardModuleTitle,
+  DashboardModuleTitle
 } from "@/components/dashboard/dashboard-module";
 import {
   DashboardPage,
   DashboardPageDescription,
-  DashboardPageHeader,
-  DashboardPageTitle,
+  DashboardPageHeader
 } from "@/components/dashboard/dashboard-page";
 import {
   Breadcrumb,
@@ -23,9 +21,9 @@ import { redirect } from "next/navigation";
 
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
-const DelegationTeamPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
-  const { slug } = await params;
-  if (slug !== "team") redirect(`/dashboard/delegates/${slug}/registration`);
+const DelegationTeamPage = async ({ params }: { params: Promise<{ delegate: string }> }) => {
+  const { delegate } = await params;
+  if (delegate !== "team") redirect(`/dashboard/delegates/${delegate}/registration`);
 
   return (
     <DashboardPage className="flex flex-col gap-6">
@@ -34,7 +32,7 @@ const DelegationTeamPage = async ({ params }: { params: Promise<{ slug: string }
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/delegates">Delegates </BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard/delegates">Delegates</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

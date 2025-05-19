@@ -12,14 +12,15 @@ import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
-const INDEX = 0;
-
-const MunForm = ({ slug }: { slug: DelegateOptions }) => {
-  const [formData, setFormData] = usePersistedState<DelegateRegistration | object>(`${slug}Registration`, {});
+const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
+  const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
+    `${slug}Registration`,
+    [],
+  );
   const router = useRouter();
 
   // Get the saved data from localStorage for this specific form
-  const savedData = formData[INDEX]?.mun_responses || {};
+  const savedData = formData[index]?.mun_responses || {};
   console.log(savedData);
 
   const formFields: FormFieldConfig[] = [
@@ -96,6 +97,8 @@ const MunForm = ({ slug }: { slug: DelegateOptions }) => {
       defaultValue: savedData[8]?.mun_answer_text || "",
     },
   ];
+
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     // Do something with the form values.
     console.log(values);
@@ -103,7 +106,7 @@ const MunForm = ({ slug }: { slug: DelegateOptions }) => {
 
     // Structure the form data to match the API requirements
     const newData = {
-      ...formData[INDEX],
+      ...formData[index],
       mun_delegates: {
         mun_delegate_email: userEmail,
         type: "",
@@ -121,7 +124,7 @@ const MunForm = ({ slug }: { slug: DelegateOptions }) => {
     // Store in localStorage
     setFormData({
       ...formData,
-      [INDEX]: newData,
+      [index]: newData,
     });
     router.push("3");
   };

@@ -14,19 +14,25 @@ const DelegateRegistrationLayout = async ({
   params,
   children,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ delegate: string }>;
   children: React.ReactNode;
 }) => {
-  const { slug } = await params;
-  const delegate = DELEGATES[slug as DelegateOptions];
+  const { delegate } = await params;
+  const delegateData = DELEGATES[delegate as DelegateOptions];
 
   return (
     <DashboardPage className="flex flex-col gap-6">
+      {/* Header (title or breadcrumbs) */}
       <DashboardPageHeader className="space-y-1">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard/delegates">{delegate.name}</BreadcrumbLink>
+              {/* If team redirect to the team page, else go back to delegate dashboard */}
+              <BreadcrumbLink
+                href={delegate === "team" ? "/dashboard/delegates/team " : "/dashboard/delegates"}
+              >
+                {delegateData.name}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -38,9 +44,7 @@ const DelegateRegistrationLayout = async ({
 
       {/* Form */}
       <DashboardModule>
-        <DashboardModuleContent>
-          {children}
-        </DashboardModuleContent>
+        <DashboardModuleContent>{children}</DashboardModuleContent>
       </DashboardModule>
     </DashboardPage>
   );

@@ -14,17 +14,19 @@ export type TeamPackage = {
   points: string[];
 };
 
+export type Package = {
+  name: string;
+  price: string;
+  points: string[];
+}
+
 export type Delegate =
   | {
       // For single, observer, advisor
       name: string;
       type: 'participant' | 'companion';
       description: string;
-      package: {
-        name: string;
-        price: string;
-        points: string[];
-      }[];
+      package: Package[];
     }
   | {
       // For team

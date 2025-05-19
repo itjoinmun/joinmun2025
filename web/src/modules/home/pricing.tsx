@@ -2,7 +2,7 @@
 import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
-import { DelegateOptions, DELEGATES } from "@/utils/helpers/delegates";
+import { DelegateOptions, DELEGATES, Package, TeamPackage } from "@/utils/helpers/delegates";
 import { isPriceReveal } from "@/utils/helpers/reveal";
 import { useState } from "react";
 import * as motion from "motion/react-client";
@@ -116,9 +116,10 @@ const Pricing = () => {
   );
 };
 
-const PricingCard = (option: any) => {
+const PricingCard = (option: TeamPackage | Package) => {
   // Team package detection
-  const isTeam = option.delegateRange && option.nonAccommodation && option.accommodation;
+  const isTeam =
+    "delegateRange" in option && "nonAccommodation" in option && "accommodation" in option;
 
   if (isTeam) {
     return (
