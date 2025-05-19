@@ -19,7 +19,7 @@ const RegistrationNav = () => {
   const isLastStep = currentStep >= TOTAL_STEPS;
   return (
     <>
-      <div className="bg-background border-gray-light fixed inset-x-0 bottom-0 z-10 grid grid-cols-2 gap-3 p-2 md:absolute md:right-8 md:bottom-8 md:left-auto md:rounded-sm md:border md:shadow-md">
+      <div className="bg-background border-gray-light fixed inset-x-0 bottom-0 z-10 grid grid-cols-2 gap-3 p-2 md:absolute md:right-8 md:bottom-8 md:left-auto md:rounded-xs md:border md:shadow-md">
         {isFirstStep ? (
           <Button
             type="button"

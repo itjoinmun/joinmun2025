@@ -6,18 +6,20 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import RegistrationNav from "@/modules/dashboard/delegates/registration/registration-nav";
 import { cn } from "@/utils/helpers/cn";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DEV_CLIENT_MIDDLEWARE_MANIFEST } from "next/dist/shared/lib/constants";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 // 👏 Defining our form field metadata.
 export interface FormFieldConfig {
+  id: number;
   name: string;
+  type?: "text" | "file";
   label: string;
   placeholder: string;
   description?: string;
@@ -108,32 +110,62 @@ const FormContent = ({
     }
   };
 
-  // 4. Render the form.
+  // 5. Render the form.
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className={cn(
-          "grid auto-rows-min grid-cols-1 gap-8 md:auto-rows-fr md:grid-cols-2",
-          className,
-        )}
+        className={cn("grid auto-rows-min grid-cols-1 gap-8 md:grid-cols-2 md:gap-12", className)}
       >
-        {fields.map((field) => (
-          <FormField
-            key={field.name}
-            control={form.control}
-            name={field.name}
-            render={({ field: fieldProps }) => (
-              <FormItem>
-                <FormLabel>{field.label}</FormLabel>
-                <FormControl>
-                  <Input placeholder={field.placeholder} {...fieldProps} />
-                </FormControl>
-                {field.description && <FormDescription>{field.description}</FormDescription>}
-              </FormItem>
-            )}
-          />
-        ))}
+        {fields.map((field, i) => {
+          if (field.type === "file")
+            return (
+              <FormField
+                key={field.name}
+                control={form.control}
+                name={field.name}
+                render={({ field: fieldProps }) => (
+                  <FormItem>
+                    <FormLabel className="h-fit">{field.label}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={field.placeholder}
+                        type={"file"}
+                        name={fieldProps.name}
+                        ref={fieldProps.ref}
+                        onBlur={fieldProps.onBlur}
+                        onChange={(e) => fieldProps.onChange(e.target.files?.[0] || null)}
+                        // value is intentionally not set from fieldProps.value for type="file"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {field.description ? field.description : <>&nbsp;</>}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            );
+          return (
+            <FormField
+              key={field.name}
+              control={form.control}
+              name={field.name}
+              render={({ field: fieldProps }) => (
+                <FormItem>
+                  <FormLabel className="">{field.label}</FormLabel>
+                  <FormControl className="">
+                    <Input placeholder={field.placeholder} {...fieldProps} className="" />
+                  </FormControl>
+                  <FormDescription className="">
+                    {field.description ? field.description : <>&nbsp;</>}
+                  </FormDescription>
+                  {/* <FormMessage /> */}
+                </FormItem>
+              )}
+            />
+          );
+        })}
         <RegistrationNav />
       </form>
     </Form>
