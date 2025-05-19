@@ -21,7 +21,6 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
 
   // Get the saved data from localStorage for this specific form
   const savedData = formData[index]?.mun_responses || {};
-  console.log(savedData);
 
   const formFields: FormFieldConfig[] = [
     {
@@ -101,7 +100,6 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     // Do something with the form values.
-    console.log(values);
     const userEmail = "andre@gmail.com";
 
     // Structure the form data to match the API requirements

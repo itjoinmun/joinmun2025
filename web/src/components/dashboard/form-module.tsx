@@ -19,7 +19,7 @@ import { z } from "zod";
 export interface FormFieldConfig {
   id: number;
   name: string;
-  type?: "text" | "file";
+  type?: "text" | "file" ;
   label: string;
   placeholder: string;
   description?: string;
@@ -132,6 +132,7 @@ const FormContent = ({
                       <Input
                         placeholder={field.placeholder}
                         type={"file"}
+                        accept="image/png, image/jpeg, image/jpg, application/pdf"
                         name={fieldProps.name}
                         ref={fieldProps.ref}
                         onBlur={fieldProps.onBlur}
