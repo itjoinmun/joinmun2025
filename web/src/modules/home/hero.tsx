@@ -55,7 +55,7 @@ const Hero = () => {
             href={`/register`}
             className={cn(
               buttonVariants({ variant: "primary" }),
-              "2xs:mb-72 xs:mb-8 mt-2 mb-48 w-fit text-sm md:mb-0",
+              "xs:mb-8 mt-2 mb-4 w-fit text-sm md:mb-0",
             )}
           >
             Register Now
