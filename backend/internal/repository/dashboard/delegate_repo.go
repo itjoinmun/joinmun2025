@@ -90,6 +90,7 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 		))
 		args = append(args,
 			d.MUNDelegateEmail,
+			d.MUNDelegateName,
 			nil,
 			nil,
 			nil,

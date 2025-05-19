@@ -93,7 +93,7 @@ func (r *responseRepo) InsertHealthResponses(tx *sqlx.Tx, responses []dashboard.
 		return nil
 	}
 
-	query := `INSERT INTO health_responses (delegate_email, health_questions_id, health_answer_text) VALUES `
+	query := `INSERT INTO health_responses (delegate_email, health_question_id, health_answer_text) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
 
