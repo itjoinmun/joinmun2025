@@ -12,7 +12,7 @@ import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
-import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
+// import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
 import { useEffect, useState } from "react";
 
 const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
@@ -23,8 +23,11 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
   const router = useRouter();
 
   // Initialize file storage
+  // eslint-disable-next-line
   const [fileStorageInitialized, setFileStorageInitialized] = useState(false);
+  {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
   const [isSubmitting, setIsSubmitting] = useState(false);
+  {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Initialize IndexedDB when component mounts
@@ -159,9 +162,8 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     },
   ];
 
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   // Replace the onSubmit function with:
-
+  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
   const onSubmit = async (values: any) => {
     // Do something with the form values.
     console.log(values);

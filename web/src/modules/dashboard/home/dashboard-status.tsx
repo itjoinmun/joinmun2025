@@ -57,6 +57,7 @@ const DashboardStatus = async () => {
 
   const userStatus = await getDelegate(accessToken);
   const paperStatus = await fetchDelegatePaper(accessToken);
+  // eslint-disable-next-line
   let regInfo = getRegistrationStatusInfo(currentUserState.registrationStatus);
   const codeInfo = getDelegateCodeInfo(currentUserState.delegateCode);
   const paperInfo = getPaperSubmissionInfo(currentUserState.paperSubmission);

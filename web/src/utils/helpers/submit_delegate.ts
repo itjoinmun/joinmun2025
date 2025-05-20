@@ -17,22 +17,28 @@ export const submitDelegateRegistration = async ({
   isTeam?: boolean;
 }): Promise<{ success: boolean; error?: string }> => {
   try {
-    if (!await fileStorageDB.isInitialized()) {
-      return { success: false, error: "File storage not initialized. Please refresh and try again." };
+    if (!(await fileStorageDB.isInitialized())) {
+      return {
+        success: false,
+        error: "File storage not initialized. Please refresh and try again.",
+      };
     }
 
     // Create a FormData object for the backend submission
     const formDataObj = new FormData();
-    
-    let delegatePayload: { delegates?: any[], advisor_or_observer?: any };
+    // eslint-disable-next-line
+    let delegatePayload: { delegates?: any[]; advisor_or_observer?: any };
     const isObserverOrAdvisor = slug === "observer" || slug === "advisor";
 
     if (isTeam) {
       // For team submissions, gather all team members
       const delegates = Object.values(formData).filter(Boolean);
-      
+
       if (!delegates.length) {
-        return { success: false, error: "No team members found. Please add at least one team member." };
+        return {
+          success: false,
+          error: "No team members found. Please add at least one team member.",
+        };
       }
 
       // Create payload with all team members
@@ -58,7 +64,10 @@ export const submitDelegateRegistration = async ({
       // Single delegate submission (original logic)
       const completeData = formData[index];
       if (!completeData) {
-        return { success: false, error: "No form data found. Please complete all previous steps first." };
+        return {
+          success: false,
+          error: "No form data found. Please complete all previous steps first.",
+        };
       }
 
       if (isObserverOrAdvisor) {
@@ -91,9 +100,9 @@ export const submitDelegateRegistration = async ({
 
     if (isTeam) {
       // Team submission - gather files from all delegates
-      Object.values(formData).forEach(delegate => {
+      Object.values(formData).forEach((delegate) => {
         if (delegate?.biodata_responses) {
-          delegate.biodata_responses.forEach(response => {
+          delegate.biodata_responses.forEach((response) => {
             if (
               typeof response.biodata_answer_text === "string" &&
               response.biodata_answer_text.startsWith("FILE:")
@@ -108,7 +117,7 @@ export const submitDelegateRegistration = async ({
       // Single delegate submission
       const completeData = formData[index];
       if (completeData?.biodata_responses) {
-        completeData.biodata_responses.forEach(response => {
+        completeData.biodata_responses.forEach((response) => {
           if (
             typeof response.biodata_answer_text === "string" &&
             response.biodata_answer_text.startsWith("FILE:")
@@ -135,15 +144,13 @@ export const submitDelegateRegistration = async ({
       }
     }
 
-
     let apiUrl: string;
     // Your backend URL
     if (slug === "observer" || slug === "advisor") {
-        apiUrl = "http://localhost:8080/api/v1/dashboard/advisor-or-observer";
+      apiUrl = "http://localhost:8080/api/v1/dashboard/advisor-or-observer";
     } else {
-        apiUrl = "http://localhost:8080/api/v1/dashboard/delegates";
+      apiUrl = "http://localhost:8080/api/v1/dashboard/delegates";
     }
-    
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -159,11 +166,11 @@ export const submitDelegateRegistration = async ({
         error: `Server responded with status: ${response.status}. Details: ${errorText}`,
       };
     }
-    
+
     // Clear storage after successful submission
     localStorage.removeItem(`${slug}Registration`);
     await fileStorageDB.clearAll();
-    
+
     return { success: true };
   } catch (error) {
     return {

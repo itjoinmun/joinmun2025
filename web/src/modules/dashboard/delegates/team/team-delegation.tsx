@@ -45,6 +45,7 @@ export function TeamRegistrationTable() {
           // Find name from biodata_responses
           let name = "";
 
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           member.biodata_responses.forEach((response: any) => {
             if (response.biodata_question_id === 2) name = response.biodata_answer_text;
           });

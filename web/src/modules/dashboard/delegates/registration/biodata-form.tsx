@@ -30,8 +30,10 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       setFileStorageInitialized(true);
       
       // Log all stored files on initialization
-      fileStorageDB.getAllKeys().then(keys => {
-      });
+      
+      {/* fileStorageDB.getAllKeys().then(keys => {}); */}
+      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+      fileStorageDB.getAllKeys().then(keys => {});
     }).catch(err => {
       console.error("❌ Failed to initialize file storage:", err);
     });

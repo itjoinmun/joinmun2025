@@ -16,33 +16,6 @@ import { cn } from "@/utils/helpers/cn";
 import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
 import { cookies } from "next/headers";
 
-interface ParticipantTableData {
-  id: string;
-  name: string;
-  delegateStatus: string;
-  council: string;
-  country: string;
-}
-
-// Dummy data for development
-const dummyData: ParticipantTableData[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    delegateStatus: "Single Delegate",
-    council: "UNSC",
-    country: "United States",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    delegateStatus: "Double Delegate",
-    council: "WHO",
-    country: "United Kingdom",
-  },
-  // Add more dummy data as needed
-];
-
 const ParticipantData = async () => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
@@ -65,6 +38,7 @@ const ParticipantData = async () => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-blue-100">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {delegates?.map((participant: any, index: number) => (
               <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
                 <TableCell
