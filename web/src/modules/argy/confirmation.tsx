@@ -231,7 +231,8 @@ const ConfirmationPage = ({
       {/* Action buttons */}
       <div className="flex justify-between items-center mt-6">
         <Button
-          onClick={() => router.push(`/dashboard/delegates/${slug}/registration/${isTeam ? 'team' : '3'}`)}
+          // onClick={() => router.push(`/dashboard/delegates/${slug}/registration/${isTeam ? `` : '3'}`)}
+          onClick={() => router.push(`/dashboard/delegates/${slug}/registration/1`)}
           variant="outline"
         >
           Back

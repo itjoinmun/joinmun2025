@@ -12,7 +12,7 @@ import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
-import { submitDelegateRegistration} from "@/utils/helpers/submit_delegate";
+import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
 import { useEffect, useState } from "react";
 
 const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
@@ -30,30 +30,33 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
   // Initialize IndexedDB when component mounts
   useEffect(() => {
     console.log("🚀 Starting IndexedDB initialization...");
-    
+
     // Check if IndexedDB is already initialized
-    fileStorageDB.isInitialized().then(isInit => {
+    fileStorageDB.isInitialized().then((isInit) => {
       if (isInit) {
         console.log("✅ IndexedDB was already initialized");
         setFileStorageInitialized(true);
-        
-        // Log all stored files 
-        fileStorageDB.getAllKeys().then(keys => {
+
+        // Log all stored files
+        fileStorageDB.getAllKeys().then((keys) => {
           console.log("📂 Currently stored file keys:", keys);
         });
       } else {
         console.log("🔄 IndexedDB needs initialization");
-        fileStorageDB.init().then(() => {
-          setFileStorageInitialized(true);
-          console.log("✅ IndexedDB initialized successfully");
-          
-          // Log all stored files on initialization
-          fileStorageDB.getAllKeys().then(keys => {
-            console.log("📂 Currently stored file keys:", keys);
+        fileStorageDB
+          .init()
+          .then(() => {
+            setFileStorageInitialized(true);
+            console.log("✅ IndexedDB initialized successfully");
+
+            // Log all stored files on initialization
+            fileStorageDB.getAllKeys().then((keys) => {
+              console.log("📂 Currently stored file keys:", keys);
+            });
+          })
+          .catch((err) => {
+            console.error("❌ Failed to initialize file storage:", err);
           });
-        }).catch(err => {
-          console.error("❌ Failed to initialize file storage:", err);
-        });
       }
     });
   }, []);
@@ -156,7 +159,6 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     },
   ];
 
-
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   // Replace the onSubmit function with:
 
@@ -190,19 +192,18 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     });
 
     // Instead of submitting here, navigate to confirmation page
-    router.push(`/dashboard/delegates/${slug}/registration/confirmation${index !== 0 ? `?idx=${index}` : ''}`);
+    // router.push(`/dashboard/delegates/${slug}/registration/confirmation${index !== 0 ? `?idx=${index}` : ''}`);
+    router.push(`/dashboard/delegates/${slug}`);
   };
 
   return (
     <>
       <RegistrationFormModule>
         <FormHeader>Medical Questions</FormHeader>
-        {submitError && (
-          <div className="text-red-500 mb-4 font-medium">Error: {submitError}</div>
-        )}
+        {submitError && <div className="mb-4 font-medium text-red-500">Error: {submitError}</div>}
         <FormContent fields={formFields} onSubmit={onSubmit} />
         {isSubmitting && (
-          <div className="text-amber-500 mt-4 font-medium">
+          <div className="mt-4 font-medium text-amber-500">
             Submitting your registration, please wait...
           </div>
         )}
