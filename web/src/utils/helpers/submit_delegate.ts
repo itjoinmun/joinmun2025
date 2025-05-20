@@ -41,7 +41,6 @@ export const submitDelegateRegistration = async ({
           advisor_or_observer: delegates.map((delegate) => ({
             mun_delegates: delegate.mun_delegates,
             biodata_responses: delegate.biodata_responses || [],
-            mun_responses: delegate.mun_responses || [],
             health_responses: delegate.health_responses || [],
           }))[0], // Take first item since we expect only one advisor/observer
         };
@@ -67,7 +66,6 @@ export const submitDelegateRegistration = async ({
           advisor_or_observer: {
             mun_delegates: completeData.mun_delegates,
             biodata_responses: completeData.biodata_responses || [],
-            mun_responses: completeData.mun_responses || [],
             health_responses: completeData.health_responses || [],
           },
         };
@@ -84,8 +82,6 @@ export const submitDelegateRegistration = async ({
         };
       }
     }
-
-    console.log("📦 Prepared delegate payload:", delegatePayload);
 
     // Add the JSON data to the FormData
     formDataObj.append("json", JSON.stringify(delegatePayload));
@@ -104,7 +100,6 @@ export const submitDelegateRegistration = async ({
             ) {
               const fileKey = response.biodata_answer_text.replace("FILE:", "");
               fileReferences.push(fileKey);
-              console.log(`🔍 Found file reference: ${fileKey} for question ID: ${response.biodata_question_id}`);
             }
           });
         }
@@ -120,7 +115,6 @@ export const submitDelegateRegistration = async ({
           ) {
             const fileKey = response.biodata_answer_text.replace("FILE:", "");
             fileReferences.push(fileKey);
-            console.log(`🔍 Found file reference: ${fileKey} for question ID: ${response.biodata_question_id}`);
           }
         });
       }
@@ -131,14 +125,8 @@ export const submitDelegateRegistration = async ({
       try {
         const file = await fileStorageDB.getFile(fileKey);
         if (file) {
-          console.log(`✅ Retrieved file from IndexedDB: ${file.name} (${file.size} bytes)`);
-
-          // Extract the question ID from the file key (assuming format: email_questionId)
-          const questionId = fileKey.split("_").pop();
-
           // Add file to FormData with a field name that backend can understand
           formDataObj.append(fileKey, file, file.name);
-          console.log(`📎 Added file to FormData with field name: ${fileKey}`);
         } else {
           console.warn(`⚠️ File with key ${fileKey} not found in IndexedDB`);
         }
@@ -147,11 +135,15 @@ export const submitDelegateRegistration = async ({
       }
     }
 
-    // Send the FormData to the backend
-    console.log("📤 Sending form data to backend...");
 
+    let apiUrl: string;
     // Your backend URL
-    const apiUrl = "http://localhost:8080/api/v1/dashboard/delegates";
+    if (slug === "observer" || slug === "advisor") {
+        apiUrl = "http://localhost:8080/api/v1/dashboard/advisor-or-observer";
+    } else {
+        apiUrl = "http://localhost:8080/api/v1/dashboard/delegates";
+    }
+    
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -167,9 +159,6 @@ export const submitDelegateRegistration = async ({
         error: `Server responded with status: ${response.status}. Details: ${errorText}`,
       };
     }
-
-    const responseData = await response.json();
-    console.log("✅ Form submission successful:", responseData);
     
     // Clear storage after successful submission
     localStorage.removeItem(`${slug}Registration`);

@@ -9,7 +9,7 @@ const parseSlug = (slug: DelegateOptions) => {
     case "observer":
       parseSlug = "observer";
       break;
-    case "faculty_advisor":
+    case "advisor":
       parseSlug = "faculty_advisor";
       break;
     default:

@@ -193,7 +193,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
     // Instead of submitting here, navigate to confirmation page
     // router.push(`/dashboard/delegates/${slug}/registration/confirmation${index !== 0 ? `?idx=${index}` : ''}`);
-    router.push(`/dashboard/delegates/${slug}`);
+    router.push(`/dashboard/delegates/${slug}/registration/confirmation`);
   };
 
   return (

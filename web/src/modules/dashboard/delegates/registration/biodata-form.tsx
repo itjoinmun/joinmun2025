@@ -28,11 +28,9 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
   useEffect(() => {
     fileStorageDB.init().then(() => {
       setFileStorageInitialized(true);
-      console.log("✅ IndexedDB initialized successfully");
       
       // Log all stored files on initialization
       fileStorageDB.getAllKeys().then(keys => {
-        console.log("📂 Currently stored file keys:", keys);
       });
     }).catch(err => {
       console.error("❌ Failed to initialize file storage:", err);
@@ -57,14 +55,8 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
         return null;
       }
       
-      console.log(`🔍 Attempting to retrieve file with key: ${fileKey}`);
       try {
         const file = await fileStorageDB.getFile(fileKey);
-        if (file) {
-          console.log(`✅ Retrieved file: ${file.name}, size: ${file.size} bytes`);
-        } else {
-          console.log(`ℹ️ No file found with key: ${fileKey}`);
-        }
         return file;
       } catch (error) {
         console.error(`❌ Failed to retrieve file with key ${fileKey}:`, error);
@@ -77,8 +69,6 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       ? savedData[7]?.biodata_answer_text.replace("FILE:", "")
       : null;
     
-    console.log("🔑 Saved file reference key:", identityCardFileKey);
-
   // Define our form fields array with all metadata
   const formFields: FormFieldConfig[] = [
     {
@@ -162,8 +152,6 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       return;
     }
 
-    console.log("🔍 Raw submitted values:", values);
-    
     // Get email from form submission
     const submittedEmail = values.email;
 
@@ -171,33 +159,18 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     const identityCardFile = values.identityCard;
     
     if (identityCardFile instanceof File) {
-      console.log(`📄 New file selected: ${identityCardFile.name}, size: ${identityCardFile.size} bytes, type: ${identityCardFile.type}`);
-      
       const fileKey = getFileKey(submittedEmail, 3); // Use submitted email
-      console.log(`🔑 Generated file key: ${fileKey}`);
 
       try {
         await fileStorageDB.storeFile(fileKey, identityCardFile);
-        console.log(`💾 Stored file "${identityCardFile.name}" in IndexedDB with key: ${fileKey}`);
-        
-        // Verify the file was stored by retrieving it
-        const storedFile = await fileStorageDB.getFile(fileKey);
-        if (storedFile) {
-          console.log(`✅ Verification successful - retrieved stored file: ${storedFile.name}`);
-        } else {
-          console.warn("⚠️ Verification failed - could not retrieve stored file");
-        }
-
         // Replace file object with a placeholder in values
         values.identityCard = `FILE:${fileKey}`;
-        console.log(`🔄 Replaced file object with reference: ${values.identityCard}`);
       } catch (error) {
         console.error("❌ Error storing file in IndexedDB:", error);
       }
     } else if (!identityCardFile && identityCardFileKey) {
       // Keep the previous file reference if no new file was provided
       values.identityCard = `FILE:${identityCardFileKey}`;
-      console.log(`🔄 Keeping existing file reference: ${values.identityCard}`);
     } else {
       console.log("ℹ️ No file selected and no previous file exists");
     }
@@ -234,30 +207,23 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       biodata_responses: biodataResponses,
     };
 
-    // Log what's actually being saved to localStorage
-    console.log("📦 Final localStorage data:", {
-      ...formData,
-      [index]: newData,
-    });
-    
-    // After setting form data, log all stored file keys for verification
-    fileStorageDB.getAllKeys().then(keys => {
-      console.log("📂 All stored file keys after submission:", keys);
-    });
-
     // Update localStorage
     setFormData({
       ...formData,
       [index]: newData,
     });
 
-    // Move to next step
-    if (slug === "team") {
-      router.push(`2?idx=${index}`);
+    if(slug === "observer" || slug === "advisor") {
+      // For observer or advisor, navigate to the confirmation page
+      router.push("3");
     } else {
-      router.push("2");
+        // Move to next step
+        if (slug === "team") {
+          router.push(`2?idx=${index}`);
+        } else {
+          router.push("2");
+        }
     }
-
   };
 
   return (

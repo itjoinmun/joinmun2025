@@ -13,12 +13,12 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
+
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
     `${slug}Registration`,
     [],
   );
   const router = useRouter();
-
   // Get the saved data from localStorage for this specific form
   const savedData = formData[index]?.mun_responses || {};
 
