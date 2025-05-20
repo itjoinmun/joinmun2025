@@ -50,12 +50,13 @@ func (r *delegateRepo) GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDeleg
 	return delegates, nil
 }
 func (r *delegateRepo) InsertOneDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDelegates) (string, error) {
-	query := `INSERT INTO mun_delegates (mun_delegate_email, type, council, country, confirmed, confirmed_date, insert_date, participant_type) 
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING mun_delegate_email`
+	query := `INSERT INTO mun_delegates (mun_delegate_email, mun_delegate_name, type, council, country, confirmed, confirmed_date, insert_date, participant_type) 
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING mun_delegate_email`
 	var id string
 	err := tx.QueryRow(
 		query,
 		delegate.MUNDelegateEmail,
+		delegate.MUNDelegateName,
 		nil,
 		nil,
 		nil,

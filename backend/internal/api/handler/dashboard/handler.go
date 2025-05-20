@@ -264,6 +264,11 @@ func (h *DashboardHandler) InsertAdvisorOrObserverHandler(c *gin.Context) {
 			return
 		}
 
+		if questionType == "name" {
+			// Set the advisor or observer's name
+			req.AdvisorOrObserver.AdvisorOrObserver.MUNDelegateName = req.AdvisorOrObserver.BiodataResponses[i].BiodataAnswerText
+		}
+
 		if questionType == "file" {
 			// Process file upload
 			fileKey := fmt.Sprintf("%s_%d", advisorOrObserverEmail, req.AdvisorOrObserver.BiodataResponses[i].BiodataQuestionID)
