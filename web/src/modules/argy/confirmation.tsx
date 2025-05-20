@@ -208,12 +208,10 @@ const ConfirmationPage = ({
     <RegistrationFormModule>
       <FormHeader>Registration Confirmation</FormHeader>
       
-      <div className="mb-6">
         <p className="text-white text-opacity-80">
           Please review your registration information below. Once you're satisfied with all details,
           click the "Submit Registration" button to complete your registration.
         </p>
-      </div>
       
       {submitError && (
         <div className="bg-red-900/50 p-4 mb-6 rounded-md text-red-300">

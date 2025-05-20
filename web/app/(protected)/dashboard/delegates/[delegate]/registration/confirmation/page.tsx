@@ -1,4 +1,4 @@
-import ConfirmationPage from "@/components/argy/confirmation";
+import ConfirmationPage from "@/modules/argy/confirmation";
 import { DelegateOptions } from "@/utils/helpers/delegates";
 
 const ConfirmationPageRoute = async ({
@@ -12,11 +12,10 @@ const ConfirmationPageRoute = async ({
   const { delegate } = await params;
   
   // Check if we're in team mode
-  const isTeam = searchParams.team === "true";
-  
-  // Get index from query params (for single delegate registration)
-  const indexParam = searchParams.idx;
-  const index = indexParam ? parseInt(indexParam as string, 10) : 0;
+  const isTeam = delegate === "team";
+
+    const index: number = parseInt((await searchParams).idx as string) || 0;
+
 
   return (
     <>

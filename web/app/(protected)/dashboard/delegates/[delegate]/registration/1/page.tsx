@@ -11,7 +11,7 @@ const RegistrationBiodataPage = async ({
   // Get current delegate slug
   const { delegate } = await params;
   // Get current index (for Delegate Team only)
-  const index: number = parseInt((await searchParams).idx as string) - 1 || 0;
+  const index: number = parseInt((await searchParams).idx as string) || 0;
 
   return (
     <>

@@ -133,7 +133,12 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       ...formData,
       [index]: newData,
     });
-    router.push("3");
+
+    if (slug === "team") {
+      router.push(`3?idx=${index}`);
+    } else {
+      router.push("3");
+    }
   };
 
   return (

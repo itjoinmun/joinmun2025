@@ -18,7 +18,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { redirect } from "next/navigation";
-
+import { TeamRegistrationTable } from "@/modules/dashboard/delegates/team/team-delagation";
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
 const DelegationTeamPage = async ({ params }: { params: Promise<{ delegate: string }> }) => {
@@ -56,7 +56,7 @@ const DelegationTeamPage = async ({ params }: { params: Promise<{ delegate: stri
         </DashboardModuleHeader>
         <DashboardModuleContent>
           {/* TO DO: Table */}
-          TO DO: Table
+          <TeamRegistrationTable />
         </DashboardModuleContent>
       </DashboardModule>
     </DashboardPage>

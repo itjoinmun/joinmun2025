@@ -15,6 +15,7 @@ import { z } from "zod";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
 
 const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
+  console.log("INDEX", index);
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
     `${slug}Registration`,
     [],
@@ -251,7 +252,12 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     });
 
     // Move to next step
-    router.push("2");
+    if (slug === "team") {
+      router.push(`2?idx=${index}`);
+    } else {
+      router.push("2");
+    }
+
   };
 
   return (
