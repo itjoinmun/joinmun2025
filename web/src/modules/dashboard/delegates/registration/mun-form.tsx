@@ -100,13 +100,14 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     // Do something with the form values.
-    const userEmail = "andre@gmail.com";
+    // Get email from biodata, not hardcoded
+    const delegateEmail = formData[index]?.biodata_responses?.[0]?.biodata_answer_text || "";
 
     // Structure the form data to match the API requirements
     const newData = {
       ...formData[index],
       mun_delegates: {
-        mun_delegate_email: userEmail,
+        mun_delegate_email: delegateEmail,
         type: "",
         council: "",
         country: "",
@@ -114,7 +115,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       },
       mun_responses: formFields.map((field) => ({
         mun_question_id: field.id,
-        delegate_email: userEmail,
+        delegate_email: delegateEmail,
         mun_answer_text: values[field.name],
       })),
     };

@@ -12,7 +12,7 @@ import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { fileStorageDB } from "@/utils/file-storage-db";
+import { fileStorageDB } from "@/utils/helpers/file-storage-db";
 
 const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
@@ -44,9 +44,6 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
   // Get the saved data from localStorage for this specific form
   const savedData = formData[index]?.biodata_responses || {};
-  
-  // Email we'll use for this delegate
-  const userEmail = "andre@gmail.com";
   
   // Define file key pattern
   const getFileKey = (email: string, questionId: number) => `${email}_${questionId}`;
@@ -84,13 +81,22 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
   // Define our form fields array with all metadata
   const formFields: FormFieldConfig[] = [
     {
+      id: 1, // Use ID 1 for email field
+      name: "email",
+      label: "Email",
+      placeholder: "Enter your email address",
+      description: "This will be used as your login identifier",
+      validation: z.string().email("Invalid email address").min(1, "Email is required"),
+      defaultValue: savedData[0]?.biodata_answer_text || "",
+    },
+    {
       id: 2,
       name: "name",
       label: "Full Name",
       placeholder: "Enter your full name",
       description: "Example: 'Rika Lembing Setyawan'",
       validation: z.string().min(1, "Name is required"),
-      defaultValue: savedData[0]?.biodata_answer_text || "",
+      defaultValue: savedData[1]?.biodata_answer_text || "",
     },
     {
       id: 4,
@@ -99,7 +105,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       placeholder: "Enter your institution",
       description: "Example: 'Universitas Gadjah Mada'",
       validation: z.string().min(1, "Institution is required"),
-      defaultValue: savedData[1]?.biodata_answer_text || "",
+      defaultValue: savedData[2]?.biodata_answer_text || "",
     },
     {
       id: 5,
@@ -108,7 +114,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       placeholder: "Enter your nationality",
       description: "Example: 'Indonesia'",
       validation: z.string().min(1, "Nationality is required"),
-      defaultValue: savedData[2]?.biodata_answer_text || "",
+      defaultValue: savedData[3]?.biodata_answer_text || "",
     },
     {
       id: 7,
@@ -116,7 +122,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       label: "Phone Number",
       placeholder: "Enter your phone number",
       validation: z.string().min(1, "Phone number is required"),
-      defaultValue: savedData[3]?.biodata_answer_text || "",
+      defaultValue: savedData[4]?.biodata_answer_text || "",
     },
     {
       id: 6,
@@ -124,7 +130,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       label: "Gender",
       placeholder: "Enter your gender",
       validation: z.string().min(1, "Gender is required"),
-      defaultValue: savedData[4]?.biodata_answer_text || "",
+      defaultValue: savedData[5]?.biodata_answer_text || "",
     },
     {
       id: 8,
@@ -133,7 +139,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       placeholder: "Enter your LINE ID (optional)",
       description: "Optional contact information",
       validation: z.string().optional(),
-      defaultValue: savedData[5]?.biodata_answer_text || "",
+      defaultValue: savedData[6]?.biodata_answer_text || "",
     },
     {
       id: 3,
@@ -156,6 +162,9 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     }
 
     console.log("🔍 Raw submitted values:", values);
+    
+    // Get email from form submission
+    const submittedEmail = values.email;
 
     // Extract the file from form values
     const identityCardFile = values.identityCard;
@@ -163,7 +172,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     if (identityCardFile instanceof File) {
       console.log(`📄 New file selected: ${identityCardFile.name}, size: ${identityCardFile.size} bytes, type: ${identityCardFile.type}`);
       
-      const fileKey = getFileKey(userEmail, 3); // 3 is the ID for identityCard
+      const fileKey = getFileKey(submittedEmail, 3); // Use submitted email
       console.log(`🔑 Generated file key: ${fileKey}`);
 
       try {
@@ -198,7 +207,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       // Handle special file type fields
       if (field.type === "file") {
         if (answerValue instanceof File) {
-          answerValue = `FILE:${getFileKey(userEmail, field.id)}`;
+          answerValue = `FILE:${getFileKey(submittedEmail, field.id)}`; // Use submitted email
         } else if (!answerValue && field.savedFileKey) {
           // Use the previously saved file if no new file was uploaded
           answerValue = `FILE:${field.savedFileKey}`;
@@ -207,7 +216,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       
       return {
         biodata_question_id: field.id,
-        delegate_email: userEmail,
+        delegate_email: submittedEmail, // Use submitted email
         biodata_answer_text: answerValue || "",
       };
     });
@@ -215,7 +224,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     const newData = {
       ...formData[index],
       mun_delegates: {
-        mun_delegate_email: userEmail,
+        mun_delegate_email: submittedEmail, // Use submitted email
         type: "",
         council: "",
         country: "",

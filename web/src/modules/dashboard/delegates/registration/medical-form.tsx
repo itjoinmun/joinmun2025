@@ -11,7 +11,8 @@ import usePersistedState from "@/utils/hooks/use-persisted-state";
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { fileStorageDB } from "@/utils/file-storage-db";
+import { fileStorageDB } from "@/utils/helpers/file-storage-db";
+import { submitDelegateRegistration} from "@/utils/helpers/submit_delegate";
 import { useEffect, useState } from "react";
 
 const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
@@ -155,132 +156,18 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     },
   ];
 
-  // Function to submit all form data to the backend
-  const submitAllFormData = async () => {
-    if (!fileStorageInitialized) {
-      console.error("❌ File storage not initialized");
-      setSubmitError("File storage not initialized. Please refresh and try again.");
-      return false;
-    }
-
-    try {
-      setIsSubmitting(true);
-      setSubmitError(null);
-      console.log("🚀 Starting submission process...");
-
-      // Get the complete data from localStorage
-      const completeData = formData[index];
-
-      if (!completeData) {
-        console.error("❌ No form data found in localStorage");
-        setSubmitError("No form data found. Please complete all previous steps first.");
-        return false;
-      }
-
-      // Log the complete data from localStorage
-      console.log("📝 Complete form data from localStorage:", completeData);
-
-      // Create a FormData object for the backend submission
-      const formDataObj = new FormData();
-
-      // Prepare the delegates payload structure
-      const delegatePayload = {
-        delegates: [
-          {
-            mun_delegates: completeData.mun_delegates,
-            biodata_responses: completeData.biodata_responses || [],
-            mun_responses: completeData.mun_responses || [],
-            health_responses: completeData.health_responses || [],
-          },
-        ],
-      };
-
-      console.log("📦 Prepared delegate payload:", delegatePayload);
-
-      // Add the JSON data to the FormData
-      formDataObj.append("json", JSON.stringify(delegatePayload));
-
-      // Find all file references in biodata_responses
-      const fileReferences: string[] = [];
-
-      if (completeData.biodata_responses && Array.isArray(completeData.biodata_responses)) {
-        completeData.biodata_responses.forEach((response: { biodata_question_id: number; biodata_answer_text: string }) => {
-          if (
-            typeof response.biodata_answer_text === "string" &&
-            response.biodata_answer_text.startsWith("FILE:")
-          ) {
-            const fileKey = response.biodata_answer_text.replace("FILE:", "");
-            fileReferences.push(fileKey);
-            console.log(`🔍 Found file reference: ${fileKey} for question ID: ${response.biodata_question_id}`);
-          }
-        });
-      }
-
-      // Retrieve all files from IndexedDB and add them to FormData
-      for (const fileKey of fileReferences) {
-        try {
-          const file = await fileStorageDB.getFile(fileKey);
-          if (file) {
-            console.log(`✅ Retrieved file from IndexedDB: ${file.name} (${file.size} bytes)`);
-
-            // Extract the question ID from the file key (assuming format: email_questionId)
-            const questionId = fileKey.split("_").pop();
-
-            // Add file to FormData with a field name that backend can understand
-            formDataObj.append(fileKey, file, file.name);
-            console.log(`📎 Added file to FormData with field name: file_${questionId}`);
-          } else {
-            console.warn(`⚠️ File with key ${fileKey} not found in IndexedDB`);
-          }
-        } catch (error) {
-          console.error(`❌ Error retrieving file with key ${fileKey}:`, error);
-        }
-      }
-
-      // Send the FormData to the backend
-      console.log("📤 Sending form data to backend...");
-
-      // Your backend URL
-      const apiUrl = "http://localhost:8080/api/v1/dashboard/delegates";
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        credentials: "include", // Include cookies in the request
-        body: formDataObj,
-        // No need to set Content-Type header for FormData
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Server responded with status: ${response.status}. Details: ${errorText}`);
-      }
-
-      const responseData = await response.json();
-      console.log("✅ Form submission successful:", responseData);
-      localStorage.removeItem(`${slug}Registration`);
-      await fileStorageDB.clearAll()
-      setIsSubmitting(false);
-      return true;
-    } catch (error) {
-      console.error("❌ Error submitting form data:", error);
-      setSubmitError(error instanceof Error ? error.message : "Unknown error occurred");
-      setIsSubmitting(false);
-      return false;
-    }
-  };
-
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = async (values: any) => {
     // Do something with the form values.
     console.log(values);
     // Parse the slug to prepare for form submission to API
-    const userEmail = "andre@gmail.com";
+    const delegateEmail = formData[index]?.biodata_responses?.[0]?.biodata_answer_text || "";
 
     // Structure the form data to match the API requirements
     const newData = {
       ...formData[index],
       mun_delegates: {
-        mun_delegate_email: userEmail,
+        mun_delegate_email: delegateEmail,
         type: "",
         council: "",
         country: "",
@@ -288,7 +175,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       },
       health_responses: formFields.map((field) => ({
         health_question_id: field.id,
-        delegate_email: userEmail,
+        delegate_email: delegateEmail,
         health_answer_text: values[field.name],
       })),
     };
@@ -300,7 +187,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     });
 
     // Submit all form data to the backend
-    const success = await submitAllFormData();
+    const success = await submitDelegateRegistration({formData, index, slug});
     if (success) {
       // Show success message
       alert("Your registration has been submitted successfully!");
