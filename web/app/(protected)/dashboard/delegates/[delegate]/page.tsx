@@ -18,7 +18,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { redirect } from "next/navigation";
-import { TeamRegistrationTable } from "@/modules/dashboard/delegates/team/team-delagation";
+import { TeamRegistrationTable } from "@/modules/dashboard/delegates/team/team-delegation";
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
 const DelegationTeamPage = async ({ params }: { params: Promise<{ delegate: string }> }) => {

@@ -24,7 +24,8 @@ export const submitDelegateRegistration = async ({
     // Create a FormData object for the backend submission
     const formDataObj = new FormData();
     
-    let delegatePayload: { delegates: any[] };
+    let delegatePayload: { delegates?: any[], advisor_or_observer?: any };
+    const isObserverOrAdvisor = slug === "observer" || slug === "advisor";
 
     if (isTeam) {
       // For team submissions, gather all team members
@@ -35,14 +36,25 @@ export const submitDelegateRegistration = async ({
       }
 
       // Create payload with all team members
-      delegatePayload = {
-        delegates: delegates.map((delegate) => ({
-          mun_delegates: delegate.mun_delegates,
-          biodata_responses: delegate.biodata_responses || [],
-          mun_responses: delegate.mun_responses || [],
-          health_responses: delegate.health_responses || [],
-        })),
-      };
+      if (isObserverOrAdvisor) {
+        delegatePayload = {
+          advisor_or_observer: delegates.map((delegate) => ({
+            mun_delegates: delegate.mun_delegates,
+            biodata_responses: delegate.biodata_responses || [],
+            mun_responses: delegate.mun_responses || [],
+            health_responses: delegate.health_responses || [],
+          }))[0], // Take first item since we expect only one advisor/observer
+        };
+      } else {
+        delegatePayload = {
+          delegates: delegates.map((delegate) => ({
+            mun_delegates: delegate.mun_delegates,
+            biodata_responses: delegate.biodata_responses || [],
+            mun_responses: delegate.mun_responses || [],
+            health_responses: delegate.health_responses || [],
+          })),
+        };
+      }
     } else {
       // Single delegate submission (original logic)
       const completeData = formData[index];
@@ -50,16 +62,27 @@ export const submitDelegateRegistration = async ({
         return { success: false, error: "No form data found. Please complete all previous steps first." };
       }
 
-      delegatePayload = {
-        delegates: [
-          {
+      if (isObserverOrAdvisor) {
+        delegatePayload = {
+          advisor_or_observer: {
             mun_delegates: completeData.mun_delegates,
             biodata_responses: completeData.biodata_responses || [],
             mun_responses: completeData.mun_responses || [],
             health_responses: completeData.health_responses || [],
           },
-        ],
-      };
+        };
+      } else {
+        delegatePayload = {
+          delegates: [
+            {
+              mun_delegates: completeData.mun_delegates,
+              biodata_responses: completeData.biodata_responses || [],
+              mun_responses: completeData.mun_responses || [],
+              health_responses: completeData.health_responses || [],
+            },
+          ],
+        };
+      }
     }
 
     console.log("📦 Prepared delegate payload:", delegatePayload);

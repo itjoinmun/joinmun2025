@@ -204,7 +204,7 @@ func cleanupFiles(uploader *s3.S3Uploader, fileKeys []string) {
 
 func (h *DashboardHandler) InsertAdvisorOrObserverHandler(c *gin.Context) {
 	type AdvisorOrObserverStruct struct {
-		AdvisorOrObserver *dashboardModel.MUNDelegates      `json:"advisor_or_observer"`
+		AdvisorOrObserver *dashboardModel.MUNDelegates      `json:"mun_delegates"`
 		BiodataResponses  []dashboardModel.BiodataResponses `json:"biodata_responses"`
 		HealthResponses   []dashboardModel.HealthResponses  `json:"health_responses"`
 	}
