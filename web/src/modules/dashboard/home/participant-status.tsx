@@ -6,10 +6,22 @@ import {
 } from "@/components/dashboard/dashboard-module";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { cookies } from "next/headers";
+import { fetchUserClient } from "@/utils/helpers/fetch/auth/user";
+import { getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
 
-const ParticipantStatus = () => {
-  const hasRegistered = true;
-
+const ParticipantStatus = async () => {
+  let hasRegistered = false;
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get('access_token')?.value
+  const delegate = await getDelegate(accessToken);
+  if (!delegate) {
+    hasRegistered = false
+  } else {
+    hasRegistered = true
+  }
+  const result = await fetchUserClient(accessToken)
+  const user = result.user
   return (
     <DashboardModule className="flex flex-col gap-6">
       <DashboardModuleHeader>
@@ -22,7 +34,7 @@ const ParticipantStatus = () => {
             <>
               <div className="flex flex-col gap-3 md:max-w-1/2">
                 <h1 className="text-2xl leading-normal">
-                  Welcome Back! <br /> <Bold>(nama)</Bold>!
+                  Welcome Back! <br /> <Bold>{user.Username}</Bold>
                 </h1>
                 <p className="text-sm leading-normal">
                   <Bold>(delegate name)</Bold>

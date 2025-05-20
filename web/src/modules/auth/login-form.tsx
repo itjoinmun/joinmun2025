@@ -38,14 +38,18 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      const res = await login({
+      login({
         email: values.email,
         password: values.password,
+      }).then((res) => {
+        if (res.ok) {
+          // redirect to dashboard
+          redirect("/dashboard");
+        } else {
+          // show error message
+          console.error(res);
+        }
       })
-      if (res.ok) {
-        // redirect to dashboard
-        redirect("/dashboard/home");
-      } 
       // post to backend api
     } catch (error) {
       console.error(error);

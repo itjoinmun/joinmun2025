@@ -6,6 +6,8 @@ import {
   DashboardModuleContent,
 } from "@/components/dashboard/dashboard-module";
 import { cn } from "@/utils/helpers/cn";
+import { fetchDelegatePaper, getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
+import { cookies } from "next/headers";
 
 type RegistrationStatus =
   | "not_registered"
@@ -49,12 +51,18 @@ interface StatusCardProps {
   cardDescription: string;
 }
 
-const DashboardStatus = () => {
-  const regInfo = getRegistrationStatusInfo(currentUserState.registrationStatus);
+const DashboardStatus = async () => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  const userStatus = await getDelegate(accessToken);
+  const paperStatus = await fetchDelegatePaper(accessToken);
+  let regInfo = getRegistrationStatusInfo(currentUserState.registrationStatus);
   const codeInfo = getDelegateCodeInfo(currentUserState.delegateCode);
   const paperInfo = getPaperSubmissionInfo(currentUserState.paperSubmission);
   const infoInfo = getInformationCenterInfo(currentUserState.informationCenter);
-
+  console.log("STATUS", userStatus)
+  console.log("PAPER", paperStatus)
   return (
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">

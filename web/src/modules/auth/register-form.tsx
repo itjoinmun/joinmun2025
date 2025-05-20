@@ -59,15 +59,19 @@ const RegisterForm = () => {
     {
       setPending(true);
       try {
-        const res = await register({
+        register({
           username: values.name,
           email: values.email,
           password: values.password,
+        }).then((res) => {
+          if (res.ok) {
+            // redirect to dashboard
+            redirect("/login");
+          } else {
+            // show error message
+            console.error(res);
+          }
         })
-        if (res.ok) {
-          // redirect to dashboard
-          redirect("/login");
-        }
         // post to backend api
       } catch (error) {
         console.error(error);

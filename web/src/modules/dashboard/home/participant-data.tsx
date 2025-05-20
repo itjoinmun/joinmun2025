@@ -13,6 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
+import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
+import { cookies } from "next/headers";
 
 interface ParticipantTableData {
   id: string;
@@ -41,7 +43,11 @@ const dummyData: ParticipantTableData[] = [
   // Add more dummy data as needed
 ];
 
-const ParticipantData = () => {
+const ParticipantData = async () => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  const delegates = await getDelegates(accessToken);
+  console.log(delegates);
   return (
     <DashboardModule>
       <DashboardModuleHeader>
@@ -59,19 +65,19 @@ const ParticipantData = () => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-blue-100">
-            {dummyData.map((participant, index) => (
-              <TableRow key={participant.id} className="hover:bg-blue-100/80">
+            {delegates?.map((participant: any, index: number) => (
+              <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
                 <TableCell
                   className={cn(
                     "font-medium",
-                    index === dummyData.length - 1 && "first:rounded-bl-lg",
+                    index === participant.length - 1 && "first:rounded-bl-lg",
                   )}
                 >
-                  {participant.name}
+                  {participant.mun_delegate_name}
                 </TableCell>
-                <TableCell>{participant.delegateStatus}</TableCell>
+                <TableCell>{participant.confirmed ? "Confirmed" : "Not Confirmed"}</TableCell>
                 <TableCell>{participant.council}</TableCell>
-                <TableCell className={cn(index === dummyData.length - 1 && "rounded-br-lg")}>
+                <TableCell className={cn(index === participant.length - 1 && "rounded-br-lg")}>
                   {participant.country}
                 </TableCell>
               </TableRow>

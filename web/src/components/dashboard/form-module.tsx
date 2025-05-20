@@ -14,17 +14,19 @@ import { cn } from "@/utils/helpers/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useState, useEffect } from "react";
 
 // 👏 Defining our form field metadata.
 export interface FormFieldConfig {
   id: number;
   name: string;
-  type?: "text" | "file" ;
+  type?: "text" | "file";
   label: string;
   placeholder: string;
   description?: string;
   validation: z.ZodTypeAny;
-  defaultValue: string;
+  defaultValue: string | null; // Allow null for file inputs that don't have default values
+  savedFileKey?: string; // Reference to a saved file in storage
 }
 
 /**
@@ -83,21 +85,48 @@ const FormContent = ({
   className,
   fields,
   onSubmit,
+  getStoredFile,
 }: {
   className?: string;
   fields: FormFieldConfig[];
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   onSubmit?: (values: any) => void;
+  getStoredFile?: (fileKey: string) => Promise<File | null>;
 }) => {
   // 1. Define the zod schema for validation.
   const schema = z.object(
     Object.fromEntries(fields.map((field) => [field.name, field.validation])),
   );
 
-  // 2. Define our form.
+  // Track saved file information
+  const [savedFiles, setSavedFiles] = useState<Record<string, string>>({});
+
+  // Load any saved files when the component mounts
+  useEffect(() => {
+    const loadSavedFiles = async () => {
+      const fileInfo: Record<string, string> = {};
+      
+      for (const field of fields) {
+        if (field.type === "file" && field.savedFileKey) {
+          if (getStoredFile) {
+            const file = await getStoredFile(field.savedFileKey);
+            if (file) {
+              fileInfo[field.name] = file.name;
+            }
+          }
+        }
+      }
+      
+      setSavedFiles(fileInfo);
+    };
+    
+    loadSavedFiles();
+  }, [fields, getStoredFile]);
+
+  // 2. Define our form with proper typing for file fields.
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: Object.fromEntries(fields.map((field) => [field.name, field.defaultValue])),
+    defaultValues: Object.fromEntries(fields.map((field) => [field.name, field.defaultValue ?? ""])),
   });
 
   // 3. Submit handler.
@@ -129,16 +158,35 @@ const FormContent = ({
                   <FormItem>
                     <FormLabel className="h-fit">{field.label}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder={field.placeholder}
-                        type={"file"}
-                        accept="image/png, image/jpeg, image/jpg, application/pdf"
-                        name={fieldProps.name}
-                        ref={fieldProps.ref}
-                        onBlur={fieldProps.onBlur}
-                        onChange={(e) => fieldProps.onChange(e.target.files?.[0] || null)}
-                        // value is intentionally not set from fieldProps.value for type="file"
-                      />
+                      <div className="flex flex-col gap-2">
+                        {savedFiles[field.name] && (
+                          <div className="text-sm text-green-500 font-medium mb-1">
+                            Previously uploaded: {savedFiles[field.name]}
+                          </div>
+                        )}
+                        <Input
+                          placeholder={field.placeholder}
+                          type="file"
+                          accept="image/png, image/jpeg, image/jpg, application/pdf"
+                          name={fieldProps.name}
+                          ref={fieldProps.ref}
+                          onBlur={fieldProps.onBlur}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            fieldProps.onChange(file);
+                            
+                            // Update the display name if a new file is selected
+                            if (file) {
+                              setSavedFiles(prev => ({
+                                ...prev,
+                                [field.name]: file.name
+                              }));
+                            }
+                          }}
+                          // value is intentionally not set from fieldProps.value for type="file"
+                          className="cursor-pointer"
+                        />
+                      </div>
                     </FormControl>
                     <FormDescription>
                       {field.description ? field.description : <>&nbsp;</>}
@@ -162,7 +210,7 @@ const FormContent = ({
                   <FormDescription className="">
                     {field.description ? field.description : <>&nbsp;</>}
                   </FormDescription>
-                  {/* <FormMessage /> */}
+                  <FormMessage />
                 </FormItem>
               )}
             />
