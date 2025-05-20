@@ -24,12 +24,20 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
 
   const formFields: FormFieldConfig[] = [
     {
+      id: 1,
+      name: "munExperience",
+      label: "Previous MUN Experience",
+      placeholder: "Enter your previous MUN experience",
+      validation: z.string().min(1, "Previous MUN experience is required"),
+      defaultValue: savedData[0]?.mun_answer_text || "",
+    },
+    {
       id: 2,
       name: "firstCouncilName",
       label: "First preferred council",
       placeholder: "Enter your full name",
       validation: z.string().min(1, "Preferred council is required"),
-      defaultValue: savedData[0]?.mun_answer_text || "",
+      defaultValue: savedData[1]?.mun_answer_text || "",
     },
     {
       id: 3,
@@ -37,7 +45,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "Reason of your first preferred council",
       placeholder: "Enter your institution",
       validation: z.string().min(1, "Reason is required"),
-      defaultValue: savedData[1]?.mun_answer_text || "",
+      defaultValue: savedData[2]?.mun_answer_text || "",
     },
     {
       id: 4,
@@ -45,7 +53,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "First preferred country",
       placeholder: "Enter your country",
       validation: z.string().min(1, "Country is required"),
-      defaultValue: savedData[2]?.mun_answer_text || "",
+      defaultValue: savedData[3]?.mun_answer_text || "",
     },
     {
       id: 5,
@@ -53,7 +61,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "Second preferred council",
       placeholder: "Enter your full name",
       validation: z.string().min(1, "Preferred council is required"),
-      defaultValue: savedData[3]?.mun_answer_text || "",
+      defaultValue: savedData[4]?.mun_answer_text || "",
     },
     {
       id: 6,
@@ -61,7 +69,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "Reason of your second preferred council",
       placeholder: "Enter your institution",
       validation: z.string().min(1, "Reason is required"),
-      defaultValue: savedData[4]?.mun_answer_text || "",
+      defaultValue: savedData[5]?.mun_answer_text || "",
     },
     {
       id: 7,
@@ -69,7 +77,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "Second preferred country",
       placeholder: "Enter your country",
       validation: z.string().min(1, "Country is required"),
-      defaultValue: savedData[5]?.mun_answer_text || "",
+      defaultValue: savedData[6]?.mun_answer_text || "",
     },
     {
       id: 8,
@@ -77,7 +85,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "Third preferred council",
       placeholder: "Enter your full name",
       validation: z.string().min(1, "Preferred council is required"),
-      defaultValue: savedData[6]?.mun_answer_text || "",
+      defaultValue: savedData[7]?.mun_answer_text || "",
     },
     {
       id: 9,
@@ -85,7 +93,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "Reason of your third preferred council",
       placeholder: "Enter your institution",
       validation: z.string().min(1, "Reason is required"),
-      defaultValue: savedData[7]?.mun_answer_text || "",
+      defaultValue: savedData[8]?.mun_answer_text || "",
     },
     {
       id: 10,
@@ -93,7 +101,7 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       label: "Third preferred country",
       placeholder: "Enter your country",
       validation: z.string().min(1, "Country is required"),
-      defaultValue: savedData[8]?.mun_answer_text || "",
+      defaultValue: savedData[9]?.mun_answer_text || "",
     },
   ];
 

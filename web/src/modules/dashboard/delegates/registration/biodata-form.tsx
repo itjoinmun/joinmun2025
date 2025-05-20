@@ -72,8 +72,8 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     };
 
     // Check for saved file references
-    const identityCardFileKey = savedData[6]?.biodata_answer_text?.startsWith("FILE:") 
-      ? savedData[6]?.biodata_answer_text.replace("FILE:", "")
+    const identityCardFileKey = savedData[7]?.biodata_answer_text?.startsWith("FILE:") 
+      ? savedData[7]?.biodata_answer_text.replace("FILE:", "")
       : null;
     
     console.log("🔑 Saved file reference key:", identityCardFileKey);

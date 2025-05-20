@@ -1,68 +1,140 @@
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
 
+/**
+ * Function to submit registration data to the backend
+ * Works for both single delegates and team registrations
+ */
 export const submitDelegateRegistration = async ({
   formData,
-  index,
+  index = 0,
   slug,
+  isTeam = false,
 }: {
-  formData: DelegateRegistration[] | object;
-  index: number;
+  formData: DelegateRegistration[] | Record<number, DelegateRegistration>;
+  index?: number;
   slug: string;
+  isTeam?: boolean;
 }): Promise<{ success: boolean; error?: string }> => {
-  if (!await fileStorageDB.isInitialized()) {
-    return { success: false, error: "File storage not initialized. Please refresh and try again." };
-  }
-
-  const completeData = (formData as DelegateRegistration[])[index];
-  if (!completeData) {
-    return { success: false, error: "No form data found. Please complete all previous steps first." };
-  }
-
-  const formDataObj = new FormData();
-
-  const delegatePayload = {
-    delegates: [
-      {
-        mun_delegates: completeData.mun_delegates,
-        biodata_responses: completeData.biodata_responses || [],
-        mun_responses: completeData.mun_responses || [],
-        health_responses: completeData.health_responses || [],
-      },
-    ],
-  };
-
-  formDataObj.append("json", JSON.stringify(delegatePayload));
-
-  const fileReferences: string[] = [];
-
-  completeData.biodata_responses?.forEach((response) => {
-    if (
-      typeof response.biodata_answer_text === "string" &&
-      response.biodata_answer_text.startsWith("FILE:")
-    ) {
-      const fileKey = response.biodata_answer_text.replace("FILE:", "");
-      fileReferences.push(fileKey);
-    }
-  });
-
-  for (const fileKey of fileReferences) {
-    try {
-      const file = await fileStorageDB.getFile(fileKey);
-      if (file) {
-        const questionId = fileKey.split("_").pop();
-        formDataObj.append(fileKey, file, file.name);
-      }
-    } catch (error) {
-      console.error(`❌ Error retrieving file with key ${fileKey}:`, error);
-    }
-  }
-
   try {
-    const response = await fetch("http://localhost:8080/api/v1/dashboard/delegates", {
+    if (!await fileStorageDB.isInitialized()) {
+      return { success: false, error: "File storage not initialized. Please refresh and try again." };
+    }
+
+    // Create a FormData object for the backend submission
+    const formDataObj = new FormData();
+    
+    let delegatePayload: { delegates: any[] };
+
+    if (isTeam) {
+      // For team submissions, gather all team members
+      const delegates = Object.values(formData).filter(Boolean);
+      
+      if (!delegates.length) {
+        return { success: false, error: "No team members found. Please add at least one team member." };
+      }
+
+      // Create payload with all team members
+      delegatePayload = {
+        delegates: delegates.map((delegate) => ({
+          mun_delegates: delegate.mun_delegates,
+          biodata_responses: delegate.biodata_responses || [],
+          mun_responses: delegate.mun_responses || [],
+          health_responses: delegate.health_responses || [],
+        })),
+      };
+    } else {
+      // Single delegate submission (original logic)
+      const completeData = formData[index];
+      if (!completeData) {
+        return { success: false, error: "No form data found. Please complete all previous steps first." };
+      }
+
+      delegatePayload = {
+        delegates: [
+          {
+            mun_delegates: completeData.mun_delegates,
+            biodata_responses: completeData.biodata_responses || [],
+            mun_responses: completeData.mun_responses || [],
+            health_responses: completeData.health_responses || [],
+          },
+        ],
+      };
+    }
+
+    console.log("📦 Prepared delegate payload:", delegatePayload);
+
+    // Add the JSON data to the FormData
+    formDataObj.append("json", JSON.stringify(delegatePayload));
+
+    // Collect all file references from all delegates
+    const fileReferences: string[] = [];
+
+    if (isTeam) {
+      // Team submission - gather files from all delegates
+      Object.values(formData).forEach(delegate => {
+        if (delegate?.biodata_responses) {
+          delegate.biodata_responses.forEach(response => {
+            if (
+              typeof response.biodata_answer_text === "string" &&
+              response.biodata_answer_text.startsWith("FILE:")
+            ) {
+              const fileKey = response.biodata_answer_text.replace("FILE:", "");
+              fileReferences.push(fileKey);
+              console.log(`🔍 Found file reference: ${fileKey} for question ID: ${response.biodata_question_id}`);
+            }
+          });
+        }
+      });
+    } else {
+      // Single delegate submission
+      const completeData = formData[index];
+      if (completeData?.biodata_responses) {
+        completeData.biodata_responses.forEach(response => {
+          if (
+            typeof response.biodata_answer_text === "string" &&
+            response.biodata_answer_text.startsWith("FILE:")
+          ) {
+            const fileKey = response.biodata_answer_text.replace("FILE:", "");
+            fileReferences.push(fileKey);
+            console.log(`🔍 Found file reference: ${fileKey} for question ID: ${response.biodata_question_id}`);
+          }
+        });
+      }
+    }
+
+    // Retrieve all files from IndexedDB and add them to FormData
+    for (const fileKey of fileReferences) {
+      try {
+        const file = await fileStorageDB.getFile(fileKey);
+        if (file) {
+          console.log(`✅ Retrieved file from IndexedDB: ${file.name} (${file.size} bytes)`);
+
+          // Extract the question ID from the file key (assuming format: email_questionId)
+          const questionId = fileKey.split("_").pop();
+
+          // Add file to FormData with a field name that backend can understand
+          formDataObj.append(fileKey, file, file.name);
+          console.log(`📎 Added file to FormData with field name: ${fileKey}`);
+        } else {
+          console.warn(`⚠️ File with key ${fileKey} not found in IndexedDB`);
+        }
+      } catch (error) {
+        console.error(`❌ Error retrieving file with key ${fileKey}:`, error);
+      }
+    }
+
+    // Send the FormData to the backend
+    console.log("📤 Sending form data to backend...");
+
+    // Your backend URL
+    const apiUrl = "http://localhost:8080/api/v1/dashboard/delegates";
+
+    const response = await fetch(apiUrl, {
       method: "POST",
-      credentials: "include",
+      credentials: "include", // Include cookies in the request
       body: formDataObj,
+      // No need to set Content-Type header for FormData
     });
 
     if (!response.ok) {
@@ -73,13 +145,18 @@ export const submitDelegateRegistration = async ({
       };
     }
 
+    const responseData = await response.json();
+    console.log("✅ Form submission successful:", responseData);
+    
+    // Clear storage after successful submission
     localStorage.removeItem(`${slug}Registration`);
     await fileStorageDB.clearAll();
+    
     return { success: true };
-  } catch (err) {
+  } catch (error) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 };

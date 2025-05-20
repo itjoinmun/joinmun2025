@@ -156,7 +156,10 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     },
   ];
 
+
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  // Replace the onSubmit function with:
+
   const onSubmit = async (values: any) => {
     // Do something with the form values.
     console.log(values);
@@ -186,16 +189,8 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       [index]: newData,
     });
 
-    // Submit all form data to the backend
-    const success = await submitDelegateRegistration({formData, index, slug});
-    if (success) {
-      // Show success message
-      alert("Your registration has been submitted successfully!");
-      router.push("/dashboard/delegates");
-    } else {
-      // Show error message
-      alert(`Failed to submit registration: ${submitError || "Unknown error"}`);
-    }
+    // Instead of submitting here, navigate to confirmation page
+    router.push(`/dashboard/delegates/${slug}/registration/confirmation${index !== 0 ? `?idx=${index}` : ''}`);
   };
 
   return (
