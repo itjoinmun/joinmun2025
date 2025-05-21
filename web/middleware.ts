@@ -149,6 +149,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Apply to all routes except public assets, api routes, and specific public pages
-    '/((?!_next/static|_next/image|.*\\.png$|.*\\.jpg$|.*\\.webp$|favicon.ico|api/refresh-token|api/public).*)',
+    '/((?!_next/static|_next/image|.*\\.png$|.*\\.jpg$|.*\\.svg$|.*\\.webp$|favicon.ico|api/refresh-token|api/public).*)',
   ],
 }
