@@ -107,7 +107,6 @@ func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 				cleanupFiles(h.uploader, uploadedFiles)
 				return
 			}
-
 			if questionType == "file" {
 				// Process file upload
 				fileKey := fmt.Sprintf("%s_%d", delegateEmail, b.BiodataQuestionID)
@@ -157,6 +156,17 @@ func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 				b.BiodataAnswerText = key
 			}
 
+			// If the question type is "name", set the delegate's name
+			if questionType == "name" {
+				// Find the delegate in the list and update its name
+				for i := range delegates {
+					if delegates[i].MUNDelegateEmail == delegateEmail {
+						delegates[i].MUNDelegateName = b.BiodataAnswerText
+						break
+					}
+				}
+			}
+
 			biodataResponses = append(biodataResponses, b)
 		}
 
@@ -194,7 +204,7 @@ func cleanupFiles(uploader *s3.S3Uploader, fileKeys []string) {
 
 func (h *DashboardHandler) InsertAdvisorOrObserverHandler(c *gin.Context) {
 	type AdvisorOrObserverStruct struct {
-		AdvisorOrObserver *dashboardModel.MUNDelegates      `json:"advisor_or_observer"`
+		AdvisorOrObserver *dashboardModel.MUNDelegates      `json:"mun_delegates"`
 		BiodataResponses  []dashboardModel.BiodataResponses `json:"biodata_responses"`
 		HealthResponses   []dashboardModel.HealthResponses  `json:"health_responses"`
 	}
@@ -252,6 +262,11 @@ func (h *DashboardHandler) InsertAdvisorOrObserverHandler(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Unknown question ID: %d", req.AdvisorOrObserver.BiodataResponses[i].BiodataQuestionID)})
 			cleanupFiles(h.uploader, uploadedFiles)
 			return
+		}
+
+		if questionType == "name" {
+			// Set the advisor or observer's name
+			req.AdvisorOrObserver.AdvisorOrObserver.MUNDelegateName = req.AdvisorOrObserver.BiodataResponses[i].BiodataAnswerText
 		}
 
 		if questionType == "file" {
@@ -371,4 +386,21 @@ func (h *DashboardHandler) LinkToTeamHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully linked to team"})
+}
+
+func (h *DashboardHandler) WhoAmIHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userEmail := userContext.Email
+	// Get the user data from the service
+	userData, err := h.dashboardService.GetUserData(userEmail)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user data", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, userData)
 }

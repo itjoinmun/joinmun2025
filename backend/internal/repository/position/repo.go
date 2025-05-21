@@ -9,7 +9,7 @@ import (
 
 type PositionPaperRepo interface {
 	GetPositionPaperByDelegateEmail(email string) (*position.PositionPaper, error) // useful for the delegate dashboard
-	InsertPositionPaper(positionPaper *position.PositionPaper) (int, error)        // insert a new position paper (delegate function)
+	InsertPositionPaper(positionPaper *position.PositionPaper) error               // insert a new position paper (delegate function)
 }
 
 type positionPaperRepo struct {
@@ -22,7 +22,7 @@ func NewPositionPaperRepo(db *sqlx.DB) PositionPaperRepo {
 
 func (r *positionPaperRepo) GetPositionPaperByDelegateEmail(email string) (*position.PositionPaper, error) {
 	var paper position.PositionPaper
-	query := `SELECT * FROM position_papers WHERE mun_delegate_email = $1`
+	query := `SELECT * FROM position_paper WHERE mun_delegate_email = $1`
 	err := r.db.Get(&paper, query, email)
 	if err != nil {
 		logger.LogError(err, "Failed to get position paper", map[string]interface{}{"delegateEmail": email})
@@ -31,22 +31,22 @@ func (r *positionPaperRepo) GetPositionPaperByDelegateEmail(email string) (*posi
 	return &paper, nil
 }
 
-func (r *positionPaperRepo) InsertPositionPaper(positionPaper *position.PositionPaper) (int, error) {
-	query := `INSERT INTO position_papers (mun_delegate_email, submission_file, submission_date, submission_status) 
-              VALUES ($1, $2, $3, $4) RETURNING position_paper_id`
-	var id int
-	err := r.db.QueryRow(
+func (r *positionPaperRepo) InsertPositionPaper(positionPaper *position.PositionPaper) error {
+	query := `INSERT INTO position_paper (mun_delegate_email, submission_file, submission_date, submission_status) 
+              VALUES ($1, $2, $3, $4)`
+
+	_, err := r.db.Exec(
 		query,
 		positionPaper.MUNDelegateEmail,
 		positionPaper.SubmissionFile,
 		positionPaper.SubmissionDate,
 		positionPaper.SubmissionStatus,
-	).Scan(&id)
+	)
 	if err != nil {
 		logger.LogError(err, "Failed to insert position paper", map[string]interface{}{
 			"delegateEmail": positionPaper.MUNDelegateEmail,
 		})
-		return 0, err
+		return err
 	}
-	return id, nil
+	return nil
 }

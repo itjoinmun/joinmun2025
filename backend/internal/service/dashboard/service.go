@@ -27,6 +27,7 @@ type DashboardService interface {
 	LinkMeToTeam(delegateEmail, teamID string) (retErr error)
 	GetParticipantData(email string) ([]dashboard.MUNDelegates, error)
 	GetQuestions() (biodataQuestions []dashboard.BiodataQuestions, healthQuestions []dashboard.HealthQuestions, munQuestions []dashboard.MUNQuestions, err error)
+	GetUserData(email string) (*dashboard.MUNDelegates, error)
 }
 
 type dashboardService struct {
@@ -383,4 +384,19 @@ func (s *dashboardService) LinkMeToTeam(delegateEmail, teamID string) (retErr er
 		"operation":     "service.LinkMeToTeam",
 	})
 	return nil
+}
+
+func (s *dashboardService) GetUserData(email string) (*dashboard.MUNDelegates, error) {
+	// Get the delegate by email
+	delegate, err := s.delegateRepo.GetDelegateByEmail(email)
+	if err != nil {
+		logger.LogError(err, "Failed to get delegate by email", map[string]interface{}{
+			"layer":     "service",
+			"operation": "service.GetUserData",
+			"error":     err,
+		})
+		return nil, err
+	}
+
+	return delegate, nil
 }

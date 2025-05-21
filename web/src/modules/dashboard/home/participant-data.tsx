@@ -13,35 +13,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
+import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
+import { cookies } from "next/headers";
 
-interface ParticipantTableData {
-  id: string;
-  name: string;
-  delegateStatus: string;
-  council: string;
-  country: string;
-}
-
-// Dummy data for development
-const dummyData: ParticipantTableData[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    delegateStatus: "Single Delegate",
-    council: "UNSC",
-    country: "United States",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    delegateStatus: "Double Delegate",
-    council: "WHO",
-    country: "United Kingdom",
-  },
-  // Add more dummy data as needed
-];
-
-const ParticipantData = () => {
+const ParticipantData = async () => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  const delegates = await getDelegates(accessToken);
+  console.log(delegates);
   return (
     <DashboardModule>
       <DashboardModuleHeader>
@@ -59,19 +38,20 @@ const ParticipantData = () => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-blue-100">
-            {dummyData.map((participant, index) => (
-              <TableRow key={participant.id} className="hover:bg-blue-100/80">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {delegates?.map((participant: any, index: number) => (
+              <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
                 <TableCell
                   className={cn(
                     "font-medium",
-                    index === dummyData.length - 1 && "first:rounded-bl-lg",
+                    index === participant.length - 1 && "first:rounded-bl-lg",
                   )}
                 >
-                  {participant.name}
+                  {participant.mun_delegate_name}
                 </TableCell>
-                <TableCell>{participant.delegateStatus}</TableCell>
+                <TableCell>{participant.confirmed ? "Confirmed" : "Not Confirmed"}</TableCell>
                 <TableCell>{participant.council}</TableCell>
-                <TableCell className={cn(index === dummyData.length - 1 && "rounded-br-lg")}>
+                <TableCell className={cn(index === participant.length - 1 && "rounded-br-lg")}>
                   {participant.country}
                 </TableCell>
               </TableRow>

@@ -32,7 +32,7 @@ const DashboardPageHeader = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <header className={cn(className, "space-y-1 leading-snug")}>{children}</header>;
+  return <header className={cn("space-y-1 leading-snug", className)}>{children}</header>;
 };
 
 const DashboardPageTitle = ({
@@ -42,7 +42,7 @@ const DashboardPageTitle = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <h1 className={cn(className, "text-gold text-lg font-medium")}>{children}</h1>;
+  return <h1 className={cn("text-gold text-lg font-medium", className)}>{children}</h1>;
 };
 
 const DashboardPageDescription = ({
@@ -52,7 +52,7 @@ const DashboardPageDescription = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <p className={cn(className, "text-base")}>{children}</p>;
+  return <p className={cn("text-base", className)}>{children}</p>;
 };
 
 export { DashboardPage, DashboardPageDescription, DashboardPageHeader, DashboardPageTitle };

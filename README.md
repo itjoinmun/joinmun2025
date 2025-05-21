@@ -16,11 +16,17 @@ The technology we use include:
 
 ## 🖥️ Running locally 
 
-Before beginning to develop, make sure you have [Docker](https://www.docker.com/products/docker-desktop/) installed on your local machine. Then you can start the development server with:
+Before beginning to develop, make sure you have [Docker](https://www.docker.com/products/docker-desktop/) installed on your local machine. Then you can start the development server with (U can read the makefile for further clarity):
 
 ```
-docker compose -f compose.dev.yaml up --build
+make up
 ```
+for dev env
+
+```
+make up MODE=prod
+```
+for prod env
 
 ## Contributing
 

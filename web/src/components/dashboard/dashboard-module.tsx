@@ -29,7 +29,7 @@ const DashboardModule = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <section className={cn(`flex flex-col gap-3 ${className}`)}>{children}</section>;
+  return <section className={cn(`flex flex-col gap-3`, className)}>{children}</section>;
 };
 
 const DashboardModuleHeader = ({
@@ -39,7 +39,7 @@ const DashboardModuleHeader = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <header className={cn(className, "space-y-1 leading-snug")}>{children}</header>;
+  return <header className={cn("space-y-1 leading-snug", className)}>{children}</header>;
 };
 
 const DashboardModuleTitle = ({
@@ -49,7 +49,7 @@ const DashboardModuleTitle = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <h1 className={cn(className, "font-bold")}>{children}</h1>;
+  return <h1 className={cn("font-bold", className)}>{children}</h1>;
 };
 
 const DashboardModuleDescription = ({
@@ -59,7 +59,7 @@ const DashboardModuleDescription = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  return <header className={cn(className, "text-sm font-normal")}>{children}</header>;
+  return <p className={cn("text-sm font-normal", className)}>{children}</p>;
 };
 
 const DashboardModuleContent = ({

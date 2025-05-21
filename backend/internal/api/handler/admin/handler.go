@@ -170,8 +170,8 @@ func (h *AdminHandler) GetDelegateBiodataResponsesHandler(c *gin.Context) {
 
 	var req struct {
 		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"required"`
-		Offset       int    `json:"offset" binding:"required"`
+		Limit        int    `json:"limit" binding:"gte=1"`
+		Offset       int    `json:"offset" binding:"gte=0"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -203,8 +203,8 @@ func (h *AdminHandler) GetDelegateHealthResponsesHandler(c *gin.Context) {
 
 	var req struct {
 		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"required"`
-		Offset       int    `json:"offset" binding:"required"`
+		Limit        int    `json:"limit" binding:"gte=1"`
+		Offset       int    `json:"offset" binding:"gte=0"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -235,8 +235,8 @@ func (h *AdminHandler) GetDelegateMUNResponsesHandler(c *gin.Context) {
 	}
 
 	var req struct {
-		Limit  int `json:"limit" binding:"required"`
-		Offset int `json:"offset" binding:"required"`
+		Limit  int `json:"limit" binding:"gte=1"`
+		Offset int `json:"offset" binding:"gte=0"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -268,8 +268,8 @@ func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
 
 	var req struct {
 		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"required"`
-		Offset       int    `json:"offset" binding:"required"`
+		Limit        int    `json:"limit" binding:"gte=1"`
+		Offset       int    `json:"offset" binding:"gte=0"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -301,8 +301,8 @@ func (h *AdminHandler) GetDelegatesHandler(c *gin.Context) {
 
 	var req struct {
 		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"required"`
-		Offset       int    `json:"offset" binding:"required"`
+		Limit        int    `json:"limit" binding:"gte=1"`
+		Offset       int    `json:"offset" binding:"gte=0"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -333,8 +333,8 @@ func (h *AdminHandler) GetDelegatePositionPaperHandler(c *gin.Context) {
 	}
 
 	var req struct {
-		Limit  int `json:"limit" binding:"required"`
-		Offset int `json:"offset" binding:"required"`
+		Limit  int `json:"limit" binding:"gte=1"`
+		Offset int `json:"offset" binding:"gte=0"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {

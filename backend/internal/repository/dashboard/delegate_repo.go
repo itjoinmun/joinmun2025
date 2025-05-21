@@ -33,6 +33,7 @@ func (r *delegateRepo) GetDelegateByEmail(email string) (*dashboard.MUNDelegates
 func (r *delegateRepo) GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDelegates, error) {
 	var delegates []dashboard.MUNDelegates
 	query := `SELECT md.type, md.mun_delegate_email
+	, md.mun_delegate_name
 	, md.council
 	, md.country
 	, md.confirmed 
@@ -49,12 +50,13 @@ func (r *delegateRepo) GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDeleg
 	return delegates, nil
 }
 func (r *delegateRepo) InsertOneDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDelegates) (string, error) {
-	query := `INSERT INTO mun_delegates (mun_delegate_email, type, council, country, confirmed, confirmed_date, insert_date, participant_type) 
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING mun_delegate_email`
+	query := `INSERT INTO mun_delegates (mun_delegate_email, mun_delegate_name, type, council, country, confirmed, confirmed_date, insert_date, participant_type) 
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING mun_delegate_email`
 	var id string
 	err := tx.QueryRow(
 		query,
 		delegate.MUNDelegateEmail,
+		delegate.MUNDelegateName,
 		nil,
 		nil,
 		nil,
@@ -79,16 +81,17 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 		return nil
 	}
 
-	query := `INSERT INTO mun_delegates (mun_delegate_email, type, council, country, confirmed, confirmed_date, insert_date, participant_type) VALUES `
+	query := `INSERT INTO mun_delegates (mun_delegate_email, mun_delegate_name, type, council, country, confirmed, confirmed_date, insert_date, participant_type) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
 
 	for i, d := range delegates {
-		valueStrings = append(valueStrings, fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
-			i*8+1, i*8+2, i*8+3, i*8+4, i*8+5, i*8+6, i*8+7, i*8+8,
+		valueStrings = append(valueStrings, fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d)",
+			i*9+1, i*9+2, i*9+3, i*9+4, i*9+5, i*9+6, i*9+7, i*9+8, i*9+9,
 		))
 		args = append(args,
 			d.MUNDelegateEmail,
+			d.MUNDelegateName,
 			nil,
 			nil,
 			nil,

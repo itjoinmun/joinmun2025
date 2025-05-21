@@ -1,20 +1,21 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { register } from "@/utils/helpers/fetch/auth/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
+import { redirect } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const loginSchema = z
   .object({
@@ -54,11 +55,23 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = () =>
-    // values: z.infer<typeof loginSchema>
+  const onSubmit = async (values: z.infer<typeof loginSchema>) =>
     {
       setPending(true);
       try {
+        register({
+          username: values.name,
+          email: values.email,
+          password: values.password,
+        }).then((res) => {
+          if (res.ok) {
+            // redirect to dashboard
+            redirect("/login");
+          } else {
+            // show error message
+            console.error(res);
+          }
+        })
         // post to backend api
       } catch (error) {
         console.error(error);

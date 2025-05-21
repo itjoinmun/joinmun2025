@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS mun_teams (
 
 CREATE TABLE IF NOT EXISTS mun_delegates (
     mun_delegate_email VARCHAR(255) PRIMARY KEY UNIQUE CHECK (mun_delegate_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    mun_delegate_name VARCHAR(255),
     type VARCHAR(16) CHECK (type IN ('single_delegate', 'double_delegate')),
     council VARCHAR(8) CHECK (council IN ('UNWOMEN', 'WHO', 'UNSC', 'ECOFIN', 'CRISIS', 'BRICS+', 'Press')),
     country VARCHAR(255),
@@ -52,7 +53,7 @@ CREATE TABLE IF NOT EXISTS mun_faculty_advisors (
 -- Questionnaire Tables
 CREATE TABLE IF NOT EXISTS biodata_questions (
     biodata_question_id SERIAL PRIMARY KEY,
-    biodata_question_type VARCHAR(16) CHECK (biodata_question_type IN ('file', 'dropdown', 'text')),
+    biodata_question_type VARCHAR(16) CHECK (biodata_question_type IN ('file', 'dropdown', 'text', 'name')),
     biodata_question_text TEXT NOT NULL
 );
 
@@ -70,10 +71,10 @@ CREATE TABLE IF NOT EXISTS health_questions (
 );
 
 CREATE TABLE IF NOT EXISTS health_responses (
-    health_questions_id INT REFERENCES health_questions(health_question_id),
+    health_question_id INT REFERENCES health_questions(health_question_id),
     delegate_email VARCHAR(255) REFERENCES mun_delegates(mun_delegate_email),
     health_answer_text TEXT NOT NULL,
-    PRIMARY KEY (health_questions_id, delegate_email)
+    PRIMARY KEY (health_question_id, delegate_email)
 );
 
 -- MUN Questions/Responses
@@ -119,14 +120,13 @@ CREATE INDEX idx_refresh_tokens_refresh_token ON refresh_tokens(refresh_token);
 
 INSERT INTO biodata_questions (biodata_question_id, biodata_question_type, biodata_question_text) VALUES
 (1,  'text', 'Email address'),
-(2,  'text', 'Full name'),
+(2,  'name', 'Full name'),
 (3,  'file', 'Proof of Identification (berupa gambar kartu identitas)'),
 (4,  'text', 'Institution'),
 (5,  'text', 'Nationality'),
 (6,  'dropdown', 'Gender'),
 (7,  'text', 'Active Contact Number'),
-(8,  'text', 'Line ID'),
-(9,  'text', 'Street Address');
+(8,  'text', 'Line ID');
 
 INSERT INTO mun_questions (mun_question_id, mun_question_type, mun_question_text) VALUES
 (1,  'text', 'Previous MUN Experience'),
@@ -139,11 +139,7 @@ INSERT INTO mun_questions (mun_question_id, mun_question_type, mun_question_text
 (8,  'dropdown', 'Third preference council'),
 (9,  'text', 'Reason of your Third preference council'),
 (10, 'text', 'Third preference country (3 Country)'),
-(11, 'dropdown', 'Are you registrating for any double delegates council?'),
-(12, 'text', 'Your Partner''s Email'),
-(13, 'text', 'Your partner''s Name'),
-(14, 'text', 'Your Partner''s Institution'),
-(15, 'text', 'Emergency Contact');
+(11, 'dropdown', 'Are you registrating for any double delegates council?');
 
 INSERT INTO health_questions (health_question_id, health_question_type, health_question_text) VALUES
 (1,  'text', 'Do you have any track record on your medical condition?'),

@@ -2,13 +2,13 @@
 import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
-import { PriceOptions, PRICES } from "@/utils/helpers/pricing";
+import { DelegateOptions, DELEGATES, Package, TeamPackage } from "@/utils/helpers/delegates";
 import { isPriceReveal } from "@/utils/helpers/reveal";
 import { useState } from "react";
 import * as motion from "motion/react-client";
 
 const Pricing = () => {
-  const [active, setActive] = useState<PriceOptions>("single");
+  const [active, setActive] = useState<DelegateOptions>("single");
 
   return (
     <>
@@ -18,6 +18,7 @@ const Pricing = () => {
         aria-hidden="true"
       />
       {isPriceReveal ? (
+        // If price reveal is true, show the pricing page
         <main className="relative z-0 overflow-hidden pb-12">
           <Container className="gap-2">
             <section className="flex flex-col items-center gap-2">
@@ -28,10 +29,10 @@ const Pricing = () => {
               </div>
 
               <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
-                {Object.entries(PRICES).map(([key, value]) => (
+                {Object.entries(DELEGATES).map(([key, value]) => (
                   <Button
                     key={key}
-                    onClick={() => setActive(key as PriceOptions)}
+                    onClick={() => setActive(key as DelegateOptions)}
                     variant={active === key ? "primary" : "outline"}
                     className="shrink-0 snap-start transition-all"
                   >
@@ -42,12 +43,12 @@ const Pricing = () => {
 
               <div className="mt-8 flex w-full flex-col items-start gap-2">
                 <h1 className="text-xl leading-snug font-bold md:text-2xl">
-                  {PRICES[active].name}
+                  {DELEGATES[active].name}
                 </h1>
-                <p className="leading-snug">{PRICES[active].description}</p>
+                <p className="leading-snug">{DELEGATES[active].description}</p>
 
                 <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6 md:px-10">
-                  {PRICES[active].package.map((option, index) => (
+                  {DELEGATES[active].package.map((option, index) => (
                     <PricingCard key={index} {...option} />
                   ))}
                 </div>
@@ -56,6 +57,7 @@ const Pricing = () => {
           </Container>
         </main>
       ) : (
+        // If price reveal is false, show the coming soon page
         <motion.div
           className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]"
           initial={{ opacity: 0 }}
@@ -114,31 +116,61 @@ const Pricing = () => {
   );
 };
 
-const PricingCard = ({
-  name,
-  price,
-  points,
-}: {
-  name: string;
-  price: number;
-  points: string[];
-}) => (
-  <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
-    <h2 className="text-lg font-bold">{name}</h2>
-    <h1 className="relative text-4xl font-bold">
-      <span className="absolute -top-1 -left-4 text-xl">$</span>
-      {price}
-    </h1>
-    <ul className="mt-4 mb-auto w-full list-inside list-disc space-y-1.5 text-start text-sm font-light">
-      {points.map((point, index) => (
-        <li key={index}>{point}</li>
-      ))}
-    </ul>
+const PricingCard = (option: TeamPackage | Package) => {
+  // Team package detection
+  const isTeam =
+    "delegateRange" in option && "nonAccommodation" in option && "accommodation" in option;
 
-    <Button variant="white" className="mt-4 w-full">
-      CTA
-    </Button>
-  </article>
-);
+  if (isTeam) {
+    return (
+      <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
+        <h2 className="text-lg font-bold">{option.name}</h2>
+        <div className="mb-2 text-sm">{option.delegateRange}</div>
+        <hr className="border-gray-light my-2 w-full" />
+        <div className="flex w-full flex-col gap-4">
+          <div>
+            <div className="font-bold">{option.nonAccommodation.label}</div>
+            <div className="relative text-4xl font-bold">
+              <span className="absolute -top-1 right-0 left-0 -translate-x-8 text-xl">$</span>
+              {option.nonAccommodation.price}
+            </div>
+          </div>
+          <div>
+            <div className="font-bold">{option.accommodation.label}</div>
+            <div className="text-xs">{option.accommodation.description}</div>
+            <div className="relative text-4xl font-bold">
+              <span className="absolute -top-1 right-0 left-0 -translate-x-8 text-xl">$</span>
+              {option.accommodation.price}
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 w-full text-left">
+          <div className="mb-1 font-bold">Included Facilities</div>
+          <ul className="list-inside list-disc space-y-1.5 text-sm font-light">
+            {option.points.map((point: string, idx: number) => (
+              <li key={idx}>{point}</li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    );
+  }
+
+  // Default card for single, observer, advisor
+  return (
+    <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
+      <h2 className="text-lg font-bold">{option.name}</h2>
+      <h1 className="relative text-4xl font-bold">
+        <span className="absolute -top-1 -left-4 text-xl">$</span>
+        {option.price}
+      </h1>
+      <ul className="mt-4 mb-auto w-full list-inside list-disc space-y-1.5 text-start text-sm font-light">
+        {option.points.map((point: string, index: number) => (
+          <li key={index}>{point}</li>
+        ))}
+      </ul>
+    </article>
+  );
+};
 
 export default Pricing;

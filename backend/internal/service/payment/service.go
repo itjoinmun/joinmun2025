@@ -60,11 +60,7 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		return fmt.Errorf("user not confirmed with email: %s", payment.MUNDelegateEmail)
 	}
 	// Check if the payment already exists
-	existingPayment, err := s.paymentRepo.GetPaymentByDelegateEmail(payment.MUNDelegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to check existing payment", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
-		return err
-	}
+	existingPayment, _ := s.paymentRepo.GetPaymentByDelegateEmail(payment.MUNDelegateEmail)
 
 	if existingPayment != nil {
 		return fmt.Errorf("payment already exists for delegate email: %s", payment.MUNDelegateEmail)

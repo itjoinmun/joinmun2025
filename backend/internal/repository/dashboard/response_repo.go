@@ -93,13 +93,13 @@ func (r *responseRepo) InsertHealthResponses(tx *sqlx.Tx, responses []dashboard.
 		return nil
 	}
 
-	query := `INSERT INTO health_responses (delegate_email, health_questions_id, health_answer_text) VALUES `
+	query := `INSERT INTO health_responses (delegate_email, health_question_id, health_answer_text) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
 
 	for i, res := range responses {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
-		args = append(args, res.DelegateEmail, res.HealthQuestionsID, res.HealthAnswerText)
+		args = append(args, res.DelegateEmail, res.HealthQuestionID, res.HealthAnswerText)
 	}
 
 	query += strings.Join(valueStrings, ",")

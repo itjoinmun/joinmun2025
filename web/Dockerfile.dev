@@ -1,7 +1,7 @@
 # Copied from https://github.com/vercel/next.js/blob/canary/examples/with-docker-compose/next-app/dev.Dockerfile
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:18-alpine
+FROM node:23-alpine
 
 WORKDIR /app
 

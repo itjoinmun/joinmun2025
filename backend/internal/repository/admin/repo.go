@@ -77,7 +77,7 @@ func (r *adminRepo) UpdateDelegateCountryAndCouncil(country, council, delegateEm
 
 func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail string) error {
 	query1 := `UPDATE mun_delegates SET pair = $1, type = $2 WHERE mun_delegate_email = $3`
-	_, err := tx.Exec(query1, pairingEmail, "double_delegate", delegateEmail)
+	res1, err := tx.Exec(query1, pairingEmail, "double_delegate", delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
 			"layer":         "repository",
@@ -86,15 +86,33 @@ func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail strin
 		})
 		return err
 	}
+	rows1, _ := res1.RowsAffected()
+	if rows1 == 0 {
+		logger.LogError(nil, "No rows affected while updating pairing", map[string]interface{}{
+			"layer":         "repository",
+			"operation":     "repo.UpdatePairing",
+			"delegateEmail": delegateEmail,
+		})
+		return nil
+	}
 
 	query2 := `UPDATE mun_delegates SET pair = $1, type = $2 WHERE mun_delegate_email = $3`
-	_, err = tx.Exec(query2, delegateEmail, "double_delegate", pairingEmail)
+	res2, err := tx.Exec(query2, delegateEmail, "double_delegate", pairingEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
 			"layer":         "repository",
 			"operation":     "repo.UpdatePairing",
 			"delegateEmail": pairingEmail,
 		})
+	}
+	rows2, _ := res2.RowsAffected()
+	if rows2 == 0 {
+		logger.LogError(nil, "No rows affected while updating pairing", map[string]interface{}{
+			"layer":         "repository",
+			"operation":     "repo.UpdatePairing",
+			"delegateEmail": pairingEmail,
+		})
+		return nil
 	}
 	logger.LogDebug("Pairing updated successfully", map[string]interface{}{
 		"layer":         "repository",
@@ -105,7 +123,7 @@ func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail strin
 }
 
 func (r *adminRepo) UpdatePaymentStatus(delegateEmail string) error {
-	query := `UPDATE payments SET payment_status = 'paid' WHERE mun_delegate_email = $1`
+	query := `UPDATE payment SET payment_status = 'paid' WHERE mun_delegate_email = $1`
 	_, err := r.db.Exec(query, delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
@@ -130,7 +148,7 @@ func (r *adminRepo) GetDelegateBiodataResponses(delegateType string, limit, offs
 		ORDER BY r.delegate_email
 		LIMIT $2 OFFSET $3;
 	`
-	err := r.db.Select(&responses, delegateType, query, limit, offset)
+	err := r.db.Select(&responses, query, delegateType, limit, offset)
 	return responses, err
 }
 
@@ -150,7 +168,7 @@ func (r *adminRepo) GetDelegateHealthResponses(delegateType string, limit, offse
 		ORDER BY r.delegate_email
 		LIMIT $2 OFFSET $3;
 	`
-	err := r.db.Select(&responses, delegateType, query, limit, offset)
+	err := r.db.Select(&responses, query, delegateType, limit, offset)
 	return responses, err
 }
 
@@ -184,13 +202,13 @@ func (r *adminRepo) GetDelegatePaymentResponses(delegateType string, limit, offs
 			p.payment_date,
 			p.payment_amount,
 			d.participant_type
-		FROM payments p
+		FROM payment p
 		JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
 		WHERE d.participant_type = $1
 		ORDER BY p.mun_delegate_email
 		LIMIT $2 OFFSET $3;
 	`
-	err := r.db.Select(&payments, delegateType, query, limit, offset)
+	err := r.db.Select(&payments, query, delegateType, limit, offset)
 	return payments, err
 }
 
@@ -201,6 +219,7 @@ func (r *adminRepo) GetDelegates(delegateType string, limit, offset int) ([]dash
 			md.mun_delegate_email,
 			md.type,
 			md.council,
+			md.council_date,
 			md.country,
 			md.confirmed,
 			md.confirmed_date,
@@ -211,7 +230,7 @@ func (r *adminRepo) GetDelegates(delegateType string, limit, offset int) ([]dash
 		ORDER BY md.mun_delegate_email
 		LIMIT $2 OFFSET $3;
 	`
-	err := r.db.Select(&delegates, delegateType, query, limit, offset)
+	err := r.db.Select(&delegates, query, delegateType, limit, offset)
 	if err != nil {
 		logger.LogError(err, "Failed to get delegates", map[string]interface{}{
 			"layer":     "repository",
@@ -226,12 +245,11 @@ func (r *adminRepo) GetPositionPapers(limit, offset int) ([]position.PositionPap
 	var papers []position.PositionPaper
 	query := `
 		SELECT 
-			pp.position_paper_id,
 			pp.mun_delegate_email,
 			pp.submission_file,
 			pp.submission_date,
 			pp.submission_status
-		FROM position_papers pp
+		FROM position_paper pp
 		ORDER BY pp.mun_delegate_email
 		LIMIT $1 OFFSET $2;
 	`
