@@ -4,10 +4,10 @@ import type { NextRequest } from 'next/server'
 import { getUserProfile, refreshAccessToken } from './src/utils/helpers/fetch/auth/auth'
 
 function setHeaders(response: NextResponse, userData: any) {
-  response.headers.set('x-user-id', userData.user_id)
-  response.headers.set('x-user-role', userData.role)
-  response.headers.set('x-user-username', userData.username)
-  response.headers.set('x-user-email', userData.email)
+  response.headers.set('x-user-id', userData.UserID)
+  response.headers.set('x-user-role', userData.Role)
+  response.headers.set('x-user-username', userData.Username)
+  response.headers.set('x-user-email', userData.Email)
 }
 
 export async function middleware(request: NextRequest) {
@@ -42,9 +42,8 @@ export async function middleware(request: NextRequest) {
         // Token is valid, get user data and set headers
         userData = res.data.user
         validAuth = true
-
         // If accessing admin path, check if user has admin role
-        if (isAdminPath && userData?.role !== 'admin') {
+        if (isAdminPath && userData?.Role !== 'admin') {
           // User is not admin, redirect to dashboard or home
           return NextResponse.redirect(new URL('/dashboard', request.url))
         }
@@ -94,7 +93,7 @@ export async function middleware(request: NextRequest) {
       const userData = userRes.data.user;
       
         // Admin path check
-        if (isAdminPath && userData?.role !== 'admin') {
+        if (isAdminPath && userData?.Role !== 'admin') {
           const response = NextResponse.redirect(new URL('/dashboard', request.url));
           response.cookies.delete('access_token');
           response.cookies.delete('refresh_token');

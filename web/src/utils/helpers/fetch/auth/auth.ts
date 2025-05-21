@@ -12,10 +12,10 @@ export type AuthResponse = {
     accessToken?: string;
     refreshToken?: string;
     user?: {
-        user_id: number;
-        email: string;
-        username: string;
-        role: string;
+        UserID: number;
+        Email: string;
+        Username: string;
+        Role: string;
     }
 };
 
