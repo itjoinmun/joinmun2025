@@ -158,7 +158,7 @@ func rateLimiterMiddleware() gin.HandlerFunc {
 	store := memory.NewStore()
 	rate := limiter.Rate{
 		Period: 1 * time.Minute,
-		Limit:  25, // Allow max 25 requests per minute per IP
+		Limit:  50, // Allow max 25 requests per minute per IP
 	}
 	// Create a new rate limiter instance
 	instance := limiter.New(store, rate)
