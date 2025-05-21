@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"backend/internal/emailer"
 	delegateModel "backend/internal/model/dashboard"
 	paymentModel "backend/internal/model/payment"
 	positionModel "backend/internal/model/position"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	"backend/pkg/utils"
-	emailUtils "backend/pkg/utils/email"
 	"backend/pkg/utils/logger"
 	"fmt"
 
@@ -76,14 +76,16 @@ type adminService struct {
 	delegateRepo delegateRepo.DelegateRepo
 	adminRepo    adminRepo.AdminRepo
 	paymentRepo  paymentRepo.PaymentRepo
+	emailer      *emailer.EmailService
 }
 
-func NewAdminService(uploader *s3.S3Uploader, adminRepo adminRepo.AdminRepo, delegateRepo delegateRepo.DelegateRepo, paymentRepo paymentRepo.PaymentRepo) AdminService {
+func NewAdminService(uploader *s3.S3Uploader, adminRepo adminRepo.AdminRepo, delegateRepo delegateRepo.DelegateRepo, paymentRepo paymentRepo.PaymentRepo, emailer *emailer.EmailService) AdminService {
 	return &adminService{
 		uploader:     uploader,
 		delegateRepo: delegateRepo,
 		adminRepo:    adminRepo,
 		paymentRepo:  paymentRepo,
+		emailer:      emailer,
 	}
 }
 
@@ -126,7 +128,7 @@ func (s *adminService) UpdateParticipantStatus(email string) (retErr error) {
 		retErr = fmt.Errorf("email %s is not a delegate", email)
 		return retErr
 	}
-	err = emailUtils.SendBiodataApprovalEmail(email)
+	err = s.emailer.SendBiodataApprovalEmail(email)
 	if err != nil {
 		logger.LogError(err, "Failed to send biodata approval email", map[string]interface{}{
 			"layer":     "service",
@@ -255,7 +257,7 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail string) error {
 		return fmt.Errorf("payment already updated for delegate email: %s", delegateEmail)
 	}
 
-	err = emailUtils.SendPaymentApprovalEmail(delegateEmail)
+	err = s.emailer.SendPaymentApprovalEmail(delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to send payment approval email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 		return err

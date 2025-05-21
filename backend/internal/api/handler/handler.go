@@ -2,6 +2,7 @@ package handler
 
 import (
 	userHandlerI "backend/internal/api/handler/user"
+	"backend/internal/emailer"
 	userRepoI "backend/internal/repository/user"
 	userServiceI "backend/internal/service/user"
 
@@ -34,12 +35,12 @@ type HandlerContainer struct {
 	PositionHandler  *positionHandlerI.PositionHandler
 }
 
-func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer {
+func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader, emailer *emailer.EmailService) *HandlerContainer {
 	// USER
 	tokenRepo := userRepoI.NewRefreshTokenRepo(db)
 	userRepo := userRepoI.NewUserRepo(db)
 	tokenService := userServiceI.NewRefreshTokenService(tokenRepo, userRepo)
-	userService := userServiceI.NewUserService(userRepo, tokenService)
+	userService := userServiceI.NewUserService(userRepo, tokenService, emailer)
 	userHandler := userHandlerI.NewUserHandler(userService, tokenService)
 
 	// DASHBOARD
@@ -75,7 +76,7 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer
 
 	// ADMIN
 	adminRepo := adminRepoI.NewAdminRepo(db)
-	adminService := adminServiceI.NewAdminService(uploader, adminRepo, delegateRepo, paymentRepo)
+	adminService := adminServiceI.NewAdminService(uploader, adminRepo, delegateRepo, paymentRepo, emailer)
 	adminHandler, err := adminHandlerI.NewAdminHandler(adminService)
 	if err != nil {
 		panic(err)
