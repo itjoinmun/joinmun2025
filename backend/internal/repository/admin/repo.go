@@ -166,9 +166,6 @@ func (r *adminRepo) GetDelegateHealthResponses(delegateType string, limit, offse
 	`
 	err := r.db.Select(&responses, query)
 	return responses, err
-}
-
-func (r *adminRepo) GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error) {
 	var responses []dashboard.MUNResponseWithQuestion
 	query := `
 		SELECT 

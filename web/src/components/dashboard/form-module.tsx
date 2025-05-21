@@ -105,7 +105,6 @@ const FormContent = ({
   useEffect(() => {
     const loadSavedFiles = async () => {
       const fileInfo: Record<string, string> = {};
-
       for (const field of fields) {
         if (field.type === "file" && field.savedFileKey) {
           if (getStoredFile) {

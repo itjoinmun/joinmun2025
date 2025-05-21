@@ -6,6 +6,8 @@ import {
   DashboardModuleContent,
 } from "@/components/dashboard/dashboard-module";
 import { cn } from "@/utils/helpers/cn";
+import { fetchDelegatePaper, getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
+import { cookies } from "next/headers";
 
 type RegistrationStatus =
   | "not_registered"
