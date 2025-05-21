@@ -15,7 +15,7 @@ import { login } from "@/utils/helpers/fetch/auth/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,6 +27,7 @@ const loginSchema = z.object({
 
 const LoginForm = () => {
   const [pending, setPending] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -35,26 +36,31 @@ const LoginForm = () => {
       password: "",
     },
   });
+
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      login({
+      // Await the login promise
+      const res = await login({
         email: values.email,
         password: values.password,
-      }).then((res) => {
-        if (res.ok) {
-          // redirect to dashboard
-          redirect("/dashboard");
-        } else {
-          // show error message
-          console.error(res);
-        }
-      })
-      // post to backend api
+      });
+
+      console.log(res);
+      if (res.ok) {
+        // redirect to dashboard
+        router.push("/dashboard");
+      } else {
+        // show error message
+        console.error(res);
+        // You might want to set an error state here to display to the user
+      }
     } catch (error) {
       console.error(error);
-    } finally {
       setPending(false);
+      // You might want to set an error state here as well
+    } finally {
+      // TO DO: Toast
     }
     // do something
   };
