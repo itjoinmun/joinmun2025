@@ -92,7 +92,7 @@ func (r *userRepo) GetUserByID(userID int) (*user.User, error) {
 
 func (r *userRepo) ResetPassword(newPassword, resetToken string) error {
 	// Query for updating the password of a user
-	query := "UPDATE users SET password = $1, reset_token = NULL, reset_token_expired_at = NULL WHERE reset_token = $2 AND reset_token_expired_at > $3"
+	query := "UPDATE users SET password = $1, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = $2 AND reset_token_expiry > $3"
 
 	// Get the current time
 	currentTime := time.Now()
@@ -116,7 +116,7 @@ func (r *userRepo) ResetPassword(newPassword, resetToken string) error {
 
 func (r *userRepo) RequestPasswordReset(email, resetToken string, resetTokenExpiredAt time.Time) error {
 	// Query for updating the reset token and its expiration time
-	query := "UPDATE users SET reset_token = $1, reset_token_expired_at = $2 WHERE email = $3"
+	query := "UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE email = $3"
 
 	// Params that will be passed to the query
 	params := []any{resetToken, resetTokenExpiredAt, email}

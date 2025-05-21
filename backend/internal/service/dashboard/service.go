@@ -25,7 +25,7 @@ type DashboardService interface {
 		biodataResponse []dashboard.BiodataResponses,
 	) (retErr error)
 	LinkMeToTeam(delegateEmail, teamID string) (retErr error)
-	GetParticipantData(email string) ([]dashboard.MUNDelegates, error)
+	GetParticipantData(email string) ([]dashboard.MUNDelegates, string, error)
 	GetQuestions() (biodataQuestions []dashboard.BiodataQuestions, healthQuestions []dashboard.HealthQuestions, munQuestions []dashboard.MUNQuestions, err error)
 	GetUserData(email string) (*dashboard.MUNDelegates, error)
 }
@@ -158,7 +158,7 @@ func (s *dashboardService) InsertDelegates(
 	})
 }
 
-func (s *dashboardService) GetParticipantData(email string) ([]dashboard.MUNDelegates, error) {
+func (s *dashboardService) GetParticipantData(email string) ([]dashboard.MUNDelegates, string, error) {
 	teamID, err := s.delegateRepo.GetTeamIDByDelegateEmail(email)
 	if err != nil {
 		logger.LogError(err, "Failed to get team by delegate email", map[string]interface{}{
@@ -166,7 +166,7 @@ func (s *dashboardService) GetParticipantData(email string) ([]dashboard.MUNDele
 			"operation": "service.GetParticipantData",
 			"error":     err,
 		})
-		return nil, err
+		return nil, "", err
 	}
 
 	delegates, err := s.delegateRepo.GetDelegatesByTeamID(teamID)
@@ -178,7 +178,7 @@ func (s *dashboardService) GetParticipantData(email string) ([]dashboard.MUNDele
 		})
 	}
 
-	return delegates, nil
+	return delegates, teamID, nil
 }
 
 // AI GENERATED CODE #VIBECODER

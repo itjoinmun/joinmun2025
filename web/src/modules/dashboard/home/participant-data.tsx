@@ -16,11 +16,8 @@ import { cn } from "@/utils/helpers/cn";
 import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
 import { cookies } from "next/headers";
 
-const ParticipantData = async () => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-  const delegates = await getDelegates(accessToken);
-  console.log(delegates);
+{/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */}
+const ParticipantData = async (delegates: any) => {
   return (
     <DashboardModule>
       <DashboardModuleHeader>
@@ -39,19 +36,18 @@ const ParticipantData = async () => {
           </TableHeader>
           <TableBody className="bg-blue-100">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {delegates?.map((participant: any, index: number) => (
+            {delegates?.delegates.map((participant: any, index: number) => (
               <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
                 <TableCell
                   className={cn(
-                    "font-medium",
-                    index === participant.length - 1 && "first:rounded-bl-lg",
+                    index === delegates.length - 1 && "first:rounded-bl-lg"
                   )}
                 >
                   {participant.mun_delegate_name}
                 </TableCell>
                 <TableCell>{participant.confirmed ? "Confirmed" : "Not Confirmed"}</TableCell>
                 <TableCell>{participant.council}</TableCell>
-                <TableCell className={cn(index === participant.length - 1 && "rounded-br-lg")}>
+                <TableCell className={cn(index === delegates.length - 1 && "rounded-br-lg")}>
                   {participant.country}
                 </TableCell>
               </TableRow>

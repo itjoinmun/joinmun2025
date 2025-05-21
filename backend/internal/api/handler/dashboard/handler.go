@@ -336,13 +336,16 @@ func (h *DashboardHandler) ParticipantDataHandler(c *gin.Context) {
 	}
 	userEmail := userContext.Email
 	// Get the participant data from the service
-	participantData, err := h.dashboardService.GetParticipantData(userEmail)
+	participantData, teamID, err := h.dashboardService.GetParticipantData(userEmail)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get participant data", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, participantData)
+	c.JSON(http.StatusOK, gin.H{
+		"participant_data": participantData,
+		"team_id":          teamID,
+	})
 }
 
 func (h *DashboardHandler) GetQuestionsHandler(c *gin.Context) {

@@ -7,15 +7,16 @@ export async function getDelegate(accessToken?: string): Promise<any> {
     headers: {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
-      credentials: "include",
     },
-  }).then((res) => res.json());
+    credentials: "include",
+  });
 
   if (!res.ok) {
     return null;
   }
 
-  return res;
+  const data = await res.json();
+  return data;
 }
 
 // eslint-disable-next-line
@@ -45,6 +46,25 @@ export async function fetchDelegatePaper(accessToken?: string): Promise<any> {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
       credentials: "include",
+    },
+  });
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const resBody = await res.json();
+  return resBody;
+}
+
+// eslint-disable-next-line
+export async function fetchPayment(accessToken?: string): Promise<any> {
+  const res = await fetch(`${API_BASE}/payment`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `access_token=${accessToken}`,
     },
   });
 

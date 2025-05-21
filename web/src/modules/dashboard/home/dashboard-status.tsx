@@ -26,22 +26,22 @@ type InformationCenterStatus =
   | "no_information"
   | "has_information";
 
-interface ParticipantData {
-  registrationStatus: RegistrationStatus;
-  delegateCode: DelegateCodeStatus;
-  paperSubmission: PaperSubmissionStatus;
-  informationCenter: InformationCenterStatus;
-  paperUrl?: string;
-  delegateCodeValue?: string;
-  informationContent?: string;
-}
+// interface ParticipantData {
+//   registrationStatus: RegistrationStatus;
+//   delegateCode: DelegateCodeStatus;
+//   paperSubmission: PaperSubmissionStatus;
+//   informationCenter: InformationCenterStatus;
+//   paperUrl?: string;
+//   delegateCodeValue?: string;
+//   informationContent?: string;
+// }
 
-const currentUserState: ParticipantData = {
-  registrationStatus: "verified_pending_payment",
-  delegateCode: "registration_pending",
-  paperSubmission: "registration_pending",
-  informationCenter: "no_information",
-};
+// const currentUserState: ParticipantData = {
+//   registrationStatus: "verified_pending_payment",
+//   delegateCode: "registration_pending",
+//   paperSubmission: "registration_pending",
+//   informationCenter: "no_information",
+// };
 
 interface StatusCardProps {
   title: string;
@@ -51,19 +51,48 @@ interface StatusCardProps {
   cardDescription: string;
 }
 
-const DashboardStatus = async () => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+type InfoProps = {
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  userStatus: any;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  paperStatus: any;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  paymentStatus: any;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  teamID: any;
+}
 
-  const userStatus = await getDelegate(accessToken);
-  const paperStatus = await fetchDelegatePaper(accessToken);
-  // eslint-disable-next-line
-  let regInfo = getRegistrationStatusInfo(currentUserState.registrationStatus);
-  const codeInfo = getDelegateCodeInfo(currentUserState.delegateCode);
-  const paperInfo = getPaperSubmissionInfo(currentUserState.paperSubmission);
-  const infoInfo = getInformationCenterInfo(currentUserState.informationCenter);
-  console.log("STATUS", userStatus)
-  console.log("PAPER", paperStatus)
+const DashboardStatus = async ({userStatus, paperStatus, paymentStatus}: InfoProps) => {
+  // Determine dynamic status
+  const registrationStatus: RegistrationStatus = (() => {
+    if (!userStatus?.confirmed) return "waiting_verification";
+    if (userStatus.confirmed && !paymentStatus?.paid) return "verified_pending_payment";
+    if (paymentStatus?.checking) return "payment_checking";
+    if (userStatus.confirmed && paymentStatus?.paid) return "payment_verified";
+    return "not_registered"; // fallback
+  })();
+
+  const paperSubmission: PaperSubmissionStatus = (() => {
+    if (!userStatus?.confirmed || !paymentStatus?.paid) return "registration_pending";
+    if (paperStatus?.paperUrl) return "uploaded";
+    return "can_upload";
+  })();
+
+  const delegateCode: DelegateCodeStatus = (() => {
+    if (!userStatus?.confirmed) return "registration_pending";
+    return userStatus?.delegate_code ? "code_available" : "registration_pending";
+  })();
+
+  const informationCenter: InformationCenterStatus = (() => {
+    if (!userStatus?.confirmed) return "registration_pending";
+    return "no_information"; // Placeholder
+  })();
+
+  const regInfo = getRegistrationStatusInfo(registrationStatus);
+  const codeInfo = getDelegateCodeInfo(delegateCode);
+  const paperInfo = getPaperSubmissionInfo(paperSubmission);
+  const infoInfo = getInformationCenterInfo(informationCenter);
+
   return (
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">

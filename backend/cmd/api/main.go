@@ -4,6 +4,7 @@ import (
 	"backend/internal/api/handler"
 	"backend/internal/api/middleware"
 	"backend/internal/api/router"
+	"backend/internal/emailer"
 	"backend/internal/s3"
 	"backend/pkg/utils/logger"
 	"context"
@@ -71,8 +72,15 @@ func main() {
 		logger.Log.Fatal().Err(err).Msg("Failed to initialize S3 uploader")
 	}
 
+	// Emailer
+	// Initialize Email Service
+	emailService, err := emailer.NewEmailService()
+	if err != nil {
+		logger.Log.Fatal().Err(err).Msg("Failed to initialize email service")
+	}
+
 	// Setup repositories and services
-	allHandler := handler.NewHandlerContainer(db, uploader)
+	allHandler := handler.NewHandlerContainer(db, uploader, emailService)
 
 	// setup router
 	r := gin.New()
@@ -158,7 +166,7 @@ func rateLimiterMiddleware() gin.HandlerFunc {
 	store := memory.NewStore()
 	rate := limiter.Rate{
 		Period: 1 * time.Minute,
-		Limit:  25, // Allow max 25 requests per minute per IP
+		Limit:  50, // Allow max 25 requests per minute per IP
 	}
 	// Create a new rate limiter instance
 	instance := limiter.New(store, rate)

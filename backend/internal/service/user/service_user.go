@@ -1,10 +1,10 @@
 package user
 
 import (
+	"backend/internal/emailer"
 	userModel "backend/internal/model/user"
 	userRepository "backend/internal/repository/user"
 	"backend/pkg/utils/auth"
-	emailUtils "backend/pkg/utils/email"
 	"backend/pkg/utils/logger"
 	"errors"
 	"fmt"
@@ -30,12 +30,14 @@ type UserService interface {
 type userService struct {
 	userRepo     userRepository.UserRepo
 	tokenService RefreshTokenService
+	emailer      *emailer.EmailService
 }
 
-func NewUserService(userRepo userRepository.UserRepo, tokenService RefreshTokenService) UserService {
+func NewUserService(userRepo userRepository.UserRepo, tokenService RefreshTokenService, emailer *emailer.EmailService) UserService {
 	return &userService{
 		userRepo:     userRepo,
 		tokenService: tokenService,
+		emailer:      emailer,
 	}
 }
 
@@ -130,7 +132,7 @@ func (s *userService) RequestPasswordReset(email string) error {
 	if os.Getenv("ENVIRONMENT") == "production" {
 		resetLink = fmt.Sprintf("https://%s/forgot-password/%s", os.Getenv("FRONTEND_URL"), resetToken)
 	} else {
-		resetLink = fmt.Sprintf("https://joinmun.localhost/forgot-password/%s", resetToken)
+		resetLink = fmt.Sprintf("http://localhost:3000/forgot-password/%s", resetToken)
 	}
 
 	// run the password reset request and email sending concurrently
@@ -156,7 +158,7 @@ func (s *userService) RequestPasswordReset(email string) error {
 
 	// send the email with the reset link
 	g.Go(func() error {
-		if err := emailUtils.SendPasswordResetEmail(email, resetLink); err != nil {
+		if err := s.emailer.SendPasswordResetEmail(email, resetLink); err != nil {
 			errorMessage := "Utils Failed to send password reset email"
 			logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.RequestPasswordReset"})
 			return err

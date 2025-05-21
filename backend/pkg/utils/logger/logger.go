@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"time"
 
 	"github.com/rs/zerolog"
 )
@@ -27,11 +26,11 @@ func InitLogger() {
 	// This configuration:
 	// - Keeps the first N logs (initial burst)
 	// - After that, samples logs at the given interval (1 out of every M)
-	sampler := &zerolog.BurstSampler{
-		Burst:       5,                             // Allow first 5 messages without sampling
-		Period:      300 * time.Second,             // Reset counter every 30 seconds
-		NextSampler: &zerolog.BasicSampler{N: 100}, // After burst, sample 1 in 50 messages
-	}
+	// sampler := &zerolog.BurstSampler{
+	// 	Burst:       5,                             // Allow first 5 messages without sampling
+	// 	Period:      300 * time.Second,             // Reset counter every 30 seconds
+	// 	NextSampler: &zerolog.BasicSampler{N: 100}, // After burst, sample 1 in 50 messages
+	// }
 
 	// Local or other environments → Log to both file and stdout
 	logPath := "/var/log/joinmun_backend"
@@ -65,7 +64,7 @@ func InitLogger() {
 		multiErrorWriter = zerolog.MultiLevelWriter(os.Stdout)
 	}
 
-	Log = zerolog.New(multiAppWriter).Sample(sampler).With().
+	Log = zerolog.New(multiAppWriter).With().
 		Timestamp().
 		Str("service", "joinmun_backend").
 		Logger()

@@ -3,7 +3,12 @@ package admin
 import (
 	adminService "backend/internal/service/admin"
 	"backend/pkg/utils/dashboard"
+	"bytes"
+	"encoding/csv"
+	"fmt"
 	"net/http"
+	"sort"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -155,21 +160,72 @@ func (h *AdminHandler) UpdatePaymentStatusHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Payment status updated successfully"})
 }
 
-func (h *AdminHandler) GetDelegateBiodataResponsesHandler(c *gin.Context) {
+// convertToCSV generates a CSV string from a slice of GroupedResponseItem.
+func convertToCSV(items []adminService.GroupedResponseItem, filenamePrefix string) (string, string, error) {
+	if len(items) == 0 {
+		return "", filenamePrefix + ".csv", nil // Return empty string and default filename
+	}
+
+	var csvBuffer bytes.Buffer
+	csvWriter := csv.NewWriter(&csvBuffer)
+
+	questionHeaderSet := make(map[string]struct{})
+	for _, item := range items {
+		answers := item.GetAnswers()
+		for questionText := range answers {
+			questionHeaderSet[questionText] = struct{}{}
+		}
+	}
+
+	sortedQuestionHeaders := make([]string, 0, len(questionHeaderSet))
+	for questionText := range questionHeaderSet {
+		sortedQuestionHeaders = append(sortedQuestionHeaders, questionText)
+	}
+	sort.Strings(sortedQuestionHeaders) // Sort for consistent column order
+
+	headers := []string{"delegate_email"}
+	headers = append(headers, sortedQuestionHeaders...)
+
+	if err := csvWriter.Write(headers); err != nil {
+		return "", "", fmt.Errorf("failed to write CSV headers: %w", err)
+	}
+
+	for _, item := range items {
+		record := make([]string, len(headers))
+		record[0] = item.GetDelegateEmail()
+		answers := item.GetAnswers()
+		for i, questionHeader := range sortedQuestionHeaders {
+			record[i+1] = answers[questionHeader] // map answer to the correct column
+		}
+		if err := csvWriter.Write(record); err != nil {
+			return "", "", fmt.Errorf("failed to write CSV record for %s: %w", item.GetDelegateEmail(), err)
+		}
+	}
+
+	csvWriter.Flush()
+	if err := csvWriter.Error(); err != nil {
+		return "", "", fmt.Errorf("failed to flush CSV writer: %w", err)
+	}
+
+	finalFilename := strings.ToLower(strings.ReplaceAll(filenamePrefix, " ", "_")) + "_responses.csv"
+	return csvBuffer.String(), finalFilename, nil
+}
+
+func (h *AdminHandler) GetAmalgamatedResponsesHandler(c *gin.Context) {
 	userContext, ok := dashboard.GetUserFromContext(c)
 	if !ok {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	// Only admins can get delegate biodata responses
+	// Only admins can get amalgamated responses
 	if userContext.Role != "admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
 		return
 	}
 
 	var req struct {
-		DelegateType string `json:"delegate_type" binding:"required"`
+		DelegateType string `json:"delegate_type" binding:"required"` // Can be "all" or a specific type
 		Limit        int    `json:"limit" binding:"gte=1"`
 		Offset       int    `json:"offset" binding:"gte=0"`
 	}
@@ -179,78 +235,35 @@ func (h *AdminHandler) GetDelegateBiodataResponsesHandler(c *gin.Context) {
 		return
 	}
 
-	responses, err := h.adminService.GetDelegateBiodataResponses(req.DelegateType, req.Limit, req.Offset)
+	actualDelegateType := req.DelegateType
+	if strings.ToLower(req.DelegateType) == "all" {
+		actualDelegateType = "" // Pass empty string to service to fetch all types
+	}
+
+	responses, err := h.adminService.GetAmalgamatedResponses(actualDelegateType, req.Limit, req.Offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate biodata responses", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve amalgamated responses", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, responses)
-}
+	items := make([]adminService.GroupedResponseItem, len(responses))
+	for i, r := range responses {
+		items[i] = r
+	}
 
-func (h *AdminHandler) GetDelegateHealthResponsesHandler(c *gin.Context) {
-	userContext, ok := dashboard.GetUserFromContext(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	filenamePrefix := "amalgamated"
+	if actualDelegateType != "" {
+		filenamePrefix += "_" + actualDelegateType
+	}
+
+	csvString, filename, errCsv := convertToCSV(items, filenamePrefix)
+	if errCsv != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate CSV for amalgamated data", "details": errCsv.Error()})
 		return
 	}
 
-	// Only admins can get delegate health responses
-	if userContext.Role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
-		return
-	}
-
-	var req struct {
-		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"gte=1"`
-		Offset       int    `json:"offset" binding:"gte=0"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
-
-	responses, err := h.adminService.GetDelegateHealthResponses(req.DelegateType, req.Limit, req.Offset)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate health responses", "details": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, responses)
-}
-
-func (h *AdminHandler) GetDelegateMUNResponsesHandler(c *gin.Context) {
-	userContext, ok := dashboard.GetUserFromContext(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	// Only admins can get delegate MUN responses
-	if userContext.Role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
-		return
-	}
-
-	var req struct {
-		Limit  int `json:"limit" binding:"gte=1"`
-		Offset int `json:"offset" binding:"gte=0"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
-
-	responses, err := h.adminService.GetDelegateMUNResponses(req.Limit, req.Offset)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate MUN responses", "details": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, responses)
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
+	c.Data(http.StatusOK, "text/csv; charset=utf-8", []byte(csvString))
 }
 
 func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {

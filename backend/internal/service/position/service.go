@@ -43,7 +43,7 @@ func (s *positionService) GetPositionPaperByDelegateEmail(delegateEmail string) 
 		logger.LogError(err, "Failed to get position paper by delegate email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPositionPaperByDelegateEmail"})
 		return nil, err
 	}
-	paperUrl, err := s.uploader.GeneratePresignedURL(paper.SubmissionFile)
+	paperUrl, err := s.uploader.GeneratePresignedURL(paper.SubmissionFile, 15*time.Minute)
 	if err != nil {
 		logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPositionPaperByDelegateEmail"})
 		return nil, err
