@@ -144,11 +144,9 @@ func (r *adminRepo) GetDelegateBiodataResponses(delegateType string, limit, offs
 		FROM biodata_responses r
 		JOIN biodata_questions q ON r.biodata_question_id = q.biodata_question_id
 		JOIN mun_delegates d ON r.delegate_email = d.mun_delegate_email
-		WHERE d.participant_type = $1
-		ORDER BY r.delegate_email
-		LIMIT $2 OFFSET $3;
+		ORDER BY r.delegate_email;
 	`
-	err := r.db.Select(&responses, query, delegateType, limit, offset)
+	err := r.db.Select(&responses, query)
 	return responses, err
 }
 
@@ -164,11 +162,9 @@ func (r *adminRepo) GetDelegateHealthResponses(delegateType string, limit, offse
 		FROM health_responses r
 		JOIN health_questions q ON r.health_question_id = q.health_question_id
 		JOIN mun_delegates d ON r.delegate_email = d.mun_delegate_email
-		WHERE d.participant_type = $1
 		ORDER BY r.delegate_email
-		LIMIT $2 OFFSET $3;
 	`
-	err := r.db.Select(&responses, query, delegateType, limit, offset)
+	err := r.db.Select(&responses, query)
 	return responses, err
 }
 
@@ -183,10 +179,9 @@ func (r *adminRepo) GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNR
 			q.mun_question_text
 		FROM mun_responses r
 		JOIN mun_questions q ON r.mun_question_id = q.mun_question_id
-		ORDER BY r.delegate_email
-		LIMIT $1 OFFSET $2;
+		ORDER BY r.delegate_email;
 	`
-	err := r.db.Select(&responses, query, limit, offset)
+	err := r.db.Select(&responses, query)
 	return responses, err
 }
 

@@ -32,6 +32,7 @@ func InitializeAdminRoutes(r *gin.Engine, adminHandler *admin.AdminHandler) *gin
 		adminPage.GET("/position-paper", adminHandler.GetDelegatePositionPaperHandler)
 		adminPage.GET("/payments", adminHandler.GetDelegatesPaymentHandler)
 		adminPage.GET("/delegates", adminHandler.GetDelegatesHandler)
+		adminPage.GET("/responses", adminHandler.GetAmalgamatedResponsesHandler)
 	}
 	return r
 }
