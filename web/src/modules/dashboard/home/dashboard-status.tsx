@@ -24,15 +24,15 @@ type InformationCenterStatus =
   | "no_information"
   | "has_information";
 
-interface ParticipantData {
-  registrationStatus: RegistrationStatus;
-  delegateCode: DelegateCodeStatus;
-  paperSubmission: PaperSubmissionStatus;
-  informationCenter: InformationCenterStatus;
-  paperUrl?: string;
-  delegateCodeValue?: string;
-  informationContent?: string;
-}
+// interface ParticipantData {
+//   registrationStatus: RegistrationStatus;
+//   delegateCode: DelegateCodeStatus;
+//   paperSubmission: PaperSubmissionStatus;
+//   informationCenter: InformationCenterStatus;
+//   paperUrl?: string;
+//   delegateCodeValue?: string;
+//   informationContent?: string;
+// }
 
 // const currentUserState: ParticipantData = {
 //   registrationStatus: "verified_pending_payment",
@@ -48,7 +48,7 @@ interface StatusCardProps {
   cardHeader: string;
   cardDescription: string;
 }
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+
 type InfoProps = {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   userStatus: any;
@@ -60,7 +60,7 @@ type InfoProps = {
   teamID: any;
 }
 
-const DashboardStatus = async ({userStatus, paperStatus, paymentStatus, teamID}: InfoProps) => {
+const DashboardStatus = async ({userStatus, paperStatus, paymentStatus}: InfoProps) => {
   // Determine dynamic status
   const registrationStatus: RegistrationStatus = (() => {
     if (!userStatus?.confirmed) return "waiting_verification";

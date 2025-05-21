@@ -57,6 +57,7 @@ export async function fetchDelegatePaper(accessToken?: string): Promise<any> {
   return resBody;
 }
 
+// eslint-disable-next-line
 export async function fetchPayment(accessToken?: string): Promise<any> {
   const res = await fetch(`${API_BASE}/payment`, {
     method: "GET",

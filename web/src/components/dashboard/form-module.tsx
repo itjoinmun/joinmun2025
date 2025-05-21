@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState, useEffect } from "react";
-import { ControllerRenderProps, FieldValues } from "react-hook-form";
+// import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 // 👏 Defining our form field metadata.
 export interface FormFieldConfig {
@@ -90,8 +90,7 @@ const FormContent = ({
 }: {
   className?: string;
   fields: FormFieldConfig[];
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  onSubmit?: (values: any) => void;
+  onSubmit?: (values: Record<string, string | File | null>) => void;
   getStoredFile?: (fileKey: string) => Promise<File | null>;
 }) => {
   // 1. Define the zod schema for validation.
@@ -106,7 +105,7 @@ const FormContent = ({
   useEffect(() => {
     const loadSavedFiles = async () => {
       const fileInfo: Record<string, string> = {};
-      
+
       for (const field of fields) {
         if (field.type === "file" && field.savedFileKey) {
           if (getStoredFile) {
@@ -117,17 +116,19 @@ const FormContent = ({
           }
         }
       }
-      
+
       setSavedFiles(fileInfo);
     };
-    
+
     loadSavedFiles();
   }, [fields, getStoredFile]);
 
   // 2. Define our form with proper typing for file fields.
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: Object.fromEntries(fields.map((field) => [field.name, field.defaultValue ?? ""])),
+    defaultValues: Object.fromEntries(
+      fields.map((field) => [field.name, field.defaultValue ?? ""]),
+    ),
   });
 
   // 3. Submit handler.
@@ -161,7 +162,7 @@ const FormContent = ({
                     <FormControl>
                       <div className="flex flex-col gap-2">
                         {savedFiles[field.name] && (
-                          <div className="text-sm text-green-500 font-medium mb-1">
+                          <div className="mb-1 text-sm font-medium text-green-500">
                             Previously uploaded: {savedFiles[field.name]}
                           </div>
                         )}
@@ -172,15 +173,16 @@ const FormContent = ({
                           name={fieldProps.name}
                           ref={fieldProps.ref}
                           onBlur={fieldProps.onBlur}
-                          onChange={(e: any) => {
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const file = e.target.files?.[0] || null;
                             fieldProps.onChange(file);
-                            
+
                             // Update the display name if a new file is selected
                             if (file) {
+                              {/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */}
                               setSavedFiles((prev: any) => ({
                                 ...prev,
-                                [field.name]: file.name
+                                [field.name]: file.name,
                               }));
                             }
                           }}
@@ -224,4 +226,3 @@ const FormContent = ({
 };
 
 export { FormContent, FormHeader, RegistrationFormModule };
-
