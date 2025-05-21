@@ -49,25 +49,6 @@ export async function getUser(): Promise<User> {
     return { username, email, role, user_id }
   }
 
-  // If headers don't have user data, try to fetch directly
-  try {
-    const accessToken = await getAccessToken()
-    if (accessToken) {
-      const userData = await fetchUserClient(accessToken)
-      if (userData) {
-        return {
-          username: userData.username,
-          email: userData.email,
-          role: userData.role,
-          user_id: userData.user_id,
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching user data:', error)
-  }
-
-  // If all attempts fail, return null
   return null
 }
 
