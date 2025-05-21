@@ -8,6 +8,7 @@ import (
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
 	"backend/internal/s3"
+	"time"
 
 	"backend/pkg/utils"
 	emailUtils "backend/pkg/utils/email"
@@ -64,9 +65,6 @@ type AdminService interface {
 	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error
 	MakePairing(delegateEmail, pair string) error
 	UpdatePaymentStatus(email string) error
-	GetDelegateHealthResponses(delegateType string, limit, offset int) ([]GroupedDelegateHealth, error)
-	GetDelegateMUNResponses(limit, offset int) ([]GroupedDelegateMUN, error)
-	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]GroupedDelegateBiodata, error)
 	GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error)
 	GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]paymentModel.PaymentResponse, error)
 	GetDelegates(delegateType string, limit, offset int) ([]delegateModel.MUNDelegates, error)
@@ -273,117 +271,6 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail string) error {
 	return nil
 }
 
-func (s *adminService) GetDelegateHealthResponses(delegateType string, limit, offset int) ([]GroupedDelegateHealth, error) {
-	rawResponses, err := s.adminRepo.GetDelegateHealthResponses(delegateType, limit, offset)
-	if err != nil {
-		logger.LogError(err, "Failed to get delegate health responses", map[string]interface{}{"layer": "service", "operation": "GetDelegateHealthResponses"})
-		return nil, err
-	}
-
-	grouped := make(map[string]map[string]string)
-	for _, r := range rawResponses {
-		if _, ok := grouped[r.DelegateEmail]; !ok {
-			grouped[r.DelegateEmail] = make(map[string]string)
-		}
-		answerText := r.HealthAnswerText
-		if r.HealthQuestionType == "file" && r.HealthAnswerText != "" {
-			url, errPresign := s.uploader.GeneratePresignedURL(r.HealthAnswerText)
-			if errPresign != nil {
-				logger.LogError(errPresign, "Failed to generate presigned URL for health response", map[string]interface{}{"key": r.HealthAnswerText})
-				answerText = "Error generating URL" // Or ""
-			} else {
-				answerText = url
-			}
-		}
-		grouped[r.DelegateEmail][r.HealthQuestionText] = answerText
-	}
-
-	var result []GroupedDelegateHealth
-	for email, answers := range grouped {
-		result = append(result, GroupedDelegateHealth{
-			DelegateEmail: email,
-			Answers:       answers,
-		})
-	}
-	logger.LogDebug("Grouped delegate health responses retrieved", map[string]interface{}{"count": len(result), "layer": "service", "operation": "GetDelegateHealthResponses"})
-	return result, nil
-}
-
-func (s *adminService) GetDelegateMUNResponses(limit, offset int) ([]GroupedDelegateMUN, error) {
-	rawResponses, err := s.adminRepo.GetDelegateMUNResponses(limit, offset)
-	if err != nil {
-		logger.LogError(err, "Failed to get delegate MUN responses", map[string]interface{}{"layer": "service", "operation": "GetDelegateMUNResponses"})
-		return nil, err
-	}
-
-	grouped := make(map[string]map[string]string)
-	for _, r := range rawResponses {
-		if _, ok := grouped[r.DelegateEmail]; !ok {
-			grouped[r.DelegateEmail] = make(map[string]string)
-		}
-		answerText := r.MUNAnswerText
-		if r.MUNQuestionType == "file" && r.MUNAnswerText != "" {
-			url, errPresign := s.uploader.GeneratePresignedURL(r.MUNAnswerText)
-			if errPresign != nil {
-				logger.LogError(errPresign, "Failed to generate presigned URL for MUN response", map[string]interface{}{"key": r.MUNAnswerText})
-				answerText = "Error generating URL" // Or ""
-			} else {
-				answerText = url
-			}
-		}
-		grouped[r.DelegateEmail][r.MUNQuestionText] = answerText
-	}
-
-	var result []GroupedDelegateMUN
-	for email, answers := range grouped {
-		result = append(result, GroupedDelegateMUN{
-			DelegateEmail: email,
-			Answers:       answers,
-		})
-	}
-	logger.LogDebug("Grouped delegate MUN responses retrieved", map[string]interface{}{"count": len(result), "layer": "service", "operation": "GetDelegateMUNResponses"})
-	return result, nil
-}
-
-func (s *adminService) GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]GroupedDelegateBiodata, error) {
-	rawResponses, err := s.adminRepo.GetDelegateBiodataResponses(delegateType, limit, offset)
-	if err != nil {
-		logger.LogError(err, "Failed to get delegate biodata responses", map[string]interface{}{
-			"layer":     "service",
-			"operation": "GetDelegateBiodataResponses",
-		})
-		return nil, err
-	}
-
-	grouped := make(map[string]map[string]string)
-	for _, r := range rawResponses {
-		if _, ok := grouped[r.DelegateEmail]; !ok {
-			grouped[r.DelegateEmail] = make(map[string]string)
-		}
-		answerText := r.BiodataAnswerText
-		if r.BiodataQuestionType == "file" && r.BiodataAnswerText != "" {
-			url, errPresign := s.uploader.GeneratePresignedURL(r.BiodataAnswerText)
-			if errPresign != nil {
-				logger.LogError(errPresign, "Failed to generate presigned URL for biodata response", map[string]interface{}{"key": r.BiodataAnswerText})
-				answerText = "Error generating URL" // Or ""
-			} else {
-				answerText = url
-			}
-		}
-		grouped[r.DelegateEmail][r.BiodataQuestionText] = answerText
-	}
-
-	var result []GroupedDelegateBiodata
-	for email, answers := range grouped {
-		result = append(result, GroupedDelegateBiodata{
-			DelegateEmail: email,
-			Answers:       answers,
-		})
-	}
-	logger.LogDebug("Grouped delegate biodata responses retrieved", map[string]interface{}{"count": len(result), "layer": "service", "operation": "GetDelegateBiodataResponses"})
-	return result, nil
-}
-
 func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error) {
 	// Note: limit and offset are applied to each category fetch.
 	// For true pagination over amalgamated results, a more complex query or post-fetch slicing would be needed.
@@ -416,7 +303,7 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offse
 				}
 				answerText := r.BiodataAnswerText
 				if r.BiodataQuestionType == "file" && r.BiodataAnswerText != "" {
-					url, errPresign := s.uploader.GeneratePresignedURL(r.BiodataAnswerText)
+					url, errPresign := s.uploader.GeneratePresignedURL(r.BiodataAnswerText, 8*time.Hour)
 					if errPresign != nil {
 						logger.LogError(errPresign, "Presign URL error", map[string]interface{}{"key": r.BiodataAnswerText})
 						answerText = "Error generating URL"
@@ -432,15 +319,6 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offse
 					amalgamatedMap[r.DelegateEmail] = make(map[string]string)
 				}
 				answerText := r.HealthAnswerText
-				if r.HealthQuestionType == "file" && r.HealthAnswerText != "" {
-					url, errPresign := s.uploader.GeneratePresignedURL(r.HealthAnswerText)
-					if errPresign != nil {
-						logger.LogError(errPresign, "Presign URL error", map[string]interface{}{"key": r.HealthAnswerText})
-						answerText = "Error generating URL"
-					} else {
-						answerText = url
-					}
-				}
 				amalgamatedMap[r.DelegateEmail][prefix+r.HealthQuestionText] = answerText
 			}
 		case []delegateModel.MUNResponseWithQuestion:
@@ -449,15 +327,6 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offse
 					amalgamatedMap[r.DelegateEmail] = make(map[string]string)
 				}
 				answerText := r.MUNAnswerText
-				if r.MUNQuestionType == "file" && r.MUNAnswerText != "" {
-					url, errPresign := s.uploader.GeneratePresignedURL(r.MUNAnswerText)
-					if errPresign != nil {
-						logger.LogError(errPresign, "Presign URL error", map[string]interface{}{"key": r.MUNAnswerText})
-						answerText = "Error generating URL"
-					} else {
-						answerText = url
-					}
-				}
 				amalgamatedMap[r.DelegateEmail][prefix+r.MUNQuestionText] = answerText
 			}
 		}
@@ -489,7 +358,7 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType string, limit, o
 	// Modify file answers to be presigned URLs
 	for i := range payments {
 		if payments[i].PaymentFile != "" {
-			url, err := s.uploader.GeneratePresignedURL(payments[i].PaymentFile)
+			url, err := s.uploader.GeneratePresignedURL(payments[i].PaymentFile, 15*time.Minute)
 			if err != nil {
 				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": payments[i].PaymentFile})
 				payments[i].PaymentFile = "" // optionally skip this one or set it to empty
@@ -524,7 +393,7 @@ func (s *adminService) GetPositionPapers(limit, offset int) ([]positionModel.Pos
 	// Modify file answers to be presigned URLs
 	for i := range positionPapers {
 		if positionPapers[i].SubmissionFile != "" {
-			url, err := s.uploader.GeneratePresignedURL(positionPapers[i].SubmissionFile)
+			url, err := s.uploader.GeneratePresignedURL(positionPapers[i].SubmissionFile, 15*time.Minute)
 			if err != nil {
 				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": positionPapers[i].SubmissionFile})
 				positionPapers[i].SubmissionFile = "" // optionally skip this one or set it to empty

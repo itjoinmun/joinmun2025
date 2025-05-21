@@ -26,9 +26,6 @@ func InitializeAdminRoutes(r *gin.Engine, adminHandler *admin.AdminHandler) *gin
 
 	adminPage := admin.Group("/page")
 	{
-		adminPage.GET("/biodata", adminHandler.GetDelegateBiodataResponsesHandler)
-		adminPage.GET("/health", adminHandler.GetDelegateHealthResponsesHandler)
-		adminPage.GET("/mun", adminHandler.GetDelegateMUNResponsesHandler)
 		adminPage.GET("/position-paper", adminHandler.GetDelegatePositionPaperHandler)
 		adminPage.GET("/payments", adminHandler.GetDelegatesPaymentHandler)
 		adminPage.GET("/delegates", adminHandler.GetDelegatesHandler)
