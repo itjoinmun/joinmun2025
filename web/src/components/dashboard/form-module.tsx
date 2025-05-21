@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState, useEffect } from "react";
+import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
 // 👏 Defining our form field metadata.
 export interface FormFieldConfig {
@@ -171,13 +172,13 @@ const FormContent = ({
                           name={fieldProps.name}
                           ref={fieldProps.ref}
                           onBlur={fieldProps.onBlur}
-                          onChange={(e) => {
+                          onChange={(e: any) => {
                             const file = e.target.files?.[0] || null;
                             fieldProps.onChange(file);
                             
                             // Update the display name if a new file is selected
                             if (file) {
-                              setSavedFiles(prev => ({
+                              setSavedFiles((prev: any) => ({
                                 ...prev,
                                 [field.name]: file.name
                               }));

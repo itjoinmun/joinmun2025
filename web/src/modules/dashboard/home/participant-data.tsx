@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
 
+{/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */}
 const ParticipantData = async (delegates: any) => {
   return (
     <DashboardModule>

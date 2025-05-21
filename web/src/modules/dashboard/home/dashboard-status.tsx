@@ -34,12 +34,12 @@ interface ParticipantData {
   informationContent?: string;
 }
 
-const currentUserState: ParticipantData = {
-  registrationStatus: "verified_pending_payment",
-  delegateCode: "registration_pending",
-  paperSubmission: "registration_pending",
-  informationCenter: "no_information",
-};
+// const currentUserState: ParticipantData = {
+//   registrationStatus: "verified_pending_payment",
+//   delegateCode: "registration_pending",
+//   paperSubmission: "registration_pending",
+//   informationCenter: "no_information",
+// };
 
 interface StatusCardProps {
   title: string;
@@ -48,11 +48,15 @@ interface StatusCardProps {
   cardHeader: string;
   cardDescription: string;
 }
-
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 type InfoProps = {
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   userStatus: any;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   paperStatus: any;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   paymentStatus: any;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   teamID: any;
 }
 
