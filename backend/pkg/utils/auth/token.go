@@ -31,7 +31,7 @@ func GenerateAccessToken(userID int, email, username, role string) (string, erro
 		Username: username,
 		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "your_app_name",
+			Issuer:    "joinmun2025",
 			IssuedAt:  jwt.NewNumericDate(issuedAt),
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},
