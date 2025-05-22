@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -34,21 +33,9 @@ func InitLogger() {
 
 	// Local or other environments → Log to both file and stdout
 	logPath := "/var/log/joinmun_backend"
-	if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
-		log.Printf("ERROR: Failed to create log directory '%s': %v", logPath, err)
-		return
-	}
-
-	appLogFile, err := os.OpenFile(logPath+"/app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Printf("ERROR: Failed to open app log file '%s': %v", logPath+"/app.log", err)
-		return
-	}
-	errorLogFile, err := os.OpenFile(logPath+"/error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Printf("ERROR: Failed to open error log file '%s': %v", logPath+"/error.log", err)
-		return
-	}
+	_ = os.MkdirAll(logPath, os.ModePerm)
+	appLogFile, _ := os.OpenFile(logPath+"/app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	errorLogFile, _ := os.OpenFile(logPath+"/error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 
 	var multiAppWriter, multiErrorWriter zerolog.LevelWriter
 
