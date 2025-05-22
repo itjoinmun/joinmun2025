@@ -53,6 +53,7 @@ func (r *delegateRepo) InsertOneDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDel
 	query := `INSERT INTO mun_delegates (mun_delegate_email, mun_delegate_name, type, council, country, confirmed, confirmed_date, insert_date, participant_type) 
 			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING mun_delegate_email`
 	var id string
+	now := time.Now()
 	err := tx.QueryRow(
 		query,
 		delegate.MUNDelegateEmail,
@@ -62,7 +63,7 @@ func (r *delegateRepo) InsertOneDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDel
 		nil,
 		false,
 		time.Time{},
-		time.Now(),
+		now,
 		delegate.ParticipantType,
 	).Scan(&id)
 	if err != nil {
@@ -80,7 +81,7 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 	if len(delegates) == 0 {
 		return nil
 	}
-
+	now := time.Now()
 	query := `INSERT INTO mun_delegates (mun_delegate_email, mun_delegate_name, type, council, country, confirmed, confirmed_date, insert_date, participant_type) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
@@ -97,7 +98,7 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 			nil,
 			false,
 			time.Time{},
-			time.Now(),
+			now,
 			d.ParticipantType,
 		)
 	}
