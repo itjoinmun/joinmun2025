@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { parseTokensFromHeaders } from "../helpers/fetch/headers";
 
 const API_URL = process.env.API_URL || "http://localhost:3000/api/v1";
 
@@ -119,26 +120,6 @@ const resetPassword = async (data: {
   return res.json();
 };
 
-const logout = async (): Promise<{ message: string }> => {
-  const { accessToken } = await getTokensFromCookies();
-
-  const res = await fetch(`${API_URL}/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Logout failed");
-  }
-
-  return res.json();
-};
-
 const getUserProfile = async (): Promise<AuthResponseApi> => {
   const { accessToken } = await getTokensFromCookies();
 
@@ -217,72 +198,6 @@ const refreshToken = async (
  * It returns an object containing the accessToken and refreshToken if they exist.
  * If the tokens are not found, it returns an empty object.
  */
-interface CookieDetails {
-  value: string;
-  path?: string;
-  domain?: string;
-  maxAge?: number;
-  httpOnly?: boolean;
-  secure?: boolean;
-  sameSite?: string;
-}
-
-interface ParsedCookies {
-  accessToken?: CookieDetails;
-  refreshToken?: CookieDetails;
-}
-
-const parseTokensFromHeaders = (headers: Headers): ParsedCookies => {
-  // Get the 'set-cookie' header
-  const setCookieHeader = headers.get("set-cookie");
-  if (!setCookieHeader) {
-    return {};
-  }
-
-  const parsedCookies: ParsedCookies = {};
-  const cookieStrings = setCookieHeader.split(", ");
-
-  cookieStrings.forEach((cookieString) => {
-    const parts = cookieString.split(";").map((part) => part.trim());
-    const [nameValuePair, ...attributes] = parts;
-    const [cookieName, cookieValue] = nameValuePair.split("=").map((part) => part.trim());
-
-    if (cookieName === "access_token" || cookieName === "refresh_token") {
-      const details: CookieDetails = { value: cookieValue };
-      attributes.forEach((attr) => {
-        const [attrName, attrValue] = attr.split("=").map((part) => part.trim());
-        switch (attrName.toLowerCase()) {
-          case "path":
-            details.path = attrValue;
-            break;
-          case "domain":
-            details.domain = attrValue;
-            break;
-          case "max-age":
-            details.maxAge = parseInt(attrValue, 10);
-            break;
-          case "httponly":
-            details.httpOnly = true;
-            break;
-          case "secure":
-            details.secure = true;
-            break;
-          case "samesite":
-            details.sameSite = attrValue;
-            break;
-        }
-      });
-
-      if (cookieName === "access_token") {
-        parsedCookies.accessToken = details;
-      } else if (cookieName === "refresh_token") {
-        parsedCookies.refreshToken = details;
-      }
-    }
-  });
-
-  return parsedCookies;
-};
 
 const getTokensFromCookies = async () => {
   const cookieStore = await cookies();
@@ -300,9 +215,7 @@ export {
   login,
   forgotPassword,
   resetPassword,
-  logout,
   getUserProfile,
   refreshToken,
   getTokensFromCookies,
-  parseTokensFromHeaders,
 };

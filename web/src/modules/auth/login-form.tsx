@@ -40,12 +40,14 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      const res = await login({
-        email: values.email,
-        password: values.password,
+      const res = await fetch(`/api/login`, {
+        method: "POST",
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
       });
 
-      console.log("res", res);
       router.push("/dashboard");
       if (res.ok) {
         console.log("Login successful!");

@@ -5,23 +5,28 @@ const GUEST_ROUTES = ["/", "/theme"];
 const PROTECTED_ROUTES = ["/dashboard"];
 
 export async function middleware(request: NextRequest) {
-  // TO DO: change this to refresh token
-  const token = request.cookies.get("access_token")?.value;
+  const token = request.cookies.get("refresh_token")?.value;
   const url = request.nextUrl.clone();
   const pathname = request.nextUrl.pathname;
 
-  if (
-    (token && AUTH_ROUTES.some((route) => pathname.startsWith(route))) ||
-    GUEST_ROUTES.some((route) => pathname === route)
-  ) {
-    url.pathname = "/dashboard/delegates";
-    return NextResponse.redirect(url);
+  const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
+  const isGuestRoute = GUEST_ROUTES.some((route) => pathname === route);
+  const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+
+  if (token) {
+    if (isAuthRoute || isGuestRoute) {
+      url.pathname = "/dashboard/delegates";
+      return NextResponse.redirect(url);
+    }
+  } else {
+    if (isProtectedRoute) {
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
   }
 
-  if (!token && PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
+  // If no redirection happened, allow the request to continue
+  return NextResponse.next();
 }
 
 // Configure which paths the middleware runs on

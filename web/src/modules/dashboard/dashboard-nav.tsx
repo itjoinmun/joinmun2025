@@ -14,7 +14,7 @@ import { BookOpen, CircleHelp, DollarSign, Globe, Home, Hourglass, LogOut } from
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const logoStyle = "size-5";
@@ -63,58 +63,79 @@ const DashboardNav = () => {
   );
 };
 
-const DummyNav = ({ pathname }: { pathname: string }) => (
-  <Sidebar className="hidden h-full md:block">
-    <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4 group-data-[collapsible=icon]:p-2">
-      <SidebarHeader className="mt-2 w-auto">
-        <Link href={`/dashboard`} className="flex w-full items-center gap-3 select-none">
-          <Image
-            src={`/LOGO.png`}
-            alt="JOINMUN"
-            width={846}
-            height={701}
-            priority
-            className="aspect-[846/701] size-9 h-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:h-full group-data-[collapsible=none]:w-full"
-          />
+const DummyNav = ({ pathname }: { pathname: string }) => {
+  const router = useRouter();
 
-          <div className="mr-1 flex flex-col gap-1 group-data-[collapsible=icon]:hidden">
-            <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
-            <h3 className="text-xs text-nowrap">Model United Nations UGM</h3>
-          </div>
-        </Link>
-      </SidebarHeader>
+  const handleLogout = async () => {
+    const res = await fetch(`/api/logout`, {
+      credentials: "include",
+      method: "POST",
+      body: JSON.stringify({}),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      <hr className="border-gray-light border-b" />
+    if (res.ok) {
+      router.push("/");
+    }
 
-      <SidebarContent>
-        <h2 className="group-data-[collapsible=icon]:hidden">Menu</h2>
+    console.error("Logout failed! Please try again later.");
+  };
 
-        <SidebarGroup className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto px-0">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={cn(
-                buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "ghost" }),
-                "group h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal group-data-[collapsible=icon]:px-0",
-                `${pathname.startsWith(link.href) && "hover:bg-red-normal"}`,
-              )}
-            >
-              <span className="group-data-[collapsible=icon]:mx-auto">{link.logo}</span>
-              <span className="block group-data-[collapsible=icon]:hidden">{link.name}</span>
-            </Link>
-          ))}
-        </SidebarGroup>
-      </SidebarContent>
+  return (
+    <Sidebar className="hidden h-full md:block">
+      <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4 group-data-[collapsible=icon]:p-2">
+        <SidebarHeader className="mt-2 w-auto">
+          <Link href={`/dashboard`} className="flex w-full items-center gap-3 select-none">
+            <Image
+              src={`/LOGO.png`}
+              alt="JOINMUN"
+              width={846}
+              height={701}
+              priority
+              className="aspect-[846/701] size-9 h-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:h-full group-data-[collapsible=none]:w-full"
+            />
 
-      <SidebarFooter className="mt-auto">
-        <Button variant="default" className="w-full">
-          <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-        </Button>
-      </SidebarFooter>
-    </DashboardContainer>
-  </Sidebar>
-);
+            <div className="mr-1 flex flex-col gap-1 group-data-[collapsible=icon]:hidden">
+              <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
+              <h3 className="text-xs text-nowrap">Model United Nations UGM</h3>
+            </div>
+          </Link>
+        </SidebarHeader>
+
+        <hr className="border-gray-light border-b" />
+
+        <SidebarContent>
+          <h2 className="group-data-[collapsible=icon]:hidden">Menu</h2>
+
+          <SidebarGroup className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto px-0">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={cn(
+                  buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "ghost" }),
+                  "group h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal group-data-[collapsible=icon]:px-0",
+                  `${pathname.startsWith(link.href) && "hover:bg-red-normal"}`,
+                )}
+              >
+                <span className="group-data-[collapsible=icon]:mx-auto">{link.logo}</span>
+                <span className="block group-data-[collapsible=icon]:hidden">{link.name}</span>
+              </Link>
+            ))}
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter className="mt-auto">
+          <Button onClick={handleLogout} variant="default" className="w-full">
+            <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+          </Button>
+        </SidebarFooter>
+      </DashboardContainer>
+    </Sidebar>
+  );
+};
 
 // const DesktopNav = ({ pathname }: { pathname: string }) => (
 //   <aside className="bg-gray hidden h-full flex-col gap-4 rounded-md p-6 md:flex">
