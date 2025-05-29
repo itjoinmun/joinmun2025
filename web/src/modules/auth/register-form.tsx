@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { register } from "@/utils/helpers/fetch/auth/auth";
+import { register } from "@/utils/actions/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -56,32 +56,34 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) =>
-    {
-      setPending(true);
-      try {
-        const res = await register({
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setPending(true);
+    try {
+      const res = await register(
+        {
           username: values.name,
           email: values.email,
           password: values.password,
-        });
+        },
+        false,
+      );
 
-        if (res.ok) {
-          // redirect to dashboard
-          router.push("/login");
-        } else {
-          // show error message
-          console.error(res);
-        }
-        // post to backend api
-      } catch (error) {
-        console.error(error);
-        setPending(false);
-      } finally {
-        // TO DO: Toast
+      if (res.ok) {
+        // redirect to dashboard
+        router.push("/login");
+      } else {
+        // show error message
+        console.error(res);
       }
-      // do something
-    };
+      // post to backend api
+    } catch (error) {
+      console.error(error);
+      setPending(false);
+    } finally {
+      // TO DO: Toast
+    }
+    // do something
+  };
 
   return (
     <Form {...form}>
@@ -93,7 +95,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="fatimah@badr.co.id" autoFocus autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,7 +108,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="fatimah@badr.co.id" autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -119,7 +121,12 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Fill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="fatimah@badr.co.id"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -132,7 +139,12 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Refill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="fatimah@badr.co.id"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

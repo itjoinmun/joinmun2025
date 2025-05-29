@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/helpers/cn";
-import { login } from "@/utils/helpers/fetch/auth/auth";
+import { login } from "@/utils/actions/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import Link from "next/link";
@@ -40,29 +40,24 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      // Await the login promise
       const res = await login({
         email: values.email,
         password: values.password,
       });
 
-      console.log(res);
+      console.log("res", res);
+      router.push("/dashboard");
       if (res.ok) {
-        // redirect to dashboard
-        router.push("/dashboard");
+        console.log("Login successful!");
       } else {
-        // show error message
         console.error(res);
-        // You might want to set an error state here to display to the user
       }
     } catch (error) {
       console.error(error);
       setPending(false);
-      // You might want to set an error state here as well
     } finally {
       // TO DO: Toast
     }
-    // do something
   };
 
   return (
@@ -75,7 +70,7 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="fatimah@badr.co.id" autoFocus autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,7 +83,12 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Fill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="fatimah@badr.co.id"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
