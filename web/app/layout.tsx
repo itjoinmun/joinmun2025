@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { cn } from "@/utils/helpers/cn";
 import { outfit, plusJakartaSans } from "@/utils/helpers/fonts";
 import getMetadata from "@/utils/helpers/metadata";
+import { AuthProvider } from "@/utils/hooks/use-session";
 import type { Metadata } from "next";
 import Script from "next/script";
 
@@ -77,7 +78,7 @@ export default function RootLayout({
           "bg-background text-primary-foreground antialiased",
         )}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

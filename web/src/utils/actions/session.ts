@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { refreshToken } from "./auth-handler";
 
-const getSession = async (): Promise<sessionReturnType> => {
+const getSession = async (): Promise<Session> => {
   const cookieStore = await cookies();
   const access = cookieStore.get("access_token")?.value;
   const refresh = cookieStore.get("refresh_token")?.value;
@@ -19,7 +19,7 @@ const getSession = async (): Promise<sessionReturnType> => {
   }
 
   try {
-    const res = await fetch(`${process.env.API_URL}/auth/session`, {
+    const res = await fetch(`${process.env.API_URL}/auth/me`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -39,7 +39,7 @@ const getSession = async (): Promise<sessionReturnType> => {
   }
 };
 
-interface sessionReturnType {
+export interface Session {
   user: number;
   email: string;
   name: string;
