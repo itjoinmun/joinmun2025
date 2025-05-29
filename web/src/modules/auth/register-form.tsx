@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { register } from "@/utils/actions/auth";
+import { register } from "@/utils/actions/auth-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -59,14 +59,11 @@ const RegisterForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      const res = await register(
-        {
-          username: values.name,
-          email: values.email,
-          password: values.password,
-        },
-        false,
-      );
+      const res = await register({
+        username: values.name,
+        email: values.email,
+        password: values.password,
+      });
 
       if (res.ok) {
         // redirect to dashboard

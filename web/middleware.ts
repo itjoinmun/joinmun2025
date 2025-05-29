@@ -1,16 +1,20 @@
-// middleware.ts
 import { NextResponse, type NextRequest } from "next/server";
 
 const AUTH_ROUTES = ["/login", "/register"];
+const GUEST_ROUTES = ["/", "/theme"];
 const PROTECTED_ROUTES = ["/dashboard"];
 
 export async function middleware(request: NextRequest) {
+  // TO DO: change this to refresh token
   const token = request.cookies.get("access_token")?.value;
   const url = request.nextUrl.clone();
   const pathname = request.nextUrl.pathname;
 
-  if (token && AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
-    url.pathname = "/dashboard/home";
+  if (
+    (token && AUTH_ROUTES.some((route) => pathname.startsWith(route))) ||
+    GUEST_ROUTES.some((route) => pathname === route)
+  ) {
+    url.pathname = "/dashboard/delegates";
     return NextResponse.redirect(url);
   }
 

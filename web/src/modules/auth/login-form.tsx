@@ -10,8 +10,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { login } from "@/utils/actions/auth-handler";
 import { cn } from "@/utils/helpers/cn";
-import { login } from "@/utils/actions/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import Link from "next/link";

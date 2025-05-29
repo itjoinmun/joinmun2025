@@ -23,14 +23,11 @@ export type AuthResponseApi = {
   headers: Headers;
 };
 
-export async function register(
-  data: {
-    username: string;
-    email: string;
-    password: string;
-  },
-  isPublic?: boolean,
-): Promise<AuthResponseApi> {
+const register = async (data: {
+  username: string;
+  email: string;
+  password: string;
+}): Promise<AuthResponseApi> => {
   const res = await fetch(`${API_URL}/user/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -44,9 +41,9 @@ export async function register(
     ok: res.ok,
     headers: res.headers,
   };
-}
+};
 
-export async function login(data: { email: string; password: string }): Promise<AuthResponseApi> {
+const login = async (data: { email: string; password: string }): Promise<AuthResponseApi> => {
   const res = await fetch(`${API_URL}/user/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -63,6 +60,7 @@ export async function login(data: { email: string; password: string }): Promise<
   // Get tokens from headers and set them in cookies
   const { accessToken, refreshToken } = parseTokensFromHeaders(res.headers);
   const cookieStore = await cookies();
+
   if (accessToken && refreshToken) {
     cookieStore.set("access_token", accessToken.value, {
       path: accessToken.path,
@@ -86,14 +84,9 @@ export async function login(data: { email: string; password: string }): Promise<
     ok: res.ok,
     headers: res.headers,
   };
-}
+};
 
-export async function forgotPassword(
-  data: {
-    email: string;
-  },
-  isPublic?: boolean,
-): Promise<{ message: string }> {
+const forgotPassword = async (data: { email: string }): Promise<{ message: string }> => {
   const res = await fetch(`${API_URL}/user/forgot-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -106,15 +99,12 @@ export async function forgotPassword(
   }
 
   return res.json();
-}
+};
 
-export async function resetPassword(
-  data: {
-    token: string;
-    newPassword: string;
-  },
-  isPublic?: boolean,
-): Promise<{ message: string }> {
+const resetPassword = async (data: {
+  token: string;
+  newPassword: string;
+}): Promise<{ message: string }> => {
   const res = await fetch(`${API_URL}/user/reset-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -127,9 +117,9 @@ export async function resetPassword(
   }
 
   return res.json();
-}
+};
 
-export async function logout(): Promise<{ message: string }> {
+const logout = async (): Promise<{ message: string }> => {
   const { accessToken } = await getTokensFromCookies();
 
   const res = await fetch(`${API_URL}/auth/logout`, {
@@ -147,9 +137,9 @@ export async function logout(): Promise<{ message: string }> {
   }
 
   return res.json();
-}
+};
 
-export async function getUserProfile(): Promise<AuthResponseApi> {
+const getUserProfile = async (): Promise<AuthResponseApi> => {
   const { accessToken } = await getTokensFromCookies();
 
   const res = await fetch(`${API_URL}/auth/me`, {
@@ -173,18 +163,17 @@ export async function getUserProfile(): Promise<AuthResponseApi> {
     ok: res.ok,
     headers: res.headers,
   };
-}
+};
 
-export async function refreshAccessToken(
-  refreshToken: string,
-  isPublic?: boolean,
-): Promise<AuthResponseApi> {
+const refreshToken = async (
+  token: string,
+): Promise<{ refreshToken: string; accessToken: string }> => {
   const res = await fetch(`${API_URL}/user/refresh`, {
     method: "GET",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      Cookie: `refresh_token=${refreshToken}`,
+      Cookie: `refresh_token=${token}`,
     },
   });
 
@@ -193,15 +182,34 @@ export async function refreshAccessToken(
     throw new Error(errorData.message || "Failed to refresh access token");
   }
 
-  const resBody = await res.json();
+  const cookieStore = await cookies();
+  const { accessToken, refreshToken } = parseTokensFromHeaders(res.headers);
+
+  if (!accessToken || !refreshToken) {
+    throw new Error("Failed to retrieve tokens from response headers");
+  }
+
+  cookieStore.set("access_token", accessToken.value, {
+    path: accessToken.path,
+    maxAge: accessToken.maxAge || 900,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  cookieStore.set("refresh_token", refreshToken.value, {
+    path: refreshToken.path,
+    maxAge: refreshToken.maxAge || 2592000,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
 
   return {
-    data: resBody,
-    status: res.status,
-    ok: res.ok,
-    headers: res.headers,
+    accessToken: accessToken.value,
+    refreshToken: refreshToken.value,
   };
-}
+};
 
 /**
  * This function extracts access and refresh tokens from the response headers.
@@ -224,7 +232,7 @@ interface ParsedCookies {
   refreshToken?: CookieDetails;
 }
 
-function parseTokensFromHeaders(headers: Headers): ParsedCookies {
+const parseTokensFromHeaders = (headers: Headers): ParsedCookies => {
   // Get the 'set-cookie' header
   const setCookieHeader = headers.get("set-cookie");
   if (!setCookieHeader) {
@@ -232,7 +240,7 @@ function parseTokensFromHeaders(headers: Headers): ParsedCookies {
   }
 
   const parsedCookies: ParsedCookies = {};
-  const cookieStrings = setCookieHeader.split(", "); // Split cookies by comma and space
+  const cookieStrings = setCookieHeader.split(", ");
 
   cookieStrings.forEach((cookieString) => {
     const parts = cookieString.split(";").map((part) => part.trim());
@@ -274,15 +282,27 @@ function parseTokensFromHeaders(headers: Headers): ParsedCookies {
   });
 
   return parsedCookies;
-}
+};
 
-export async function getTokensFromCookies() {
+const getTokensFromCookies = async () => {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token");
-  const refreshToken = cookieStore.get("refresh_token");
+  const accessToken = cookieStore.get("access_token")?.value;
+  const refreshToken = cookieStore.get("refresh_token")?.value;
 
   return {
     accessToken,
     refreshToken,
   };
-}
+};
+
+export {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+  logout,
+  getUserProfile,
+  refreshToken,
+  getTokensFromCookies,
+  parseTokensFromHeaders,
+};
