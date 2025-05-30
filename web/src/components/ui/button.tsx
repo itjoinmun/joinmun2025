@@ -22,10 +22,6 @@ const buttonVariants = cva(
         white: "bg-white text-black shadow-xs hover:bg-white/80",
         warning: "bg-gold text-black hover:bg-gold/80",
         warningOutline: "bg-red-dark border border-gold text-gold hover:bg-red-dark-hover",
-
-        // destructive:
-        //   "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        //   "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

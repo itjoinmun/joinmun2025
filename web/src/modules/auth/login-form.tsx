@@ -40,7 +40,7 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      const res = await fetch(`/api/auth/login`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`, {
         method: "POST",
         body: JSON.stringify({
           email: values.email,

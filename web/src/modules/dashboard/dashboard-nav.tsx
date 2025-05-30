@@ -9,6 +9,17 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/utils/helpers/cn";
 import { BookOpen, CircleHelp, DollarSign, Globe, Home, Hourglass, LogOut } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
@@ -73,7 +84,7 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const res = await fetch(`${process.env.BASE_URL}/api/auth/logout`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
       credentials: "include",
       method: "POST",
       headers: {
@@ -84,8 +95,6 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
     if (res.ok) {
       router.push("/");
     }
-
-    console.error("Logout failed! Please try again later.");
   };
 
   return (
@@ -133,48 +142,32 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
         </SidebarContent>
 
         <SidebarFooter className="mt-auto">
-          <Button onClick={handleLogout} variant="default" className="w-full">
-            <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="default" className="w-full">
+                <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You will be logged out of your account and redirected to the home page.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <Button onClick={handleLogout} variant={`primary`}>
+                  Log out
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </SidebarFooter>
       </DashboardContainer>
     </Sidebar>
   );
 };
-
-// const DesktopNav = ({ pathname }: { pathname: string }) => (
-//   <aside className="bg-gray hidden h-full flex-col gap-4 rounded-md p-6 md:flex">
-//     <CompleteLogo />
-
-//     <hr className="border-gray-light/50 my-1 border-b" />
-
-//     <h2>Menu</h2>
-
-//     {/* nav links */}
-//     <ul className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto">
-//       {NAV_LINKS.map((link) => (
-//         <li key={link.name}>
-//           <Link
-//             href={link.href}
-//             scroll={false}
-//             className={cn(
-//               buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
-//               "h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal",
-//               `${pathname === link.href && "hover:bg-red-normal"}`,
-//             )}
-//           >
-//             {link.logo} {link.name}
-//           </Link>{" "}
-//         </li>
-//       ))}
-//     </ul>
-
-//     {/* logout */}
-//     <Button variant="default" className="mt-auto w-full">
-//       Logout
-//     </Button>
-//   </aside>
-// );
 
 const MobileNavButtons = ({ pathname, className }: { pathname: string; className?: string }) => (
   <nav
