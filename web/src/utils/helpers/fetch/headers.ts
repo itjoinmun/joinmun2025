@@ -5,7 +5,6 @@
  */
 
 const parseTokensFromHeaders = (headers: Headers): ParsedCookies => {
-  // Get the 'set-cookie' header
   const setCookieHeader = headers.getSetCookie();
   if (!setCookieHeader || setCookieHeader.length === 0) {
     return {};
@@ -13,7 +12,6 @@ const parseTokensFromHeaders = (headers: Headers): ParsedCookies => {
 
   const parsedCookies: ParsedCookies = {};
 
-  // Parse each cookie from the set-cookie header
   setCookieHeader.forEach((cookieString) => {
     const cookieParts = cookieString.split(";").map((part) => part.trim());
     const [nameValue] = cookieParts;
@@ -21,11 +19,9 @@ const parseTokensFromHeaders = (headers: Headers): ParsedCookies => {
 
     if (!name || !value) return;
 
-    // Only parse access and refresh tokens
     if (name === "access_token" || name === "refresh_token") {
       const cookieDetails: CookieDetails = { value };
 
-      // Parse additional cookie attributes
       cookieParts.slice(1).forEach((attribute) => {
         const [key, val] = attribute.split("=");
         const lowerKey = key.toLowerCase();
