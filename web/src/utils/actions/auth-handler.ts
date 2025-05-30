@@ -169,7 +169,6 @@ const getTokensFromCookies = async () => {
 
 export {
   register,
-  login,
   forgotPassword,
   resetPassword,
   getUserProfile,

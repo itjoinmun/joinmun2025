@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `refresh_token=${refreshToken}`,
+        Cookie: `access_token${accessToken}; refresh_token=${refreshToken}`,
       },
     });
 

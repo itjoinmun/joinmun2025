@@ -73,10 +73,9 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const res = await fetch(`/api/logout`, {
+    const res = await fetch(`${process.env.BASE_URL}/api/auth/logout`, {
       credentials: "include",
       method: "POST",
-      body: JSON.stringify({}),
       headers: {
         "Content-Type": "application/json",
       },
