@@ -21,11 +21,11 @@ const DashboardHome = () => {
         <ParticipantStatus />
       </Suspense>
 
-      <Suspense>
+      <Suspense fallback={<div>Loading information center...</div>}>
         <InformationCenter />
       </Suspense>
 
-      <Suspense>
+      <Suspense fallback={<div>Loading participant data...</div>}>
         <ParticipantData />
       </Suspense>
 
