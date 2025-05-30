@@ -21,31 +21,37 @@ const logoStyle = "size-5";
 
 const NAV_LINKS = [
   {
+    id: "home",
     name: "Home",
     href: "/dashboard/home",
     logo: <Home className={logoStyle} />,
   },
   {
+    id: "delegates",
     name: "Delegates",
     href: "/dashboard/delegates",
     logo: <BookOpen className={logoStyle} />,
   },
   {
+    id: "councils",
     name: "Councils",
     href: "/dashboard/councils",
     logo: <Globe className={logoStyle} />,
   },
   {
+    id: "pricing",
     name: "Pricing",
     href: "/dashboard/pricing",
     logo: <DollarSign className={logoStyle} />,
   },
   {
+    id: "timeline",
     name: "Timeline",
     href: "/dashboard/timeline",
     logo: <Hourglass className={logoStyle} />,
   },
   {
+    id: "help",
     name: "Help and Support",
     href: "/dashboard/help",
     logo: <CircleHelp className={logoStyle} />,
@@ -178,11 +184,11 @@ const MobileNavButtons = ({ pathname, className }: { pathname: string; className
       className,
     )}
   >
-    {NAV_LINKS.map((link, i) => (
+    {NAV_LINKS.map((link) => (
       <Link
         href={link.href}
-        key={i} // Using index as key is acceptable here as NAV_LINKS is static
-        scroll={false} // Add scroll={false} to prevent page scroll reset
+        key={link.id}
+        scroll={false}
         className={cn(
           buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "gray" }),
           "shrink-0 snap-start items-center rounded-sm transition-all",

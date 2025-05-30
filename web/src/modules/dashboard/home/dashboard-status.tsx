@@ -60,9 +60,9 @@ type InfoProps = {
   paymentStatus: any;
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   teamID: any;
-}
+};
 
-const DashboardStatus = async ({userStatus, paperStatus, paymentStatus}: InfoProps) => {
+const DashboardStatus = async ({ userStatus, paperStatus, paymentStatus }: InfoProps) => {
   // Determine dynamic status
   const registrationStatus: RegistrationStatus = (() => {
     if (!userStatus?.confirmed) return "waiting_verification";
@@ -97,29 +97,29 @@ const DashboardStatus = async ({userStatus, paperStatus, paymentStatus}: InfoPro
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">
         <StatusCard
-          cardHeader="Registration Status"
-          cardDescription="Track your registration progress from initial signup to payment verification"
+          cardHeader="Status"
+          cardDescription=""
           title="Current Status"
           status={regInfo.status}
           description={regInfo.description}
         />
         <StatusCard
           cardHeader="Delegate Code"
-          cardDescription="Your unique identifier for the JOINMUN 2025 conference"
+          cardDescription="Give code to your Faculty Advisor"
           title="Code Status"
           status={codeInfo.status}
           description={codeInfo.description}
         />
         <StatusCard
           cardHeader="Paper Submission"
-          cardDescription="Submit and manage your position papers for the conference"
+          cardDescription=""
           title="Submission Status"
           status={paperInfo.status}
           description={paperInfo.description}
         />
         <StatusCard
           cardHeader="Information Center"
-          cardDescription="Stay updated with important announcements and conference details"
+          cardDescription=""
           title="Update Status"
           status={infoInfo.status}
           description={infoInfo.description}
