@@ -14,10 +14,16 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
 import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
-import { cookies } from "next/headers";
 
-{/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */}
-const ParticipantData = async (delegates: any) => {
+const ParticipantData = async () => {
+  const delegates = await getDelegates();
+  console.log("Delegates data:", delegates); // null
+
+  let participantData;
+  if (delegates) {
+    participantData = await delegates.participant_data;
+  }
+
   return (
     <DashboardModule>
       <DashboardModuleHeader>
@@ -35,23 +41,30 @@ const ParticipantData = async (delegates: any) => {
             </TableRow>
           </TableHeader>
           <TableBody className="bg-blue-100">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {delegates?.delegates.map((participant: any, index: number) => (
-              <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
-                <TableCell
-                  className={cn(
-                    index === delegates.length - 1 && "first:rounded-bl-lg"
-                  )}
-                >
-                  {participant.mun_delegate_name}
-                </TableCell>
-                <TableCell>{participant.confirmed ? "Confirmed" : "Not Confirmed"}</TableCell>
-                <TableCell>{participant.council}</TableCell>
-                <TableCell className={cn(index === delegates.length - 1 && "rounded-br-lg")}>
-                  {participant.country}
+            {participantData ? (
+              participantData.map((participant: any, index: number) => (
+                <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
+                  <TableCell
+                    className={cn(index === participantData.length - 1 && "first:rounded-bl-lg")}
+                  >
+                    {participant.mun_delegate_name}
+                  </TableCell>
+                  <TableCell>{participant.confirmed ? "Confirmed" : "Not Confirmed"}</TableCell>
+                  <TableCell>{participant.council}</TableCell>
+                  <TableCell
+                    className={cn(index === participantData.length - 1 && "rounded-br-lg")}
+                  >
+                    {participant.country}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="bg-neutral-400">
+                <TableCell colSpan={4} className="text-start font-medium text-black">
+                  You haven't registered. Register now
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </DashboardModuleContent>

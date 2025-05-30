@@ -1,11 +1,12 @@
-import { mockParticipants } from "./mock-data";
-
-const API_BASE = process.env.API_URL;
+"use server";
+import { cookies } from "next/headers";
 
 // TO DO: tolong benerin type nya sesuai postman siapa aja
 // eslint-disable-next-line
-export async function getDelegate(accessToken?: string): Promise<any> {
-  const res = await fetch(`${API_BASE}/dashboard/whoami`, {
+export async function getDelegate(): Promise<any> {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
+  const res = await fetch(`${process.env.API_URL}/dashboard/whoami`, {
     headers: {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
@@ -21,13 +22,10 @@ export async function getDelegate(accessToken?: string): Promise<any> {
   return data;
 }
 
-export async function getDelegates(accessToken?: string): Promise<any> {
-  // Use mock data in development
-  if (process.env.NODE_ENV === "development") {
-    return mockParticipants;
-  }
+export async function getDelegates(): Promise<any> {
+  const accessToken = (await cookies()).get("access_token")?.value;
 
-  const res = await fetch(`${API_BASE}/dashboard/participants`, {
+  const res = await fetch(`${process.env.API_URL}/dashboard/participants`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -45,8 +43,10 @@ export async function getDelegates(accessToken?: string): Promise<any> {
 }
 
 // eslint-disable-next-line
-export async function fetchDelegatePaper(accessToken?: string): Promise<any> {
-  const res = await fetch(`${API_BASE}/position`, {
+export async function getDelegatePaper(): Promise<any> {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
+  const res = await fetch(`${process.env.API_URL}/position`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -64,8 +64,10 @@ export async function fetchDelegatePaper(accessToken?: string): Promise<any> {
 }
 
 // eslint-disable-next-line
-export async function fetchPayment(accessToken?: string): Promise<any> {
-  const res = await fetch(`${API_BASE}/payment`, {
+export async function getPayment(): Promise<any> {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
+  const res = await fetch(`${process.env.API_URL}/payment`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -82,7 +84,9 @@ export async function fetchPayment(accessToken?: string): Promise<any> {
   return resBody;
 }
 
-export async function approveRegistration(id: number, accessToken: string) {
+export async function approveRegistration(id: number) {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
   const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/approve-registration`, {
     method: "POST",
     headers: {
@@ -99,7 +103,9 @@ export async function approveRegistration(id: number, accessToken: string) {
   return res.json();
 }
 
-export async function rejectRegistration(id: number, accessToken: string) {
+export async function rejectRegistration(id: number) {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
   const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/reject-registration`, {
     method: "POST",
     headers: {
@@ -116,7 +122,9 @@ export async function rejectRegistration(id: number, accessToken: string) {
   return res.json();
 }
 
-export async function approvePayment(id: number, accessToken: string) {
+export async function approvePayment(id: number) {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
   const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/approve-payment`, {
     method: "POST",
     headers: {
@@ -133,7 +141,9 @@ export async function approvePayment(id: number, accessToken: string) {
   return res.json();
 }
 
-export async function rejectPayment(id: number, accessToken: string) {
+export async function rejectPayment(id: number) {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
   const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/reject-payment`, {
     method: "POST",
     headers: {
@@ -150,7 +160,9 @@ export async function rejectPayment(id: number, accessToken: string) {
   return res.json();
 }
 
-export async function assignCouncil(id: number, council: string, accessToken: string) {
+export async function assignCouncil(id: number, council: string) {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
   const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/assign-council`, {
     method: "POST",
     headers: {
@@ -168,7 +180,9 @@ export async function assignCouncil(id: number, council: string, accessToken: st
   return res.json();
 }
 
-export async function assignCountry(id: number, country: string, accessToken: string) {
+export async function assignCountry(id: number, country: string) {
+  const accessToken = (await cookies()).get("access_token")?.value;
+
   const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/assign-country`, {
     method: "POST",
     headers: {

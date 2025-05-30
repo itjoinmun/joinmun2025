@@ -1,13 +1,17 @@
 import {
   DashboardModule,
+  DashboardModuleContent,
+  DashboardModuleDescription,
   DashboardModuleHeader,
   DashboardModuleTitle,
-  DashboardModuleDescription,
-  DashboardModuleContent,
 } from "@/components/dashboard/dashboard-module";
 import { cn } from "@/utils/helpers/cn";
-import { fetchDelegatePaper, getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
-import { cookies } from "next/headers";
+import {
+  getDelegate,
+  getDelegatePaper,
+  getDelegates,
+  getPayment,
+} from "@/utils/helpers/fetch/delegates/delegates";
 
 type RegistrationStatus =
   | "not_registered"
@@ -26,50 +30,18 @@ type InformationCenterStatus =
   | "no_information"
   | "has_information";
 
-// interface ParticipantData {
-//   registrationStatus: RegistrationStatus;
-//   delegateCode: DelegateCodeStatus;
-//   paperSubmission: PaperSubmissionStatus;
-//   informationCenter: InformationCenterStatus;
-//   paperUrl?: string;
-//   delegateCodeValue?: string;
-//   informationContent?: string;
-// }
+const DashboardStatus = async () => {
+  const userStatus = await getDelegate();
+  const paperStatus = await getDelegatePaper();
+  const paymentStatus = await getPayment();
+  const delegates = await getDelegates();
 
-// const currentUserState: ParticipantData = {
-//   registrationStatus: "verified_pending_payment",
-//   delegateCode: "registration_pending",
-//   paperSubmission: "registration_pending",
-//   informationCenter: "no_information",
-// };
-
-interface StatusCardProps {
-  title: string;
-  status: string;
-  description: string;
-  cardHeader: string;
-  cardDescription: string;
-}
-
-type InfoProps = {
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  userStatus: any;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  paperStatus: any;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  paymentStatus: any;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  teamID: any;
-};
-
-const DashboardStatus = async ({ userStatus, paperStatus, paymentStatus }: InfoProps) => {
-  // Determine dynamic status
   const registrationStatus: RegistrationStatus = (() => {
     if (!userStatus?.confirmed) return "waiting_verification";
     if (userStatus.confirmed && !paymentStatus?.paid) return "verified_pending_payment";
     if (paymentStatus?.checking) return "payment_checking";
     if (userStatus.confirmed && paymentStatus?.paid) return "payment_verified";
-    return "not_registered"; // fallback
+    return "not_registered";
   })();
 
   const paperSubmission: PaperSubmissionStatus = (() => {
@@ -135,7 +107,11 @@ const StatusCard = ({
   description,
   cardHeader,
   cardDescription,
-}: StatusCardProps) => {
+}: {
+  description: string;
+  cardHeader: string;
+  cardDescription: string;
+}) => {
   return (
     <DashboardModule
       className={cn(
