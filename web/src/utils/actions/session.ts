@@ -9,9 +9,11 @@ const getSession = async (): Promise<Session> => {
   const access = cookieStore.get("access_token")?.value;
   const refresh = cookieStore.get("refresh_token")?.value;
 
-  if (refresh) {
+  refreshCheck: if (refresh) {
+    if (access) break refreshCheck;
+
     try {
-      await refreshToken(refresh);
+      await refreshToken();
     } catch (error) {
       console.error("Error refreshing token:", error);
       redirect("/login");

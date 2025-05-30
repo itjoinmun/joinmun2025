@@ -6,49 +6,56 @@
 
 const parseTokensFromHeaders = (headers: Headers): ParsedCookies => {
   // Get the 'set-cookie' header
-  const setCookieHeader = headers.get("set-cookie");
-  if (!setCookieHeader) {
+  const setCookieHeader = headers.getSetCookie();
+  if (!setCookieHeader || setCookieHeader.length === 0) {
     return {};
   }
 
   const parsedCookies: ParsedCookies = {};
-  const cookieStrings = setCookieHeader.split(", ");
 
-  cookieStrings.forEach((cookieString) => {
-    const parts = cookieString.split(";").map((part) => part.trim());
-    const [nameValuePair, ...attributes] = parts;
-    const [cookieName, cookieValue] = nameValuePair.split("=").map((part) => part.trim());
+  // Parse each cookie from the set-cookie header
+  setCookieHeader.forEach((cookieString) => {
+    const cookieParts = cookieString.split(";").map((part) => part.trim());
+    const [nameValue] = cookieParts;
+    const [name, value] = nameValue.split("=");
 
-    if (cookieName === "access_token" || cookieName === "refresh_token") {
-      const details: CookieDetails = { value: cookieValue };
-      attributes.forEach((attr) => {
-        const [attrName, attrValue] = attr.split("=").map((part) => part.trim());
-        switch (attrName.toLowerCase()) {
+    if (!name || !value) return;
+
+    // Only parse access and refresh tokens
+    if (name === "access_token" || name === "refresh_token") {
+      const cookieDetails: CookieDetails = { value };
+
+      // Parse additional cookie attributes
+      cookieParts.slice(1).forEach((attribute) => {
+        const [key, val] = attribute.split("=");
+        const lowerKey = key.toLowerCase();
+
+        switch (lowerKey) {
           case "path":
-            details.path = attrValue;
+            cookieDetails.path = val;
             break;
           case "domain":
-            details.domain = attrValue;
+            cookieDetails.domain = val;
             break;
           case "max-age":
-            details.maxAge = parseInt(attrValue, 10);
+            cookieDetails.maxAge = parseInt(val, 10);
             break;
           case "httponly":
-            details.httpOnly = true;
+            cookieDetails.httpOnly = true;
             break;
           case "secure":
-            details.secure = true;
+            cookieDetails.secure = true;
             break;
           case "samesite":
-            details.sameSite = attrValue;
+            cookieDetails.sameSite = val;
             break;
         }
       });
 
-      if (cookieName === "access_token") {
-        parsedCookies.accessToken = details;
-      } else if (cookieName === "refresh_token") {
-        parsedCookies.refreshToken = details;
+      if (name === "access_token") {
+        parsedCookies.accessToken = cookieDetails;
+      } else if (name === "refresh_token") {
+        parsedCookies.refreshToken = cookieDetails;
       }
     }
   });

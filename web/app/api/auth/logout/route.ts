@@ -11,14 +11,14 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `access_token=${accessToken}; refresh_token=${refreshToken}`,
+        Cookie: `refresh_token=${refreshToken}`,
       },
     });
 
     cookieStore.delete("access_token");
     cookieStore.delete("refresh_token");
 
-    return NextResponse.json(res, { status: res.status });
+    return NextResponse.json(res, { status: res.status, headers: res.headers });
   } catch (err) {
     return NextResponse.json({ message: "An unexpected error occurred" }, { status: 500 });
   }

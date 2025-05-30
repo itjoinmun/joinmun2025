@@ -44,49 +44,6 @@ const register = async (data: {
   };
 };
 
-const login = async (data: { email: string; password: string }): Promise<AuthResponseApi> => {
-  const res = await fetch(`${API_URL}/user/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Login failed");
-  }
-  const resBody = await res.json();
-
-  // Get tokens from headers and set them in cookies
-  const { accessToken, refreshToken } = parseTokensFromHeaders(res.headers);
-  const cookieStore = await cookies();
-
-  if (accessToken && refreshToken) {
-    cookieStore.set("access_token", accessToken.value, {
-      path: accessToken.path,
-      maxAge: accessToken.maxAge || 900,
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    });
-    cookieStore.set("refresh_token", refreshToken.value, {
-      path: refreshToken.path,
-      maxAge: refreshToken.maxAge || 2592000,
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    });
-  }
-
-  return {
-    data: resBody,
-    status: res.status,
-    ok: res.ok,
-    headers: res.headers,
-  };
-};
-
 const forgotPassword = async (data: { email: string }): Promise<{ message: string }> => {
   const res = await fetch(`${API_URL}/user/forgot-password`, {
     method: "POST",
@@ -146,9 +103,10 @@ const getUserProfile = async (): Promise<AuthResponseApi> => {
   };
 };
 
-const refreshToken = async (
-  token: string,
-): Promise<{ refreshToken: string; accessToken: string }> => {
+const refreshToken = async (): Promise<{ refreshToken: string; accessToken: string }> => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("refresh_token")?.value;
+
   const res = await fetch(`${API_URL}/user/refresh`, {
     method: "GET",
     credentials: "include",
@@ -163,7 +121,6 @@ const refreshToken = async (
     throw new Error(errorData.message || "Failed to refresh access token");
   }
 
-  const cookieStore = await cookies();
   const { accessToken, refreshToken } = parseTokensFromHeaders(res.headers);
 
   if (!accessToken || !refreshToken) {

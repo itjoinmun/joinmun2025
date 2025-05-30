@@ -40,7 +40,7 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      const res = await fetch(`/api/login`, {
+      const res = await fetch(`/api/auth/login`, {
         method: "POST",
         body: JSON.stringify({
           email: values.email,
@@ -48,7 +48,7 @@ const LoginForm = () => {
         }),
       });
 
-      router.push("/dashboard");
+      router.push("/dashboard/delegates");
       if (res.ok) {
         console.log("Login successful!");
       } else {
