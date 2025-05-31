@@ -299,10 +299,16 @@ func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
 	// Group payments by team for better admin visibility
 	teamPayments := make(map[string][]interface{})
 	for _, payment := range responses {
-		if teamPayments[payment.MUNTeamID] == nil {
-			teamPayments[payment.MUNTeamID] = make([]interface{}, 0)
+		var teamID string
+		if payment.MUNTeamID != nil {
+			teamID = *payment.MUNTeamID
+		} else {
+			teamID = "No Team"
 		}
-		teamPayments[payment.MUNTeamID] = append(teamPayments[payment.MUNTeamID], payment)
+		if teamPayments[teamID] == nil {
+			teamPayments[teamID] = make([]interface{}, 0)
+		}
+		teamPayments[teamID] = append(teamPayments[teamID], payment)
 	}
 
 	c.JSON(http.StatusOK, gin.H{

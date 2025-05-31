@@ -66,7 +66,7 @@ type AdminService interface {
 	MakePairing(delegateEmail, pair string) error
 	UpdatePaymentStatus(email string) error
 	GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error)
-	GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.PaymentResponseWithTeam, error)
+	GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.TeamPaymentSummary, error)
 	GetDelegates(delegateType string, limit, offset int) ([]delegateModel.MUNDelegates, error)
 	GetPositionPapers(limit, offset int) ([]positionModel.PositionPaper, error)
 }
@@ -350,7 +350,7 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offse
 	return result, nil
 }
 
-func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.PaymentResponseWithTeam, error) {
+func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.TeamPaymentSummary, error) {
 	var startDate, endDate *time.Time
 
 	switch timeWave {
@@ -371,25 +371,28 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 		startDate, endDate = nil, nil
 	}
 
-	payments, err := s.adminRepo.GetDelegatePaymentResponsesWithTeam(delegateType, startDate, endDate, limit, offset)
+	teamPaymentSummaries, err := s.adminRepo.GetTeamPaymentSummaries(delegateType, startDate, endDate, limit, offset)
 	if err != nil {
 		logger.LogError(err, "Failed to get delegate payment responses", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
 		return nil, err
 	}
 
-	for i := range payments {
-		if payments[i].PaymentFile != "" {
-			url, err := s.uploader.GeneratePresignedURL(payments[i].PaymentFile, 15*time.Minute)
-			if err != nil {
-				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": payments[i].PaymentFile})
-				payments[i].PaymentFile = ""
-				continue
+	// Generate presigned URLs for payment files in each team's payments
+	for i := range teamPaymentSummaries {
+		for j := range teamPaymentSummaries[i].TeamPayments {
+			if teamPaymentSummaries[i].TeamPayments[j].PaymentFile != "" {
+				url, err := s.uploader.GeneratePresignedURL(teamPaymentSummaries[i].TeamPayments[j].PaymentFile, 15*time.Minute)
+				if err != nil {
+					logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": teamPaymentSummaries[i].TeamPayments[j].PaymentFile})
+					teamPaymentSummaries[i].TeamPayments[j].PaymentFile = ""
+					continue
+				}
+				teamPaymentSummaries[i].TeamPayments[j].PaymentFile = url
 			}
-			payments[i].PaymentFile = url
 		}
 	}
 
-	return payments, nil
+	return teamPaymentSummaries, nil
 }
 
 func (s *adminService) GetDelegates(delegateType string, limit, offset int) ([]delegateModel.MUNDelegates, error) {

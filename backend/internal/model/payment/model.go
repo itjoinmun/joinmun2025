@@ -15,7 +15,7 @@ type Payment struct {
 
 type PaymentResponseWithTeam struct {
 	PaymentID        int       `json:"payment_id" db:"payment_id" binding:"required"`
-	MUNTeamID        string    `json:"mun_team_id" db:"mun_team_id" binding:"required"`
+	MUNTeamID        *string   `json:"mun_team_id" db:"mun_team_id" binding:"required"`
 	MUNDelegateEmail string    `json:"mun_delegate_email" db:"mun_delegate_email" binding:"required,email"`
 	Package          string    `json:"package" db:"package" binding:"omitempty"`
 	PaymentFile      string    `json:"payment_file" db:"payment_file"`
@@ -23,7 +23,6 @@ type PaymentResponseWithTeam struct {
 	PaymentDate      time.Time `json:"payment_date" db:"payment_date"`
 	PaymentAmount    int       `json:"payment_amount" db:"payment_amount" binding:"omitempty"`
 	ParticipantType  string    `json:"participant_type" db:"participant_type" binding:"omitempty,oneof=faculty_advisor observer single_delegate team_delegate"`
-	MUNTeamLead      string    `json:"mun_team_lead" db:"mun_team_lead"`
 }
 
 type PaymentWithTeamMembers struct {
@@ -54,4 +53,15 @@ type TeamMemberInfo struct {
 	PaymentStatus string `json:"payment_status" db:"payment_status"`
 	PaymentAmount int    `json:"payment_amount" db:"payment_amount"`
 	Package       string `json:"package" db:"package"`
+}
+
+type TeamPaymentSummary struct {
+	MUNTeamID    *string                   `json:"mun_team_id" db:"mun_team_id"`
+	MUNTeamLead  string                    `json:"mun_team_lead" db:"mun_team_lead"`
+	TeamPayments []PaymentResponseWithTeam `json:"team_payments"`
+	TotalAmount  int                       `json:"total_amount"`
+	PaymentCount int                       `json:"payment_count"`
+	PendingCount int                       `json:"pending_count"`
+	PaidCount    int                       `json:"paid_count"`
+	FailedCount  int                       `json:"failed_count"`
 }

@@ -5,6 +5,7 @@ import (
 	"backend/internal/model/payment"
 	"backend/internal/model/position"
 	"backend/pkg/utils/logger"
+	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -20,6 +21,7 @@ type AdminRepo interface {
 	GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error)
 	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]dashboard.BiodataResponseWithQuestion, error)
 	GetDelegatePaymentResponsesWithTeam(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.PaymentResponseWithTeam, error)
+	GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.TeamPaymentSummary, error)
 	GetDelegates(delegateType string, limit, offset int) ([]dashboard.MUNDelegates, error)
 	GetPositionPapers(limit, offset int) ([]position.PositionPaper, error)
 }
@@ -198,8 +200,7 @@ func (r *adminRepo) GetDelegatePaymentResponsesWithTeam(delegateType string, sta
 			p.payment_status,
 			p.payment_date,
 			p.payment_amount,
-			d.participant_type,
-			t.mun_team_lead
+			d.participant_type
 		FROM payment p
 		JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
 		LEFT JOIN mun_teams t ON p.mun_team_id = t.mun_team_id
@@ -221,6 +222,126 @@ func (r *adminRepo) GetDelegatePaymentResponsesWithTeam(delegateType string, sta
 
 	err := r.db.Select(&payments, query, args...)
 	return payments, err
+}
+
+func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.TeamPaymentSummary, error) {
+	var teamSummaries []payment.TeamPaymentSummary
+
+	// First, get unique teams with pagination
+	teamQuery := `
+		WITH team_info AS (
+			SELECT DISTINCT 
+				p.mun_team_id,
+				COALESCE(t.mun_team_lead, p.mun_delegate_email) as mun_team_lead,
+				MIN(p.payment_date) as earliest_payment
+			FROM payment p
+			JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
+			LEFT JOIN mun_teams t ON p.mun_team_id = t.mun_team_id
+			WHERE ($1 = '' OR d.participant_type = $1)
+	`
+
+	args := []interface{}{delegateType}
+	argIndex := 2
+
+	if startDate != nil && endDate != nil {
+		teamQuery += fmt.Sprintf(" AND p.payment_date BETWEEN $%d AND $%d", argIndex, argIndex+1)
+		args = append(args, *startDate, *endDate)
+		argIndex += 2
+	}
+
+	teamQuery += fmt.Sprintf(`
+			GROUP BY p.mun_team_id, t.mun_team_lead, p.mun_delegate_email
+		)
+		SELECT mun_team_id, mun_team_lead
+		FROM team_info
+		ORDER BY earliest_payment
+		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
+
+	args = append(args, limit, offset)
+
+	type TeamInfo struct {
+		MUNTeamID   *string `db:"mun_team_id"`
+		MUNTeamLead string  `db:"mun_team_lead"`
+	}
+
+	var teams []TeamInfo
+	err := r.db.Select(&teams, teamQuery, args...)
+	if err != nil {
+		logger.LogError(err, "Failed to get team payment summaries", map[string]interface{}{
+			"layer":     "repository",
+			"operation": "repo.GetTeamPaymentSummaries",
+		})
+		return nil, err
+	}
+
+	// For each team, get all payments
+	for _, team := range teams {
+		var teamPayments []payment.PaymentResponseWithTeam
+
+		paymentQuery := `
+			SELECT 
+				p.payment_id,
+				p.mun_delegate_email,
+				p.mun_team_id,
+				p.package,
+				p.payment_file,
+				p.payment_status,
+				p.payment_date,
+				p.payment_amount,
+				d.participant_type
+			FROM payment p
+			JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
+			WHERE (p.mun_team_id = $1 OR ($1 IS NULL AND p.mun_delegate_email = $2))
+		`
+
+		paymentArgs := []interface{}{team.MUNTeamID, team.MUNTeamLead}
+
+		if startDate != nil && endDate != nil {
+			paymentQuery += " AND p.payment_date BETWEEN $3 AND $4"
+			paymentArgs = append(paymentArgs, *startDate, *endDate)
+		}
+
+		paymentQuery += " ORDER BY p.payment_date"
+
+		err := r.db.Select(&teamPayments, paymentQuery, paymentArgs...)
+		if err != nil {
+			logger.LogError(err, "Failed to get payments for team", map[string]interface{}{
+				"layer":     "repository",
+				"operation": "repo.GetTeamPaymentSummaries",
+				"teamId":    team.MUNTeamID,
+			})
+			continue
+		}
+
+		// Calculate summary statistics
+		var totalAmount, pendingCount, paidCount, failedCount int
+		for _, payment := range teamPayments {
+			totalAmount += payment.PaymentAmount
+			switch payment.PaymentStatus {
+			case "pending":
+				pendingCount++
+			case "paid":
+				paidCount++
+			case "failed":
+				failedCount++
+			}
+		}
+
+		teamSummary := payment.TeamPaymentSummary{
+			MUNTeamID:    team.MUNTeamID,
+			MUNTeamLead:  team.MUNTeamLead,
+			TeamPayments: teamPayments,
+			TotalAmount:  totalAmount,
+			PaymentCount: len(teamPayments),
+			PendingCount: pendingCount,
+			PaidCount:    paidCount,
+			FailedCount:  failedCount,
+		}
+
+		teamSummaries = append(teamSummaries, teamSummary)
+	}
+
+	return teamSummaries, nil
 }
 
 func (r *adminRepo) GetDelegates(delegateType string, limit, offset int) ([]dashboard.MUNDelegates, error) {
