@@ -46,7 +46,7 @@ downv:
 restart: down upb
 
 # Restart containers with volume removal
-restartv: downv up
+restartv: downv upb
 
 # Build containers
 build:
