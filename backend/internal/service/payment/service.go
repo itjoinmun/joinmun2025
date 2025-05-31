@@ -12,7 +12,7 @@ import (
 )
 
 type PaymentService interface {
-	GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.Payment, error)
+	GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.PaymentWithTeamMembers, error)
 	InsertPayment(payment *paymentModel.Payment) error
 }
 
@@ -28,13 +28,13 @@ func NewPaymentService(delegateRepo delegateRepo.DelegateRepo, paymentRepo payme
 	}
 }
 
-func (s *paymentService) GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.Payment, error) {
-	payment, err := s.paymentRepo.GetPaymentByDelegateEmail(delegateEmail)
+func (s *paymentService) GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.PaymentWithTeamMembers, error) {
+	payment, err := s.paymentRepo.GetPaymentWithTeamByDelegateEmail(delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get payment by delegate email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
+		logger.LogError(err, "Failed to get payment with team by email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
 		return nil, err
 	}
-	logger.LogDebug("Payment retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
+	logger.LogDebug("Payment with team retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
 	return payment, nil
 }
 

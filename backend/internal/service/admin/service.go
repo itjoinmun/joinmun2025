@@ -118,7 +118,7 @@ func (s *adminService) UpdateParticipantStatus(email string) (retErr error) {
 		retErr = fmt.Errorf("email %s is already confirmed", email)
 		return retErr
 	}
-	if participant.ParticipantType == nil || participantTap != "delegate" {
+	if participant.ParticipantType == nil || participantTap != "team_delegate" && participantTap != "single_delegate" && participantTap != "faculty_advisor" && participantTap != "observer" {
 		logger.LogError(nil, "Participant is not a delegate", map[string]interface{}{
 			"layer":     "service",
 			"operation": "service.UpdateParticipantStatus",
@@ -191,7 +191,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 		})
 		return fmt.Errorf("email %s is not confirmed", delegateEmail)
 	}
-	if participantType != "delegate" {
+	if participantType != "single_delegate" && participantType != "team_delegate" {
 		logger.LogError(nil, "Participant is not a delegate", map[string]interface{}{
 			"layer":     "service",
 			"operation": "service.UpdateDelegateCountryAndCouncil",

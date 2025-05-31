@@ -209,9 +209,9 @@ func (r *delegateRepo) InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNT
 	return teamID, nil
 }
 
-func (r *delegateRepo) InsertMeToTeam(teamID, delegateEmail string) error {
+func (r *delegateRepo) InsertMeToTeam(tx *sqlx.Tx, teamID, delegateEmail string) error {
 	query := `INSERT INTO mun_team_members (mun_team_id, mun_delegate_email) VALUES ($1, $2)`
-	_, err := r.db.Exec(query, teamID, delegateEmail)
+	_, err := tx.Exec(query, teamID, delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to insert me to team", map[string]interface{}{
 			"layer":         "repository",

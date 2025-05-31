@@ -152,7 +152,6 @@ func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
 				}
 
 				uploadedFiles = append(uploadedFiles, key)
-				fmt.Printf("Uploaded file to S3 with key: %s\n", key)
 				b.BiodataAnswerText = key
 			}
 
