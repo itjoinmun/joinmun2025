@@ -123,7 +123,7 @@ func (r *paymentRepo) GetPaymentWithTeamByDelegateEmail(delegateEmail string) (*
 func (r *paymentRepo) UploadPayment(tx *sqlx.Tx, payment *payment.Payment) error {
 	query := `UPDATE payment
               SET package = $1, payment_file = $2, payment_status = $3, payment_date = $4, payment_amount = $5, mun_team_id = $6
-              WHERE payment_id = $7 AND mun_delegate_email = $8`
+              WHERE mun_delegate_email = $7`
 	_, err := tx.Exec(
 		query,
 		payment.Package,
@@ -132,7 +132,6 @@ func (r *paymentRepo) UploadPayment(tx *sqlx.Tx, payment *payment.Payment) error
 		payment.PaymentDate,
 		payment.PaymentAmount,
 		payment.MUNTeamID,
-		payment.PaymentID,
 		payment.MUNDelegateEmail,
 	)
 	if err != nil {
