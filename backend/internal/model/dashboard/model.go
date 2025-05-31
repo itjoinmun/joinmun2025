@@ -49,7 +49,7 @@ type MUNDelegates struct {
 	ConfirmedDate    *time.Time `json:"confirmed_date" db:"confirmed_date"`
 	CouncilDate      *time.Time `json:"council_date" db:"council_date"`
 	InsertDate       *time.Time `json:"insert_date" db:"insert_date"`
-	ParticipantType  *string    `json:"participant_type" db:"participant_type" binding:"omitempty,oneof=delegate observer faculty_advisor"`
+	ParticipantType  *string    `json:"participant_type" db:"participant_type" binding:"omitempty,oneof=team_delegate single_delegate observer faculty_advisor"`
 }
 
 type MUNTeams struct {

@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS mun_delegates (
     confirmed_date TIMESTAMP,
     council_date TIMESTAMP,
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    participant_type VARCHAR(32) CHECK (participant_type IN ('delegate', 'observer', 'faculty_advisor'))
+    participant_type VARCHAR(32) CHECK (participant_type IN ('single_delegate', 'team_delegate', 'observer', 'faculty_advisor'))
 );
 
 CREATE TABLE IF NOT EXISTS mun_team_members (
@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS position_paper (
 CREATE TABLE IF NOT EXISTS payment (
     payment_id SERIAL PRIMARY KEY,
     mun_delegate_email VARCHAR(255) REFERENCES mun_delegates(mun_delegate_email),
+    mun_team_id VARCHAR(6) REFERENCES mun_teams(mun_team_id),
     package VARCHAR(255),
     payment_file TEXT,
     payment_status VARCHAR(7) CHECK (payment_status IN ('pending', 'paid', 'failed')),

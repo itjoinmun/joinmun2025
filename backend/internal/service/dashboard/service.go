@@ -3,6 +3,7 @@ package dashboard
 import (
 	"backend/internal/model/dashboard"
 	dashboardRepo "backend/internal/repository/dashboard"
+	paymentRepo "backend/internal/repository/payment"
 	"backend/pkg/utils"
 	dashboardUtils "backend/pkg/utils/dashboard"
 	"backend/pkg/utils/logger"
@@ -34,17 +35,20 @@ type dashboardService struct {
 	questionRepo dashboardRepo.QuestionRepo
 	delegateRepo dashboardRepo.DelegateRepo
 	responseRepo dashboardRepo.ResponseRepo
+	paymentRepo  paymentRepo.PaymentRepo // Assuming you have a PaymentRepo for payment-related operations
 }
 
 func NewDashboardService(
 	questionRepo dashboardRepo.QuestionRepo,
 	delegateRepo dashboardRepo.DelegateRepo,
 	responseRepo dashboardRepo.ResponseRepo,
+	paymentRepo paymentRepo.PaymentRepo, // Injecting PaymentRepo for payment-related operations
 ) DashboardService {
 	return &dashboardService{
 		questionRepo: questionRepo,
 		delegateRepo: delegateRepo,
 		responseRepo: responseRepo,
+		paymentRepo:  paymentRepo, // Assigning the injected PaymentRepo
 	}
 }
 
@@ -93,6 +97,25 @@ func (s *dashboardService) InsertDelegates(
 				"layer":     "service",
 				"operation": "service.InsertDelegates",
 				"error":     err,
+			})
+			return err
+		}
+
+		// Extract delegate emails for bulk payment creation
+		delegateEmails := make([]string, len(delegates))
+		for i, d := range delegates {
+			delegateEmails[i] = d.MUNDelegateEmail
+		}
+
+		// Create initial payments for all delegates at once
+		err = s.paymentRepo.MakeInitialPaymentsForTeam(tx, delegateEmails, team.MUNTeamID)
+		if err != nil {
+			logger.LogError(err, "Failed to make initial payments for team", map[string]interface{}{
+				"delegateEmails": delegateEmails,
+				"teamID":         team.MUNTeamID,
+				"layer":          "service",
+				"operation":      "service.InsertDelegates",
+				"error":          err,
 			})
 			return err
 		}
@@ -292,6 +315,14 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 				"error":     err,
 			})
 			return err
+		}
+
+		if _, err := s.paymentRepo.MakeInitialPayment(tx, participant.MUNDelegateEmail, ""); err != nil {
+			logger.LogError(err, "Failed to make initial payment for participant", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.InsertOneDelegateForFAOrObserver",
+				"error":     err,
+			})
 		}
 
 		// insert concurrent responses

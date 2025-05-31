@@ -66,7 +66,7 @@ type AdminService interface {
 	MakePairing(delegateEmail, pair string) error
 	UpdatePaymentStatus(email string) error
 	GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error)
-	GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]paymentModel.PaymentResponse, error)
+	GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.PaymentResponseWithTeam, error)
 	GetDelegates(delegateType string, limit, offset int) ([]delegateModel.MUNDelegates, error)
 	GetPositionPapers(limit, offset int) ([]positionModel.PositionPaper, error)
 }
@@ -350,27 +350,45 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offse
 	return result, nil
 }
 
-func (s *adminService) GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]paymentModel.PaymentResponse, error) {
-	payments, err := s.adminRepo.GetDelegatePaymentResponses(delegateType, limit, offset)
+func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.PaymentResponseWithTeam, error) {
+	var startDate, endDate *time.Time
+
+	switch timeWave {
+	case "earlybird":
+		start := time.Date(2024, 6, 16, 0, 0, 0, 0, time.UTC)
+		end := time.Date(2024, 7, 14, 23, 59, 59, 0, time.UTC)
+		startDate, endDate = &start, &end
+	case "regularwave":
+		start := time.Date(2024, 7, 28, 0, 0, 0, 0, time.UTC)
+		end := time.Date(2024, 8, 24, 23, 59, 59, 0, time.UTC)
+		startDate, endDate = &start, &end
+	case "latewave":
+		start := time.Date(2024, 9, 1, 0, 0, 0, 0, time.UTC)
+		end := time.Date(2024, 9, 29, 23, 59, 59, 0, time.UTC)
+		startDate, endDate = &start, &end
+	default:
+		// nil means no filter
+		startDate, endDate = nil, nil
+	}
+
+	payments, err := s.adminRepo.GetDelegatePaymentResponsesWithTeam(delegateType, startDate, endDate, limit, offset)
 	if err != nil {
 		logger.LogError(err, "Failed to get delegate payment responses", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
 		return nil, err
 	}
 
-	// Modify file answers to be presigned URLs
 	for i := range payments {
 		if payments[i].PaymentFile != "" {
 			url, err := s.uploader.GeneratePresignedURL(payments[i].PaymentFile, 15*time.Minute)
 			if err != nil {
 				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": payments[i].PaymentFile})
-				payments[i].PaymentFile = "" // optionally skip this one or set it to empty
-				continue                     // optionally skip this one or set it to empty
+				payments[i].PaymentFile = ""
+				continue
 			}
 			payments[i].PaymentFile = url
 		}
 	}
 
-	logger.LogDebug("Delegate payment responses retrieved and processed successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
 	return payments, nil
 }
 

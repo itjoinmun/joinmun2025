@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -268,35 +269,46 @@ func (h *AdminHandler) GetAmalgamatedResponsesHandler(c *gin.Context) {
 
 func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
 	userContext, ok := dashboard.GetUserFromContext(c)
-	if !ok {
+	if !ok || userContext.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	// Only admins can get delegates payment
-	if userContext.Role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+	delegateType := c.DefaultQuery("delegate_type", "")
+	timeWave := c.Query("time")
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
 		return
 	}
 
-	var req struct {
-		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"gte=1"`
-		Offset       int    `json:"offset" binding:"gte=0"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
-
-	responses, err := h.adminService.GetDelegatePaymentResponses(req.DelegateType, req.Limit, req.Offset)
+	responses, err := h.adminService.GetDelegatePaymentResponses(delegateType, timeWave, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates payment", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, responses)
+	// Group payments by team for better admin visibility
+	teamPayments := make(map[string][]interface{})
+	for _, payment := range responses {
+		if teamPayments[payment.MUNTeamID] == nil {
+			teamPayments[payment.MUNTeamID] = make([]interface{}, 0)
+		}
+		teamPayments[payment.MUNTeamID] = append(teamPayments[payment.MUNTeamID], payment)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"payments_by_team": teamPayments,
+		"total_payments":   len(responses),
+	})
 }
 
 func (h *AdminHandler) GetDelegatesHandler(c *gin.Context) {

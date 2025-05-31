@@ -19,7 +19,7 @@ type AdminRepo interface {
 	GetDelegateHealthResponses(delegateType string, limit, offset int) ([]dashboard.HealthResponseWithQuestion, error)
 	GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error)
 	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]dashboard.BiodataResponseWithQuestion, error)
-	GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]payment.PaymentResponse, error)
+	GetDelegatePaymentResponsesWithTeam(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.PaymentResponseWithTeam, error)
 	GetDelegates(delegateType string, limit, offset int) ([]dashboard.MUNDelegates, error)
 	GetPositionPapers(limit, offset int) ([]position.PositionPaper, error)
 }
@@ -185,25 +185,41 @@ func (r *adminRepo) GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNR
 	return responses, err
 }
 
-func (r *adminRepo) GetDelegatePaymentResponses(delegateType string, limit, offset int) ([]payment.PaymentResponse, error) {
-	var payments []payment.PaymentResponse
+func (r *adminRepo) GetDelegatePaymentResponsesWithTeam(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.PaymentResponseWithTeam, error) {
+	var payments []payment.PaymentResponseWithTeam
+
 	query := `
 		SELECT 
 			p.payment_id,
 			p.mun_delegate_email,
+			p.mun_team_id,
 			p.package,
 			p.payment_file,
 			p.payment_status,
 			p.payment_date,
 			p.payment_amount,
-			d.participant_type
+			d.participant_type,
+			t.mun_team_lead
 		FROM payment p
 		JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
-		WHERE d.participant_type = $1
-		ORDER BY p.mun_delegate_email
-		LIMIT $2 OFFSET $3;
+		LEFT JOIN mun_teams t ON p.mun_team_id = t.mun_team_id
+		WHERE ($1 = '' OR d.participant_type = $1)
 	`
-	err := r.db.Select(&payments, query, delegateType, limit, offset)
+
+	args := []interface{}{delegateType}
+
+	// Append time filtering if provided
+	if startDate != nil && endDate != nil {
+		query += " AND p.payment_date BETWEEN $2 AND $3"
+		args = append(args, *startDate, *endDate)
+		query += " ORDER BY p.mun_team_id, p.mun_delegate_email LIMIT $4 OFFSET $5"
+		args = append(args, limit, offset)
+	} else {
+		query += " ORDER BY p.mun_team_id, p.mun_delegate_email LIMIT $2 OFFSET $3"
+		args = append(args, limit, offset)
+	}
+
+	err := r.db.Select(&payments, query, args...)
 	return payments, err
 }
 
