@@ -92,13 +92,6 @@ func (r *responseRepo) InsertHealthResponses(tx *sqlx.Tx, responses []dashboard.
 	if len(responses) == 0 {
 		return nil
 	}
-	for _, r := range responses {
-		logger.LogDebug("Inserting health response", map[string]interface{}{
-			"question_id":    r.HealthQuestionID,
-			"delegate_email": r.DelegateEmail,
-			"answer":         r.HealthAnswerText,
-		})
-	}
 	query := `INSERT INTO health_responses (delegate_email, health_question_id, health_answer_text) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}

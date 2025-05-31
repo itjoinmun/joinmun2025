@@ -60,6 +60,7 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		return fmt.Errorf("user not confirmed with email: %s", payment.MUNDelegateEmail)
 	}
 
+	// Check if the user has a participant type
 	var participantType string
 	if user.ParticipantType != nil {
 		participantType = *user.ParticipantType
@@ -67,6 +68,7 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		logger.LogError(nil, "Participant type is nil", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return fmt.Errorf("participant type is nil for user: %s", payment.MUNDelegateEmail)
 	}
+
 	// Handle team requirements based on participant type
 	if participantType == "faculty_advisor" {
 		// Faculty advisors must have a team
@@ -79,10 +81,10 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 			logger.LogError(nil, "Faculty advisor must join a team first", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 			return fmt.Errorf("faculty advisor must join a team first: %s", payment.MUNDelegateEmail)
 		}
-		payment.MUNTeamID = teamID
+		payment.MUNTeamID = &teamID
 	} else if participantType == "observer" {
 		// Observers don't need a team
-		payment.MUNTeamID = ""
+		payment.MUNTeamID = nil
 	} else {
 		// For other participant types, get team ID
 		teamID, err := s.delegateRepo.GetTeamIDByDelegateEmail(payment.MUNDelegateEmail)
@@ -90,7 +92,7 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 			logger.LogError(err, "Failed to get team ID by delegate email", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 			return err
 		}
-		payment.MUNTeamID = teamID
+		payment.MUNTeamID = &teamID
 	}
 
 	return utils.WithTransaction(s.paymentRepo.DB(), func(tx *sqlx.Tx) error {
