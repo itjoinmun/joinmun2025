@@ -118,12 +118,14 @@ const refreshToken = async (): Promise<{ refreshToken: string; accessToken: stri
 
   if (!res.ok) {
     const errorData = await res.json();
+    cookieStore.delete("refresh_token");
     throw new Error(errorData.message || "Failed to refresh access token");
   }
 
   const { accessToken, refreshToken } = parseTokensFromHeaders(res.headers);
 
   if (!accessToken || !refreshToken) {
+    cookieStore.delete("refresh_token");
     throw new Error("Failed to retrieve tokens from response headers");
   }
 

@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { useFormStatus } from "@/utils/hooks/use-form-status";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const RegistrationNav = () => {
+  const { submitting, setSubmitting } = useFormStatus();
   const pathname = usePathname();
 
   // Extract the current step from the URL
@@ -31,11 +33,11 @@ const RegistrationNav = () => {
             Previous
           </Button>
         ) : (
-          <Link href={`${currentStep - 1}`} scroll={false} className=" md:w-auto">
+          <Link href={`${currentStep - 1}`} scroll={false} className="md:w-auto">
             <Button
               type="button"
               variant={"outline"}
-              className="bg-gray-light/40 hover:bg-gray-light/60 cursor-pointer border w-full border-white"
+              className="bg-gray-light/40 hover:bg-gray-light/60 w-full cursor-pointer border border-white"
             >
               <ChevronLeft />
               Previous
@@ -43,9 +45,13 @@ const RegistrationNav = () => {
           </Link>
         )}
         {isLastStep ? (
-          <Button type="submit" variant={"primary"} className="cursor-pointer">
-            {" "}
-            Submit
+          <Button
+            type="submit"
+            disabled={submitting}
+            variant={"primary"}
+            className="cursor-pointer"
+          >
+            {submitting ? <>Submitting...</> : <>Submit</>}
           </Button>
         ) : (
           <Button type="submit" variant={"primary"} className="cursor-pointer">
@@ -55,11 +61,9 @@ const RegistrationNav = () => {
           </Button>
         )}
       </div>
-      <div className="h-8 w-full md:hidden">
-        {/* This is a spacer to prevent content from being hidden behind the fixed nav bar on mobile */}
-      </div>
+      <div className="h-8 w-full md:hidden" />
     </>
-  )
+  );
 };
 
 export default RegistrationNav;

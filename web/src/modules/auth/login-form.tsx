@@ -48,12 +48,13 @@ const LoginForm = () => {
         }),
       });
 
-      router.push("/dashboard/delegates");
-      if (res.ok) {
-        console.log("Login successful!");
-      } else {
+      const data = await res.json();
+
+      if (!res.ok) {
         console.error(res);
       }
+
+      router.push("/dashboard/delegates");
     } catch (error) {
       console.error(error);
       setPending(false);

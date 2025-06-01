@@ -7,8 +7,8 @@ const UserProfileInfo = () => {
 
   return (
     <div className="flex w-fit items-center gap-2">
-      <User />
       <p className="hidden md:block">{session.user?.name}</p>
+      <User />
     </div>
   );
 };

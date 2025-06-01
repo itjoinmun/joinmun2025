@@ -16,7 +16,15 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
   if (!access) {
-    await refreshToken();
+    try {
+      await refreshToken();
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      if (isProtectedRoute) {
+        url.pathname = "/login";
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   if (refresh) {

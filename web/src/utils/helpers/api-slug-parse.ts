@@ -3,7 +3,7 @@ import { DelegateOptions } from "./delegates";
 const parseSlug = (slug: DelegateOptions) => {
   let parseSlug;
   switch (slug as string) {
-    case "delegate":
+    case "single":
       parseSlug = "single_delegate";
       break;
     case "observer":
@@ -20,6 +20,6 @@ const parseSlug = (slug: DelegateOptions) => {
   }
 
   return parseSlug;
-}
+};
 
 export default parseSlug;

@@ -7,8 +7,6 @@ import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
-import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
-import { Loader2 } from "lucide-react";
 
 const ConfirmationPage = ({
   slug,
@@ -24,9 +22,9 @@ const ConfirmationPage = ({
   >(`${slug}Registration`, isTeam ? {} : []);
 
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+  {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  }
   const [fileStorageInitialized, setFileStorageInitialized] = useState(false);
 
   // Initialize file storage
@@ -46,34 +44,6 @@ const ConfirmationPage = ({
       }
     });
   }, []);
-
-  // Handle form submission
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      const { success, error } = await submitDelegateRegistration({
-        formData,
-        index,
-        slug,
-        isTeam,
-      });
-
-      if (success) {
-        // Show success message
-        alert("Your registration has been submitted successfully!");
-        router.push("/dashboard/delegates");
-      } else {
-        // Show error message
-        setSubmitError(error || "Unknown error occurred during submission");
-      }
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   // Display delegate information in a readable format
   const renderDelegateInfo = (delegateData: DelegateRegistration, delegateIndex?: number) => {
@@ -122,7 +92,7 @@ const ConfirmationPage = ({
         {missingRequiredFields && (
           <div className="mb-6 rounded-md bg-red-900/50 p-4 text-red-300">
             <strong>Warning:</strong> Some required information is missing. Please complete all
-            required fields.
+            required fields before submission.
           </div>
         )}
 
@@ -159,7 +129,10 @@ const ConfirmationPage = ({
           <div className="mt-4">
             <Button
               onClick={() =>
-                router.push(`/dashboard/delegates/${slug}/registration/1?idx=${delegateIndex}`)
+                // Navigate to the first step of registration for editing
+                router.push(
+                  `/dashboard/delegates/${slug}/registration/1${delegateIndex !== undefined && delegateIndex !== 0 ? `?idx=${delegateIndex}` : ""}`,
+                )
               }
               variant="outline"
               className="mr-2"
@@ -213,28 +186,28 @@ const ConfirmationPage = ({
             renderDelegateInfo(data as DelegateRegistration, parseInt(idx)),
           )
         : // Render single delegate
-          renderDelegateInfo(formData[index] as DelegateRegistration)}
+          renderDelegateInfo((formData as DelegateRegistration[])[index] as DelegateRegistration)}
 
+      {/* Removed submission button and error display */}
       <div className="mt-6 flex justify-end">
         <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="bg-green-600 hover:bg-green-700"
+          onClick={() => router.back()} // Example: Go back to previous page (e.g., medical form)
+          variant="outline"
+          className="mr-2"
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
-            </>
-          ) : (
-            "Submit Registration"
-          )}
+          Back to Edit
+        </Button>
+        {/* Or a button to navigate to the start of this delegate's form */}
+        <Button
+          onClick={() =>
+            router.push(
+              `/dashboard/delegates/${slug}/registration/1${index !== 0 ? `?idx=${index}` : ""}`,
+            )
+          }
+        >
+          Edit Registration Details
         </Button>
       </div>
-
-      {submitError && (
-        <div className="mt-4 rounded-md bg-red-900/50 p-4 text-red-300">{submitError}</div>
-      )}
     </RegistrationFormModule>
   );
 };
