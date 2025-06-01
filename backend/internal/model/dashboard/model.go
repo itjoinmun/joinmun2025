@@ -39,7 +39,7 @@ type MUNResponses struct {
 }
 
 type MUNDelegates struct {
-	MUNDelegateEmail string     `json:"mun_delegate_email" db:"mun_delegate_email" binding:"email"` // Changed from int to string
+	MUNDelegateEmail string     `json:"mun_delegate_email" db:"mun_delegate_email" binding:"email"`
 	MUNDelegateName  string     `json:"mun_delegate_name" db:"mun_delegate_name"`
 	Type             *string    `json:"type" db:"type" binding:"omitempty,oneof=single_delegate double_delegate"`
 	Pair             *string    `json:"pair" db:"pair" binding:"email,omitempty"`
@@ -50,6 +50,9 @@ type MUNDelegates struct {
 	CouncilDate      *time.Time `json:"council_date" db:"council_date"`
 	InsertDate       *time.Time `json:"insert_date" db:"insert_date"`
 	ParticipantType  *string    `json:"participant_type" db:"participant_type" binding:"omitempty,oneof=team_delegate single_delegate observer faculty_advisor"`
+	// Add team-related fields for coupled queries
+	MUNTeamID   *string `json:"mun_team_id,omitempty" db:"mun_team_id"`
+	MUNTeamLead *string `json:"mun_team_lead,omitempty" db:"mun_team_lead"`
 }
 
 type MUNTeams struct {
@@ -86,4 +89,11 @@ type MUNResponseWithQuestion struct {
 	MUNAnswerText   string `db:"mun_answer_text"`
 	MUNQuestionType string `db:"mun_question_type"`
 	MUNQuestionText string `db:"mun_question_text"`
+}
+
+type TeamDelegateGroup struct {
+	MUNTeamID     *string        `json:"mun_team_id"`
+	MUNTeamLead   *string        `json:"mun_team_lead"`
+	Delegates     []MUNDelegates `json:"delegates"`
+	DelegateCount int            `json:"delegate_count"`
 }
