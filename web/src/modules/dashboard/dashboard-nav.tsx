@@ -50,9 +50,9 @@ const NAV_LINKS = [
     logo: <Globe className={logoStyle} />,
   },
   {
-    id: "pricing",
-    name: "Pricing",
-    href: "/dashboard/pricing",
+    id: "payment",
+    name: "Payment",
+    href: "/dashboard/payment",
     logo: <DollarSign className={logoStyle} />,
   },
   {
@@ -111,9 +111,9 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
               className="aspect-[846/701] size-9 h-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:h-full group-data-[collapsible=none]:w-full"
             />
 
-            <div className="mr-1 flex flex-col gap-1 group-data-[collapsible=icon]:hidden">
+            <div className="mr-1 flex flex-col group-data-[collapsible=icon]:hidden">
               <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
-              <h3 className="text-xs text-nowrap">Model United Nations UGM</h3>
+              <h3 className="text-xs text-nowrap">UGM MUN</h3>
             </div>
           </Link>
         </SidebarHeader>

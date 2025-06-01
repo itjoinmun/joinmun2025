@@ -16,7 +16,7 @@ const CompleteLogo = () => {
 
       <div className="mr-1 flex flex-col gap-1">
         <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
-        <h3 className="text-xs text-nowrap">Model United Nations UGM</h3>
+        <h3 className="text-xs text-nowrap">UGM MUN Community</h3>
       </div>
     </Link>
   );
