@@ -1,3 +1,4 @@
+import { refreshToken } from "@/utils/actions/auth-handler";
 import { NextResponse, type NextRequest } from "next/server";
 
 const AUTH_ROUTES = ["/login", "/register"];
@@ -5,7 +6,8 @@ const GUEST_ROUTES = ["/", "/theme"];
 const PROTECTED_ROUTES = ["/dashboard"];
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("refresh_token")?.value;
+  const access = request.cookies.get("access_token")?.value;
+  const refresh = request.cookies.get("refresh_token")?.value;
   const url = request.nextUrl.clone();
   const pathname = request.nextUrl.pathname;
 
@@ -13,7 +15,11 @@ export async function middleware(request: NextRequest) {
   const isGuestRoute = GUEST_ROUTES.some((route) => pathname === route);
   const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
-  if (token) {
+  if (!access) {
+    await refreshToken();
+  }
+
+  if (refresh) {
     if (isAuthRoute || isGuestRoute) {
       url.pathname = "/dashboard/delegates";
       return NextResponse.redirect(url);
