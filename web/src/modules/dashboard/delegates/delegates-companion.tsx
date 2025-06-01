@@ -6,8 +6,18 @@ import {
   DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
 import { DELEGATES } from "@/utils/helpers/delegates";
+import { getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
 
-const DelegatesCompanion = () => {
+const DelegatesCompanion = async () => {
+  let res;
+  try {
+    res = await getDelegate();
+  } catch (error) {
+    console.error("Error fetching delegate:", error);
+  }
+
+  if (res) return <></>;
+
   return (
     <DashboardModule>
       <DashboardModuleHeader>
@@ -20,7 +30,7 @@ const DelegatesCompanion = () => {
             <CTACard
               title={delegate.name}
               description={delegate.description}
-              href={`delegates/${key === 'team' ? 'team' : key + '/registration/1'}`}
+              href={`delegates/${key === "team" ? "team" : key + "/registration/1"}`}
               key={key}
             />
           ))}
