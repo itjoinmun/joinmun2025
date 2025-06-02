@@ -1,0 +1,8 @@
+services:
+  joinmun2025:
+    image: joinmun2025
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
