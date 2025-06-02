@@ -1,13 +1,9 @@
-<<<<<<< HEAD
 "use client";
-=======
->>>>>>> bc7cdb1c6ae905b922cb3f2d1b0729f86ebf611a
 import {
   DashboardPage,
   DashboardPageHeader,
   DashboardPageTitle,
 } from "@/components/dashboard/dashboard-page";
-<<<<<<< HEAD
 import Payment from "@/modules/dashboard/payment/payment";
 import { FormStatusProvider } from "@/utils/hooks/use-form-status";
 import { createContext, Suspense } from "react";
@@ -52,17 +48,3 @@ const PackageSelectionPage = () => {
 };
 
 export default PackageSelectionPage;
-=======
-
-const PaymentPage = () => {
-  return (
-    <DashboardPage>
-      <DashboardPageHeader>
-        <DashboardPageTitle>Payment</DashboardPageTitle>
-      </DashboardPageHeader>
-    </DashboardPage>
-  );
-};
-
-export default PaymentPage;
->>>>>>> bc7cdb1c6ae905b922cb3f2d1b0729f86ebf611a
