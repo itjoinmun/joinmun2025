@@ -21,8 +21,6 @@ type AdminRepo interface {
 	GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error)
 	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]dashboard.BiodataResponseWithQuestion, error)
 	GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.TeamPaymentSummary, error)
-	GetDelegates(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]dashboard.MUNDelegates, error)
-	GetPositionPapers(startDate, endDate *time.Time, limit, offset int) ([]position.PositionPaper, error)
 	GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]dashboard.TeamDelegateGroup, error)
 	GetPositionPapersByTeam(startDate, endDate *time.Time, limit, offset int) ([]position.TeamPositionPaperGroup, error)
 }
@@ -169,6 +167,9 @@ func (r *adminRepo) GetDelegateHealthResponses(delegateType string, limit, offse
 	`
 	err := r.db.Select(&responses, query)
 	return responses, err
+}
+
+func (r *adminRepo) GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error) {
 	var responses []dashboard.MUNResponseWithQuestion
 	query := `
 		SELECT 
@@ -306,208 +307,18 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 	return teamSummaries, nil
 }
 
-func (r *adminRepo) GetDelegates(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]dashboard.MUNDelegates, error) {
-	var delegates []dashboard.MUNDelegates
-
-	// First, get unique teams/individuals with pagination (similar to payment approach)
-	teamQuery := `
-		WITH delegate_info AS (
-			SELECT DISTINCT 
-				COALESCE(tm.mun_team_id, 'individual_' || md.mun_delegate_email) as group_identifier,
-				tm.mun_team_id,
-				COALESCE(t.mun_team_lead, md.mun_delegate_email) as group_lead,
-				MIN(md.insert_date) as earliest_registration
-			FROM mun_delegates md
-			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
-			LEFT JOIN mun_teams t ON tm.mun_team_id = t.mun_team_id
-			WHERE ($1 = '' OR md.participant_type = $1)
-	`
-
-	args := []interface{}{delegateType}
-	argIndex := 2
-
-	if startDate != nil && endDate != nil {
-		teamQuery += fmt.Sprintf(" AND md.insert_date BETWEEN $%d AND $%d", argIndex, argIndex+1)
-		args = append(args, *startDate, *endDate)
-		argIndex += 2
-	}
-
-	teamQuery += fmt.Sprintf(`
-			GROUP BY group_identifier, tm.mun_team_id, t.mun_team_lead, md.mun_delegate_email
-		)
-		SELECT mun_team_id, group_lead
-		FROM delegate_info
-		ORDER BY earliest_registration DESC
-		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
-
-	args = append(args, limit, offset)
-
-	type GroupInfo struct {
-		MUNTeamID *string `db:"mun_team_id"`
-		GroupLead string  `db:"group_lead"`
-	}
-
-	var groups []GroupInfo
-	err := r.db.Select(&groups, teamQuery, args...)
-	if err != nil {
-		logger.LogError(err, "Failed to get delegate groups", map[string]interface{}{
-			"layer":     "repository",
-			"operation": "repo.GetDelegates",
-		})
-		return nil, err
-	}
-
-	// For each group, get all delegates
-	for _, group := range groups {
-		var groupDelegates []dashboard.MUNDelegates
-
-		delegateQuery := `
-			SELECT 
-				md.mun_delegate_email,
-				md.mun_delegate_name,
-				md.type,
-				md.council,
-				md.council_date,
-				md.country,
-				md.confirmed,
-				md.confirmed_date,
-				md.insert_date,
-				md.participant_type
-			FROM mun_delegates md
-			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
-			WHERE (tm.mun_team_id = $1 OR ($1 IS NULL AND md.mun_delegate_email = $2))
-		`
-
-		delegateArgs := []interface{}{group.MUNTeamID, group.GroupLead}
-
-		if startDate != nil && endDate != nil {
-			delegateQuery += " AND md.insert_date BETWEEN $3 AND $4"
-			delegateArgs = append(delegateArgs, *startDate, *endDate)
-		}
-
-		delegateQuery += " ORDER BY md.insert_date DESC"
-
-		err := r.db.Select(&groupDelegates, delegateQuery, delegateArgs...)
-		if err != nil {
-			logger.LogError(err, "Failed to get delegates for group", map[string]interface{}{
-				"layer":     "repository",
-				"operation": "repo.GetDelegates",
-				"groupId":   group.MUNTeamID,
-			})
-			continue
-		}
-
-		delegates = append(delegates, groupDelegates...)
-	}
-
-	return delegates, nil
-}
-
-func (r *adminRepo) GetPositionPapers(startDate, endDate *time.Time, limit, offset int) ([]position.PositionPaper, error) {
-	var papers []position.PositionPaper
-
-	// Get position papers coupled with delegate team info
-	paperQuery := `
-		WITH paper_info AS (
-			SELECT DISTINCT 
-				COALESCE(tm.mun_team_id, 'individual_' || pp.mun_delegate_email) as group_identifier,
-				tm.mun_team_id,
-				COALESCE(t.mun_team_lead, pp.mun_delegate_email) as group_lead,
-				MIN(pp.submission_date) as earliest_submission
-			FROM position_paper pp
-			JOIN mun_delegates md ON pp.mun_delegate_email = md.mun_delegate_email
-			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
-			LEFT JOIN mun_teams t ON tm.mun_team_id = t.mun_team_id
-			WHERE 1=1
-	`
-
-	args := []interface{}{}
-	argIndex := 1
-
-	if startDate != nil && endDate != nil {
-		paperQuery += fmt.Sprintf(" AND pp.submission_date BETWEEN $%d AND $%d", argIndex, argIndex+1)
-		args = append(args, *startDate, *endDate)
-		argIndex += 2
-	}
-
-	paperQuery += fmt.Sprintf(`
-			GROUP BY group_identifier, tm.mun_team_id, t.mun_team_lead, pp.mun_delegate_email
-		)
-		SELECT mun_team_id, group_lead
-		FROM paper_info
-		ORDER BY earliest_submission DESC
-		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
-
-	args = append(args, limit, offset)
-
-	type GroupInfo struct {
-		MUNTeamID *string `db:"mun_team_id"`
-		GroupLead string  `db:"group_lead"`
-	}
-
-	var groups []GroupInfo
-	err := r.db.Select(&groups, paperQuery, args...)
-	if err != nil {
-		logger.LogError(err, "Failed to get position paper groups", map[string]interface{}{
-			"layer":     "repository",
-			"operation": "repo.GetPositionPapers",
-		})
-		return nil, err
-	}
-
-	// For each group, get all position papers
-	for _, group := range groups {
-		var groupPapers []position.PositionPaper
-
-		positionQuery := `
-			SELECT 
-				pp.mun_delegate_email,
-				pp.submission_file,
-				pp.submission_date,
-				pp.submission_status
-			FROM position_paper pp
-			JOIN mun_delegates md ON pp.mun_delegate_email = md.mun_delegate_email
-			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
-			WHERE (tm.mun_team_id = $1 OR ($1 IS NULL AND pp.mun_delegate_email = $2))
-		`
-
-		positionArgs := []interface{}{group.MUNTeamID, group.GroupLead}
-
-		if startDate != nil && endDate != nil {
-			positionQuery += " AND pp.submission_date BETWEEN $3 AND $4"
-			positionArgs = append(positionArgs, *startDate, *endDate)
-		}
-
-		positionQuery += " ORDER BY pp.submission_date DESC"
-
-		err := r.db.Select(&groupPapers, positionQuery, positionArgs...)
-		if err != nil {
-			logger.LogError(err, "Failed to get position papers for group", map[string]interface{}{
-				"layer":     "repository",
-				"operation": "repo.GetPositionPapers",
-				"groupId":   group.MUNTeamID,
-			})
-			continue
-		}
-
-		papers = append(papers, groupPapers...)
-	}
-
-	return papers, nil
-}
-
 func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]dashboard.TeamDelegateGroup, error) {
 	var teamGroups []dashboard.TeamDelegateGroup
 
 	// First, get unique teams with pagination
 	teamQuery := `
-		WITH team_info AS (
-			SELECT DISTINCT 
-				COALESCE(tm.mun_team_id, 'individual_' || md.mun_delegate_email) as group_identifier,
+		WITH delegate_data AS (
+			SELECT 
+				md.mun_delegate_email,
+				md.insert_date,
+				md.participant_type,
 				tm.mun_team_id,
-				COALESCE(t.mun_team_lead, md.mun_delegate_email) as group_lead,
-				MIN(md.insert_date) as earliest_registration,
-				COUNT(md.mun_delegate_email) as delegate_count
+				t.mun_team_lead
 			FROM mun_delegates md
 			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
 			LEFT JOIN mun_teams t ON tm.mun_team_id = t.mun_team_id
@@ -523,20 +334,36 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 		argIndex += 2
 	}
 
-	teamQuery += fmt.Sprintf(`
-			GROUP BY group_identifier, tm.mun_team_id, t.mun_team_lead, md.mun_delegate_email
+	teamQuery += `
+		),
+		team_groups AS (
+			SELECT 
+				COALESCE(mun_team_id, 'individual_' || mun_delegate_email) as group_identifier,
+				mun_team_id,
+				COALESCE(mun_team_lead, mun_delegate_email) as group_lead,
+				MIN(insert_date) as earliest_registration,
+				COUNT(*) as delegate_count
+			FROM delegate_data
+			GROUP BY mun_team_id, mun_team_lead, mun_delegate_email
 		)
-		SELECT mun_team_id, group_lead, delegate_count
-		FROM team_info
+	`
+
+	teamQuery += fmt.Sprintf(`
+		SELECT mun_team_id, group_lead, 
+			   SUM(delegate_count) as delegate_count,
+			   MIN(earliest_registration) as earliest_registration
+		FROM team_groups
+		GROUP BY mun_team_id, group_lead
 		ORDER BY earliest_registration DESC
 		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
 
 	args = append(args, limit, offset)
 
 	type TeamInfo struct {
-		MUNTeamID     *string `db:"mun_team_id"`
-		GroupLead     string  `db:"group_lead"`
-		DelegateCount int     `db:"delegate_count"`
+		MUNTeamID            *string   `db:"mun_team_id"`
+		GroupLead            string    `db:"group_lead"`
+		DelegateCount        int       `db:"delegate_count"`
+		EarliestRegistration time.Time `db:"earliest_registration"`
 	}
 
 	var teams []TeamInfo
@@ -570,14 +397,33 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 			FROM mun_delegates md
 			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
 			LEFT JOIN mun_teams t ON tm.mun_team_id = t.mun_team_id
-			WHERE (tm.mun_team_id = $1 OR ($1 IS NULL AND md.mun_delegate_email = $2))
+			WHERE 1=1
 		`
 
-		delegateArgs := []interface{}{team.MUNTeamID, team.GroupLead}
+		var delegateArgs []interface{}
+		argIdx := 1
 
+		// Handle team vs individual logic
+		if team.MUNTeamID != nil {
+			delegateQuery += fmt.Sprintf(" AND tm.mun_team_id = $%d", argIdx)
+			delegateArgs = append(delegateArgs, *team.MUNTeamID)
+			argIdx++
+		} else {
+			delegateQuery += fmt.Sprintf(" AND tm.mun_team_id IS NULL AND md.mun_delegate_email = $%d", argIdx)
+			delegateArgs = append(delegateArgs, team.GroupLead)
+			argIdx++
+		}
+
+		// Add date filter if provided
 		if startDate != nil && endDate != nil {
-			delegateQuery += " AND md.insert_date BETWEEN $3 AND $4"
+			delegateQuery += fmt.Sprintf(" AND md.insert_date BETWEEN $%d AND $%d", argIdx, argIdx+1)
 			delegateArgs = append(delegateArgs, *startDate, *endDate)
+		}
+
+		// Add delegate type filter
+		if delegateType != "" {
+			delegateQuery += fmt.Sprintf(" AND md.participant_type = $%d", len(delegateArgs)+1)
+			delegateArgs = append(delegateArgs, delegateType)
 		}
 
 		delegateQuery += " ORDER BY md.insert_date DESC"
@@ -610,13 +456,12 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time, limit
 
 	// First, get unique teams with position papers
 	teamQuery := `
-		WITH team_info AS (
-			SELECT DISTINCT 
-				COALESCE(tm.mun_team_id, 'individual_' || pp.mun_delegate_email) as group_identifier,
+		WITH paper_data AS (
+			SELECT 
+				pp.mun_delegate_email,
+				pp.submission_date,
 				tm.mun_team_id,
-				COALESCE(t.mun_team_lead, pp.mun_delegate_email) as group_lead,
-				MIN(pp.submission_date) as earliest_submission,
-				COUNT(pp.mun_delegate_email) as paper_count
+				t.mun_team_lead
 			FROM position_paper pp
 			JOIN mun_delegates md ON pp.mun_delegate_email = md.mun_delegate_email
 			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
@@ -633,20 +478,36 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time, limit
 		argIndex += 2
 	}
 
-	teamQuery += fmt.Sprintf(`
-			GROUP BY group_identifier, tm.mun_team_id, t.mun_team_lead, pp.mun_delegate_email
+	teamQuery += `
+		),
+		team_groups AS (
+			SELECT 
+				COALESCE(mun_team_id, 'individual_' || mun_delegate_email) as group_identifier,
+				mun_team_id,
+				COALESCE(mun_team_lead, mun_delegate_email) as group_lead,
+				MIN(submission_date) as earliest_submission,
+				COUNT(*) as paper_count
+			FROM paper_data
+			GROUP BY mun_team_id, mun_team_lead, mun_delegate_email
 		)
-		SELECT mun_team_id, group_lead, paper_count
-		FROM team_info
+	`
+
+	teamQuery += fmt.Sprintf(`
+		SELECT mun_team_id, group_lead, 
+			   SUM(paper_count) as paper_count,
+			   MIN(earliest_submission) as earliest_submission
+		FROM team_groups
+		GROUP BY mun_team_id, group_lead
 		ORDER BY earliest_submission DESC
 		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
 
 	args = append(args, limit, offset)
 
 	type TeamInfo struct {
-		MUNTeamID  *string `db:"mun_team_id"`
-		GroupLead  string  `db:"group_lead"`
-		PaperCount int     `db:"paper_count"`
+		MUNTeamID          *string   `db:"mun_team_id"`
+		GroupLead          string    `db:"group_lead"`
+		PaperCount         int       `db:"paper_count"`
+		EarliestSubmission time.Time `db:"earliest_submission"`
 	}
 
 	var teams []TeamInfo
@@ -672,13 +533,26 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time, limit
 			FROM position_paper pp
 			JOIN mun_delegates md ON pp.mun_delegate_email = md.mun_delegate_email
 			LEFT JOIN mun_team_members tm ON md.mun_delegate_email = tm.mun_delegate_email
-			WHERE (tm.mun_team_id = $1 OR ($1 IS NULL AND pp.mun_delegate_email = $2))
+			WHERE 1=1
 		`
 
-		paperArgs := []interface{}{team.MUNTeamID, team.GroupLead}
+		var paperArgs []interface{}
+		argIdx := 1
 
+		// Handle team vs individual logic
+		if team.MUNTeamID != nil {
+			paperQuery += fmt.Sprintf(" AND tm.mun_team_id = $%d", argIdx)
+			paperArgs = append(paperArgs, *team.MUNTeamID)
+			argIdx++
+		} else {
+			paperQuery += fmt.Sprintf(" AND tm.mun_team_id IS NULL AND pp.mun_delegate_email = $%d", argIdx)
+			paperArgs = append(paperArgs, team.GroupLead)
+			argIdx++
+		}
+
+		// Add date filter if provided
 		if startDate != nil && endDate != nil {
-			paperQuery += " AND pp.submission_date BETWEEN $3 AND $4"
+			paperQuery += fmt.Sprintf(" AND pp.submission_date BETWEEN $%d AND $%d", argIdx, argIdx+1)
 			paperArgs = append(paperArgs, *startDate, *endDate)
 		}
 
