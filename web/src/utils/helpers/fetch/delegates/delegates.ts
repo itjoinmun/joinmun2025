@@ -3,6 +3,11 @@ import { cookies } from "next/headers";
 import { apiSlugs } from "../../api-slug-parse";
 
 export interface Delegate {
+  id: number;
+  name: string;
+  email: string;
+  payment_status: "rejected" | "pending" | "approved";
+  registration_status: "rejected" | "pending" | "approved";
   mun_delegate_email: string;
   mun_delegate_name: string;
   type: string | null;
@@ -246,6 +251,6 @@ export interface Participant {
   email: string;
   payment_status: "rejected" | "pending" | "approved";
   registration_status: "rejected" | "pending" | "approved";
-  council: string;
-  country: string;
+  council: string | null;
+  country: string | null;
 }

@@ -10,7 +10,7 @@ import {
   assignCouncil,
   assignCountry,
   getDelegates,
-  Participant,
+  // Participant,
   rejectPayment,
   rejectRegistration,
 } from "@/utils/helpers/fetch/delegates/delegates";
@@ -23,17 +23,16 @@ const DashboardHome = async () => {
       <DashboardPageHeader>
         <DashboardPageTitle>Admin</DashboardPageTitle>
       </DashboardPageHeader>
-
       <ParticipantTable
-        participants={allParticipants.participant_data.map((participant: Participant) => ({
+        participants={allParticipants?.participant_data?.map((participant) => ({
           id: participant.id,
           name: participant.name,
           email: participant.email,
-          payment_status: participant.payment_status || "pending",
-          registration_status: participant.registration_status || "pending",
-          council: participant.council,
-          country: participant.country,
-        }))}
+          payment_status: participant.payment_status ?? "pending",
+          registration_status: participant.registration_status ?? "pending",
+          council: participant.council ?? "",
+          country: participant.country ?? "",
+        })) ?? []}
         onApproveRegistration={async (id) => {
           await approveRegistration(id);
         }}

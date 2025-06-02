@@ -45,7 +45,8 @@ const Payment = () => {
         return (
           <>
             <h1>Payment Details</h1>
-            <PaymentDetailsStep onSubmit={handleSubmit} />
+            <PaymentDetailsStep />
+            {/* <PaymentDetailsStep onSubmit={handleSubmit} /> */}
           </>
         );
       default:
@@ -59,7 +60,6 @@ const Payment = () => {
         <DashboardModuleContent>
           {renderStepContent()}
           <PaymentNav
-            currentStep={currentStep}
             onNext={handleNext}
             onPrevious={handlePrevious}
             onSubmit={handleSubmit}
@@ -121,10 +121,11 @@ const PackageSelectionStep = () => {
 };
 
 // Step 2: Payment Details (Fixed component)
-const PaymentDetailsStep = ({ onSubmit }: { onSubmit: (file?: File) => void }) => {
+const PaymentDetailsStep = (
+  // { onSubmit }: { onSubmit: (file?: File) => void }
+) => {
   const { packageSelection } = useContext(PaymentContext);
   const [paymentProof, setPaymentProof] = useState<File>();
-  const [selectedBank, setSelectedBank] = useState<string>();
 
   const bankAccounts = [
     {
