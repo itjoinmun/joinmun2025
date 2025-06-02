@@ -2,12 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { useFormStatus } from "@/utils/hooks/use-form-status";
+import { useContext } from "react";
+import { PaymentContext } from "./payment-context"; // You may need to create or adjust this import
 
 interface PaymentNavProps {
   currentStep: number;
   onNext: () => void;
   onPrevious: () => void;
-  onSubmit: () => void;
+  onSubmit: (file?: File) => void;
   isLastStep: boolean;
   isFirstStep: boolean;
   canProceed?: boolean;
@@ -22,59 +25,72 @@ const PaymentNav = ({
   isFirstStep,
   canProceed = true,
 }: PaymentNavProps) => {
+  const { submitting, setSubmitting } = useFormStatus();
+  const { packageSelection } = useContext(PaymentContext);
+
   const handleNextClick = () => {
     if (isLastStep) {
-      onSubmit();
+      const paymentProofInput = document.getElementById("payment-proof") as HTMLInputElement;
+      const selectedBankElement = document.querySelector(".border-blue-500.bg-blue-500/5");
+
+      if (!selectedBankElement) {
+        alert("Please select a bank account");
+        return;
+      }
+      if (!paymentProofInput?.files?.[0]) {
+        alert("Please upload payment proof");
+        return;
+      }
+
+      setSubmitting(true);
+      onSubmit(paymentProofInput.files[0]);
+      setTimeout(() => setSubmitting(false), 2000);
     } else {
       onNext();
     }
   };
 
+  const canSubmit = isLastStep
+    ? document.querySelector(".border-blue-500.bg-blue-500/5") &&
+      (document.getElementById("payment-proof") as HTMLInputElement)?.files?.[0]
+    : canProceed;
+
   return (
     <>
-      <div className="bg-background border-gray-light fixed inset-x-0 bottom-0 z-10 grid grid-cols-2 gap-3 p-4 md:absolute md:right-8 md:bottom-8 md:left-auto md:w-auto md:grid-cols-2 md:rounded-lg md:border md:shadow-md">
-        {isFirstStep ? (
-          <Button
-            type="button"
-            variant="outline"
-            disabled
-            className="bg-gray-light/40 hover:bg-gray-light/60 border border-gray-300"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Previous
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onPrevious}
-            className="bg-gray-light/40 hover:bg-gray-light/60 border border-gray-300"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Previous
-          </Button>
-        )}
+      <div className="bg-background border-gray-light fixed inset-x-0 bottom-0 z-10 grid grid-cols-2 gap-3 p-2 md:absolute md:right-8 md:bottom-8 md:left-auto md:rounded-xs md:border md:shadow-md">
+        <Button
+          type="button"
+          variant={"outline"}
+          disabled={isFirstStep}
+          onClick={onPrevious}
+          className="bg-gray-light/40 hover:bg-gray-light/60 border border-white"
+        >
+          <ChevronLeft />
+          Previous
+        </Button>
 
         <Button
           type="button"
-          variant="default"
+          disabled={submitting || (isLastStep ? false : !canProceed)}
+          variant={"primary"}
+          className="cursor-pointer"
           onClick={handleNextClick}
-          disabled={!canProceed}
-          className={` ${isLastStep ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"} ${!canProceed ? "cursor-not-allowed opacity-50" : "cursor-pointer"} `}
         >
           {isLastStep ? (
-            <>Submit Payment</>
+            submitting ? (
+              <>Submitting...</>
+            ) : (
+              <>Submit Payment</>
+            )
           ) : (
             <>
               Next
-              <ChevronLeft className="ml-2 h-4 w-4 rotate-180" />
+              <ChevronLeft className="rotate-180" />
             </>
           )}
         </Button>
       </div>
-
-      {/* Spacer for mobile fixed navigation */}
-      <div className="h-20 w-full md:hidden" />
+      <div className="h-8 w-full md:hidden" />
     </>
   );
 };

@@ -14,11 +14,12 @@ import ParticipantData from "@/modules/dashboard/payment/payment-participant-dat
 import { Suspense, useState, createContext, useContext } from "react";
 import { FormStatusProvider, useFormStatus } from "@/utils/hooks/use-form-status";
 import { cn } from "@/utils/helpers/cn";
+import PaymentPackageCard from "@/modules/dashboard/payment/package-card";
 
 // Types
 interface PackageSelection {
-  type: "Early Bird" | "Regular" | "Late Bird";
-  participantType: "single_delegate" | "team_delegate";
+  type: "Early Bird" | "Regular" | "Late";
+  participantType: "single_delegate" | "team_delegation" | "observer" | "advisor";
   accommodationType: "with_accommodation" | "non_accommodation";
   price?: number;
 }
@@ -121,105 +122,46 @@ const Payment = () => {
 // Step 1: Package Selection
 const PackageSelectionStep = () => {
   const { packageSelection, setPackageSelection } = useContext(PaymentContext);
-  const [selectedAccommodation, setSelectedAccommodation] = useState<"with_accommodation" | "non_accommodation" | null>(
-    packageSelection?.accommodationType || null
-  );
 
-  const handleAccommodationSelect = (type: "with_accommodation" | "non_accommodation") => {
-    setSelectedAccommodation(type);
-    
-    // Update package selection
-    const newSelection: PackageSelection = {
-      type: "Early Bird", // Atau ambil dari props
-      participantType: "single_delegate", // Atau ambil dari props
-      accommodationType: type,
-      price: type === "with_accommodation" ? 1500000 : 1000000, // Contoh harga
-    };
-    
-    setPackageSelection(newSelection);
+  // Only allow valid values
+  const type: "Early Bird" | "Regular" | "Late" =
+    packageSelection?.type === "Early Bird" ||
+    packageSelection?.type === "Regular" ||
+    packageSelection?.type === "Late"
+      ? packageSelection.type
+      : "Early Bird";
+  const participantType: "single_delegate" | "team_delegation" | "observer" | "advisor" =
+    packageSelection?.participantType === "single_delegate" ||
+    packageSelection?.participantType === "team_delegation" ||
+    packageSelection?.participantType === "observer" ||
+    packageSelection?.participantType === "advisor"
+      ? packageSelection.participantType
+      : "single_delegate";
+  const selectedType =
+    packageSelection?.accommodationType === "with_accommodation"
+      ? "accommodation"
+      : packageSelection?.accommodationType === "non_accommodation"
+        ? "nonAccommodation"
+        : undefined;
+
+  // Handler for PaymentPackageCard selection
+  const handleSelect = (accomType: "accommodation" | "nonAccommodation", price: string) => {
+    setPackageSelection({
+      type,
+      participantType,
+      accommodationType: accomType === "accommodation" ? "with_accommodation" : "non_accommodation",
+      price: Number(price.replace(/[^0-9]/g, "")),
+    });
   };
 
   return (
-    <div className="space-y-4">
-      {/* Package Card */}
-      <PackageCard type="Early Bird" participantType="single_delegate" />
-      
-      {/* Accommodation Selection */}
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-4">Choose Accommodation</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* With Accommodation */}
-          <div
-            className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-              selectedAccommodation === "with_accommodation"
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
-            }`}
-            onClick={() => handleAccommodationSelect("with_accommodation")}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">With Accommodation</h4>
-                <p className="text-sm text-gray-600">Includes hotel stay</p>
-                <p className="text-lg font-bold text-green-600 mt-2">Rp 1,500,000</p>
-              </div>
-              <div
-                className={`w-5 h-5 rounded-full border-2 ${
-                  selectedAccommodation === "with_accommodation"
-                    ? "bg-blue-500 border-blue-500"
-                    : "border-gray-300"
-                }`}
-              >
-                {selectedAccommodation === "with_accommodation" && (
-                  <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Non Accommodation */}
-          <div
-            className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-              selectedAccommodation === "non_accommodation"
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
-            }`}
-            onClick={() => handleAccommodationSelect("non_accommodation")}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Non Accommodation</h4>
-                <p className="text-sm text-gray-600">Conference only</p>
-                <p className="text-lg font-bold text-green-600 mt-2">Rp 1,000,000</p>
-              </div>
-              <div
-                className={`w-5 h-5 rounded-full border-2 ${
-                  selectedAccommodation === "non_accommodation"
-                    ? "bg-blue-500 border-blue-500"
-                    : "border-gray-300"
-                }`}
-              >
-                {selectedAccommodation === "non_accommodation" && (
-                  <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Selection Summary */}
-      {selectedAccommodation && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium">Selected:</h4>
-          <p className="text-sm text-gray-600">
-            Early Bird - {selectedAccommodation === "with_accommodation" ? "With Accommodation" : "Non Accommodation"}
-          </p>
-          <p className="font-bold text-green-600">
-            Total: Rp {selectedAccommodation === "with_accommodation" ? "1,500,000" : "1,000,000"}
-          </p>
-        </div>
-      )}
+    <div className="flex justify-center">
+      <PaymentPackageCard
+        type={type}
+        participantType={participantType}
+        onSelect={handleSelect}
+        selectedType={selectedType}
+      />
     </div>
   );
 };
@@ -269,16 +211,24 @@ const PaymentDetailsStep = ({ onSubmit }: { onSubmit: (file?: File) => void }) =
     <div className="space-y-6">
       {/* Selection Summary */}
       {packageSelection && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="font-semibold text-blue-800 mb-2">Your Selection</h3>
+        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <h3 className="mb-2 font-semibold text-blue-800">Your Selection</h3>
           <div className="space-y-1 text-sm">
-            <p><span className="font-medium">Package:</span> {packageSelection.type}</p>
-            <p><span className="font-medium">Type:</span> {packageSelection.participantType.replace('_', ' ')}</p>
-            <p><span className="font-medium">Accommodation:</span> {
-              packageSelection.accommodationType === "with_accommodation" ? "With Accommodation" : "Non Accommodation"
-            }</p>
-            <p className="text-lg font-bold text-green-600 mt-2">
-              Total: Rp {packageSelection.price?.toLocaleString('id-ID') || '0'}
+            <p>
+              <span className="font-medium">Package:</span> {packageSelection.type}
+            </p>
+            <p>
+              <span className="font-medium">Type:</span>{" "}
+              {packageSelection.participantType.replace("_", " ")}
+            </p>
+            <p>
+              <span className="font-medium">Accommodation:</span>{" "}
+              {packageSelection.accommodationType === "with_accommodation"
+                ? "With Accommodation"
+                : "Non Accommodation"}
+            </p>
+            <p className="mt-2 text-lg font-bold text-green-600">
+              Total: Rp {packageSelection.price?.toLocaleString("id-ID") || "0"}
             </p>
           </div>
         </div>
@@ -290,7 +240,7 @@ const PaymentDetailsStep = ({ onSubmit }: { onSubmit: (file?: File) => void }) =
         <div className="flex justify-between">
           <span>Total Amount</span>
           <span className="font-bold">
-            Rp {packageSelection?.price?.toLocaleString('id-ID') || '0'}
+            Rp {packageSelection?.price?.toLocaleString("id-ID") || "0"}
           </span>
         </div>
       </div>
@@ -313,7 +263,7 @@ const PaymentDetailsStep = ({ onSubmit }: { onSubmit: (file?: File) => void }) =
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-bold">{account.bank}</p>
-                  <p className="text-gray-600 text-sm">{account.name}</p>
+                  <p className="text-sm text-gray-600">{account.name}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -336,7 +286,7 @@ const PaymentDetailsStep = ({ onSubmit }: { onSubmit: (file?: File) => void }) =
       <div className="space-y-4">
         <div>
           <Label htmlFor="payment-proof">Upload Payment Proof</Label>
-          <p className="text-gray-600 text-sm">
+          <p className="text-sm text-gray-600">
             Please upload a screenshot or photo of your payment receipt
           </p>
         </div>
@@ -348,18 +298,14 @@ const PaymentDetailsStep = ({ onSubmit }: { onSubmit: (file?: File) => void }) =
             onChange={handlePaymentProofUpload}
           />
           {paymentProof && (
-            <p className="text-gray-600 text-sm">Selected file: {paymentProof.name}</p>
+            <p className="text-sm text-gray-600">Selected file: {paymentProof.name}</p>
           )}
         </div>
       </div>
 
       {/* Validation Messages */}
-      {!selectedBank && (
-        <p className="text-red-500 text-sm">Please select a bank account</p>
-      )}
-      {!paymentProof && (
-        <p className="text-red-500 text-sm">Please upload payment proof</p>
-      )}
+      {!selectedBank && <p className="text-sm text-red-500">Please select a bank account</p>}
+      {!paymentProof && <p className="text-sm text-red-500">Please upload payment proof</p>}
     </div>
   );
 };
@@ -389,9 +335,9 @@ const PaymentNav = ({
   const handleNextClick = () => {
     if (isLastStep) {
       // Validation untuk step terakhir
-      const paymentProofInput = document.getElementById('payment-proof') as HTMLInputElement;
-      const selectedBankElement = document.querySelector('.border-blue-500.bg-blue-500\\/5');
-      
+      const paymentProofInput = document.getElementById("payment-proof") as HTMLInputElement;
+      const selectedBankElement = document.querySelector(".border-blue-500.bg-blue-500\\/5");
+
       if (!selectedBankElement) {
         alert("Please select a bank account");
         return;
@@ -411,10 +357,10 @@ const PaymentNav = ({
   };
 
   // Untuk step terakhir, cek apakah form sudah lengkap
-  const canSubmit = isLastStep ? (
-    document.querySelector('.border-blue-500.bg-blue-500\\/5') && 
-    (document.getElementById('payment-proof') as HTMLInputElement)?.files?.[0]
-  ) : canProceed;
+  const canSubmit = isLastStep
+    ? document.querySelector(".border-blue-500.bg-blue-500\\/5") &&
+      (document.getElementById("payment-proof") as HTMLInputElement)?.files?.[0]
+    : canProceed;
 
   return (
     <>

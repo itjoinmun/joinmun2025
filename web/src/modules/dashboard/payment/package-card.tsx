@@ -14,7 +14,12 @@ interface PackageCardProps {
   selectedType?: AccommodationType;
 }
 
-const PackageCard = ({ type, participantType, onSelect, selectedType }: PackageCardProps) => {
+const PaymentPackageCard = ({
+  type,
+  participantType,
+  onSelect,
+  selectedType,
+}: PackageCardProps) => {
   const option = basePricing[participantType][type];
   const isTeam = participantType === "team_delegation";
 
@@ -80,4 +85,4 @@ const PackageCard = ({ type, participantType, onSelect, selectedType }: PackageC
   );
 };
 
-export default PackageCard;
+export default PaymentPackageCard;
