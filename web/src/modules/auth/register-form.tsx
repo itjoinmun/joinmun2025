@@ -9,10 +9,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { register } from "@/utils/helpers/fetch/auth/auth";
+import { register } from "@/utils/actions/auth-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -44,6 +44,7 @@ const loginSchema = z
 
 const RegisterForm = () => {
   const [pending, setPending] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -55,31 +56,31 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) =>
-    {
-      setPending(true);
-      try {
-        register({
-          username: values.name,
-          email: values.email,
-          password: values.password,
-        }).then((res) => {
-          if (res.ok) {
-            // redirect to dashboard
-            redirect("/login");
-          } else {
-            // show error message
-            console.error(res);
-          }
-        })
-        // post to backend api
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setPending(false);
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setPending(true);
+    try {
+      const res = await register({
+        username: values.name,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (res.ok) {
+        // redirect to dashboard
+        router.push("/login");
+      } else {
+        // show error message
+        console.error(res);
       }
-      // do something
-    };
+      // post to backend api
+    } catch (error) {
+      console.error(error);
+      setPending(false);
+    } finally {
+      // TO DO: Toast
+    }
+    // do something
+  };
 
   return (
     <Form {...form}>
@@ -91,7 +92,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="fatimah@badr.co.id" autoFocus autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,7 +105,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="fatimah@badr.co.id" autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,7 +118,12 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Fill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="fatimah@badr.co.id"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -130,7 +136,12 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Refill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="fatimah@badr.co.id"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

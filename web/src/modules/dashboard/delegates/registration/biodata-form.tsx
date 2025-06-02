@@ -15,66 +15,56 @@ import { z } from "zod";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
 
 const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
-  console.log("INDEX", index);
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
     `${slug}Registration`,
     [],
   );
-  
+
   // Initialize file storage
   const [fileStorageInitialized, setFileStorageInitialized] = useState(false);
-  
+
   // Initialize IndexedDB when component mounts
   useEffect(() => {
-    fileStorageDB.init().then(() => {
-      setFileStorageInitialized(true);
-      
-      // Log all stored files on initialization
-      
-      {/* fileStorageDB.getAllKeys().then(keys => {}); */}
-      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-      fileStorageDB.getAllKeys().then(keys => {});
-    }).catch(err => {
-      console.error("❌ Failed to initialize file storage:", err);
-    });
+    fileStorageDB
+      .init()
+      .then(() => {
+        setFileStorageInitialized(true);
+        fileStorageDB.getAllKeys();
+      })
+      .catch((err) => {
+        console.error("❌ Failed to initialize file storage:", err);
+      });
   }, []);
-  
-  // More comprehensive logging for getStoredFile
-  
+
   const router = useRouter();
 
-  // Get the saved data from localStorage for this specific form
   const savedData = formData[index]?.biodata_responses || {};
-  
-  // Define file key pattern
+
   const getFileKey = (email: string, questionId: number) => `${email}_${questionId}`;
 
-  // Function to retrieve files from storage
-    // More comprehensive logging for getStoredFile
-    const getStoredFile = async (fileKey: string): Promise<File | null> => {
-      if (!fileStorageInitialized) {
-        console.warn("⚠️ File storage not initialized yet");
-        return null;
-      }
-      
-      try {
-        const file = await fileStorageDB.getFile(fileKey);
-        return file;
-      } catch (error) {
-        console.error(`❌ Failed to retrieve file with key ${fileKey}:`, error);
-        return null;
-      }
-    };
+  const getStoredFile = async (fileKey: string): Promise<File | null> => {
+    if (!fileStorageInitialized) {
+      console.warn("⚠️ File storage not initialized yet");
+      return null;
+    }
 
-    // Check for saved file references
-    const identityCardFileKey = savedData[7]?.biodata_answer_text?.startsWith("FILE:") 
-      ? savedData[7]?.biodata_answer_text.replace("FILE:", "")
-      : null;
-    
-  // Define our form fields array with all metadata
+    try {
+      const file = await fileStorageDB.getFile(fileKey);
+      return file;
+    } catch (error) {
+      console.error(`❌ Failed to retrieve file with key ${fileKey}:`, error);
+      return null;
+    }
+  };
+
+  // Check for saved file references
+  const identityCardFileKey = savedData[7]?.biodata_answer_text?.startsWith("FILE:")
+    ? savedData[7]?.biodata_answer_text.replace("FILE:", "")
+    : null;
+
   const formFields: FormFieldConfig[] = [
     {
-      id: 1, // Use ID 1 for email field
+      id: 1,
       name: "email",
       label: "Email",
       placeholder: "Enter your email address",
@@ -141,9 +131,9 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       label: "Identification Card",
       placeholder: "Upload your identification card here",
       description: ".pdf, .png, .jpg, .jpeg",
-      validation: z.instanceof(File).optional().or(z.literal('')).or(z.literal(null)),
+      validation: z.instanceof(File).optional().or(z.literal("")).or(z.literal(null)),
       defaultValue: null, // File inputs don't have default values in the form
-      savedFileKey: identityCardFileKey // The key for any previously saved file
+      savedFileKey: identityCardFileKey, // The key for any previously saved file
     },
   ];
 
@@ -159,7 +149,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
     // Extract the file from form values
     const identityCardFile = values.identityCard;
-    
+
     if (identityCardFile instanceof File) {
       const fileKey = getFileKey(submittedEmail, 3); // Use submitted email
 
@@ -179,7 +169,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     // Process JSON data
     const biodataResponses = formFields.map((field) => {
       let answerValue = values[field.name];
-      
+
       // Handle special file type fields
       if (field.type === "file") {
         if (answerValue instanceof File) {
@@ -189,7 +179,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
           answerValue = `FILE:${field.savedFileKey}`;
         }
       }
-      
+
       return {
         biodata_question_id: field.id,
         delegate_email: submittedEmail, // Use submitted email
@@ -215,16 +205,16 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       [index]: newData,
     });
 
-    if(slug === "observer" || slug === "advisor") {
+    if (slug === "observer" || slug === "advisor") {
       // For observer or advisor, navigate to the confirmation page
       router.push("3");
     } else {
-        // Move to next step
-        if (slug === "team") {
-          router.push(`2?idx=${index}`);
-        } else {
-          router.push("2");
-        }
+      // Move to next step
+      if (slug === "team") {
+        router.push(`2?idx=${index}`);
+      } else {
+        router.push("2");
+      }
     }
   };
 
@@ -232,11 +222,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     <>
       <RegistrationFormModule>
         <FormHeader>Biodata</FormHeader>
-        <FormContent 
-          fields={formFields} 
-          onSubmit={onSubmit} 
-          getStoredFile={getStoredFile}
-        />
+        <FormContent fields={formFields} onSubmit={onSubmit} getStoredFile={getStoredFile} />
       </RegistrationFormModule>
     </>
   );

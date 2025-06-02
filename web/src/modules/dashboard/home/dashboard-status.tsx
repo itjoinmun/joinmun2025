@@ -1,13 +1,16 @@
 import {
   DashboardModule,
+  DashboardModuleContent,
+  DashboardModuleDescription,
   DashboardModuleHeader,
   DashboardModuleTitle,
-  DashboardModuleDescription,
-  DashboardModuleContent,
 } from "@/components/dashboard/dashboard-module";
 import { cn } from "@/utils/helpers/cn";
-import { fetchDelegatePaper, getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
-import { cookies } from "next/headers";
+import {
+  getDelegate,
+  getDelegatePaper,
+  getPayment,
+} from "@/utils/helpers/fetch/delegates/delegates";
 
 type RegistrationStatus =
   | "not_registered"
@@ -26,61 +29,28 @@ type InformationCenterStatus =
   | "no_information"
   | "has_information";
 
-// interface ParticipantData {
-//   registrationStatus: RegistrationStatus;
-//   delegateCode: DelegateCodeStatus;
-//   paperSubmission: PaperSubmissionStatus;
-//   informationCenter: InformationCenterStatus;
-//   paperUrl?: string;
-//   delegateCodeValue?: string;
-//   informationContent?: string;
-// }
+const DashboardStatus = async () => {
+  const userStatus = await getDelegate();
+  const paperStatus = await getDelegatePaper();
+  const paymentStatus = await getPayment();
 
-// const currentUserState: ParticipantData = {
-//   registrationStatus: "verified_pending_payment",
-//   delegateCode: "registration_pending",
-//   paperSubmission: "registration_pending",
-//   informationCenter: "no_information",
-// };
-
-interface StatusCardProps {
-  title: string;
-  status: string;
-  description: string;
-  cardHeader: string;
-  cardDescription: string;
-}
-
-type InfoProps = {
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  userStatus: any;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  paperStatus: any;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  paymentStatus: any;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  teamID: any;
-}
-
-const DashboardStatus = async ({userStatus, paperStatus, paymentStatus}: InfoProps) => {
-  // Determine dynamic status
   const registrationStatus: RegistrationStatus = (() => {
     if (!userStatus?.confirmed) return "waiting_verification";
-    if (userStatus.confirmed && !paymentStatus?.paid) return "verified_pending_payment";
-    if (paymentStatus?.checking) return "payment_checking";
-    if (userStatus.confirmed && paymentStatus?.paid) return "payment_verified";
-    return "not_registered"; // fallback
+    if (userStatus.confirmed && !paymentStatus?.confirmed) return "verified_pending_payment";
+    if (paymentStatus?.payment_status === "checking") return "payment_checking";
+    if (userStatus.confirmed && paymentStatus?.confirmed) return "payment_verified";
+    return "not_registered";
   })();
 
   const paperSubmission: PaperSubmissionStatus = (() => {
-    if (!userStatus?.confirmed || !paymentStatus?.paid) return "registration_pending";
+    if (!userStatus?.confirmed || !paymentStatus?.confirmed) return "registration_pending";
     if (paperStatus?.paperUrl) return "uploaded";
     return "can_upload";
   })();
 
   const delegateCode: DelegateCodeStatus = (() => {
-    if (!userStatus?.confirmed) return "registration_pending";
-    return userStatus?.delegate_code ? "code_available" : "registration_pending";
+    if (userStatus?.confirmed) return "code_available";
+    return "registration_pending";
   })();
 
   const informationCenter: InformationCenterStatus = (() => {
@@ -97,30 +67,26 @@ const DashboardStatus = async ({userStatus, paperStatus, paymentStatus}: InfoPro
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">
         <StatusCard
-          cardHeader="Registration Status"
-          cardDescription="Track your registration progress from initial signup to payment verification"
-          title="Current Status"
+          cardHeader="Status"
+          cardDescription=""
           status={regInfo.status}
           description={regInfo.description}
         />
         <StatusCard
           cardHeader="Delegate Code"
-          cardDescription="Your unique identifier for the JOINMUN 2025 conference"
-          title="Code Status"
+          cardDescription="Give code to your Faculty Advisor"
           status={codeInfo.status}
           description={codeInfo.description}
         />
         <StatusCard
           cardHeader="Paper Submission"
-          cardDescription="Submit and manage your position papers for the conference"
-          title="Submission Status"
+          cardDescription=""
           status={paperInfo.status}
           description={paperInfo.description}
         />
         <StatusCard
           cardHeader="Information Center"
-          cardDescription="Stay updated with important announcements and conference details"
-          title="Update Status"
+          cardDescription=""
           status={infoInfo.status}
           description={infoInfo.description}
         />
@@ -130,12 +96,16 @@ const DashboardStatus = async ({userStatus, paperStatus, paymentStatus}: InfoPro
 };
 
 const StatusCard = ({
-  // title,
-  // status,
+  status,
   description,
   cardHeader,
   cardDescription,
-}: StatusCardProps) => {
+}: {
+  status: string;
+  description: string;
+  cardHeader: string;
+  cardDescription: string;
+}) => {
   return (
     <DashboardModule
       className={cn(
@@ -143,6 +113,7 @@ const StatusCard = ({
         // variantStyles[variant],
       )}
     >
+      {status}
       <DashboardModuleHeader className="flex shrink-0 flex-col text-nowrap 2xl:flex-row 2xl:justify-between 2xl:*:max-w-1/2">
         <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
         <DashboardModuleDescription className="text-wrap opacity-80">
@@ -159,31 +130,26 @@ const StatusCard = ({
 
 const getRegistrationStatusInfo = (status: RegistrationStatus) => {
   switch (status) {
-    // Belum Daftar
     case "not_registered":
       return {
         status: "Not Registered",
         description: "You haven't registered, <b>Register Now</b>",
       };
-    // Sudah Daftar
     case "waiting_verification":
       return {
         status: "Waiting for Verification",
         description: "Waiting For Verification",
       };
-    // Belum Verified
     case "verified_pending_payment":
       return {
         status: "Payment Required",
         description: "Verified, Go To Payment",
       };
-    // Pendaftaran Sudah Verified
     case "payment_checking":
       return {
         status: "Payment Being Checked",
         description: "Verified, Go To Payment",
       };
-    // Payment Sudah Verified
     case "payment_verified":
       return {
         status: "Fully Registered",

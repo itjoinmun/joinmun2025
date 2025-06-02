@@ -7,27 +7,24 @@ import {
 } from "@/components/dashboard/form-module";
 import parseSlug from "@/utils/helpers/api-slug-parse";
 import { DelegateOptions } from "@/utils/helpers/delegates";
+import { fileStorageDB } from "@/utils/helpers/file-storage-db";
+import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate"; // Added import
+import { useFormStatus } from "@/utils/hooks/use-form-status";
 import usePersistedState from "@/utils/hooks/use-persisted-state";
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
-import { fileStorageDB } from "@/utils/helpers/file-storage-db";
-// import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 
 const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
+  const { setSubmitting } = useFormStatus();
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
     `${slug}Registration`,
     [],
   );
   const router = useRouter();
 
-  // Initialize file storage
-  // eslint-disable-next-line
-  const [fileStorageInitialized, setFileStorageInitialized] = useState(false);
-  {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+  const [, setFileStorageInitialized] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Initialize IndexedDB when component mounts
@@ -163,21 +160,31 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
   ];
 
   // Replace the onSubmit function with:
-  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-  const onSubmit = async (values: any) => {
-    // Do something with the form values.
-    console.log(values);
-    // Parse the slug to prepare for form submission to API
-    const delegateEmail = formData[index]?.biodata_responses?.[0]?.biodata_answer_text || "";
+  const onSubmit = async (values: Record<string, string>) => {
+    setSubmitting(true);
+    setSubmitError(null);
+
+    // Ensure formData is treated as an array
+    const currentFormDataArray = Array.isArray(formData)
+      ? [...formData]
+      : Object.keys(formData).length > 0
+      // eslint-disable-next-line
+        ? [{ ...(formData as any)[0] }]
+        : [];
+
+    const existingDelegateData =
+      currentFormDataArray[index] || ({} as Partial<DelegateRegistration>);
+    const delegateEmail = existingDelegateData.biodata_responses?.[0]?.biodata_answer_text || "";
 
     // Structure the form data to match the API requirements
-    const newData = {
-      ...formData[index],
+    const updatedDelegateData: DelegateRegistration = {
+      ...existingDelegateData,
       mun_delegates: {
+        ...(existingDelegateData.mun_delegates || {}),
         mun_delegate_email: delegateEmail,
-        type: "",
-        council: "",
-        country: "",
+        type: existingDelegateData.mun_delegates?.type || "",
+        council: existingDelegateData.mun_delegates?.council || "",
+        country: existingDelegateData.mun_delegates?.country || "",
         participant_type: parseSlug(slug),
       },
       health_responses: formFields.map((field) => ({
@@ -185,28 +192,48 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
         delegate_email: delegateEmail,
         health_answer_text: values[field.name],
       })),
+      // Ensure biodata_responses and mun_responses are carried over or initialized
+      biodata_responses: existingDelegateData.biodata_responses || [],
+      mun_responses: existingDelegateData.mun_responses || [],
     };
 
-    // Store in localStorage
-    setFormData({
-      ...formData,
-      [index]: newData,
-    });
+    // Prepare the full array of delegates for submission
+    const allDelegatesData = [...currentFormDataArray];
+    // Ensure array is long enough
+    while (allDelegatesData.length <= index) {
+      allDelegatesData.push({} as DelegateRegistration);
+    }
+    allDelegatesData[index] = updatedDelegateData;
 
-    // Instead of submitting here, navigate to confirmation page
-    // router.push(`/dashboard/delegates/${slug}/registration/confirmation${index !== 0 ? `?idx=${index}` : ''}`);
-    router.push(`/dashboard/delegates/${slug}/registration/confirmation`);
+    try {
+      const { success, error } = await submitDelegateRegistration({
+        formData: allDelegatesData,
+        index,
+        slug,
+        isTeam: false, // Assuming medical form is for one delegate at a time
+      });
+
+      if (success) {
+        setFormData(allDelegatesData);
+        router.push("/dashboard/delegates");
+      } else {
+        setSubmitError(error || "Unknown error occurred during submission");
+        setSubmitting(false);
+      }
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
+      setSubmitting(false);
+    }
   };
 
   return (
     <>
       <RegistrationFormModule>
         <FormHeader>Medical Questions</FormHeader>
-        {submitError && <div className="mb-4 font-medium text-red-500">Error: {submitError}</div>}
         <FormContent fields={formFields} onSubmit={onSubmit} />
-        {isSubmitting && (
-          <div className="mt-4 font-medium text-amber-500">
-            Submitting your registration, please wait...
+        {submitError && (
+          <div className="mt-4 border-2 border-red-700 bg-red-500 p-4 font-medium text-white">
+            Error: {submitError}
           </div>
         )}
       </RegistrationFormModule>

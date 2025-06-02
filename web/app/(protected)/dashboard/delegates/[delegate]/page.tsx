@@ -2,12 +2,12 @@ import {
   DashboardModule,
   DashboardModuleContent,
   DashboardModuleHeader,
-  DashboardModuleTitle
+  DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
 import {
   DashboardPage,
   DashboardPageDescription,
-  DashboardPageHeader
+  DashboardPageHeader,
 } from "@/components/dashboard/dashboard-page";
 import {
   Breadcrumb,
@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { redirect } from "next/navigation";
 import { TeamRegistrationTable } from "@/modules/dashboard/delegates/team/team-delegation";
+import { Button } from "@/components/ui/button";
+
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
 const DelegationTeamPage = async ({ params }: { params: Promise<{ delegate: string }> }) => {
@@ -55,8 +57,10 @@ const DelegationTeamPage = async ({ params }: { params: Promise<{ delegate: stri
           <DashboardModuleTitle>Team Registration</DashboardModuleTitle>
         </DashboardModuleHeader>
         <DashboardModuleContent>
-          {/* TO DO: Table */}
           <TeamRegistrationTable />
+          <Button variant={`primary`} className="ml-auto">
+            Submit
+          </Button>
         </DashboardModuleContent>
       </DashboardModule>
     </DashboardPage>

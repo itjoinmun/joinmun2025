@@ -11,15 +11,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/helpers/cn";
-import { login } from "@/utils/helpers/fetch/auth/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 const loginSchema = z.object({
   email: z.string().email("Email format is invalid").nonempty("Email is required"),
   password: z.string().nonempty("Password is required"),
@@ -27,6 +25,7 @@ const loginSchema = z.object({
 
 const LoginForm = () => {
   const [pending, setPending] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -35,28 +34,31 @@ const LoginForm = () => {
       password: "",
     },
   });
+
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
     try {
-      login({
-        email: values.email,
-        password: values.password,
-      }).then((res) => {
-        if (res.ok) {
-          // redirect to dashboard
-          redirect("/dashboard");
-        } else {
-          // show error message
-          console.error(res);
-        }
-      })
-      // post to backend api
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`, {
+        method: "POST",
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+    });
+
+      if (!res.ok) {
+        console.error(res);
+        setPending(false);
+        return;
+      }
+
+      router.push("/dashboard/delegates");
     } catch (error) {
       console.error(error);
-    } finally {
       setPending(false);
+    } finally {
+      // TO DO: Toast
     }
-    // do something
   };
 
   return (
@@ -69,7 +71,7 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="fatimah@badr.co.id" autoFocus autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,7 +84,12 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Fill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="fatimah@badr.co.id"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

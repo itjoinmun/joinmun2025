@@ -4,7 +4,7 @@ interface DelegateRegistration {
     type?: string;
     council?: string;
     country?: string;
-    participant_type: "delegate" | "observer" | "faculty_advisor";
+    participant_type: "single_delegate" | "observer" | "faculty_advisor" | "team_delegate";
   };
   biodata_responses: BiodataResponse[];
   health_responses: HealthResponse[];

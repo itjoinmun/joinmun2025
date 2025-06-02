@@ -53,6 +53,7 @@ func (r *delegateRepo) InsertOneDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDel
 	query := `INSERT INTO mun_delegates (mun_delegate_email, mun_delegate_name, type, council, country, confirmed, confirmed_date, insert_date, participant_type) 
 			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING mun_delegate_email`
 	var id string
+	now := time.Now()
 	err := tx.QueryRow(
 		query,
 		delegate.MUNDelegateEmail,
@@ -62,7 +63,7 @@ func (r *delegateRepo) InsertOneDelegate(tx *sqlx.Tx, delegate *dashboard.MUNDel
 		nil,
 		false,
 		time.Time{},
-		time.Now(),
+		now,
 		delegate.ParticipantType,
 	).Scan(&id)
 	if err != nil {
@@ -80,7 +81,7 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 	if len(delegates) == 0 {
 		return nil
 	}
-
+	now := time.Now()
 	query := `INSERT INTO mun_delegates (mun_delegate_email, mun_delegate_name, type, council, country, confirmed, confirmed_date, insert_date, participant_type) VALUES `
 	args := []interface{}{}
 	valueStrings := []string{}
@@ -97,7 +98,7 @@ func (r *delegateRepo) InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDel
 			nil,
 			false,
 			time.Time{},
-			time.Now(),
+			now,
 			d.ParticipantType,
 		)
 	}
@@ -208,9 +209,9 @@ func (r *delegateRepo) InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNT
 	return teamID, nil
 }
 
-func (r *delegateRepo) InsertMeToTeam(teamID, delegateEmail string) error {
+func (r *delegateRepo) InsertMeToTeam(tx *sqlx.Tx, teamID, delegateEmail string) error {
 	query := `INSERT INTO mun_team_members (mun_team_id, mun_delegate_email) VALUES ($1, $2)`
-	_, err := r.db.Exec(query, teamID, delegateEmail)
+	_, err := tx.Exec(query, teamID, delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to insert me to team", map[string]interface{}{
 			"layer":         "repository",

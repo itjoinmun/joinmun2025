@@ -31,5 +31,3 @@ coverage.out
 .DS_Store
 
 certs/
-
-prometheus/data/

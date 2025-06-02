@@ -5,15 +5,13 @@ import {
   DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { cookies } from "next/headers";
 import { getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
+import Image from "next/image";
 
 const ParticipantStatus = async () => {
   let hasRegistered = false;
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get('access_token')?.value
-  const delegate = await getDelegate(accessToken);
+  const delegate = await getDelegate();
+
   if (!delegate) {
     hasRegistered = false
   } else {

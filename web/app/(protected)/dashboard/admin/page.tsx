@@ -3,38 +3,57 @@ import {
   DashboardPageHeader,
   DashboardPageTitle,
 } from "@/components/dashboard/dashboard-page";
-// import { Button } from "@/components/ui/button";
-// import DashboardEvents from "@/modules/dashboard/home/dashboard-events";
-// import ParticipantData from "@/modules/dashboard/home/participant-data";
+import ParticipantTable from "@/modules/dashboard/admin/participant-table";
+import {
+  approvePayment,
+  approveRegistration,
+  assignCouncil,
+  assignCountry,
+  getDelegates,
+  // Participant,
+  rejectPayment,
+  rejectRegistration,
+} from "@/utils/helpers/fetch/delegates/delegates";
 
-import { getUser } from "@/utils/helpers/fetch/auth/user";
-// import { fetchAllParticipants, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
-// import { cookies } from "next/headers";
 const DashboardHome = async () => {
-  // const cookieStore = await cookies();
-  // const accessToken = cookieStore.get("access_token")?.value;
-  // const allParticipants = await getDelegates(accessToken);
-  const user = await getUser();
-  console.log("user", user);
+  const allParticipants = await getDelegates();
 
   return (
     <DashboardPage className="flex flex-col gap-6">
       <DashboardPageHeader>
         <DashboardPageTitle>Admin</DashboardPageTitle>
-        {/* <GetAllParticipants /> */}
       </DashboardPageHeader>
-
-      {/* fill the table about all registered participants */}
-      {/* <ParticipantData delegates={allParticipants.participant_data} /> */}
+      <ParticipantTable
+        participants={allParticipants?.participant_data?.map((participant) => ({
+          id: participant.id,
+          name: participant.name,
+          email: participant.email,
+          payment_status: participant.payment_status ?? "pending",
+          registration_status: participant.registration_status ?? "pending",
+          council: participant.council ?? "",
+          country: participant.country ?? "",
+        })) ?? []}
+        onApproveRegistration={async (id) => {
+          await approveRegistration(id);
+        }}
+        onRejectRegistration={async (id) => {
+          await rejectRegistration(id);
+        }}
+        onApprovePayment={async (id) => {
+          await approvePayment(id);
+        }}
+        onRejectPayment={async (id) => {
+          await rejectPayment(id);
+        }}
+        onAssignCouncil={async (id, council) => {
+          await assignCouncil(id, council);
+        }}
+        onAssignCountry={async (id, country) => {
+          await assignCountry(id, country);
+        }}
+      />
     </DashboardPage>
   );
 };
 
 export default DashboardHome;
-
-// const GetAllParticipants = async () => {
-//   const cookieStore = await cookies();
-//   const accessToken = cookieStore.get("access_token")?.value;
-//   const allParticipants = await fetchAllParticipants(accessToken);
-//   return <Button>Get All Participants</Button>;
-// };

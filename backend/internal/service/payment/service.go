@@ -12,7 +12,7 @@ import (
 )
 
 type PaymentService interface {
-	GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.Payment, error)
+	GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.PaymentWithTeamMembers, error)
 	InsertPayment(payment *paymentModel.Payment) error
 }
 
@@ -28,13 +28,13 @@ func NewPaymentService(delegateRepo delegateRepo.DelegateRepo, paymentRepo payme
 	}
 }
 
-func (s *paymentService) GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.Payment, error) {
-	payment, err := s.paymentRepo.GetPaymentByDelegateEmail(delegateEmail)
+func (s *paymentService) GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.PaymentWithTeamMembers, error) {
+	payment, err := s.paymentRepo.GetPaymentWithTeamByDelegateEmail(delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get payment by delegate email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
+		logger.LogError(err, "Failed to get payment with team by email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
 		return nil, err
 	}
-	logger.LogDebug("Payment retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
+	logger.LogDebug("Payment with team retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
 	return payment, nil
 }
 
@@ -59,16 +59,45 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		logger.LogError(nil, "User not confirmed", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return fmt.Errorf("user not confirmed with email: %s", payment.MUNDelegateEmail)
 	}
-	// Check if the payment already exists
-	existingPayment, _ := s.paymentRepo.GetPaymentByDelegateEmail(payment.MUNDelegateEmail)
 
-	if existingPayment != nil {
-		return fmt.Errorf("payment already exists for delegate email: %s", payment.MUNDelegateEmail)
+	// Check if the user has a participant type
+	var participantType string
+	if user.ParticipantType != nil {
+		participantType = *user.ParticipantType
+	} else {
+		logger.LogError(nil, "Participant type is nil", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+		return fmt.Errorf("participant type is nil for user: %s", payment.MUNDelegateEmail)
+	}
+
+	// Handle team requirements based on participant type
+	if participantType == "faculty_advisor" {
+		// Faculty advisors must have a team
+		teamID, err := s.delegateRepo.GetTeamIDByDelegateEmail(payment.MUNDelegateEmail)
+		if err != nil {
+			logger.LogError(err, "Failed to get team ID by delegate email", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+			return err
+		}
+		if teamID == "" {
+			logger.LogError(nil, "Faculty advisor must join a team first", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+			return fmt.Errorf("faculty advisor must join a team first: %s", payment.MUNDelegateEmail)
+		}
+		payment.MUNTeamID = &teamID
+	} else if participantType == "observer" {
+		// Observers don't need a team
+		payment.MUNTeamID = nil
+	} else {
+		// For other participant types, get team ID
+		teamID, err := s.delegateRepo.GetTeamIDByDelegateEmail(payment.MUNDelegateEmail)
+		if err != nil {
+			logger.LogError(err, "Failed to get team ID by delegate email", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+			return err
+		}
+		payment.MUNTeamID = &teamID
 	}
 
 	return utils.WithTransaction(s.paymentRepo.DB(), func(tx *sqlx.Tx) error {
 		// Insert the payment
-		_, err := s.paymentRepo.MakeInitialPayment(tx, payment, payment.MUNDelegateEmail)
+		err := s.paymentRepo.UploadPayment(tx, payment)
 		if err != nil {
 			logger.LogError(err, "Failed to insert payment", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 			return err

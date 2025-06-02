@@ -12,6 +12,7 @@ import {
 import DelegatesCompanion from "@/modules/dashboard/delegates/delegates-companion";
 import DelegatesParticipant from "@/modules/dashboard/delegates/delegates-participant";
 import YourRole from "@/modules/dashboard/delegates/your-role";
+import { Suspense } from "react";
 
 const DelegatesPage = () => {
   return (
@@ -29,10 +30,15 @@ const DelegatesPage = () => {
           Welcome to delegates, choose role to see more information
         </DashboardPageDescription>
       </DashboardPageHeader>
-
-      <YourRole />
-      <DelegatesParticipant />
-      <DelegatesCompanion />
+      <Suspense fallback={<div>Loading...</div>}>
+        <YourRole />
+      </Suspense>
+      <Suspense fallback={<></>}>
+        <DelegatesParticipant />
+      </Suspense>
+      <Suspense fallback={<></>}>
+        <DelegatesCompanion />
+      </Suspense>
     </DashboardPage>
   );
 };

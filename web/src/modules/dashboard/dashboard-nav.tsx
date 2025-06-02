@@ -1,6 +1,16 @@
 "use client";
 import CompleteLogo from "@/components/dashboard/complete-logo";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sidebar,
@@ -14,38 +24,44 @@ import { BookOpen, CircleHelp, DollarSign, Globe, Home, Hourglass, LogOut } from
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const logoStyle = "size-5";
 
 const NAV_LINKS = [
   {
+    id: "home",
     name: "Home",
     href: "/dashboard/home",
     logo: <Home className={logoStyle} />,
   },
   {
+    id: "delegates",
     name: "Delegates",
     href: "/dashboard/delegates",
     logo: <BookOpen className={logoStyle} />,
   },
   {
+    id: "councils",
     name: "Councils",
     href: "/dashboard/councils",
     logo: <Globe className={logoStyle} />,
   },
   {
-    name: "Pricing",
-    href: "/dashboard/pricing",
+    id: "payment",
+    name: "Payment",
+    href: "/dashboard/payment",
     logo: <DollarSign className={logoStyle} />,
   },
   {
+    id: "timeline",
     name: "Timeline",
     href: "/dashboard/timeline",
     logo: <Hourglass className={logoStyle} />,
   },
   {
+    id: "help",
     name: "Help and Support",
     href: "/dashboard/help",
     logo: <CircleHelp className={logoStyle} />,
@@ -63,92 +79,94 @@ const DashboardNav = () => {
   );
 };
 
-const DummyNav = ({ pathname }: { pathname: string }) => (
-  <Sidebar className="hidden h-full md:block">
-    <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4 group-data-[collapsible=icon]:p-2">
-      <SidebarHeader className="mt-2 w-auto">
-        <Link href={`/dashboard`} className="flex w-full items-center gap-3 select-none">
-          <Image
-            src={`/LOGO.png`}
-            alt="JOINMUN"
-            width={846}
-            height={701}
-            priority
-            className="aspect-[846/701] size-9 h-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:h-full group-data-[collapsible=none]:w-full"
-          />
+const DummyNav = ({ pathname }: { pathname: string }) => {
+  const router = useRouter();
 
-          <div className="mr-1 flex flex-col gap-1 group-data-[collapsible=icon]:hidden">
-            <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
-            <h3 className="text-xs text-nowrap">Model United Nations UGM</h3>
-          </div>
-        </Link>
-      </SidebarHeader>
+  const handleLogout = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      <hr className="border-gray-light border-b" />
+    if (res.ok) {
+      router.push("/");
+    }
+  };
 
-      <SidebarContent>
-        <h2 className="group-data-[collapsible=icon]:hidden">Menu</h2>
+  return (
+    <Sidebar className="hidden h-full md:block">
+      <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4 group-data-[collapsible=icon]:p-2">
+        <SidebarHeader className="mt-2 w-auto">
+          <Link href={`/dashboard`} className="flex w-full items-center gap-3 select-none">
+            <Image
+              src={`/LOGO.png`}
+              alt="JOINMUN"
+              width={846}
+              height={701}
+              priority
+              className="aspect-[846/701] size-9 h-auto group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:h-full group-data-[collapsible=none]:w-full"
+            />
 
-        <SidebarGroup className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto px-0">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={cn(
-                buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "ghost" }),
-                "group h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal group-data-[collapsible=icon]:px-0",
-                `${pathname.startsWith(link.href) && "hover:bg-red-normal"}`,
-              )}
-            >
-              <span className="group-data-[collapsible=icon]:mx-auto">{link.logo}</span>
-              <span className="block group-data-[collapsible=icon]:hidden">{link.name}</span>
-            </Link>
-          ))}
-        </SidebarGroup>
-      </SidebarContent>
+            <div className="mr-1 flex flex-col group-data-[collapsible=icon]:hidden">
+              <h1 className="font-bold text-nowrap">JOINMUN 2025</h1>
+              <h3 className="text-xs text-nowrap">UGM MUN</h3>
+            </div>
+          </Link>
+        </SidebarHeader>
 
-      <SidebarFooter className="mt-auto">
-        <Button variant="default" className="w-full">
-          <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-        </Button>
-      </SidebarFooter>
-    </DashboardContainer>
-  </Sidebar>
-);
+        <hr className="border-gray-light border-b" />
 
-// const DesktopNav = ({ pathname }: { pathname: string }) => (
-//   <aside className="bg-gray hidden h-full flex-col gap-4 rounded-md p-6 md:flex">
-//     <CompleteLogo />
+        <SidebarContent>
+          <h2 className="group-data-[collapsible=icon]:hidden">Menu</h2>
 
-//     <hr className="border-gray-light/50 my-1 border-b" />
+          <SidebarGroup className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto px-0">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={cn(
+                  buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "ghost" }),
+                  "group h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal group-data-[collapsible=icon]:px-0",
+                  `${pathname.startsWith(link.href) && "hover:bg-red-normal"}`,
+                )}
+              >
+                <span className="group-data-[collapsible=icon]:mx-auto">{link.logo}</span>
+                <span className="block group-data-[collapsible=icon]:hidden">{link.name}</span>
+              </Link>
+            ))}
+          </SidebarGroup>
+        </SidebarContent>
 
-//     <h2>Menu</h2>
-
-//     {/* nav links */}
-//     <ul className="no-scrollbar mb-1 flex max-h-full flex-col gap-1.5 overflow-y-auto">
-//       {NAV_LINKS.map((link) => (
-//         <li key={link.name}>
-//           <Link
-//             href={link.href}
-//             scroll={false}
-//             className={cn(
-//               buttonVariants({ variant: pathname === link.href ? "primary" : "ghost" }),
-//               "h-auto w-full justify-start gap-4 rounded-sm py-2.5 font-normal",
-//               `${pathname === link.href && "hover:bg-red-normal"}`,
-//             )}
-//           >
-//             {link.logo} {link.name}
-//           </Link>{" "}
-//         </li>
-//       ))}
-//     </ul>
-
-//     {/* logout */}
-//     <Button variant="default" className="mt-auto w-full">
-//       Logout
-//     </Button>
-//   </aside>
-// );
+        <SidebarFooter className="mt-auto">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="default" className="w-full">
+                <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You will be logged out of your account and redirected to the home page.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <Button onClick={handleLogout} variant={`primary`}>
+                  Log out
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </SidebarFooter>
+      </DashboardContainer>
+    </Sidebar>
+  );
+};
 
 const MobileNavButtons = ({ pathname, className }: { pathname: string; className?: string }) => (
   <nav
@@ -157,11 +175,11 @@ const MobileNavButtons = ({ pathname, className }: { pathname: string; className
       className,
     )}
   >
-    {NAV_LINKS.map((link, i) => (
+    {NAV_LINKS.map((link) => (
       <Link
         href={link.href}
-        key={i} // Using index as key is acceptable here as NAV_LINKS is static
-        scroll={false} // Add scroll={false} to prevent page scroll reset
+        key={link.id}
+        scroll={false}
         className={cn(
           buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "gray" }),
           "shrink-0 snap-start items-center rounded-sm transition-all",

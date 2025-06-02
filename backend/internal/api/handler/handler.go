@@ -36,6 +36,8 @@ type HandlerContainer struct {
 }
 
 func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader, emailer *emailer.EmailService) *HandlerContainer {
+	paymentRepo := paymentRepoI.NewPaymentRepo(db)
+
 	// USER
 	tokenRepo := userRepoI.NewRefreshTokenRepo(db)
 	userRepo := userRepoI.NewUserRepo(db)
@@ -52,6 +54,7 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader, emailer *emailer.
 		questionRepo,
 		delegateRepo,
 		responseRepo,
+		paymentRepo,
 	)
 	dashboardHandler, err := dashboardHandlerI.NewDashboardHandler(dashboardService, uploader)
 	if err != nil {
@@ -59,7 +62,6 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader, emailer *emailer.
 	}
 
 	// PAYMENT
-	paymentRepo := paymentRepoI.NewPaymentRepo(db)
 	paymentService := paymentServiceI.NewPaymentService(delegateRepo, paymentRepo)
 	paymentHandler, err := paymentHandlerI.NewPaymentHandler(paymentService, uploader)
 	if err != nil {

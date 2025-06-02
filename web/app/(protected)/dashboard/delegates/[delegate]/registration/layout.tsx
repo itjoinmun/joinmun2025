@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { DelegateOptions, DELEGATES } from "@/utils/helpers/delegates";
+import { FormStatusProvider } from "@/utils/hooks/use-form-status";
 
 const DelegateRegistrationLayout = async ({
   params,
@@ -21,32 +22,34 @@ const DelegateRegistrationLayout = async ({
   const delegateData = DELEGATES[delegate as DelegateOptions];
 
   return (
-    <DashboardPage className="flex flex-col gap-6">
-      {/* Header (title or breadcrumbs) */}
-      <DashboardPageHeader className="space-y-1">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              {/* If team redirect to the team page, else go back to delegate dashboard */}
-              <BreadcrumbLink
-                href={delegate === "team" ? "/dashboard/delegates/team " : "/dashboard/delegates"}
-              >
-                {delegateData.name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Registration</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </DashboardPageHeader>
+    <FormStatusProvider>
+      <DashboardPage className="flex flex-col gap-6">
+        {/* Header (title or breadcrumbs) */}
+        <DashboardPageHeader className="space-y-1">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                {/* If team redirect to the team page, else go back to delegate dashboard */}
+                <BreadcrumbLink
+                  href={delegate === "team" ? "/dashboard/delegates/team " : "/dashboard/delegates"}
+                >
+                  {delegateData.name}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Registration</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </DashboardPageHeader>
 
-      {/* Form */}
-      <DashboardModule>
-        <DashboardModuleContent>{children}</DashboardModuleContent>
-      </DashboardModule>
-    </DashboardPage>
+        {/* Form */}
+        <DashboardModule>
+          <DashboardModuleContent>{children}</DashboardModuleContent>
+        </DashboardModule>
+      </DashboardPage>
+    </FormStatusProvider>
   );
 };
 

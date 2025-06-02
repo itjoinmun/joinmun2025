@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,8 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Trash, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-
+import { useEffect, useState } from "react";
 type TeamMember = {
   name: string;
   originalIndex: number; // Keep track of original index in localStorage
@@ -45,7 +43,7 @@ export function TeamRegistrationTable() {
           // Find name from biodata_responses
           let name = "";
 
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           member.biodata_responses.forEach((response: any) => {
             if (response.biodata_question_id === 2) name = response.biodata_answer_text;
           });
@@ -82,9 +80,8 @@ export function TeamRegistrationTable() {
 
   const handleAddTeamMember = () => {
     // Find the next available index
-    const nextIndex = teamMembers.length > 0 
-      ? Math.max(...teamMembers.map(m => m.originalIndex)) + 1
-      : 0;
+    const nextIndex =
+      teamMembers.length > 0 ? Math.max(...teamMembers.map((m) => m.originalIndex)) + 1 : 0;
     router.push(`/dashboard/delegates/team/registration/1?idx=${nextIndex}`);
   };
 
@@ -96,23 +93,23 @@ export function TeamRegistrationTable() {
     try {
       // Retrieve current data from localStorage
       const storedData = localStorage.getItem("teamRegistration");
-      
+
       if (!storedData) {
         return;
       }
 
       const parsedData = JSON.parse(storedData);
-      
+
       // Delete the member entry
       if (parsedData[originalIndex]) {
         delete parsedData[originalIndex];
-        
+
         // Save the updated data back to localStorage
         localStorage.setItem("teamRegistration", JSON.stringify(parsedData));
-        
+
         // Update the state to reflect changes
         setTeamMembers(teamMembers.filter((member) => member.originalIndex !== originalIndex));
-        
+
         // Trigger storage event for other components to reload data
         window.dispatchEvent(new Event("storage"));
       }
@@ -163,15 +160,15 @@ export function TeamRegistrationTable() {
                   <TableCell className="text-white">{member.name || "—"}</TableCell>
                   <TableCell className="text-right text-white">
                     <div className="flex justify-end gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleEditTeamMember(member.originalIndex)}
                       >
                         Edit
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleDeleteTeamMember(member.originalIndex)}
                       >
@@ -187,15 +184,6 @@ export function TeamRegistrationTable() {
                     <UserPlus className="h-4 w-4" />
                     Add Team Member
                   </Button>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell colSpan={2} className="self-end text-center">
-                  <Link href={`/dashboard/delegates/team/registration/confirmation`}>
-                    <Button className="mx-auto flex items-center gap-2">
-                      Go to Confirmation
-                    </Button>
-                  </Link>
                 </TableCell>
               </TableRow>
             </TableBody>

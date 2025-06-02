@@ -3,6 +3,7 @@ package dashboard
 import (
 	"backend/internal/model/dashboard"
 	dashboardRepo "backend/internal/repository/dashboard"
+	paymentRepo "backend/internal/repository/payment"
 	"backend/pkg/utils"
 	dashboardUtils "backend/pkg/utils/dashboard"
 	"backend/pkg/utils/logger"
@@ -34,17 +35,20 @@ type dashboardService struct {
 	questionRepo dashboardRepo.QuestionRepo
 	delegateRepo dashboardRepo.DelegateRepo
 	responseRepo dashboardRepo.ResponseRepo
+	paymentRepo  paymentRepo.PaymentRepo // Assuming you have a PaymentRepo for payment-related operations
 }
 
 func NewDashboardService(
 	questionRepo dashboardRepo.QuestionRepo,
 	delegateRepo dashboardRepo.DelegateRepo,
 	responseRepo dashboardRepo.ResponseRepo,
+	paymentRepo paymentRepo.PaymentRepo, // Injecting PaymentRepo for payment-related operations
 ) DashboardService {
 	return &dashboardService{
 		questionRepo: questionRepo,
 		delegateRepo: delegateRepo,
 		responseRepo: responseRepo,
+		paymentRepo:  paymentRepo, // Assigning the injected PaymentRepo
 	}
 }
 
@@ -90,6 +94,34 @@ func (s *dashboardService) InsertDelegates(
 			logger.LogError(err, "Failed to insert team with delegates", map[string]interface{}{
 				"delegates": delegates,
 				"team":      team,
+				"layer":     "service",
+				"operation": "service.InsertDelegates",
+				"error":     err,
+			})
+			return err
+		}
+
+		// Extract delegate emails for bulk payment creation
+		if len(delegates) == 0 {
+			logger.LogError(nil, "No delegates provided", map[string]interface{}{
+				"delegates": delegates,
+				"team":      team,
+				"layer":     "service",
+				"operation": "service.InsertDelegates",
+				"error":     "no delegates provided",
+			})
+			return fmt.Errorf("no delegates provided")
+		}
+
+		delegateEmails := make([]string, len(delegates))
+		for i, d := range delegates {
+			delegateEmails[i] = d.MUNDelegateEmail
+		}
+
+		if err := s.paymentRepo.MakeInitialPaymentsForTeam(tx, delegateEmails, team.MUNTeamID); err != nil {
+			logger.LogError(err, "Failed to make initial payments for team", map[string]interface{}{
+				"emails":    delegateEmails,
+				"teamID":    team.MUNTeamID,
 				"layer":     "service",
 				"operation": "service.InsertDelegates",
 				"error":     err,
@@ -294,6 +326,14 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 			return err
 		}
 
+		if _, err := s.paymentRepo.MakeInitialPayment(tx, participant.MUNDelegateEmail, ""); err != nil {
+			logger.LogError(err, "Failed to make initial payment for participant", map[string]interface{}{
+				"layer":     "service",
+				"operation": "service.InsertOneDelegateForFAOrObserver",
+				"error":     err,
+			})
+		}
+
 		// insert concurrent responses
 		errChan := make(chan error, 2)
 		var wg sync.WaitGroup
@@ -366,24 +406,30 @@ func (s *dashboardService) LinkMeToTeam(delegateEmail, teamID string) (retErr er
 		return retErr
 	}
 
-	// Check if the team exists
-	if err = s.delegateRepo.InsertMeToTeam(teamID, delegateEmail); err != nil {
-		logger.LogError(err, "Failed to insert delegate to team", map[string]interface{}{
-			"layer":     "service",
-			"operation": "service.LinkMeToTeam",
-			"error":     err,
-		})
-		retErr = err
-		return retErr
-	}
+	return utils.WithTransaction(s.delegateRepo.DB(), func(tx *sqlx.Tx) error {
+		if err := s.delegateRepo.InsertMeToTeam(tx, teamID, delegateEmail); err != nil {
+			logger.LogError(err, "Failed to insert delegate to team", map[string]interface{}{
+				"teamID":        teamID,
+				"delegateEmail": delegateEmail,
+				"layer":         "service",
+				"operation":     "service.LinkMeToTeam",
+				"error":         err,
+			})
+			return err
+		}
 
-	logger.LogDebug("Linking delegate to team", map[string]interface{}{
-		"teamID":        teamID,
-		"delegateEmail": delegateEmail,
-		"layer":         "service",
-		"operation":     "service.LinkMeToTeam",
+		if err := s.paymentRepo.UpdatePaymentTeam(tx, teamID, delegateEmail); err != nil {
+			logger.LogError(err, "Failed to update payment team", map[string]interface{}{
+				"teamID":        teamID,
+				"delegateEmail": delegateEmail,
+				"layer":         "service",
+				"operation":     "service.LinkMeToTeam",
+				"error":         err,
+			})
+			return err
+		}
+		return nil
 	})
-	return nil
 }
 
 func (s *dashboardService) GetUserData(email string) (*dashboard.MUNDelegates, error) {

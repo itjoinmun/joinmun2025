@@ -22,7 +22,7 @@ endif
 DOCKER_COMPOSE=docker compose -f $(COMPOSE_FILE)
 
 # Commands
-.PHONY: up down downv restart restartv logs build stop ps shell db
+.PHONY: up down downv restart restartv logs build start stop ps shell db
 
 # Start containers
 up:
@@ -30,6 +30,9 @@ up:
 
 upb:
 	$(DOCKER_COMPOSE) up --build
+
+updb:
+	$(DOCKER_COMPOSE) up -d --build
 
 # Stop and remove containers
 down:
@@ -43,7 +46,7 @@ downv:
 restart: down upb
 
 # Restart containers with volume removal
-restartv: downv up
+restartv: downv upb
 
 # Build containers
 build:
@@ -52,6 +55,10 @@ build:
 # View logs
 logs:
 	$(DOCKER_COMPOSE) logs -f
+
+# Stop containers
+start:
+	$(DOCKER_COMPOSE) start
 
 # Stop containers
 stop:

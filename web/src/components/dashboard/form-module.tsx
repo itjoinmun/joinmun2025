@@ -90,18 +90,16 @@ const FormContent = ({
 }: {
   className?: string;
   fields: FormFieldConfig[];
-  onSubmit?: (values: Record<string, string | File | null>) => void;
+  // eslint-disable-next-line
+  onSubmit?: (values: any) => void;
   getStoredFile?: (fileKey: string) => Promise<File | null>;
 }) => {
-  // 1. Define the zod schema for validation.
   const schema = z.object(
     Object.fromEntries(fields.map((field) => [field.name, field.validation])),
   );
 
-  // Track saved file information
   const [savedFiles, setSavedFiles] = useState<Record<string, string>>({});
 
-  // Load any saved files when the component mounts
   useEffect(() => {
     const loadSavedFiles = async () => {
       const fileInfo: Record<string, string> = {};
@@ -122,7 +120,6 @@ const FormContent = ({
     loadSavedFiles();
   }, [fields, getStoredFile]);
 
-  // 2. Define our form with proper typing for file fields.
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: Object.fromEntries(
@@ -130,7 +127,6 @@ const FormContent = ({
     ),
   });
 
-  // 3. Submit handler.
   const handleSubmit = (values: z.infer<typeof schema>) => {
     // ✅ If a custom onSubmit is provided, use it. Otherwise, log to console.
     if (onSubmit) {
@@ -178,7 +174,7 @@ const FormContent = ({
 
                             // Update the display name if a new file is selected
                             if (file) {
-                              {/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */}
+                              // eslint-disable-next-line
                               setSavedFiles((prev: any) => ({
                                 ...prev,
                                 [field.name]: file.name,

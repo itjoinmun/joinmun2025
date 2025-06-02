@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -268,98 +269,119 @@ func (h *AdminHandler) GetAmalgamatedResponsesHandler(c *gin.Context) {
 
 func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
 	userContext, ok := dashboard.GetUserFromContext(c)
-	if !ok {
+	if !ok || userContext.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	// Only admins can get delegates payment
-	if userContext.Role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+	delegateType := c.DefaultQuery("delegate_type", "")
+	timeWave := c.Query("time")
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
 		return
 	}
 
-	var req struct {
-		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"gte=1"`
-		Offset       int    `json:"offset" binding:"gte=0"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
-
-	responses, err := h.adminService.GetDelegatePaymentResponses(req.DelegateType, req.Limit, req.Offset)
+	responses, err := h.adminService.GetDelegatePaymentResponses(delegateType, timeWave, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates payment", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, responses)
+	// Group payments by team for better admin visibility
+	teamPayments := make(map[string][]interface{})
+	for _, payment := range responses {
+		var teamID string
+		if payment.MUNTeamID != nil {
+			teamID = *payment.MUNTeamID
+		} else {
+			teamID = "No Team"
+		}
+		if teamPayments[teamID] == nil {
+			teamPayments[teamID] = make([]interface{}, 0)
+		}
+		teamPayments[teamID] = append(teamPayments[teamID], payment)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"payments_by_team": teamPayments,
+		"total_payments":   len(responses),
+	})
 }
 
 func (h *AdminHandler) GetDelegatesHandler(c *gin.Context) {
 	userContext, ok := dashboard.GetUserFromContext(c)
-	if !ok {
+	if !ok || userContext.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	// Only admins can get delegates
-	if userContext.Role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+	delegateType := c.DefaultQuery("delegate_type", "")
+	timeWave := c.Query("time")
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
 		return
 	}
 
-	var req struct {
-		DelegateType string `json:"delegate_type" binding:"required"`
-		Limit        int    `json:"limit" binding:"gte=1"`
-		Offset       int    `json:"offset" binding:"gte=0"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
-
-	responses, err := h.adminService.GetDelegates(req.DelegateType, req.Limit, req.Offset)
+	teamDelegates, err := h.adminService.GetDelegatesByTeam(delegateType, timeWave, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, responses)
+	c.JSON(http.StatusOK, gin.H{
+		"delegates_by_team": teamDelegates,
+		"total_teams":       len(teamDelegates),
+	})
 }
 
 func (h *AdminHandler) GetDelegatePositionPaperHandler(c *gin.Context) {
 	userContext, ok := dashboard.GetUserFromContext(c)
-	if !ok {
+	if !ok || userContext.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
-	// Only admins can get delegate position paper
-	if userContext.Role != "admin" {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden: Admin access required"})
+	timeWave := c.Query("time")
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
 		return
 	}
 
-	var req struct {
-		Limit  int `json:"limit" binding:"gte=1"`
-		Offset int `json:"offset" binding:"gte=0"`
-	}
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
-
-	responses, err := h.adminService.GetPositionPapers(req.Limit, req.Offset)
+	teamPapers, err := h.adminService.GetPositionPapersByTeam(timeWave, limit, offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegate position paper", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve position papers", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, responses)
+	c.JSON(http.StatusOK, gin.H{
+		"papers_by_team": teamPapers,
+		"total_teams":    len(teamPapers),
+	})
 }
