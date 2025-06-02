@@ -1,4 +1,6 @@
 "use client";
+import { DashboardModuleContent } from "@/components/dashboard/dashboard-module";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,12 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { COUNCILS } from "@/utils/helpers/councils";
+import { Participant } from "@/utils/helpers/fetch/delegates/delegates";
 import { Check, Download, X } from "lucide-react";
-import { COUNCIL_OPTIONS } from "@/utils/constants/councils";
-import type { Participant } from "@/utils/helpers/fetch/delegates/mock-data";
-import { DashboardModuleContent } from "@/components/dashboard/dashboard-module";
+import { useState } from "react";
 
 interface ParticipantTableProps {
   participants: Participant[];
@@ -87,9 +87,9 @@ const ParticipantTable = ({
                   disabled={loading[`assign-council-${participant.id}`]}
                 >
                   <option value="">Select Council</option>
-                  {COUNCIL_OPTIONS.map((council) => (
-                    <option key={council} value={council}>
-                      {council}
+                  {COUNCILS.map((council) => (
+                    <option key={council.slug} value={council.slug}>
+                      {council.name}
                     </option>
                   ))}
                 </select>

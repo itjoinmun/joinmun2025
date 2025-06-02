@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
   const refreshToken = cookieStore.get("refresh_token")?.value;
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     cookieStore.delete("refresh_token");
 
     return NextResponse.json(res, { status: res.status, headers: res.headers });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ message: "An unexpected error occurred" }, { status: 500 });
   }
 }

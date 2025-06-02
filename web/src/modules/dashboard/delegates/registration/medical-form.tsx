@@ -7,25 +7,25 @@ import {
 } from "@/components/dashboard/form-module";
 import parseSlug from "@/utils/helpers/api-slug-parse";
 import { DelegateOptions } from "@/utils/helpers/delegates";
+import { fileStorageDB } from "@/utils/helpers/file-storage-db";
+import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate"; // Added import
+import { useFormStatus } from "@/utils/hooks/use-form-status";
 import usePersistedState from "@/utils/hooks/use-persisted-state";
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
-import { fileStorageDB } from "@/utils/helpers/file-storage-db";
-import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate"; // Added import
 import { useEffect, useState } from "react";
-import { useFormStatus } from "@/utils/hooks/use-form-status";
+import { z } from "zod";
 
 const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
-  const { submitting, setSubmitting } = useFormStatus();
+  const { setSubmitting } = useFormStatus();
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
     `${slug}Registration`,
     [],
   );
   const router = useRouter();
 
-  const [fileStorageInitialized, setFileStorageInitialized] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null); // Will be used
+  const [, setFileStorageInitialized] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Initialize IndexedDB when component mounts
   useEffect(() => {
@@ -168,6 +168,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     const currentFormDataArray = Array.isArray(formData)
       ? [...formData]
       : Object.keys(formData).length > 0
+      // eslint-disable-next-line
         ? [{ ...(formData as any)[0] }]
         : [];
 

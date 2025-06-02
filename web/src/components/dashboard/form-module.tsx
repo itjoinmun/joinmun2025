@@ -90,7 +90,8 @@ const FormContent = ({
 }: {
   className?: string;
   fields: FormFieldConfig[];
-  onSubmit?: (values: Record<string, string | File | null>) => void;
+  // eslint-disable-next-line
+  onSubmit?: (values: any) => void;
   getStoredFile?: (fileKey: string) => Promise<File | null>;
 }) => {
   const schema = z.object(
@@ -173,9 +174,7 @@ const FormContent = ({
 
                             // Update the display name if a new file is selected
                             if (file) {
-                              {
-                                /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-                              }
+                              // eslint-disable-next-line
                               setSavedFiles((prev: any) => ({
                                 ...prev,
                                 [field.name]: file.name,

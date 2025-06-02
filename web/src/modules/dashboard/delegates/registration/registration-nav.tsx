@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const RegistrationNav = () => {
-  const { submitting, setSubmitting } = useFormStatus();
+  const { submitting } = useFormStatus();
   const pathname = usePathname();
 
   // Extract the current step from the URL

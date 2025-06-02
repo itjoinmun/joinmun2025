@@ -102,12 +102,12 @@ const DashboardStatus = async () => {
 };
 
 const StatusCard = ({
-  // title,
-  // status,
+  title,
   description,
   cardHeader,
   cardDescription,
 }: {
+  title?: string;
   description: string;
   cardHeader: string;
   cardDescription: string;

@@ -18,7 +18,7 @@ import { getCurrentPaymentPhase } from "@/utils/helpers/registration-wave";
 
 const ParticipantData = async () => {
   const delegates = await getDelegates();
-  const participantData = delegates?.participant_data || null;
+  const participantData = await delegates?.participant_data;
 
   // Get the registration wave (e.g., Early Bird / Regular / Late)
   const currentPhase = getCurrentPaymentPhase();
@@ -52,7 +52,7 @@ const ParticipantData = async () => {
           </TableHeader>
           <TableBody className="bg-blue-100">
             {participantData && participantData.length > 0 ? (
-              participantData.map((participant: any, index: number) => (
+              participantData.map((participant: {}, index: number) => (
                 <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
                   <TableCell
                     className={cn(index === participantData.length - 1 && "first:rounded-bl-lg")}
@@ -65,7 +65,7 @@ const ParticipantData = async () => {
             ) : (
               <TableRow className="bg-neutral-400">
                 <TableCell colSpan={2} className="text-center font-medium text-black">
-                  You haven't registered.
+                  You haven&apos;t registered.
                   <br className="block sm:hidden" />
                   Register now
                 </TableCell>

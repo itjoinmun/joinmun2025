@@ -10,7 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { login } from "@/utils/actions/auth-handler";
 import { cn } from "@/utils/helpers/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
@@ -19,7 +18,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 const loginSchema = z.object({
   email: z.string().email("Email format is invalid").nonempty("Email is required"),
   password: z.string().nonempty("Password is required"),
@@ -46,12 +44,12 @@ const LoginForm = () => {
           email: values.email,
           password: values.password,
         }),
-      });
-
-      const data = await res.json();
+    });
 
       if (!res.ok) {
         console.error(res);
+        setPending(false);
+        return;
       }
 
       router.push("/dashboard/delegates");

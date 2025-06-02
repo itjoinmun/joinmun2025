@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(res, { status: res.status, headers: res.headers });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ message: "An unexpected error occurred" }, { status: 500 });
   }
 }

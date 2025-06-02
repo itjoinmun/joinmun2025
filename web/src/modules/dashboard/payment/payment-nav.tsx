@@ -1,10 +1,8 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { useFormStatus } from "@/utils/hooks/use-form-status";
 import { useContext } from "react";
-import { PaymentContext } from "./payment-context"; // You may need to create or adjust this import
+import { PaymentContext } from "./payment-context";
+import { useFormStatus } from "@/utils/hooks/use-form-status";
 
 interface PaymentNavProps {
   currentStep: number;
@@ -30,13 +28,9 @@ const PaymentNav = ({
 
   const handleNextClick = () => {
     if (isLastStep) {
+      // Validation untuk step terakhir
       const paymentProofInput = document.getElementById("payment-proof") as HTMLInputElement;
-      const selectedBankElement = document.querySelector(".border-blue-500.bg-blue-500/5");
 
-      if (!selectedBankElement) {
-        alert("Please select a bank account");
-        return;
-      }
       if (!paymentProofInput?.files?.[0]) {
         alert("Please upload payment proof");
         return;
@@ -44,14 +38,16 @@ const PaymentNav = ({
 
       setSubmitting(true);
       onSubmit(paymentProofInput.files[0]);
+      // Reset submitting state after submission
       setTimeout(() => setSubmitting(false), 2000);
     } else {
       onNext();
     }
   };
 
+  // Untuk step terakhir, cek apakah form sudah lengkap
   const canSubmit = isLastStep
-    ? document.querySelector(".border-blue-500.bg-blue-500/5") &&
+    ? document.querySelector(".border-blue-500.bg-blue-500\\/5") &&
       (document.getElementById("payment-proof") as HTMLInputElement)?.files?.[0]
     : canProceed;
 

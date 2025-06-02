@@ -22,6 +22,7 @@ export async function getDelegate(): Promise<any> {
   return data;
 }
 
+// eslint-disable-next-line
 export async function getDelegates(): Promise<any> {
   const accessToken = (await cookies()).get("access_token")?.value;
 
@@ -198,4 +199,14 @@ export async function assignCountry(id: number, country: string) {
   }
 
   return res.json();
+}
+
+export interface Participant {
+  id: number;
+  name: string;
+  email: string;
+  payment_status: "rejected" | "approved";
+  registration_status: "rejected" | "approved";
+  council: string;
+  country: string;
 }

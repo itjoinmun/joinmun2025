@@ -3,25 +3,20 @@ import {
   DashboardPageHeader,
   DashboardPageTitle,
 } from "@/components/dashboard/dashboard-page";
-import { cookies } from "next/headers";
+import ParticipantTable from "@/modules/dashboard/admin/participant-table";
 import {
-  getDelegates,
-  approveRegistration,
-  rejectRegistration,
   approvePayment,
-  rejectPayment,
+  approveRegistration,
   assignCouncil,
   assignCountry,
+  getDelegates,
+  Participant,
+  rejectPayment,
+  rejectRegistration,
 } from "@/utils/helpers/fetch/delegates/delegates";
-import ParticipantTable from "@/modules/dashboard/admin/participant-table";
 
 const DashboardHome = async () => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-  if (!accessToken) {
-    throw new Error("No access token found");
-  }
-  const allParticipants = await getDelegates(accessToken);
+  const allParticipants = await getDelegates();
 
   return (
     <DashboardPage className="flex flex-col gap-6">
@@ -30,7 +25,7 @@ const DashboardHome = async () => {
       </DashboardPageHeader>
 
       <ParticipantTable
-        participants={allParticipants.participant_data.map((participant: any) => ({
+        participants={allParticipants.participant_data.map((participant: Participant) => ({
           id: participant.id,
           name: participant.name,
           email: participant.email,
@@ -40,58 +35,22 @@ const DashboardHome = async () => {
           country: participant.country,
         }))}
         onApproveRegistration={async (id) => {
-          "use server";
-          const cookieStore = await cookies();
-          const accessToken = cookieStore.get("access_token")?.value;
-          if (!accessToken) {
-            throw new Error("No access token found");
-          }
-          await approveRegistration(id, accessToken);
+          await approveRegistration(id);
         }}
         onRejectRegistration={async (id) => {
-          "use server";
-          const cookieStore = await cookies();
-          const accessToken = cookieStore.get("access_token")?.value;
-          if (!accessToken) {
-            throw new Error("No access token found");
-          }
-          await rejectRegistration(id, accessToken);
+          await rejectRegistration(id);
         }}
         onApprovePayment={async (id) => {
-          "use server";
-          const cookieStore = await cookies();
-          const accessToken = cookieStore.get("access_token")?.value;
-          if (!accessToken) {
-            throw new Error("No access token found");
-          }
-          await approvePayment(id, accessToken);
+          await approvePayment(id);
         }}
         onRejectPayment={async (id) => {
-          "use server";
-          const cookieStore = await cookies();
-          const accessToken = cookieStore.get("access_token")?.value;
-          if (!accessToken) {
-            throw new Error("No access token found");
-          }
-          await rejectPayment(id, accessToken);
+          await rejectPayment(id);
         }}
         onAssignCouncil={async (id, council) => {
-          "use server";
-          const cookieStore = await cookies();
-          const accessToken = cookieStore.get("access_token")?.value;
-          if (!accessToken) {
-            throw new Error("No access token found");
-          }
-          await assignCouncil(id, council, accessToken);
+          await assignCouncil(id, council);
         }}
         onAssignCountry={async (id, country) => {
-          "use server";
-          const cookieStore = await cookies();
-          const accessToken = cookieStore.get("access_token")?.value;
-          if (!accessToken) {
-            throw new Error("No access token found");
-          }
-          await assignCountry(id, country, accessToken);
+          await assignCountry(id, country);
         }}
       />
     </DashboardPage>

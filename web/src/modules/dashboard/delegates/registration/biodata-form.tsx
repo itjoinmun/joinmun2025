@@ -29,7 +29,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       .init()
       .then(() => {
         setFileStorageInitialized(true);
-        fileStorageDB.getAllKeys().then((keys) => {});
+        fileStorageDB.getAllKeys();
       })
       .catch((err) => {
         console.error("❌ Failed to initialize file storage:", err);

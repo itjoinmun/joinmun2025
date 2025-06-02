@@ -17,7 +17,6 @@ import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
 
 const ParticipantData = async () => {
   const delegates = await getDelegates();
-  console.log("Delegates data:", delegates); // null
 
   let participantData;
   if (delegates) {
@@ -61,7 +60,7 @@ const ParticipantData = async () => {
             ) : (
               <TableRow className="bg-neutral-400">
                 <TableCell colSpan={4} className="text-start font-medium text-black">
-                  You haven't registered. Register now
+                  You haven&apos;t registered. Register now
                 </TableCell>
               </TableRow>
             )}
