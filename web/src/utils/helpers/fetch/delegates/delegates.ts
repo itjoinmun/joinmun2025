@@ -1,9 +1,22 @@
 "use server";
 import { cookies } from "next/headers";
+import { apiSlugs } from "../../api-slug-parse";
 
-// TO DO: tolong benerin type nya sesuai postman siapa aja
-// eslint-disable-next-line
-export async function getDelegate(): Promise<any> {
+export interface Delegate {
+  mun_delegate_email: string;
+  mun_delegate_name: string;
+  type: string | null;
+  pair: string | null;
+  council: string | null;
+  country: string | null;
+  confirmed: boolean;
+  confirmed_date: string | null;
+  council_date: string | null;
+  insert_date: string;
+  participant_type: apiSlugs;
+}
+
+export async function getDelegate(): Promise<Delegate | null> {
   const accessToken = (await cookies()).get("access_token")?.value;
 
   const res = await fetch(`${process.env.API_URL}/dashboard/whoami`, {
@@ -22,8 +35,10 @@ export async function getDelegate(): Promise<any> {
   return data;
 }
 
-// eslint-disable-next-line
-export async function getDelegates(): Promise<any> {
+export async function getDelegates(): Promise<{
+  participant_data: Delegate[];
+  team_id: string;
+} | null> {
   const accessToken = (await cookies()).get("access_token")?.value;
 
   const res = await fetch(`${process.env.API_URL}/dashboard/participants`, {
@@ -64,8 +79,32 @@ export async function getDelegatePaper(): Promise<any> {
   return resBody;
 }
 
-// eslint-disable-next-line
-export async function getPayment(): Promise<any> {
+export interface Payment {
+  payment_id: number;
+  mun_team_id: string;
+  mun_delegate_email: string;
+  package: string;
+  payment_file: string;
+  payment_status: "rejected" | "pending" | "checking" | "approved";
+  payment_date: string | null;
+  payment_amount: number;
+  mun_delegate_name: string;
+  confirmed: boolean;
+  insert_date: string;
+  participant_type: apiSlugs;
+  mun_team_lead: string;
+  team_members: {
+    mun_delegate_email: string;
+    mun_delegate_name: string;
+    participant_type: apiSlugs;
+    confirmed: boolean;
+    payment_status: "rejected" | "pending" | "checking" | "approved";
+    payment_amount: number;
+    package: string;
+  }[];
+}
+
+export async function getPayment(): Promise<Payment | null> {
   const accessToken = (await cookies()).get("access_token")?.value;
 
   const res = await fetch(`${process.env.API_URL}/payment`, {
@@ -205,8 +244,8 @@ export interface Participant {
   id: number;
   name: string;
   email: string;
-  payment_status: "rejected" | "approved";
-  registration_status: "rejected" | "approved";
+  payment_status: "rejected" | "pending" | "approved";
+  registration_status: "rejected" | "pending" | "approved";
   council: string;
   country: string;
 }

@@ -22,4 +22,11 @@ const parseSlug = (slug: DelegateOptions) => {
   return parseSlug;
 };
 
+export type apiSlugs =
+  | "single_delegate"
+  | "observer"
+  | "faculty_advisor"
+  | "team_delegate"
+  | "no_slug";
+
 export default parseSlug;

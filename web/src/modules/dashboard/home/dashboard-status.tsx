@@ -34,25 +34,24 @@ const DashboardStatus = async () => {
   const userStatus = await getDelegate();
   const paperStatus = await getDelegatePaper();
   const paymentStatus = await getPayment();
-  const delegates = await getDelegates();
 
   const registrationStatus: RegistrationStatus = (() => {
     if (!userStatus?.confirmed) return "waiting_verification";
-    if (userStatus.confirmed && !paymentStatus?.paid) return "verified_pending_payment";
-    if (paymentStatus?.checking) return "payment_checking";
-    if (userStatus.confirmed && paymentStatus?.paid) return "payment_verified";
+    if (userStatus.confirmed && !paymentStatus?.confirmed) return "verified_pending_payment";
+    if (paymentStatus?.payment_status === "checking") return "payment_checking";
+    if (userStatus.confirmed && paymentStatus?.confirmed) return "payment_verified";
     return "not_registered";
   })();
 
   const paperSubmission: PaperSubmissionStatus = (() => {
-    if (!userStatus?.confirmed || !paymentStatus?.paid) return "registration_pending";
+    if (!userStatus?.confirmed || !paymentStatus?.confirmed) return "registration_pending";
     if (paperStatus?.paperUrl) return "uploaded";
     return "can_upload";
   })();
 
   const delegateCode: DelegateCodeStatus = (() => {
-    if (!userStatus?.confirmed) return "registration_pending";
-    return userStatus?.delegate_code ? "code_available" : "registration_pending";
+    if (userStatus?.confirmed) return "code_available";
+    return "registration_pending";
   })();
 
   const informationCenter: InformationCenterStatus = (() => {
@@ -71,28 +70,24 @@ const DashboardStatus = async () => {
         <StatusCard
           cardHeader="Status"
           cardDescription=""
-          title="Current Status"
           status={regInfo.status}
           description={regInfo.description}
         />
         <StatusCard
           cardHeader="Delegate Code"
           cardDescription="Give code to your Faculty Advisor"
-          title="Code Status"
           status={codeInfo.status}
           description={codeInfo.description}
         />
         <StatusCard
           cardHeader="Paper Submission"
           cardDescription=""
-          title="Submission Status"
           status={paperInfo.status}
           description={paperInfo.description}
         />
         <StatusCard
           cardHeader="Information Center"
           cardDescription=""
-          title="Update Status"
           status={infoInfo.status}
           description={infoInfo.description}
         />
@@ -102,12 +97,12 @@ const DashboardStatus = async () => {
 };
 
 const StatusCard = ({
-  title,
+  status,
   description,
   cardHeader,
   cardDescription,
 }: {
-  title?: string;
+  status: string;
   description: string;
   cardHeader: string;
   cardDescription: string;
@@ -119,6 +114,7 @@ const StatusCard = ({
         // variantStyles[variant],
       )}
     >
+      {status}
       <DashboardModuleHeader className="flex shrink-0 flex-col text-nowrap 2xl:flex-row 2xl:justify-between 2xl:*:max-w-1/2">
         <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
         <DashboardModuleDescription className="text-wrap opacity-80">
@@ -135,31 +131,26 @@ const StatusCard = ({
 
 const getRegistrationStatusInfo = (status: RegistrationStatus) => {
   switch (status) {
-    // Belum Daftar
     case "not_registered":
       return {
         status: "Not Registered",
         description: "You haven't registered, <b>Register Now</b>",
       };
-    // Sudah Daftar
     case "waiting_verification":
       return {
         status: "Waiting for Verification",
         description: "Waiting For Verification",
       };
-    // Belum Verified
     case "verified_pending_payment":
       return {
         status: "Payment Required",
         description: "Verified, Go To Payment",
       };
-    // Pendaftaran Sudah Verified
     case "payment_checking":
       return {
         status: "Payment Being Checked",
         description: "Verified, Go To Payment",
       };
-    // Payment Sudah Verified
     case "payment_verified":
       return {
         status: "Fully Registered",
