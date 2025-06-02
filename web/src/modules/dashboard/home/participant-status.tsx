@@ -17,7 +17,6 @@ const ParticipantStatus = async () => {
   } else {
     hasRegistered = true
   }
-
   return (
     <DashboardModule className="flex flex-col gap-6">
       <DashboardModuleHeader>
