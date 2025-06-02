@@ -9,7 +9,6 @@ import { cn } from "@/utils/helpers/cn";
 import {
   getDelegate,
   getDelegatePaper,
-  getDelegates,
   getPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
 

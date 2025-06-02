@@ -13,12 +13,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
-import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
+import { Delegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
 import { getCurrentPaymentPhase } from "@/utils/helpers/registration-wave";
 
 const ParticipantData = async () => {
   const delegates = await getDelegates();
-  const participantData = await delegates?.participant_data;
+  const participantData = delegates?.participant_data;
 
   // Get the registration wave (e.g., Early Bird / Regular / Late)
   const currentPhase = getCurrentPaymentPhase();
@@ -52,14 +52,16 @@ const ParticipantData = async () => {
           </TableHeader>
           <TableBody className="bg-blue-100">
             {participantData && participantData.length > 0 ? (
-              participantData.map((participant: {}, index: number) => (
+              participantData.map((participant: Delegate, index: number) => (
                 <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
                   <TableCell
                     className={cn(index === participantData.length - 1 && "first:rounded-bl-lg")}
                   >
                     {participant.mun_delegate_name}
                   </TableCell>
-                  <TableCell className="text-center">{participant.payment_status}</TableCell>
+                  <TableCell className="text-center">
+                    {participant.confirmed ? "Approved" : "Pending"}
+                  </TableCell>
                 </TableRow>
               ))
             ) : (

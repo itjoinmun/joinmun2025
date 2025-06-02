@@ -13,14 +13,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
-import { getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
+import { Delegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
 
 const ParticipantData = async () => {
   const delegates = await getDelegates();
 
-  let participantData;
+  let participantData: Delegate[] | undefined;
   if (delegates) {
-    participantData = await delegates.participant_data;
+    participantData = delegates.participant_data;
   }
 
   return (
@@ -41,7 +41,7 @@ const ParticipantData = async () => {
           </TableHeader>
           <TableBody className="bg-blue-100">
             {participantData ? (
-              participantData.map((participant: any, index: number) => (
+              participantData.map((participant: Delegate, index: number) => (
                 <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-100/80">
                   <TableCell
                     className={cn(index === participantData.length - 1 && "first:rounded-bl-lg")}

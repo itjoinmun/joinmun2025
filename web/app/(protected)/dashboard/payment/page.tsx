@@ -27,21 +27,23 @@ const PaymentContext = createContext<{
 
 const PackageSelectionPage = () => {
   return (
-    <DashboardPage>
-      <DashboardPageHeader>
-        <DashboardPageTitle>Payment</DashboardPageTitle>
-      </DashboardPageHeader>
+    <PaymentContext value={{ packageSelection: null, setPackageSelection: () => {} }}>
+      <DashboardPage>
+        <DashboardPageHeader>
+          <DashboardPageTitle>Payment</DashboardPageTitle>
+        </DashboardPageHeader>
 
-      {/* <Suspense fallback={<div>Loading participant data...</div>}>
+        {/* <Suspense fallback={<div>Loading participant data...</div>}>
         <ParticipantData />
       </Suspense> */}
 
-      <Suspense fallback={<div>Loading Payment Details...</div>}>
-        <FormStatusProvider>
-          <Payment />
-        </FormStatusProvider>
-      </Suspense>
-    </DashboardPage>
+        <Suspense fallback={<div>Loading Payment Details...</div>}>
+          <FormStatusProvider>
+            <Payment />
+          </FormStatusProvider>
+        </Suspense>
+      </DashboardPage>
+    </PaymentContext>
   );
 };
 

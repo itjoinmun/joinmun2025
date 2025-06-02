@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { useFormStatus } from "@/utils/hooks/use-form-status";
 import { ChevronLeft } from "lucide-react";
 import { useContext } from "react";
 import { PaymentContext } from "./payment-context";
-import { useFormStatus } from "@/utils/hooks/use-form-status";
 
 interface PaymentNavProps {
-  currentStep: number;
+  // currentStep: number;
   onNext: () => void;
   onPrevious: () => void;
   onSubmit: (file?: File) => void;
@@ -15,7 +15,7 @@ interface PaymentNavProps {
 }
 
 const PaymentNav = ({
-  currentStep,
+  // currentStep,
   onNext,
   onPrevious,
   onSubmit,
@@ -24,7 +24,6 @@ const PaymentNav = ({
   canProceed = true,
 }: PaymentNavProps) => {
   const { submitting, setSubmitting } = useFormStatus();
-  const { packageSelection } = useContext(PaymentContext);
 
   const handleNextClick = () => {
     if (isLastStep) {
@@ -46,10 +45,10 @@ const PaymentNav = ({
   };
 
   // Untuk step terakhir, cek apakah form sudah lengkap
-  const canSubmit = isLastStep
-    ? document.querySelector(".border-blue-500.bg-blue-500\\/5") &&
-      (document.getElementById("payment-proof") as HTMLInputElement)?.files?.[0]
-    : canProceed;
+  // const canSubmit = isLastStep
+  //   ? document.querySelector(".border-blue-500.bg-blue-500\\/5") &&
+  //     (document.getElementById("payment-proof") as HTMLInputElement)?.files?.[0]
+  //   : canProceed;
 
   return (
     <>
