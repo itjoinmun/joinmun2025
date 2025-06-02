@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/utils/helpers/cn";
 import { pricePackage as basePricing } from "@/utils/helpers/price-package";
 
 type PackageType = "Early Bird" | "Regular" | "Late";
@@ -24,7 +25,7 @@ const PaymentPackageCard = ({
   const isTeam = participantType === "team_delegation";
 
   return (
-    <article className="bg-background border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center">
+    <article className="bg-background border-gray-light mr-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center">
       <h2 className="text-lg font-bold">
         {participantType === "single_delegate"
           ? "Single Delegate"
@@ -69,16 +70,16 @@ const PaymentPackageCard = ({
         <Button
           variant={selectedType === "accommodation" ? "default" : "warning"}
           onClick={() => onSelect("accommodation", option.accommodation.price)}
-          className="w-full"
+          className={cn(selectedType === "accommodation" && "border border-white", "w-full")}
         >
-          With Accommodation
+          {selectedType === "accommodation" ? "Selected" : "With Accommodation"}
         </Button>
         <Button
           variant={selectedType === "nonAccommodation" ? "default" : "warning"}
           onClick={() => onSelect("nonAccommodation", option.nonAccommodation.price)}
-          className="w-full"
+          className={cn(selectedType === "nonAccommodation" && "border border-white", "w-full")}
         >
-          Without Accommodation
+          {selectedType === "nonAccommodation" ? "Selected" : "Without Accommodation"}
         </Button>
       </div>
     </article>
