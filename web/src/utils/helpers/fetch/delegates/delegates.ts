@@ -29,6 +29,9 @@ export async function getDelegate(): Promise<Delegate | null> {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
     },
+    next: {
+      revalidate: 30,
+    },
     credentials: "include",
   });
 
@@ -53,6 +56,9 @@ export async function getDelegates(): Promise<{
       Cookie: `access_token=${accessToken}`,
       credentials: "include",
     },
+    next: {
+      revalidate: 30,
+    },
   });
 
   if (!res.ok) {
@@ -63,8 +69,14 @@ export async function getDelegates(): Promise<{
   return resBody;
 }
 
-// eslint-disable-next-line
-export async function getDelegatePaper(): Promise<any> {
+interface Paper {
+  mun_delegate_email: string;
+  submission_file: string;
+  submission_date: string;
+  submission_status: string;
+}
+
+export async function getDelegatePaper(): Promise<Paper | null> {
   const accessToken = (await cookies()).get("access_token")?.value;
 
   const res = await fetch(`${process.env.API_URL}/position`, {
@@ -73,6 +85,9 @@ export async function getDelegatePaper(): Promise<any> {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
       credentials: "include",
+    },
+    next: {
+      revalidate: 30,
     },
   });
 
@@ -118,6 +133,9 @@ export async function getPayment(): Promise<Payment | null> {
     headers: {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
+    },
+    next: {
+      revalidate: 30,
     },
   });
 

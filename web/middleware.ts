@@ -1,4 +1,4 @@
-import { refreshToken } from "@/utils/actions/auth-handler";
+import { parseTokensFromHeaders } from "@/utils/helpers/fetch/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
 const AUTH_ROUTES = ["/login", "/register"];
@@ -6,7 +6,7 @@ const GUEST_ROUTES = ["/", "/theme"];
 const PROTECTED_ROUTES = ["/dashboard"];
 
 export async function middleware(request: NextRequest) {
-  const access = request.cookies.get("access_token");
+  const access = request.cookies.get("access_token")?.value;
   const refresh = request.cookies.get("refresh_token")?.value;
   const url = request.nextUrl.clone();
   const pathname = request.nextUrl.pathname;
@@ -15,9 +15,12 @@ export async function middleware(request: NextRequest) {
   const isGuestRoute = GUEST_ROUTES.some((route) => pathname === route);
   const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
-  if (!access) {
+  if (!access && refresh) {
     try {
-      await refreshToken();
+      const response = await refreshTokenMiddleware(request);
+      if (response) {
+        return response;
+      }
     } catch (error) {
       console.error("Failed to refresh token in middleware:", error);
       if (isProtectedRoute) {
@@ -27,9 +30,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (refresh) {
+  const hasValidSession = access || refresh;
+
+  if (hasValidSession) {
     if (isAuthRoute || isGuestRoute) {
-      url.pathname = "/dashboard/delegates";
+      url.pathname = "/dashboard/home";
       return NextResponse.redirect(url);
     }
   } else {
@@ -39,11 +44,60 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // If no redirection happened, allow the request to continue
   return NextResponse.next();
 }
 
-// Configure which paths the middleware runs on
+const refreshTokenMiddleware = async (request: NextRequest) => {
+  const refresh = request.cookies.get("refresh_token")?.value;
+
+  if (!refresh) {
+    throw new Error("No refresh token available");
+  }
+
+  const res = await fetch(`${process.env.API_URL}/user/refresh`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `refresh_token=${refresh}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Failed to refresh access token");
+  }
+
+  const { accessToken, refreshToken } = parseTokensFromHeaders(res.headers);
+  const response = NextResponse.next();
+
+  if (!accessToken || !refreshToken) {
+    throw new Error("Failed to retrieve tokens from response headers");
+  }
+
+  response.cookies.set({
+    name: "access_token",
+    value: accessToken.value,
+    path: accessToken.path,
+    maxAge: accessToken.maxAge || 900,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  response.cookies.set({
+    name: "refresh_token",
+    value: refreshToken.value,
+    path: refreshToken.path,
+    maxAge: refreshToken.maxAge || 2592000,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  return response;
+};
+
 export const config = {
   matcher: [
     /*

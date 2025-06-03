@@ -44,7 +44,7 @@ const DashboardStatus = async () => {
 
   const paperSubmission: PaperSubmissionStatus = (() => {
     if (!userStatus?.confirmed || !paymentStatus?.confirmed) return "registration_pending";
-    if (paperStatus?.paperUrl) return "uploaded";
+    if (paperStatus?.submission_file) return "uploaded";
     return "can_upload";
   })();
 
@@ -74,7 +74,7 @@ const DashboardStatus = async () => {
         />
         <StatusCard
           cardHeader="Delegate Code"
-          cardDescription="Give code to your Faculty Advisor"
+          cardDescription="Give this code to your Faculty Advisor"
           status={codeInfo.status}
           description={codeInfo.description}
         />
@@ -107,14 +107,8 @@ const StatusCard = ({
   cardDescription: string;
 }) => {
   return (
-    <DashboardModule
-      className={cn(
-        "flex flex-col gap-3 transition-all",
-        // variantStyles[variant],
-      )}
-    >
-      {status}
-      <DashboardModuleHeader className="flex shrink-0 flex-col text-nowrap 2xl:flex-row 2xl:justify-between 2xl:*:max-w-1/2">
+    <DashboardModule className={cn("flex flex-col gap-3 transition-all")}>
+      <DashboardModuleHeader className="flex shrink-0 flex-col text-nowrap lg:flex-row lg:gap-4 lg:max-2xl:items-center 2xl:justify-between 2xl:*:max-w-1/2">
         <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
         <DashboardModuleDescription className="text-wrap opacity-80">
           {cardDescription}
@@ -122,7 +116,6 @@ const StatusCard = ({
       </DashboardModuleHeader>
       <DashboardModuleContent className="mt-auto">
         <p className="text-sm opacity-90">{description}</p>
-        {/* <p className="text-xs opacity-75">{description}</p> */}
       </DashboardModuleContent>
     </DashboardModule>
   );

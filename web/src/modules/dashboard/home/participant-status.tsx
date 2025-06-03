@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getSession } from "@/utils/actions/session";
 import { getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
 import Image from "next/image";
+import Link from "next/link";
 import { Suspense } from "react";
 
 const ParticipantStatus = () => {
@@ -18,7 +19,9 @@ const ParticipantStatus = () => {
         <DashboardModuleTitle>Participant Status</DashboardModuleTitle>
       </DashboardModuleHeader>
 
-      <Suspense fallback={<Skeleton className="h-64" />}>
+      <Suspense
+        fallback={<Skeleton className="from-red-dark-hover/60 to-red-dark h-64 bg-gradient-to-b" />}
+      >
         <Body />
       </Suspense>
     </DashboardModule>
@@ -52,12 +55,16 @@ const Body = async () => {
               </p>
             </div>
             <footer className="mt-auto flex w-full justify-end gap-3 justify-self-end">
-              <Button variant={`warningOutline`} className="mt-40 w-fit md:mt-0">
-                Delegate Status
-              </Button>
-              <Button variant={`warning`} className="mt-40 w-fit md:mt-0">
-                See Council
-              </Button>
+              <Link href={`/dashboard/delegates`}>
+                <Button variant={`warningOutline`} className="mt-40 w-fit cursor-pointer md:mt-0">
+                  See Council
+                </Button>
+              </Link>
+              <Link href={`/dashboard/timeline`}>
+                <Button variant={`warning`} className="mt-40 w-fit cursor-pointer md:mt-0">
+                  See Event Schedule
+                </Button>
+              </Link>
             </footer>
           </>
         ) : (

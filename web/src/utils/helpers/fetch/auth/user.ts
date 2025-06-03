@@ -59,6 +59,9 @@ export const fetchUserClient = async (accessToken?: string) => {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
     },
+    next: {
+      revalidate: 300,
+    },
     credentials: "include",
   });
   if (res.ok) {
