@@ -67,8 +67,6 @@ type AdminService interface {
 	UpdatePaymentStatus(email string) error
 	GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error)
 	GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.TeamPaymentSummary, error)
-	GetDelegates(delegateType, timeWave string, limit, offset int) ([]delegateModel.MUNDelegates, error)
-	GetPositionPapers(timeWave string, limit, offset int) ([]positionModel.PositionPaper, error)
 	GetDelegatesByTeam(delegateType, timeWave string, limit, offset int) ([]delegateModel.TeamDelegateGroup, error)
 	GetPositionPapersByTeam(timeWave string, limit, offset int) ([]positionModel.TeamPositionPaperGroup, error)
 }
@@ -395,70 +393,6 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 	}
 
 	return teamPaymentSummaries, nil
-}
-
-func (s *adminService) GetDelegates(delegateType, timeWave string, limit, offset int) ([]delegateModel.MUNDelegates, error) {
-		startDate, endDate = &start, &end
-	case "latewave":
-		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	default:
-		// nil means no filter
-		startDate, endDate = nil, nil
-	}
-
-	delegates, err := s.adminRepo.GetDelegates(delegateType, startDate, endDate, limit, offset)
-	if err != nil {
-		logger.LogError(err, "Failed to get delegates", map[string]interface{}{"layer": "service", "operation": "GetDelegates"})
-		return nil, err
-	}
-
-	logger.LogDebug("Delegates retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegates"})
-	return delegates, nil
-}
-
-func (s *adminService) GetPositionPapers(timeWave string, limit, offset int) ([]positionModel.PositionPaper, error) {
-	var startDate, endDate *time.Time
-
-	switch timeWave {
-	case "earlybird":
-		start := time.Date(2025, 6, 16, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 7, 14, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "regularwave":
-		start := time.Date(2025, 7, 28, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 8, 24, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "latewave":
-		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	default:
-		// nil means no filter
-		startDate, endDate = nil, nil
-	}
-
-	positionPapers, err := s.adminRepo.GetPositionPapers(startDate, endDate, limit, offset)
-	if err != nil {
-		logger.LogError(err, "Failed to get position papers", map[string]interface{}{"layer": "service", "operation": "GetPositionPapers"})
-		return nil, err
-	}
-
-	// Modify file answers to be presigned URLs
-	for i := range positionPapers {
-		if positionPapers[i].SubmissionFile != "" {
-			url, err := s.uploader.GeneratePresignedURL(positionPapers[i].SubmissionFile, 15*time.Minute)
-			if err != nil {
-				logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": positionPapers[i].SubmissionFile})
-				positionPapers[i].SubmissionFile = ""
-				continue
-			}
-			positionPapers[i].SubmissionFile = url
-		}
-	}
-	logger.LogDebug("Position papers retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetPositionPapers"})
-	return positionPapers, nil
 }
 
 func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string, limit, offset int) ([]delegateModel.TeamDelegateGroup, error) {

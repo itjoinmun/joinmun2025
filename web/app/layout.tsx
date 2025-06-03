@@ -5,6 +5,7 @@ import getMetadata from "@/utils/helpers/metadata";
 import { AuthProvider } from "@/utils/hooks/use-session";
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = getMetadata({
   title: "Jogjakarta International Model United Nations 2025",
@@ -78,7 +79,10 @@ export default function RootLayout({
           "bg-background text-primary-foreground antialiased",
         )}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <Analytics />
+        </AuthProvider>
       </body>
     </html>
   );
