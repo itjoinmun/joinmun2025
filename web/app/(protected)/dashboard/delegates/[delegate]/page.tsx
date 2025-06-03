@@ -18,7 +18,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { redirect, useRouter } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import { TeamRegistrationTable } from "@/modules/dashboard/delegates/team/team-delegation";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -26,8 +26,8 @@ import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
 
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
-const DelegationTeamPage = ({ params }: { params: { delegate: string } }) => {
-  const { delegate } = params;
+const DelegationTeamPage = () => {
+  const { delegate } = useParams();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -42,6 +42,8 @@ const DelegationTeamPage = ({ params }: { params: { delegate: string } }) => {
       // Get team data from localStorage
       const storedData = localStorage.getItem("teamRegistration");
 
+      console.log("🚀 Team submission - raw data:", storedData); // Debug log
+
       if (!storedData) {
         setSubmitError("No team data found. Please add team members first.");
         setIsSubmitting(false);
@@ -49,11 +51,17 @@ const DelegationTeamPage = ({ params }: { params: { delegate: string } }) => {
       }
 
       const teamData = JSON.parse(storedData);
+      console.log("📊 Team submission - parsed data:", teamData); // Debug log
 
-      // Check if there are any team members
-      const teamMembers = Object.values(teamData).filter(Boolean);
+      // Check if there are any team members with complete data
+      const teamMembers = Object.values(teamData).filter((member: any) => {
+        return member && member.biodata_responses && member.biodata_responses.length > 0;
+      });
+
+      console.log("👥 Valid team members found:", teamMembers.length); // Debug log
+
       if (!teamMembers.length) {
-        setSubmitError("No team members found. Please add at least one team member.");
+        setSubmitError("No complete team members found. Please ensure all team members have completed their registration.");
         setIsSubmitting(false);
         return;
       }
@@ -66,13 +74,16 @@ const DelegationTeamPage = ({ params }: { params: { delegate: string } }) => {
       });
 
       if (success) {
+        console.log("✅ Team submission successful"); // Debug log
         // Clear localStorage after successful submission
         localStorage.removeItem("teamRegistration");
         router.push("/dashboard/delegates");
       } else {
+        console.error("❌ Team submission failed:", error); // Debug log
         setSubmitError(error || "Unknown error occurred during submission");
       }
     } catch (err) {
+      console.error("💥 Team submission error:", err); // Debug log
       setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
     } finally {
       setIsSubmitting(false);
