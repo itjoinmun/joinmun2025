@@ -66,12 +66,12 @@ func (s *positionService) InsertPositionPaper(positionPaper *positionModel.Posit
 		return fmt.Errorf("user not found with email: %s", positionPaper.MUNDelegateEmail)
 	}
 
-	var userConfirmed bool
+	var userConfirmedStatus string
 	if user.Confirmed != nil {
-		userConfirmed = *user.Confirmed
+		userConfirmedStatus = *user.Confirmed
 	}
 
-	if !userConfirmed {
+	if userConfirmedStatus != "confirmed" {
 		logger.LogError(nil, "User biodata not confirmed", map[string]interface{}{"delegateEmail": positionPaper.MUNDelegateEmail, "layer": "service", "operation": "InsertPositionPaper"})
 		return fmt.Errorf("user not confirmed with email: %s", positionPaper.MUNDelegateEmail)
 	}

@@ -61,10 +61,10 @@ func (a AmalgamatedDelegateResponse) GetDelegateEmail() string      { return a.D
 func (a AmalgamatedDelegateResponse) GetAnswers() map[string]string { return a.Answers }
 
 type AdminService interface {
-	UpdateParticipantStatus(email string) error
+	UpdateParticipantStatus(email, status string) error
 	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error
 	MakePairing(delegateEmail, pair string) error
-	UpdatePaymentStatus(email string) error
+	UpdatePaymentStatus(email, status string) error
 	GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error)
 	GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.TeamPaymentSummary, error)
 	GetDelegatesByTeam(delegateType, timeWave string, limit, offset int) ([]delegateModel.TeamDelegateGroup, error)
@@ -89,7 +89,7 @@ func NewAdminService(uploader *s3.S3Uploader, adminRepo adminRepo.AdminRepo, del
 	}
 }
 
-func (s *adminService) UpdateParticipantStatus(email string) (retErr error) {
+func (s *adminService) UpdateParticipantStatus(email, status string) (retErr error) {
 	participant, err := s.delegateRepo.GetDelegateByEmail(email)
 	if err != nil {
 		logger.LogError(err, "Failed to get participant by email", map[string]interface{}{
@@ -100,7 +100,7 @@ func (s *adminService) UpdateParticipantStatus(email string) (retErr error) {
 		retErr = err
 		return retErr
 	}
-	var participantStatus bool
+	var participantStatus string
 	var participantTap string
 	if participant.Confirmed != nil {
 		participantStatus = *participant.Confirmed
@@ -108,7 +108,7 @@ func (s *adminService) UpdateParticipantStatus(email string) (retErr error) {
 	if participant.ParticipantType != nil {
 		participantTap = *participant.ParticipantType
 	}
-	if participantStatus {
+	if participantStatus != "" && participantStatus != "pending" {
 		logger.LogError(nil, "Participant already confirmed", map[string]interface{}{
 			"layer":     "service",
 			"operation": "service.UpdateParticipantStatus",
@@ -138,7 +138,7 @@ func (s *adminService) UpdateParticipantStatus(email string) (retErr error) {
 		retErr = err
 		return retErr
 	}
-	err = s.adminRepo.UpdateDelegateStatus(email)
+	err = s.adminRepo.UpdateDelegateStatus(email, status)
 	if err != nil {
 		logger.LogError(err, "Failed to update participant status", map[string]interface{}{
 			"layer":     "service",
@@ -163,7 +163,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 	}
 
 	var participantType, participantCountry, participantCouncil string
-	var participantStatus bool
+	var participantStatus string
 
 	// dereference the pointers
 	if participant.ParticipantType != nil {
@@ -182,7 +182,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 		participantCouncil = *participant.Council
 	}
 
-	if !participantStatus {
+	if participantStatus != "confirmed" {
 		logger.LogError(nil, "Participant is not confirmed", map[string]interface{}{
 			"layer":     "service",
 			"operation": "service.UpdateDelegateCountryAndCouncil",
@@ -244,7 +244,7 @@ func (s *adminService) MakePairing(delegateEmail, pair string) (retErr error) {
 	})
 }
 
-func (s *adminService) UpdatePaymentStatus(delegateEmail string) error {
+func (s *adminService) UpdatePaymentStatus(delegateEmail, status string) error {
 	// Check if the payment exists
 	payment, err := s.paymentRepo.GetPaymentByDelegateEmail(delegateEmail)
 	if err != nil {
@@ -263,7 +263,7 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail string) error {
 		return err
 	}
 
-	err = s.adminRepo.UpdatePaymentStatus(delegateEmail)
+	err = s.adminRepo.UpdatePaymentStatus(delegateEmail, status)
 	if err != nil {
 		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 		return err

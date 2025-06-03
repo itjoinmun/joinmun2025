@@ -50,12 +50,12 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		return fmt.Errorf("user not found with email: %s", payment.MUNDelegateEmail)
 	}
 
-	var userConfirmed bool
+	var userConfirmedStatus string
 	if user.Confirmed != nil {
-		userConfirmed = *user.Confirmed
+		userConfirmedStatus = *user.Confirmed
 	}
 
-	if !userConfirmed {
+	if userConfirmedStatus != "confirmed" {
 		logger.LogError(nil, "User not confirmed", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return fmt.Errorf("user not confirmed with email: %s", payment.MUNDelegateEmail)
 	}

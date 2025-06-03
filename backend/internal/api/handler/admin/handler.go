@@ -27,6 +27,7 @@ func NewAdminHandler(adminService adminService.AdminService) (*AdminHandler, err
 func (h *AdminHandler) UpdateParticipantStatusHandler(c *gin.Context) {
 	var req struct {
 		ParticipantEmail string `json:"participant_email" binding:"required,email"`
+		Status           string `json:"status" binding:"required,oneof=confirmed rejected pending"`
 	}
 
 	// Get the email from the request context
@@ -46,10 +47,8 @@ func (h *AdminHandler) UpdateParticipantStatusHandler(c *gin.Context) {
 		return
 	}
 
-	delegateEmail := req.ParticipantEmail
-
 	// Update the delegate status in the service
-	err := h.adminService.UpdateParticipantStatus(delegateEmail)
+	err := h.adminService.UpdateParticipantStatus(req.ParticipantEmail, req.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update delegate status", "details": err.Error()})
 		return
@@ -145,6 +144,7 @@ func (h *AdminHandler) UpdatePaymentStatusHandler(c *gin.Context) {
 
 	var req struct {
 		DelegateEmail string `json:"delegate_email" binding:"required,email"`
+		Status        string `json:"status" binding:"required,oneof=paid failed pending"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -153,7 +153,7 @@ func (h *AdminHandler) UpdatePaymentStatusHandler(c *gin.Context) {
 	}
 
 	// Update payment status
-	if err := h.adminService.UpdatePaymentStatus(req.DelegateEmail); err != nil {
+	if err := h.adminService.UpdatePaymentStatus(req.DelegateEmail, req.Status); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update payment status", "details": err.Error()})
 		return
 	}
@@ -225,23 +225,28 @@ func (h *AdminHandler) GetAmalgamatedResponsesHandler(c *gin.Context) {
 		return
 	}
 
-	var req struct {
-		DelegateType string `json:"delegate_type" binding:"required"` // Can be "all" or a specific type
-		Limit        int    `json:"limit" binding:"gte=1"`
-		Offset       int    `json:"offset" binding:"gte=0"`
-	}
+	// Get query parameters instead of request body
+	delegateType := c.DefaultQuery("delegate_type", "all")
+	limitStr := c.DefaultQuery("limit", "10000")
+	offsetStr := c.DefaultQuery("offset", "0")
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit"})
+		return
+	}
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset"})
 		return
 	}
 
-	actualDelegateType := req.DelegateType
-	if strings.ToLower(req.DelegateType) == "all" {
+	actualDelegateType := delegateType
+	if strings.ToLower(delegateType) == "all" {
 		actualDelegateType = "" // Pass empty string to service to fetch all types
 	}
 
-	responses, err := h.adminService.GetAmalgamatedResponses(actualDelegateType, req.Limit, req.Offset)
+	responses, err := h.adminService.GetAmalgamatedResponses(actualDelegateType, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve amalgamated responses", "details": err.Error()})
 		return

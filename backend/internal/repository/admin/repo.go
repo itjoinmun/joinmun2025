@@ -13,10 +13,10 @@ import (
 
 type AdminRepo interface {
 	DB() *sqlx.DB // Get the database connection
-	UpdateDelegateStatus(delegateEmail string) error
+	UpdateDelegateStatus(delegateEmail, status string) error
 	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error
 	UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail string) error
-	UpdatePaymentStatus(delegateEmail string) error
+	UpdatePaymentStatus(delegateEmail, status string) error
 	GetDelegateHealthResponses(delegateType string, limit, offset int) ([]dashboard.HealthResponseWithQuestion, error)
 	GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error)
 	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]dashboard.BiodataResponseWithQuestion, error)
@@ -37,9 +37,9 @@ func (r *adminRepo) DB() *sqlx.DB {
 	return r.db
 }
 
-func (r *adminRepo) UpdateDelegateStatus(delegateEmail string) error {
+func (r *adminRepo) UpdateDelegateStatus(delegateEmail, status string) error {
 	query := `UPDATE mun_delegates SET confirmed = $1, confirmed_date = $2 WHERE mun_delegate_email = $3`
-	_, err := r.db.Exec(query, true, time.Now(), delegateEmail)
+	_, err := r.db.Exec(query, status, time.Now(), delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update delegate status", map[string]interface{}{
 			"layer":         "repository",
@@ -123,9 +123,9 @@ func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail strin
 	return nil
 }
 
-func (r *adminRepo) UpdatePaymentStatus(delegateEmail string) error {
-	query := `UPDATE payment SET payment_status = 'paid' WHERE mun_delegate_email = $1`
-	_, err := r.db.Exec(query, delegateEmail)
+func (r *adminRepo) UpdatePaymentStatus(delegateEmail, status string) error {
+	query := `UPDATE payment SET payment_status = $1 WHERE mun_delegate_email = $2`
+	_, err := r.db.Exec(query, status, delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
 	}
