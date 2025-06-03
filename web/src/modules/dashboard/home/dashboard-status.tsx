@@ -138,7 +138,7 @@ const getRegistrationStatusInfo = (status: RegistrationStatus) => {
     case "waiting_verification":
       return {
         status: "Waiting for Verification",
-        description: "Waiting For Verification",
+        description: "Waiting For Verification...",
       };
     case "verified_pending_payment":
       return {

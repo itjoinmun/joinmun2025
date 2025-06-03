@@ -15,17 +15,17 @@ export async function middleware(request: NextRequest) {
   const isGuestRoute = GUEST_ROUTES.some((route) => pathname === route);
   const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
-  // if (!access) {
-  //   try {
-  //     await refreshToken();
-  //   } catch (error) {
-  //     console.error("Failed to refresh token in middleware:", error);
-  //     if (isProtectedRoute) {
-  //       url.pathname = "/login";
-  //       return NextResponse.redirect(url);
-  //     }
-  //   }
-  // }
+  if (!access) {
+    try {
+      await refreshToken();
+    } catch (error) {
+      console.error("Failed to refresh token in middleware:", error);
+      if (isProtectedRoute) {
+        url.pathname = "/login";
+        return NextResponse.redirect(url);
+      }
+    }
+  }
 
   if (refresh) {
     if (isAuthRoute || isGuestRoute) {

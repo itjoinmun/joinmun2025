@@ -44,7 +44,7 @@ const LoginForm = () => {
           email: values.email,
           password: values.password,
         }),
-    });
+      });
 
       if (!res.ok) {
         console.error(res);
@@ -52,7 +52,7 @@ const LoginForm = () => {
         return;
       }
 
-      router.push("/dashboard/delegates");
+      router.push("/dashboard/home");
     } catch (error) {
       console.error(error);
       setPending(false);

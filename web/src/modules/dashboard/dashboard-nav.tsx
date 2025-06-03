@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -20,7 +20,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { cn } from "@/utils/helpers/cn";
-import { BookOpen, CircleHelp, DollarSign, Globe, Home, Hourglass, LogOut } from "lucide-react";
+import { BookOpen, CircleHelp, DollarSign, Home, Hourglass, LogOut } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,12 +42,12 @@ const NAV_LINKS = [
     href: "/dashboard/delegates",
     logo: <BookOpen className={logoStyle} />,
   },
-  {
-    id: "councils",
-    name: "Councils",
-    href: "/dashboard/councils",
-    logo: <Globe className={logoStyle} />,
-  },
+  // {
+  //   id: "councils",
+  //   name: "Councils",
+  //   href: "/dashboard/councils",
+  //   logo: <Globe className={logoStyle} />,
+  // },
   {
     id: "payment",
     name: "Payment",
