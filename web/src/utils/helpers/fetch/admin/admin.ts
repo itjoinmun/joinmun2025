@@ -15,11 +15,32 @@ export const approveParticipantRegistration = async (participantEmail: string) =
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ participant_email: participantEmail }),
+    body: JSON.stringify({ 
+      participant_email: participantEmail,
+      status: "confirmed"
+    }),
   });
   
   if (!response.ok) {
     throw new Error(`Failed to approve registration: ${response.statusText}`);
+  }
+  
+  return response.json();
+};
+
+export const rejectParticipantRegistration = async (participantEmail: string) => {
+  const response = await fetch(`${API_BASE_URL}/dashboard/update-participant-status`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      participant_email: participantEmail,
+    status: "rejected"
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to reject registration: ${response.statusText}`);
   }
   
   return response.json();
@@ -53,11 +74,32 @@ export const approvePayment = async (delegateEmail: string) => {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ delegate_email: delegateEmail }),
+    body: JSON.stringify({ 
+      delegate_email: delegateEmail,
+      status: "paid"
+    }),
   });
   
   if (!response.ok) {
     throw new Error(`Failed to approve payment: ${response.statusText}`);
+  }
+  
+  return response.json();
+};
+
+export const rejectPayment = async (delegateEmail: string) => {
+  const response = await fetch(`${API_BASE_URL}/payment/update-payment-status`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      delegate_email: delegateEmail,
+      status: "failed"
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to reject payment: ${response.statusText}`);
   }
   
   return response.json();
@@ -167,4 +209,25 @@ export const downloadResponsesCSV = async (
   a.click();
   window.URL.revokeObjectURL(url);
   document.body.removeChild(a);
+};
+
+export const makeDelegatePairing = async (
+  delegateEmail: string,
+  pairEmail: string
+) => {
+  const response = await fetch(`${API_BASE_URL}/dashboard/make-pairing`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      delegate_email: delegateEmail,
+      pair_email: pairEmail 
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to make pairing: ${response.statusText}`);
+  }
+  
+  return response.json();
 };

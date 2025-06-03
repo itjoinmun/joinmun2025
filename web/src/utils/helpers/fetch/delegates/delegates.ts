@@ -264,11 +264,10 @@ export async function assignCountry(id: number, country: string) {
 }
 
 export interface Participant {
-  id: number;
   name: string;
   email: string;
-  payment_status: "rejected" | "pending" | "approved";
-  registration_status: "rejected" | "pending" | "approved";
+  payment_status: "paid" | "pending" | "failed";
+  registration_status: "rejected" | "pending" | "confirmed";
   council: string | null;
   country: string | null;
 }

@@ -16,12 +16,12 @@ import { useState } from "react";
 
 interface ParticipantTableProps {
   participants: Participant[];
-  onApproveRegistration: (id: number) => Promise<void>;
-  onRejectRegistration: (id: number) => Promise<void>;
-  onApprovePayment: (id: number) => Promise<void>;
-  onRejectPayment: (id: number) => Promise<void>;
-  onAssignCouncil: (id: number, council: string) => Promise<void>;
-  onAssignCountry: (id: number, country: string) => Promise<void>;
+  onApproveRegistration: (email: string) => Promise<void>;
+  onRejectRegistration: (email: string) => Promise<void>;
+  onApprovePayment: (email: string) => Promise<void>;
+  onRejectPayment: (email: string) => Promise<void>;
+  onAssignCouncil: (email: string, council: string) => Promise<void>;
+  onAssignCountry: (email: string, country: string) => Promise<void>;
 }
 
 const ParticipantTable = ({
@@ -35,12 +35,12 @@ const ParticipantTable = ({
 }: ParticipantTableProps) => {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
 
-  const handleAction = async (action: () => Promise<void>, id: number, actionType: string) => {
+  const handleAction = async (action: () => Promise<void>, email: string, actionType: string) => {
     try {
-      setLoading((prev) => ({ ...prev, [`${actionType}-${id}`]: true }));
+      setLoading((prev) => ({ ...prev, [`${actionType}-${email}`]: true }));
       await action();
     } finally {
-      setLoading((prev) => ({ ...prev, [`${actionType}-${id}`]: false }));
+      setLoading((prev) => ({ ...prev, [`${actionType}-${email}`]: false }));
     }
   };
 
@@ -68,7 +68,7 @@ const ParticipantTable = ({
         </TableHeader>
         <TableBody className="bg-slate-300">
           {participants.map((participant, index) => (
-            <TableRow key={participant.id}>
+            <TableRow key={participant.email}>
               <TableCell className="text-center">{index + 1}</TableCell>
               <TableCell>{participant.name}</TableCell>
               <TableCell>{participant.email}</TableCell>
@@ -77,14 +77,14 @@ const ParticipantTable = ({
                   name="Council"
                   onChange={(e) =>
                     handleAction(
-                      () => onAssignCouncil(participant.id, e.target.value),
-                      participant.id,
+                      () => onAssignCouncil(participant.email, e.target.value),
+                      participant.email,
                       "assign-council",
                     )
                   }
                   value={participant.council || ""}
                   className="w-full rounded border p-1 pr-3"
-                  disabled={loading[`assign-council-${participant.id}`]}
+                  disabled={loading[`assign-council-${participant.email}`]}
                 >
                   <option value="">Select Council</option>
                   {COUNCILS.map((council) => (
@@ -98,19 +98,19 @@ const ParticipantTable = ({
                 <input
                   type="text"
                   value={participant.country || ""}
-                  onChange={(e) => onAssignCountry(participant.id, e.target.value)}
+                  onChange={(e) => onAssignCountry(participant.email, e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleAction(
-                        () => onAssignCountry(participant.id, e.currentTarget.value),
-                        participant.id,
+                        () => onAssignCountry(participant.email, e.currentTarget.value),
+                        participant.email,
                         "assign-country",
                       );
                     }
                   }}
                   className="w-full rounded border p-1"
                   placeholder="Enter country and press Enter"
-                  disabled={loading[`assign-country-${participant.id}`]}
+                  disabled={loading[`assign-country-${participant.email}`]}
                 />
               </TableCell>
               <TableCell>
@@ -122,14 +122,14 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onApproveRegistration(participant.id),
-                          participant.id,
+                          () => onApproveRegistration(participant.email),
+                          participant.email,
                           "approve-reg",
                         )
                       }
                       disabled={
-                        loading[`approve-reg-${participant.id}`] ||
-                        participant.registration_status === "approved"
+                        loading[`approve-reg-${participant.email}`] ||
+                        participant.registration_status === "confirmed"
                       }
                     >
                       <Check className="h-4 w-4 text-green-500" />
@@ -140,13 +140,13 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onRejectRegistration(participant.id),
-                          participant.id,
+                          () => onRejectRegistration(participant.email),
+                          participant.email,
                           "reject-reg",
                         )
                       }
                       disabled={
-                        loading[`reject-reg-${participant.id}`] ||
+                        loading[`reject-reg-${participant.email}`] ||
                         participant.registration_status === "rejected"
                       }
                     >
@@ -154,7 +154,7 @@ const ParticipantTable = ({
                     </Button>
                   </div>
                   <span className="text-sm">
-                    {participant.registration_status === "approved" && "✓ Approved"}
+                    {participant.registration_status === "confirmed" && "✓ Approved"}
                     {participant.registration_status === "rejected" && "✗ Rejected"}
                     {!participant.registration_status && "Pending"}
                   </span>
@@ -169,14 +169,14 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onApprovePayment(participant.id),
-                          participant.id,
+                          () => onApprovePayment(participant.email),
+                          participant.email,
                           "approve-pay",
                         )
                       }
                       disabled={
-                        loading[`approve-pay-${participant.id}`] ||
-                        participant.payment_status === "approved"
+                        loading[`approve-pay-${participant.email}`] ||
+                        participant.payment_status === "paid"
                       }
                     >
                       <Check className="h-4 w-4 text-green-500" />
@@ -187,22 +187,22 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onRejectPayment(participant.id),
-                          participant.id,
+                          () => onRejectPayment(participant.email),
+                          participant.email,
                           "reject-pay",
                         )
                       }
                       disabled={
-                        loading[`reject-pay-${participant.id}`] ||
-                        participant.payment_status === "rejected"
+                        loading[`reject-pay-${participant.email}`] ||
+                        participant.payment_status === "failed"
                       }
                     >
                       <X className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
                   <span className="text-sm">
-                    {participant.payment_status === "approved" && "✓ Approved"}
-                    {participant.payment_status === "rejected" && "✗ Rejected"}
+                    {participant.payment_status === "paid" && "✓ Approved"}
+                    {participant.payment_status === "failed" && "✗ Rejected"}
                     {!participant.payment_status && "Pending"}
                   </span>
                 </div>

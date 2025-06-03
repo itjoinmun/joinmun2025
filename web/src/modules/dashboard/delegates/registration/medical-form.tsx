@@ -205,24 +205,33 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     }
     allDelegatesData[index] = updatedDelegateData;
 
-    try {
-      const { success, error } = await submitDelegateRegistration({
-        formData: allDelegatesData,
-        index,
-        slug,
-        isTeam: false, // Assuming medical form is for one delegate at a time
-      });
+    // Save data to localStorage
+    setFormData(allDelegatesData);
 
-      if (success) {
-        setFormData(allDelegatesData);
-        router.push("/dashboard/delegates");
-      } else {
-        setSubmitError(error || "Unknown error occurred during submission");
+    // Handle different flows based on delegation type
+    if (slug === "team") {
+      // For team registrations, redirect to team dashboard
+      router.push("/dashboard/delegates/team");
+    } else {
+      // For individual registrations, submit directly
+      try {
+        const { success, error } = await submitDelegateRegistration({
+          formData: allDelegatesData,
+          index,
+          slug,
+          isTeam: false,
+        });
+
+        if (success) {
+          router.push("/dashboard/delegates");
+        } else {
+          setSubmitError(error || "Unknown error occurred during submission");
+          setSubmitting(false);
+        }
+      } catch (err) {
+        setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
         setSubmitting(false);
       }
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
-      setSubmitting(false);
     }
   };
 

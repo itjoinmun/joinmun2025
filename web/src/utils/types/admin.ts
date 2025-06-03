@@ -1,28 +1,29 @@
-export interface TeamDelegateGroup {
-  mun_team_id: string | null;
-  mun_team_lead: string | null;
-  delegates: MUNDelegate[];
-  delegate_count: number;
-}
+export type DelegateType = '' | 'single_delegate' | 'team_delegate' | 'faculty_advisor' | 'observer';
+export type TimeWave = '' | 'earlybird' | 'regularwave' | 'latewave';
 
 export interface MUNDelegate {
   mun_delegate_email: string;
   mun_delegate_name: string;
-  type: string | null;
-  pair: string | null;
-  council: string | null;
-  country: string | null;
-  confirmed: boolean | null;
-  confirmed_date: string | null;
-  council_date: string | null;
-  insert_date: string | null;
-  participant_type: string | null;
-  mun_team_id: string | null;
-  mun_team_lead: string | null;
+  type?: string | null;
+  pair?: string | null;
+  council?: string | null;
+  country?: string | null;
+  confirmed: "confirmed" | "rejected" | "pending"; // Can be boolean or string ("confirmed", "rejected", "pending")
+  confirmed_date?: string | null;
+  council_date?: string | null;
+  insert_date: string;
+  participant_type: string;
+}
+
+export interface TeamDelegateGroup {
+  mun_team_id?: string | null;
+  mun_team_lead: string;
+  delegates: MUNDelegate[];
+  delegate_count: number;
 }
 
 export interface TeamPaymentSummary {
-  mun_team_id: string | null;
+  mun_team_id?: string | null;
   mun_team_lead: string;
   team_payments: PaymentResponseWithTeam[];
   total_amount: number;
@@ -34,8 +35,8 @@ export interface TeamPaymentSummary {
 
 export interface PaymentResponseWithTeam {
   payment_id: number;
-  mun_team_id: string | null;
   mun_delegate_email: string;
+  mun_team_id?: string | null;
   package: string;
   payment_file: string;
   payment_status: string;
@@ -45,8 +46,8 @@ export interface PaymentResponseWithTeam {
 }
 
 export interface TeamPositionPaperGroup {
-  mun_team_id: string | null;
-  mun_team_lead: string | null;
+  mun_team_id?: string | null;
+  mun_team_lead: string;
   position_papers: PositionPaper[];
   paper_count: number;
 }
@@ -62,6 +63,3 @@ export interface AmalgamatedResponse {
   delegate_email: string;
   answers: Record<string, string>;
 }
-
-export type DelegateType = '' | 'single_delegate' | 'team_delegate' | 'faculty_advisor' | 'observer';
-export type TimeWave = '' | 'earlybird' | 'regularwave' | 'latewave';
