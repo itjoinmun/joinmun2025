@@ -39,7 +39,7 @@ const Body = async () => {
 
   return (
     <section className="from-red-dark-hover/60 to-red-dark relative z-0 w-full rounded-md bg-gradient-to-b p-3 text-pretty md:p-6">
-      <div className="flex flex-col gap-5 md:min-h-50">
+      <div className="flex h-full flex-col gap-5 md:min-h-50 md:flex-row">
         {hasRegistered ? (
           <>
             <div className="flex flex-col gap-3 md:max-w-1/2">
@@ -78,9 +78,14 @@ const Body = async () => {
                 <Bold>Delegates Team</Bold>, <Bold>Observer or Faculty Advisor</Bold>
               </p>
             </div>
-            <Button variant={`warning`} className="mt-40 w-fit md:mt-0 md:ml-auto">
-              Register Now
-            </Button>
+            <Link
+              href={`/dashboard/register`}
+              className="mt-40 inline-flex w-fit md:mt-auto md:ml-auto"
+            >
+              <Button variant={`warning`} className="cursor-pointer">
+                Register Now
+              </Button>
+            </Link>
           </>
         )}
       </div>

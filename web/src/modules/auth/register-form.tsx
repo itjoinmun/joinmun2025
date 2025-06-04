@@ -44,6 +44,7 @@ const loginSchema = z
 
 const RegisterForm = () => {
   const [pending, setPending] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm({
@@ -65,13 +66,14 @@ const RegisterForm = () => {
         password: values.password,
       });
 
-      if (res.ok) {
-        // redirect to dashboard
-        router.push("/login");
-      } else {
-        // show error message
-        console.error(res);
+      if (!res.ok) {
+        setPending(false);
+        setError("Registration failed. Please try again.");
+        return;
       }
+
+      // redirect to dashboard
+      router.push("/login");
       // post to backend api
     } catch (error) {
       console.error(error);
@@ -147,6 +149,9 @@ const RegisterForm = () => {
             </FormItem>
           )}
         />
+
+        {error && <div className="text-center text-sm text-red-500 md:text-start">{error}</div>}
+
         <Button disabled={pending} type="submit" variant={`primary`} className="w-full">
           {pending ? (
             <>

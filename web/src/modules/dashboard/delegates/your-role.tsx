@@ -41,7 +41,6 @@ const YourRole = async () => {
             <CTACard
               title={delegate.name}
               description={delegate.description}
-              href={`/`}
               className="md:w-1/3"
             />
           </div>

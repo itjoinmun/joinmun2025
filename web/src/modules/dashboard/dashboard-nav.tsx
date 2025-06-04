@@ -143,7 +143,7 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
         <SidebarFooter className="mt-auto">
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="default" className="w-full">
+              <Button variant="default" className="w-full cursor-pointer">
                 <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
               </Button>
             </AlertDialogTrigger>
@@ -155,8 +155,8 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <Button onClick={handleLogout} variant={`primary`}>
+                <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                <Button onClick={handleLogout} variant={`primary`} className="cursor-pointer">
                   Log out
                 </Button>
               </AlertDialogFooter>

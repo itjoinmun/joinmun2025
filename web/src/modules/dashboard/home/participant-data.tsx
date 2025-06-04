@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
 import { Delegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
+import Link from "next/link";
 import { Suspense } from "react";
 
 const ParticipantData = () => {
@@ -41,27 +42,24 @@ const Body = async () => {
 
   return (
     <DashboardModuleContent className="no-scrollbar max-h-96 overflow-scroll">
+      <p className="mb-2 text-xs">Announcement at 12 December 2025</p>
       <Table>
         <TableHeader>
-          <TableRow className="bg-gray-50 hover:bg-gray-50 border-b">
-            <TableHead className="first:rounded-tl-lg last:rounded-tr-lg font-semibold text-gray-700">
-              Name
-            </TableHead>
-            <TableHead className="font-semibold text-gray-700">
-              Delegate Status
-            </TableHead>
-            <TableHead className="font-semibold text-gray-700">Council</TableHead>
-            <TableHead className="font-semibold text-gray-700">Country</TableHead>
+          <TableRow className="bg-background border-b *:text-white">
+            <TableHead className="first:rounded-tl-lg last:rounded-tr-lg">Name</TableHead>
+            <TableHead className="">Delegate Status</TableHead>
+            <TableHead className="">Council</TableHead>
+            <TableHead className="">Country</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="bg-white">
+        <TableBody className="bg-blue-50">
           {participantData ? (
             participantData.map((participant: Delegate, index: number) => (
-              <TableRow key={participant.mun_delegate_name} className="hover:bg-blue-50 border-b border-gray-100">
+              <TableRow key={participant.mun_delegate_name} className="border-b border-gray-100">
                 <TableCell
                   className={cn(
-                    "font-medium text-gray-900 py-3",
-                    index === participantData.length - 1 && "first:rounded-bl-lg"
+                    "py-3 font-medium text-gray-900",
+                    index === participantData.length - 1 && "first:rounded-bl-lg",
                   )}
                 >
                   {participant.mun_delegate_name}
@@ -69,34 +67,43 @@ const Body = async () => {
                 <TableCell className="py-3">
                   <span
                     className={cn(
-                      "px-2 py-1 rounded-full text-xs font-medium",
+                      "rounded-full px-2 py-1 text-xs font-medium",
                       participant.confirmed === "confirmed"
                         ? "bg-green-100 text-green-800"
                         : participant.confirmed === "rejected"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800",
                     )}
                   >
-                    {participant.confirmed === "confirmed" 
-                      ? "Confirmed" 
+                    {participant.confirmed === "confirmed"
+                      ? "Confirmed"
                       : participant.confirmed === "rejected"
-                      ? "Rejected"
-                      : "Pending"}
+                        ? "Rejected"
+                        : "Pending"}
                   </span>
                 </TableCell>
-                <TableCell className="text-gray-700 py-3">{participant.council ?? "-"}</TableCell>
-                <TableCell className={cn(
-                  "text-gray-700 py-3",
-                  index === participantData.length - 1 && "rounded-br-lg"
-                )}>
+                <TableCell className="py-3 text-gray-700">{participant.council ?? "-"}</TableCell>
+                <TableCell
+                  className={cn(
+                    "py-3 text-gray-700",
+                    index === participantData.length - 1 && "rounded-br-lg",
+                  )}
+                >
                   {participant.country ?? "-"}
                 </TableCell>
               </TableRow>
             ))
           ) : (
-            <TableRow className="bg-red-50 border-b">
-              <TableCell colSpan={4} className="text-center font-medium text-red-700 py-6">
-                You haven&apos;t registered. Register now
+            <TableRow className="border-b bg-red-50">
+              <TableCell colSpan={4} className="py-6 text-center font-medium text-red-700">
+                You haven&apos;t registered.{" "}
+                <Link
+                  href={`/dashboard/delegates`}
+                  className="underline transition-colors hover:text-red-800"
+                >
+                  {" "}
+                  Register now
+                </Link>
               </TableCell>
             </TableRow>
           )}

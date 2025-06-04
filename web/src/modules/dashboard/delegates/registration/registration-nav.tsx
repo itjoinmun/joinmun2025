@@ -8,7 +8,6 @@ const RegistrationNav = () => {
   const { submitting } = useFormStatus();
   const pathname = usePathname();
 
-  // Extract the current step from the URL
   const pathSegments: string[] = pathname.split("/");
   const lastSegment: string = pathSegments[pathSegments.length - 1];
   const currentStep: number = parseInt(lastSegment) || 1;
@@ -19,6 +18,9 @@ const RegistrationNav = () => {
 
   const isFirstStep = currentStep <= 1;
   const isLastStep = currentStep >= TOTAL_STEPS;
+
+  const isObserver = pathSegments.includes("observer");
+
   return (
     <>
       <div className="bg-background border-gray-light fixed inset-x-0 bottom-0 z-10 grid grid-cols-2 gap-3 p-2 md:absolute md:right-8 md:bottom-8 md:left-auto md:rounded-xs md:border md:shadow-md">
@@ -33,7 +35,11 @@ const RegistrationNav = () => {
             Previous
           </Button>
         ) : (
-          <Link href={`${currentStep - 1}`} scroll={false} className="md:w-auto">
+          <Link
+            href={`${isObserver ? currentStep - 2 : currentStep - 1}`}
+            scroll={false}
+            className="md:w-auto"
+          >
             <Button
               type="button"
               variant={"outline"}

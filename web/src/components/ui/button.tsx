@@ -20,7 +20,7 @@ const buttonVariants = cva(
         link: "text-white hover:text-white/80",
         ghost: "hover:bg-transparent hover:bg-gray-light/20 dark:hover:bg-accent/50",
         white: "bg-white text-black shadow-xs hover:bg-white/80",
-        warning: "bg-gold text-black hover:bg-gold/80",
+        warning: "bg-gold text-black hover:bg-gold/90",
         warningOutline: "bg-red-dark border border-gold text-gold hover:bg-red-dark-hover",
       },
       size: {

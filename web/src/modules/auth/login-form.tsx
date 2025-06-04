@@ -18,13 +18,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
 const loginSchema = z.object({
-  email: z.string().email("Email format is invalid").nonempty("Email is required"),
+  email: z.string().email("Please provide a valid email address").nonempty("Email is required"),
   password: z.string().nonempty("Password is required"),
 });
 
 const LoginForm = () => {
   const [pending, setPending] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm({
@@ -37,6 +39,7 @@ const LoginForm = () => {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setPending(true);
+    setError(null);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`, {
         method: "POST",
@@ -47,8 +50,8 @@ const LoginForm = () => {
       });
 
       if (!res.ok) {
-        console.error(res);
         setPending(false);
+        setError("Invalid credentials. Please check your email and password again.");
         return;
       }
 
@@ -95,6 +98,9 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
+
+        {error && <div className="text-center text-sm text-red-500 md:text-start">{error}</div>}
+
         <Button disabled={pending} type="submit" variant={`primary`} className="w-full">
           {pending ? (
             <>

@@ -20,7 +20,7 @@ const getSession = async (): Promise<Session> => {
         Cookie: `access_token=${access}`,
       },
       next: {
-        revalidate: 300,
+        revalidate: 30,
       },
     }).then((res) => res.json());
 
@@ -32,6 +32,8 @@ const getSession = async (): Promise<Session> => {
     };
   } catch (error) {
     console.error("Error fetching session:", error);
+    cookieStore.delete("access_token");
+    cookieStore.delete("refresh_token");
     redirect("/login");
   }
 };

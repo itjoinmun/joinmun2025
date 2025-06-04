@@ -10,7 +10,7 @@ const CTACard = ({
 }: {
   title: string;
   description: string;
-  href: string;
+  href?: string;
   className?: string;
 }) => {
   return (
@@ -20,15 +20,17 @@ const CTACard = ({
       <h1 className="text-lg/snug font-bold">{title}</h1>
       <hr className="border-gray my-2 border-b-2" />
       <p className="mb-auto text-sm/snug">{description}</p>
-      <Link
-        href={href}
-        className={cn(
-          buttonVariants({ variant: "primary" }),
-          "mt-2 ml-auto w-fit justify-self-end",
-        )}
-      >
-        Enter
-      </Link>
+      {href && (
+        <Link
+          href={href}
+          className={cn(
+            buttonVariants({ variant: "primary" }),
+            "mt-2 ml-auto w-fit justify-self-end",
+          )}
+        >
+          Enter
+        </Link>
+      )}
     </article>
   );
 };

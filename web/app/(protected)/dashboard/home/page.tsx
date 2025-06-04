@@ -4,7 +4,6 @@ import {
   DashboardPageTitle,
 } from "@/components/dashboard/dashboard-page";
 import { Skeleton } from "@/components/ui/skeleton";
-import DashboardEvents from "@/modules/dashboard/home/dashboard-events";
 import InformationCenter from "@/modules/dashboard/home/dashboard-status";
 import ParticipantData from "@/modules/dashboard/home/participant-data";
 import ParticipantStatus from "@/modules/dashboard/home/participant-status";
@@ -28,7 +27,6 @@ const DashboardHome = () => {
         <ParticipantData />
       </Suspense>
 
-      <DashboardEvents />
       <Playground />
     </DashboardPage>
   );
