@@ -14,7 +14,6 @@ export const ViewPaperButton = () => {
     setIsLoading(true);
     try {
       const paperData = await getDelegatePaper();
-      console.log("🚀 Paper data:", paperData); // Debug log
       if (paperData && paperData.submission_file) {
         setPaperUrl(paperData.submission_file);
         setOpen(true);
