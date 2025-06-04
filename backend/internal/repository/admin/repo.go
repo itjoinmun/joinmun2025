@@ -195,7 +195,10 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 		WITH team_info AS (
 			SELECT DISTINCT 
 				p.mun_team_id,
-				COALESCE(t.mun_team_lead, p.mun_delegate_email) as mun_team_lead,
+				COALESCE(
+					t.mun_team_lead, 
+					MIN(p.mun_delegate_email)  -- Use MIN to get consistent fallback
+				) as mun_team_lead,
 				MIN(p.payment_date) as earliest_payment
 			FROM payment p
 			JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
@@ -213,7 +216,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 	}
 
 	teamQuery += fmt.Sprintf(`
-			GROUP BY p.mun_team_id, t.mun_team_lead, p.mun_delegate_email
+			GROUP BY p.mun_team_id, t.mun_team_lead  -- Removed p.mun_delegate_email
 		)
 		SELECT mun_team_id, mun_team_lead
 		FROM team_info
