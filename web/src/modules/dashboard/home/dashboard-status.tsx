@@ -34,59 +34,69 @@ const DashboardStatus = async () => {
   const paperStatus = await getDelegatePaper();
   const paymentStatus = await getPayment();
 
+  console.log("User Status:", userStatus);
+  console.log("Paper Status:", paperStatus);
+  console.log("Payment Status:", paymentStatus);
+  
   const registrationStatus: RegistrationStatus = (() => {
-    if (!userStatus?.confirmed) return "waiting_verification";
-    if (userStatus.confirmed && !paymentStatus?.confirmed) return "verified_pending_payment";
-    if (paymentStatus?.payment_status === "checking") return "payment_checking";
-    if (userStatus.confirmed && paymentStatus?.confirmed) return "payment_verified";
-    return "not_registered";
+    if (!userStatus) return "not_registered";
+    if (userStatus.confirmed === "pending") return "waiting_verification";
+    if (userStatus.confirmed === "rejected") return "not_registered";
+    if (userStatus.confirmed === "confirmed" && (!paymentStatus || paymentStatus.payment_status === "pending")) return "verified_pending_payment";
+    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "pending") return "payment_checking";
+    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "paid") return "payment_verified";
+    return "verified_pending_payment";
   })();
 
   const paperSubmission: PaperSubmissionStatus = (() => {
-    if (!userStatus?.confirmed || !paymentStatus?.confirmed) return "registration_pending";
+    if (!userStatus || userStatus.confirmed !== "confirmed") return "registration_pending";
+    if (!paymentStatus || paymentStatus.payment_status !== "paid") return "registration_pending";
     if (paperStatus?.submission_file) return "uploaded";
     return "can_upload";
   })();
 
   const delegateCode: DelegateCodeStatus = (() => {
-    if (userStatus?.confirmed) return "code_available";
+    if (!userStatus) return "not_registered";
+    if (userStatus.participant_type !== "single_delegate") return "code_available";
     return "registration_pending";
   })();
 
   const informationCenter: InformationCenterStatus = (() => {
-    if (!userStatus?.confirmed) return "registration_pending";
-    return "no_information"; // Placeholder
+    if (!userStatus || userStatus.confirmed !== "confirmed") return "registration_pending";
+    // Check if council and country are assigned
+    if (userStatus.council && userStatus.country) return "has_information";
+    return "no_information";
   })();
 
-  const regInfo = getRegistrationStatusInfo(registrationStatus);
-  const codeInfo = getDelegateCodeInfo(delegateCode);
+  const regInfo = getRegistrationStatusInfo(registrationStatus, userStatus);
+  const codeInfo = getDelegateCodeInfo(delegateCode, userStatus, paymentStatus);
   const paperInfo = getPaperSubmissionInfo(paperSubmission);
-  const infoInfo = getInformationCenterInfo(informationCenter);
+  const infoInfo = getInformationCenterInfo(informationCenter, userStatus);
 
   return (
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">
         <StatusCard
-          cardHeader="Status"
-          cardDescription=""
+          cardHeader="Registration Status"
+          cardDescription="Your current registration progress"
           status={regInfo.status}
           description={regInfo.description}
         />
         <StatusCard
           cardHeader="Delegate Code"
-          cardDescription="Give this code to your Faculty Advisor"
+          cardDescription="Your unique delegate identifier"
           status={codeInfo.status}
           description={codeInfo.description}
         />
         <StatusCard
           cardHeader="Paper Submission"
-          cardDescription=""
+          cardDescription="Position paper upload status"
           status={paperInfo.status}
           description={paperInfo.description}
         />
         <StatusCard
-          cardHeader="Information Center"
-          cardDescription=""
+          cardHeader="Assignment Information"
+          cardDescription="Council and country assignment"
           status={infoInfo.status}
           description={infoInfo.description}
         />
@@ -121,55 +131,53 @@ const StatusCard = ({
   );
 };
 
-const getRegistrationStatusInfo = (status: RegistrationStatus) => {
+const getRegistrationStatusInfo = (status: RegistrationStatus, userStatus?: any) => {
   switch (status) {
     case "not_registered":
       return {
         status: "Not Registered",
-        description: "You haven't registered, <b>Register Now</b>",
+        description: "You haven't registered yet. Please complete your registration.",
       };
     case "waiting_verification":
       return {
-        status: "Waiting for Verification",
-        description: "Waiting For Verification...",
+        status: "Pending Verification",
+        description: "Your registration is being reviewed by administrators.",
       };
     case "verified_pending_payment":
       return {
         status: "Payment Required",
-        description: "Verified, Go To Payment",
+        description: "Registration approved! Please proceed with payment to complete your registration.",
       };
     case "payment_checking":
       return {
-        status: "Payment Being Checked",
-        description: "Verified, Go To Payment",
+        status: "Payment Under Review",
+        description: "Your payment is being verified by our team.",
       };
     case "payment_verified":
       return {
         status: "Fully Registered",
-        description: "Your registration is complete",
+        description: "Congratulations! Your registration and payment are complete.",
       };
   }
 };
 
-const getDelegateCodeInfo = (status: DelegateCodeStatus) => {
+const getDelegateCodeInfo = (status: DelegateCodeStatus, userStatus?: any, paymentStatus?: any) => {
   switch (status) {
     case "not_registered":
       return {
         status: "Not Available",
         description: "Complete registration to get your delegate code",
-        variant: "error" as const,
       };
     case "registration_pending":
       return {
-        status: "Pending Registration",
-        description: "Code will be available after registration is complete",
-        variant: "warning" as const,
+        status: "Pending Approval",
+        description: "Code will be available after registration approval",
       };
     case "code_available":
+      const delegateCode = paymentStatus?.mun_team_id || userStatus?.mun_team_id || "Individual";
       return {
-        status: "Code Available",
-        description: "Your delegate code is ready to use",
-        variant: "success" as const,
+        status: delegateCode,
+        description: `${delegateCode}`,
       };
   }
 };
@@ -203,31 +211,27 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
   }
 };
 
-const getInformationCenterInfo = (status: InformationCenterStatus) => {
+const getInformationCenterInfo = (status: InformationCenterStatus, userStatus?: any) => {
   switch (status) {
     case "not_registered":
       return {
         status: "Not Available",
-        description: "Register to access information center",
-        variant: "error" as const,
+        description: "Register to access assignment information",
       };
     case "registration_pending":
       return {
         status: "Pending Registration",
-        description: "Complete registration to view information",
-        variant: "warning" as const,
+        description: "Complete registration and payment to view assignments",
       };
     case "no_information":
       return {
-        status: "No Updates",
-        description: "No new information available at this time",
-        variant: "info" as const,
+        status: "Assignment Pending",
+        description: "Council and country assignments will be available soon",
       };
     case "has_information":
       return {
-        status: "Updates Available",
-        description: "New information is available for you",
-        variant: "success" as const,
+        status: "Assignment Available",
+        description: `Council: ${userStatus?.council || 'TBA'} | Country: ${userStatus?.country || 'TBA'}`,
       };
   }
 };

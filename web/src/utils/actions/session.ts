@@ -28,6 +28,7 @@ const getSession = async (): Promise<Session> => {
       user: res.user.UserID,
       email: res.user.Email,
       name: res.user.Username,
+      role: res.user.Role,
     };
   } catch (error) {
     console.error("Error fetching session:", error);
@@ -39,6 +40,7 @@ export interface Session {
   user: number;
   email: string;
   name: string;
+  role: string;
 }
 
 export { getSession };
