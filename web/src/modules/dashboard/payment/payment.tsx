@@ -1,13 +1,37 @@
 import { PaymentContext } from "./payment-context";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { PackageSelection } from "./payment-context";
 import { DashboardModule, DashboardModuleContent } from "@/components/dashboard/dashboard-module";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PaymentPackageCard from "./package-card";
 import PaymentNav from "./payment-nav";
-import { submitPayment } from "@/utils/helpers/fetch/delegates/delegates";
+import { submitPayment, getDelegates, Delegate } from "@/utils/helpers/fetch/delegates/delegates";
 import { paymentStorage } from "@/utils/storage/indexeddb";
+
+// Custom hook for fetching delegate data
+const useDelegatesApprovalStatus = () => {
+  const [delegates, setDelegates] = useState<{ participant_data: Delegate[]; team_id: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDelegates = async () => {
+      try {
+        const data = await getDelegates();
+        setDelegates(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch delegates");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDelegates();
+  }, []);
+
+  return { delegates, loading, error };
+};
 
 const Payment = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -121,21 +145,155 @@ const Payment = () => {
     <PaymentContext.Provider value={{ packageSelection, setPackageSelection }}>
       <DashboardModule>
         <DashboardModuleContent>
-          {renderStepContent()}
-          {!submitSuccess && (
-            <PaymentNav
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-              onSubmit={handleSubmit}
-              isLastStep={currentStep >= TOTAL_STEPS}
-              isFirstStep={currentStep <= 1}
-              canProceed={!!packageSelection}
-              submitError={submitError}
-            />
-          )}
+          <PaymentWithApprovalCheck 
+            renderStepContent={renderStepContent}
+            submitSuccess={submitSuccess}
+            handleNext={handleNext}
+            handlePrevious={handlePrevious}
+            handleSubmit={handleSubmit}
+            currentStep={currentStep}
+            TOTAL_STEPS={TOTAL_STEPS}
+            packageSelection={packageSelection}
+            submitError={submitError}
+          />
         </DashboardModuleContent>
       </DashboardModule>
     </PaymentContext.Provider>
+  );
+};
+
+const PaymentWithApprovalCheck = ({ 
+  renderStepContent, 
+  submitSuccess, 
+  handleNext, 
+  handlePrevious, 
+  handleSubmit, 
+  currentStep, 
+  TOTAL_STEPS, 
+  packageSelection, 
+  submitError 
+}: {
+  renderStepContent: () => React.ReactNode;
+  submitSuccess: boolean;
+  handleNext: () => void;
+  handlePrevious: () => void;
+  handleSubmit: (file: File) => Promise<void>;
+  currentStep: number;
+  TOTAL_STEPS: number;
+  packageSelection: PackageSelection | null;
+  submitError: string;
+}) => {
+  const { delegates, loading, error } = useDelegatesApprovalStatus();
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p className="text-gray-600">Loading approval status...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-8">
+        <div className="rounded-full bg-red-100 p-3">
+          <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-red-700">Error Loading Data</h2>
+        <p className="text-center text-gray-600">
+          {error}
+        </p>
+      </div>
+    );
+  }
+  
+  if (!delegates || !delegates.participant_data || delegates.participant_data.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-8">
+        <div className="rounded-full bg-yellow-100 p-3">
+          <svg className="h-8 w-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-yellow-700">No Registration Found</h2>
+        <p className="text-center text-gray-600">
+          You haven't registered yet. Please register first before proceeding with payment.
+        </p>
+      </div>
+    );
+  }
+
+  const hasRejected = delegates.participant_data.some(delegate => delegate.confirmed === "rejected");
+  const allConfirmed = delegates.participant_data.every(delegate => delegate.confirmed === "confirmed");
+
+  if (hasRejected) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-8">
+        <div className="rounded-full bg-red-100 p-3">
+          <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-red-700">Registration Rejected</h2>
+        <p className="text-center text-gray-600">
+          One or more of your delegates have been rejected. Please contact the admin for more information.
+        </p>
+      </div>
+    );
+  }
+
+  if (!allConfirmed) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-8">
+        <div className="rounded-full bg-blue-100 p-3">
+          <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-blue-700">Approval Pending</h2>
+        <p className="text-center text-gray-600">
+          You are not fully approved yet. Please wait for admin approval before proceeding with payment.
+        </p>
+        <div className="mt-4 text-sm text-gray-500">
+          <p>Delegate Status:</p>
+          <ul className="mt-2 space-y-1">
+            {delegates.participant_data.map((delegate, index) => (
+              <li key={index} className="flex items-center gap-2">
+                <span className={`inline-block w-2 h-2 rounded-full ${
+                  delegate.confirmed === "confirmed" ? "bg-green-500" : 
+                  delegate.confirmed === "rejected" ? "bg-red-500" : "bg-yellow-500"
+                }`}></span>
+                <span>{delegate.mun_delegate_name}: {
+                  delegate.confirmed === "confirmed" ? "Confirmed" :
+                  delegate.confirmed === "rejected" ? "Rejected" : "Pending"
+                }</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  // All delegates are confirmed, show normal payment flow
+  return (
+    <>
+      {renderStepContent()}
+      {!submitSuccess && (
+        <PaymentNav
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          onSubmit={handleSubmit}
+          isLastStep={currentStep >= TOTAL_STEPS}
+          isFirstStep={currentStep <= 1}
+          canProceed={!!packageSelection}
+          submitError={submitError}
+        />
+      )}
+    </>
   );
 };
 

@@ -147,122 +147,6 @@ export async function getPayment(): Promise<Payment | null> {
   return resBody;
 }
 
-export async function approveRegistration(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/approve-registration`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to approve registration");
-  }
-
-  return res.json();
-}
-
-export async function rejectRegistration(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/reject-registration`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to reject registration");
-  }
-
-  return res.json();
-}
-
-export async function approvePayment(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/approve-payment`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to approve payment");
-  }
-
-  return res.json();
-}
-
-export async function rejectPayment(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/reject-payment`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to reject payment");
-  }
-
-  return res.json();
-}
-
-export async function assignCouncil(id: number, council: string) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/assign-council`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-    body: JSON.stringify({ council }),
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to assign council");
-  }
-
-  return res.json();
-}
-
-export async function assignCountry(id: number, country: string) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/assign-country`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-    body: JSON.stringify({ country }),
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to assign country");
-  }
-
-  return res.json();
-}
-
 export interface Participant {
   name: string;
   email: string;
@@ -302,5 +186,31 @@ export async function submitPayment(paymentData: {
     message: result.message,
     payment_id: result.payment_id,
     payment_file: result.payment_file,
+  };
+}
+
+export async function submitPositionPaper(file: File): Promise<{ success: boolean; message: string }> {
+  const accessToken = (await cookies()).get("access_token")?.value;
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${process.env.API_URL}/position`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      "Cookie": `access_token=${accessToken}`,
+    },
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to submit position paper");
+  }
+
+  const result = await res.json();
+  return {
+    success: true,
+    message: result.message,
   };
 }

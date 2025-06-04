@@ -11,6 +11,8 @@ import {
   getDelegatePaper,
   getPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
+import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
+import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
 
 type RegistrationStatus =
   | "not_registered"
@@ -93,6 +95,9 @@ const DashboardStatus = async () => {
           cardDescription="Position paper upload status"
           status={paperInfo.status}
           description={paperInfo.description}
+          canSubmitPaper={paperSubmission === "can_upload"}
+          paperUploaded={paperSubmission === "uploaded"}
+          userStatus={userStatus}
         />
         <StatusCard
           cardHeader="Assignment Information"
@@ -110,11 +115,17 @@ const StatusCard = ({
   description,
   cardHeader,
   cardDescription,
+  canSubmitPaper = false,
+  userStatus,
+  paperUploaded = false,
 }: {
   status: string;
   description: string;
   cardHeader: string;
   cardDescription: string;
+  canSubmitPaper?: boolean;
+  userStatus?: any;
+  paperUploaded?: boolean;
 }) => {
   return (
     <DashboardModule className={cn("flex flex-col gap-3 transition-all")}>
@@ -124,8 +135,14 @@ const StatusCard = ({
           {cardDescription}
         </DashboardModuleDescription>
       </DashboardModuleHeader>
-      <DashboardModuleContent className="mt-auto">
+      <DashboardModuleContent className="mt-auto space-y-3">
         <p className="text-sm opacity-90">{description}</p>
+        {canSubmitPaper && userStatus && (
+          <PositionPaperModal userStatus={userStatus} />
+        )}
+        {paperUploaded && (
+          <ViewPaperButton />
+        )}
       </DashboardModuleContent>
     </DashboardModule>
   );
