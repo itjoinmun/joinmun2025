@@ -1,5 +1,10 @@
-export type DelegateType = '' | 'single_delegate' | 'team_delegate' | 'faculty_advisor' | 'observer';
-export type TimeWave = '' | 'earlybird' | 'regularwave' | 'latewave';
+export type DelegateType =
+  | "all"
+  | "single_delegate"
+  | "team_delegate"
+  | "faculty_advisor"
+  | "observer";
+export type TimeWave = "all" | "earlybird" | "regular" | "late";
 
 export interface MUNDelegate {
   mun_delegate_email: string;
