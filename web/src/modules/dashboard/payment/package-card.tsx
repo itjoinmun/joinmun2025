@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/helpers/cn";
 import { pricePackage as basePricing } from "@/utils/helpers/price-package";
 
-type PackageType = "Early Bird" | "Regular" | "Late";
+type PackageType = "EarlyBird" | "Regular" | "Late";
 type ParticipantType = "single_delegate" | "team_delegation" | "observer" | "advisor";
 type AccommodationType = "accommodation" | "nonAccommodation";
 

@@ -14,7 +14,7 @@ export interface Delegate {
   pair: string | null;
   council: string | null;
   country: string | null;
-  confirmed: boolean;
+  confirmed: string;
   confirmed_date: string | null;
   council_date: string | null;
   insert_date: string;
@@ -105,7 +105,7 @@ export interface Payment {
   mun_delegate_email: string;
   package: string;
   payment_file: string;
-  payment_status: "rejected" | "pending" | "checking" | "approved";
+  payment_status: "paid" | "failed" | "pending";
   payment_date: string | null;
   payment_amount: number;
   mun_delegate_name: string;
@@ -118,7 +118,7 @@ export interface Payment {
     mun_delegate_name: string;
     participant_type: apiSlugs;
     confirmed: boolean;
-    payment_status: "rejected" | "pending" | "checking" | "approved";
+    payment_status: "paid" | "failed" | "pending";
     payment_amount: number;
     package: string;
   }[];
@@ -270,4 +270,37 @@ export interface Participant {
   registration_status: "rejected" | "pending" | "confirmed";
   council: string | null;
   country: string | null;
+}
+
+export async function submitPayment(paymentData: {
+  package: string;
+  payment_amount: number;
+}, paymentFile: File): Promise<{ success: boolean; message: string; payment_id?: number; payment_file?: string }> {
+  const accessToken = (await cookies()).get("access_token")?.value;
+  const formData = new FormData();
+  formData.append("payment", JSON.stringify(paymentData));
+  formData.append("payment_proof", paymentFile);
+
+  const res = await fetch(`${process.env.API_URL}/payment`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      "Accept": "application/json",
+      "Cookie": `access_token=${accessToken}`,
+    },
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to submit payment");
+  }
+
+  const result = await res.json();
+  return {
+    success: true,
+    message: result.message,
+    payment_id: result.payment_id,
+    payment_file: result.payment_file,
+  };
 }

@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export interface PackageSelection {
-  type: "Early Bird" | "Regular" | "Late";
+  type: "EarlyBird" | "Regular" | "Late";
   participantType: "single_delegate" | "team_delegation" | "observer" | "advisor";
   accommodationType: "with_accommodation" | "non_accommodation";
   price?: number;

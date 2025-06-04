@@ -1,33 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { useFormStatus } from "@/utils/hooks/use-form-status";
 import { ChevronLeft } from "lucide-react";
-// import { useContext } from "react";
-// import { PaymentContext } from "./payment-context";
 
 interface PaymentNavProps {
-  // currentStep: number;
   onNext: () => void;
   onPrevious: () => void;
-  onSubmit: (file?: File) => void;
+  onSubmit: (file: File) => Promise<void>;
   isLastStep: boolean;
   isFirstStep: boolean;
   canProceed?: boolean;
+  submitError?: string;
 }
 
 const PaymentNav = ({
-  // currentStep,
   onNext,
   onPrevious,
   onSubmit,
   isLastStep,
   isFirstStep,
   canProceed = true,
+  submitError,
 }: PaymentNavProps) => {
   const { submitting, setSubmitting } = useFormStatus();
 
-  const handleNextClick = () => {
+  const handleNextClick = async () => {
     if (isLastStep) {
-      // Validation untuk step terakhir
       const paymentProofInput = document.getElementById("payment-proof") as HTMLInputElement;
 
       if (!paymentProofInput?.files?.[0]) {
@@ -36,19 +33,17 @@ const PaymentNav = ({
       }
 
       setSubmitting(true);
-      onSubmit(paymentProofInput.files[0]);
-      // Reset submitting state after submission
-      setTimeout(() => setSubmitting(false), 2000);
+      try {
+        await onSubmit(paymentProofInput.files[0]);
+      } catch (error) {
+        console.error("Payment submission failed:", error);
+      } finally {
+        setSubmitting(false);
+      }
     } else {
       onNext();
     }
   };
-
-  // Untuk step terakhir, cek apakah form sudah lengkap
-  // const canSubmit = isLastStep
-  //   ? document.querySelector(".border-blue-500.bg-blue-500\\/5") &&
-  //     (document.getElementById("payment-proof") as HTMLInputElement)?.files?.[0]
-  //   : canProceed;
 
   return (
     <>
@@ -85,6 +80,11 @@ const PaymentNav = ({
           )}
         </Button>
       </div>
+      {submitError && (
+        <div className="fixed inset-x-0 bottom-20 z-20 mx-4 rounded bg-red-100 p-3 text-red-700 md:absolute md:bottom-24 md:right-8 md:left-auto md:mx-0">
+          {submitError}
+        </div>
+      )}
       <div className="h-8 w-full md:hidden" />
     </>
   );
