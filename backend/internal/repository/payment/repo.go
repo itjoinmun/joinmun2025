@@ -47,8 +47,8 @@ func (r *paymentRepo) GetPaymentByDelegateEmail(delegateEmail string) (*payment.
 	var payments payment.Payment
 	query := `
 	SELECT 
-		p.*, 
-	FROM payments p
+		p.* 
+	FROM payment p
 	WHERE p.mun_delegate_email = $1`
 	err := r.db.Get(&payments, query, delegateEmail)
 	if err != nil {

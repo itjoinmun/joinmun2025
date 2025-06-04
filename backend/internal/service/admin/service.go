@@ -128,16 +128,18 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 		retErr = fmt.Errorf("email %s is not a delegate", email)
 		return retErr
 	}
-	err = s.emailer.SendBiodataApprovalEmail(email)
-	if err != nil {
-		logger.LogError(err, "Failed to send biodata approval email", map[string]interface{}{
-			"layer":     "service",
-			"operation": "service.UpdateParticipantStatus",
-			"error":     err,
-		})
-		retErr = err
-		return retErr
-	}
+
+	// err = s.emailer.SendBiodataApprovalEmail(email)
+	// if err != nil {
+	// 	logger.LogError(err, "Failed to send biodata approval email", map[string]interface{}{
+	// 		"layer":     "service",
+	// 		"operation": "service.UpdateParticipantStatus",
+	// 		"error":     err,
+	// 	})
+	// 	retErr = err
+	// 	return retErr
+	// }
+
 	err = s.adminRepo.UpdateDelegateStatus(email, status)
 	if err != nil {
 		logger.LogError(err, "Failed to update participant status", map[string]interface{}{
@@ -257,11 +259,11 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail, status string) error {
 		return fmt.Errorf("payment already updated for delegate email: %s", delegateEmail)
 	}
 
-	err = s.emailer.SendPaymentApprovalEmail(delegateEmail)
-	if err != nil {
-		logger.LogError(err, "Failed to send payment approval email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
-		return err
-	}
+	// err = s.emailer.SendPaymentApprovalEmail(delegateEmail)
+	// if err != nil {
+	// 	logger.LogError(err, "Failed to send payment approval email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+	// 	return err
+	// }
 
 	err = s.adminRepo.UpdatePaymentStatus(delegateEmail, status)
 	if err != nil {
