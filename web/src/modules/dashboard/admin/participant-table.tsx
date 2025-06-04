@@ -34,6 +34,7 @@ const ParticipantTable = ({
   onAssignCountry,
 }: ParticipantTableProps) => {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [tempValues, setTempValues] = useState<Record<string, { council: string; country: string }>>({});
 
   const handleAction = async (action: () => Promise<void>, email: string, actionType: string) => {
     try {
@@ -41,6 +42,33 @@ const ParticipantTable = ({
       await action();
     } finally {
       setLoading((prev) => ({ ...prev, [`${actionType}-${email}`]: false }));
+    }
+  };
+
+  const getTempValue = (email: string, field: 'council' | 'country') => {
+    return tempValues[email]?.[field] || '';
+  };
+
+  const setTempValue = (email: string, field: 'council' | 'country', value: string) => {
+    setTempValues(prev => ({
+      ...prev,
+      [email]: {
+        ...prev[email],
+        [field]: value
+      }
+    }));
+  };
+
+  const handleAssignCouncilCountry = async (email: string) => {
+    const council = getTempValue(email, 'council');
+    const country = getTempValue(email, 'country');
+    
+    if (council && country) {
+      await handleAction(
+        () => onAssignCouncil(email, council),
+        email,
+        "assign-council-country"
+      );
     }
   };
 
@@ -60,8 +88,7 @@ const ParticipantTable = ({
             <TableHead className="w-12">No</TableHead>
             <TableHead className="min-w-[200px]">Nama</TableHead>
             <TableHead className="min-w-[200px]">Email</TableHead>
-            <TableHead className="min-w-[100px]">Council</TableHead>
-            <TableHead className="min-w-[100px]">Country</TableHead>
+            <TableHead className="min-w-[150px]">Council & Country</TableHead>
             <TableHead className="min-w-[100px]">Registration</TableHead>
             <TableHead className="min-w-[100px]">Payment</TableHead>
           </TableRow>
@@ -73,45 +100,43 @@ const ParticipantTable = ({
               <TableCell>{participant.name}</TableCell>
               <TableCell>{participant.email}</TableCell>
               <TableCell>
-                <select
-                  name="Council"
-                  onChange={(e) =>
-                    handleAction(
-                      () => onAssignCouncil(participant.email, e.target.value),
-                      participant.email,
-                      "assign-council",
-                    )
-                  }
-                  value={participant.council || ""}
-                  className="w-full rounded border p-1 pr-3"
-                  disabled={loading[`assign-council-${participant.email}`]}
-                >
-                  <option value="">Select Council</option>
-                  {COUNCILS.map((council) => (
-                    <option key={council.slug} value={council.slug}>
-                      {council.name}
-                    </option>
-                  ))}
-                </select>
-              </TableCell>
-              <TableCell>
-                <input
-                  type="text"
-                  value={participant.country || ""}
-                  onChange={(e) => onAssignCountry(participant.email, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleAction(
-                        () => onAssignCountry(participant.email, e.currentTarget.value),
-                        participant.email,
-                        "assign-country",
-                      );
+                <div className="space-y-2">
+                  <select
+                    name="Council"
+                    value={getTempValue(participant.email, 'council') || participant.council || ""}
+                    onChange={(e) => setTempValue(participant.email, 'council', e.target.value)}
+                    className="w-full rounded border p-1 pr-3"
+                    disabled={loading[`assign-council-country-${participant.email}`]}
+                  >
+                    <option value="">Select Council</option>
+                    {COUNCILS.map((council) => (
+                      <option key={council.slug} value={council.slug}>
+                        {council.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={getTempValue(participant.email, 'country') || participant.country || ""}
+                    onChange={(e) => setTempValue(participant.email, 'country', e.target.value)}
+                    className="w-full rounded border p-1"
+                    placeholder="Enter country"
+                    disabled={loading[`assign-council-country-${participant.email}`]}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleAssignCouncilCountry(participant.email)}
+                    disabled={
+                      loading[`assign-council-country-${participant.email}`] ||
+                      !getTempValue(participant.email, 'council') ||
+                      !getTempValue(participant.email, 'country')
                     }
-                  }}
-                  className="w-full rounded border p-1"
-                  placeholder="Enter country and press Enter"
-                  disabled={loading[`assign-country-${participant.email}`]}
-                />
+                  >
+                    Assign
+                  </Button>
+                </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">

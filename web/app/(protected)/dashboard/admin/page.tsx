@@ -62,7 +62,7 @@ const DashboardAdmin = () => {
   const [totalTeams, setTotalTeams] = useState(0);
   const [totalPayments, setTotalPayments] = useState(0);
   const [totalPapers, setTotalPapers] = useState(0);
-
+  
   const fetchDelegates = async () => {
     try {
       setLoading(true);
@@ -173,11 +173,11 @@ const DashboardAdmin = () => {
 
         <DashboardModuleContent>
           {/* Filters */}
-          <div className="flex gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <select
               value={delegateType}
               onChange={(e) => setDelegateType(e.target.value as DelegateType)}
-              className="h-10 w-48 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="h-10 w-full sm:w-48 rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               {DELEGATE_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -189,7 +189,7 @@ const DashboardAdmin = () => {
             <select
               value={timeWave}
               onChange={(e) => setTimeWave(e.target.value as TimeWave)}
-              className="h-10 w-48 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="h-10 w-full sm:w-48 rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               {TIME_WAVES.map((wave) => (
                 <option key={wave.value} value={wave.value}>
@@ -200,41 +200,41 @@ const DashboardAdmin = () => {
           </div>
 
           {/* Note */}
-          <div className="text-xs text-amber-600 mb-4">
-            Note: Response files are only valid for 8 hours after download.
+          <div className="text-xs text-amber-600 mb-4 p-2 bg-amber-50 rounded border border-amber-200">
+            ⚠️ Note: Response files are only valid for 8 hours after download.
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex space-x-1 rounded-lg bg-muted p-1 mb-4">
+          <div className="flex space-x-1 rounded-lg bg-muted p-1 mb-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab('delegates')}
-              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === 'delegates'
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Delegates ({delegatesData.length})
+              Delegates ({delegatesData?.length || 0})
             </button>
             <button
               onClick={() => setActiveTab('payments')}
-              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === 'payments'
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Payments ({paymentsData.length})
+              Payments ({paymentsData?.length || 0})
             </button>
             <button
               onClick={() => setActiveTab('papers')}
-              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all ${
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === 'papers'
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Position Papers ({positionPapersData?.length})
+              Position Papers ({positionPapersData?.length || 0})
             </button>
           </div>
 
@@ -263,16 +263,17 @@ const DashboardAdmin = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-6">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-2 mt-6 p-4 bg-gray-50 rounded-lg">
               <Button
                 variant="outline"
                 onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
                 disabled={currentPage === 0 || loading}
+                className="w-full sm:w-auto"
               >
                 Previous
               </Button>
 
-              <span className="text-sm">
+              <span className="text-sm text-gray-600 px-4">
                 Page {currentPage + 1} of {totalPages}
               </span>
 
@@ -280,6 +281,7 @@ const DashboardAdmin = () => {
                 variant="outline"
                 onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
                 disabled={currentPage >= totalPages - 1 || loading}
+                className="w-full sm:w-auto"
               >
                 Next
               </Button>
