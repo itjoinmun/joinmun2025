@@ -79,7 +79,7 @@ const refreshTokenMiddleware = async (request: NextRequest) => {
     name: "access_token",
     value: accessToken.value,
     path: accessToken.path,
-    maxAge: accessToken.maxAge || 900,
+    maxAge: accessToken.maxAge || 3600,
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
