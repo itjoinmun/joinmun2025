@@ -13,7 +13,6 @@ import {
   getDelegate,
   getDelegatePaper,
   getPayment,
-  Payment,
 } from "@/utils/helpers/fetch/delegates/delegates";
 
 type RegistrationStatus =
@@ -37,10 +36,6 @@ const DashboardStatus = async () => {
   const userStatus = await getDelegate();
   const paperStatus = await getDelegatePaper();
   const paymentStatus = await getPayment();
-
-  console.log("User Status:", userStatus);
-  console.log("Paper Status:", paperStatus);
-  console.log("Payment Status:", paymentStatus);
 
   const registrationStatus: RegistrationStatus = (() => {
     if (!userStatus) return "not_registered";
