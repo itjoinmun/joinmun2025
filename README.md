@@ -47,7 +47,3 @@ See [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to se
 - [Muhammad Argya Vityasy](https://github.com/vityasyyy)
 - [Sultan Devino](https://github.com/sultandevin)
 - [Bobby Rahman](https://github.com/)
-
-
-
-
