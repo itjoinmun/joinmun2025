@@ -11,7 +11,10 @@ import { paymentStorage } from "@/utils/storage/indexeddb";
 
 // Custom hook for fetching delegate data
 const useDelegatesApprovalStatus = () => {
-  const [delegates, setDelegates] = useState<{ participant_data: Delegate[]; team_id: string } | null>(null);
+  const [delegates, setDelegates] = useState<{
+    participant_data: Delegate[];
+    team_id: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,7 +65,7 @@ const Payment = () => {
 
     // Format package string as expected by backend: "type - accommodation"
     const packageString = `${packageSelection.type} - ${packageSelection.accommodationType}`;
-    
+
     const paymentData = {
       package: packageString,
       payment_amount: packageSelection.price || 0,
@@ -74,29 +77,28 @@ const Payment = () => {
         ...paymentData,
         payment_file: paymentFile,
         timestamp: Date.now(),
-        status: 'pending',
+        status: "pending",
       });
 
       // Submit to backend
       const result = await submitPayment(paymentData, paymentFile);
-      
+
       // Update storage status on success
-      await paymentStorage.updatePaymentStatus(storageId, 'submitted');
-      
+      await paymentStorage.updatePaymentStatus(storageId, "submitted");
+
       setSubmitSuccess(true);
       console.log("Payment submitted successfully:", result);
-      
     } catch (error) {
       console.error("Payment submission failed:", error);
       setSubmitError(error instanceof Error ? error.message : "Failed to submit payment");
-      
+
       // Try to store locally on failure
       try {
         await paymentStorage.storePayment({
           ...paymentData,
           payment_file: paymentFile,
           timestamp: Date.now(),
-          status: 'failed',
+          status: "failed",
         });
       } catch (storageError) {
         console.error("Failed to store payment locally:", storageError);
@@ -109,13 +111,24 @@ const Payment = () => {
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
           <div className="rounded-full bg-green-100 p-3">
-            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <svg
+              className="h-8 w-8 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <h2 className="text-xl font-bold text-green-700">Payment Submitted Successfully!</h2>
           <p className="text-center text-gray-600">
-            Your payment proof has been submitted and is being reviewed. You will receive confirmation once approved.
+            Your payment proof has been submitted and is being reviewed. You will receive
+            confirmation once approved.
           </p>
         </div>
       );
@@ -145,7 +158,7 @@ const Payment = () => {
     <PaymentContext.Provider value={{ packageSelection, setPackageSelection }}>
       <DashboardModule>
         <DashboardModuleContent>
-          <PaymentWithApprovalCheck 
+          <PaymentWithApprovalCheck
             renderStepContent={renderStepContent}
             submitSuccess={submitSuccess}
             handleNext={handleNext}
@@ -162,16 +175,16 @@ const Payment = () => {
   );
 };
 
-const PaymentWithApprovalCheck = ({ 
-  renderStepContent, 
-  submitSuccess, 
-  handleNext, 
-  handlePrevious, 
-  handleSubmit, 
-  currentStep, 
-  TOTAL_STEPS, 
-  packageSelection, 
-  submitError 
+const PaymentWithApprovalCheck = ({
+  renderStepContent,
+  submitSuccess,
+  handleNext,
+  handlePrevious,
+  handleSubmit,
+  currentStep,
+  TOTAL_STEPS,
+  packageSelection,
+  submitError,
 }: {
   renderStepContent: () => React.ReactNode;
   submitSuccess: boolean;
@@ -188,7 +201,7 @@ const PaymentWithApprovalCheck = ({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
         <p className="text-gray-600">Loading approval status...</p>
       </div>
     );
@@ -198,48 +211,81 @@ const PaymentWithApprovalCheck = ({
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
         <div className="rounded-full bg-red-100 p-3">
-          <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          <svg
+            className="h-8 w-8 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
           </svg>
         </div>
         <h2 className="text-xl font-bold text-red-700">Error Loading Data</h2>
-        <p className="text-center text-gray-600">
-          {error}
-        </p>
+        <p className="text-center text-gray-600">{error}</p>
       </div>
     );
   }
-  
+
   if (!delegates || !delegates.participant_data || delegates.participant_data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
         <div className="rounded-full bg-yellow-100 p-3">
-          <svg className="h-8 w-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          <svg
+            className="h-8 w-8 text-yellow-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
           </svg>
         </div>
         <h2 className="text-xl font-bold text-yellow-700">No Registration Found</h2>
         <p className="text-center text-gray-600">
-          You haven't registered yet. Please register first before proceeding with payment.
+          You haven&apos;t registered yet. Please register first before proceeding with payment.
         </p>
       </div>
     );
   }
 
-  const hasRejected = delegates.participant_data.some(delegate => delegate.confirmed === "rejected");
-  const allConfirmed = delegates.participant_data.every(delegate => delegate.confirmed === "confirmed");
+  const hasRejected = delegates.participant_data.some(
+    (delegate) => delegate.confirmed === "rejected",
+  );
+  const allConfirmed = delegates.participant_data.every(
+    (delegate) => delegate.confirmed === "confirmed",
+  );
 
   if (hasRejected) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
         <div className="rounded-full bg-red-100 p-3">
-          <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="h-8 w-8 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </div>
         <h2 className="text-xl font-bold text-red-700">Registration Rejected</h2>
         <p className="text-center text-gray-600">
-          One or more of your delegates have been rejected. Please contact the admin for more information.
+          One or more of your delegates have been rejected. Please contact the admin for more
+          information.
         </p>
       </div>
     );
@@ -249,27 +295,47 @@ const PaymentWithApprovalCheck = ({
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
         <div className="rounded-full bg-blue-100 p-3">
-          <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="h-8 w-8 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
         <h2 className="text-xl font-bold text-blue-700">Approval Pending</h2>
         <p className="text-center text-gray-600">
-          You are not fully approved yet. Please wait for admin approval before proceeding with payment.
+          You are not fully approved yet. Please wait for admin approval before proceeding with
+          payment.
         </p>
         <div className="mt-4 text-sm text-gray-500">
           <p>Delegate Status:</p>
           <ul className="mt-2 space-y-1">
             {delegates.participant_data.map((delegate, index) => (
               <li key={index} className="flex items-center gap-2">
-                <span className={`inline-block w-2 h-2 rounded-full ${
-                  delegate.confirmed === "confirmed" ? "bg-green-500" : 
-                  delegate.confirmed === "rejected" ? "bg-red-500" : "bg-yellow-500"
-                }`}></span>
-                <span>{delegate.mun_delegate_name}: {
-                  delegate.confirmed === "confirmed" ? "Confirmed" :
-                  delegate.confirmed === "rejected" ? "Rejected" : "Pending"
-                }</span>
+                <span
+                  className={`inline-block h-2 w-2 rounded-full ${
+                    delegate.confirmed === "confirmed"
+                      ? "bg-green-500"
+                      : delegate.confirmed === "rejected"
+                        ? "bg-red-500"
+                        : "bg-yellow-500"
+                  }`}
+                ></span>
+                <span>
+                  {delegate.mun_delegate_name}:{" "}
+                  {delegate.confirmed === "confirmed"
+                    ? "Confirmed"
+                    : delegate.confirmed === "rejected"
+                      ? "Rejected"
+                      : "Pending"}
+                </span>
               </li>
             ))}
           </ul>
@@ -381,7 +447,7 @@ const PaymentDetailsStep = () => {
         return;
       }
       // Match backend allowed file types
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
       if (!allowedTypes.includes(file.type)) {
         alert("Please upload JPG, JPEG, PNG, or PDF file");
         return;

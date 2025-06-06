@@ -5,14 +5,14 @@ import {
   DashboardModuleHeader,
   DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
+import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
+import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
 import { cn } from "@/utils/helpers/cn";
 import {
   getDelegate,
   getDelegatePaper,
   getPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
-import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
-import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
 
 type RegistrationStatus =
   | "not_registered"
@@ -39,14 +39,20 @@ const DashboardStatus = async () => {
   console.log("User Status:", userStatus);
   console.log("Paper Status:", paperStatus);
   console.log("Payment Status:", paymentStatus);
-  
+
   const registrationStatus: RegistrationStatus = (() => {
     if (!userStatus) return "not_registered";
     if (userStatus.confirmed === "pending") return "waiting_verification";
     if (userStatus.confirmed === "rejected") return "not_registered";
-    if (userStatus.confirmed === "confirmed" && (!paymentStatus || paymentStatus.payment_status === "pending")) return "verified_pending_payment";
-    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "pending") return "payment_checking";
-    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "paid") return "payment_verified";
+    if (
+      userStatus.confirmed === "confirmed" &&
+      (!paymentStatus || paymentStatus.payment_status === "pending")
+    )
+      return "verified_pending_payment";
+    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "pending")
+      return "payment_checking";
+    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "paid")
+      return "payment_verified";
     return "verified_pending_payment";
   })();
 
@@ -137,12 +143,8 @@ const StatusCard = ({
       </DashboardModuleHeader>
       <DashboardModuleContent className="mt-auto space-y-3">
         <p className="text-sm opacity-90">{description}</p>
-        {canSubmitPaper && userStatus && (
-          <PositionPaperModal userStatus={userStatus} />
-        )}
-        {paperUploaded && (
-          <ViewPaperButton />
-        )}
+        {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
+        {paperUploaded && <ViewPaperButton />}
       </DashboardModuleContent>
     </DashboardModule>
   );
@@ -163,7 +165,8 @@ const getRegistrationStatusInfo = (status: RegistrationStatus, userStatus?: any)
     case "verified_pending_payment":
       return {
         status: "Payment Required",
-        description: "Registration approved! Please proceed with payment to complete your registration.",
+        description:
+          "Registration approved! Please proceed with payment to complete your registration.",
       };
     case "payment_checking":
       return {
@@ -248,7 +251,7 @@ const getInformationCenterInfo = (status: InformationCenterStatus, userStatus?: 
     case "has_information":
       return {
         status: "Assignment Available",
-        description: `Council: ${userStatus?.council || 'TBA'} | Country: ${userStatus?.country || 'TBA'}`,
+        description: `Council: ${userStatus?.council || "TBA"} | Country: ${userStatus?.country || "TBA"}`,
       };
   }
 };
