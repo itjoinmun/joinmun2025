@@ -2,10 +2,9 @@ import "@/styles/globals.css";
 import { cn } from "@/utils/helpers/cn";
 import { outfit, plusJakartaSans } from "@/utils/helpers/fonts";
 import getMetadata from "@/utils/helpers/metadata";
-import { AuthProvider } from "@/utils/hooks/use-session";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = getMetadata({
   title: "Jogjakarta International Model United Nations 2025",
@@ -79,10 +78,8 @@ export default function RootLayout({
           "bg-background text-primary-foreground antialiased",
         )}
       >
-        <AuthProvider>
-          {children}
-          <Analytics />
-        </AuthProvider>
+        {children}
+        <Analytics />
       </body>
     </html>
   );
