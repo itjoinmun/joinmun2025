@@ -8,14 +8,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
-import Link from "next/link";
 
-const ModalCompleteRegistration = () => {
+const ModalCompleteRegistration = ({
+  children,
+  submitting,
+  onSubmit,
+}: {
+  children: React.ReactNode;
+  submitting: boolean;
+  onSubmit?: () => void;
+}) => {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Submit Registration</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="p-3">
         <DialogHeader>
           <DialogTitle className="my-1 flex items-center gap-4">Complete Registration?</DialogTitle>
@@ -26,13 +31,15 @@ const ModalCompleteRegistration = () => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Link href={"/dashboard/delegates"}>
-            {/* Kalo gabisa nnti pake yg ini  */}
-            {/* <Button type="submit" onClick={handleNavigation}> */}
-            <Button type="submit" variant={"primary"}>
-              Finish and Submit
-            </Button>
-          </Link>
+          <Button
+            type="button"
+            disabled={submitting}
+            variant={"primary"}
+            className="cursor-pointer"
+            onClick={onSubmit}
+          >
+            {submitting ? <>Submitting...</> : <>Finish and Submit</>}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

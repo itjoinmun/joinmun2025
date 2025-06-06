@@ -161,6 +161,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
   // Replace the onSubmit function with:
   const onSubmit = async (values: Record<string, string>) => {
+    console.log("attempt");
     setSubmitting(true);
     setSubmitError(null);
 
@@ -219,16 +220,12 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       updatedFormData = allDelegatesData;
     }
 
-    // Save data to localStorage
     setFormData(updatedFormData);
 
-    // Handle different flows based on delegation type
     if (slug === "team") {
-      // For team registrations, redirect to team dashboard
-      setSubmitting(false); // Reset submitting state before redirect
+      setSubmitting(false);
       router.push("/dashboard/delegates/team");
     } else {
-      // For individual registrations, submit directly
       try {
         const { success, error } = await submitDelegateRegistration({
           formData: updatedFormData as DelegateRegistration[],
@@ -239,6 +236,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
         if (success) {
           router.push("/dashboard/delegates");
+          setFormData(null);
         } else {
           setSubmitError(error || "Unknown error occurred during submission");
           setSubmitting(false);

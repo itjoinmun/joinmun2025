@@ -214,7 +214,7 @@ const FormContent = ({
             />
           );
         })}
-        <RegistrationNav />
+        <RegistrationNav onSubmit={() => form.handleSubmit(handleSubmit)()} />
       </form>
     </Form>
   );
