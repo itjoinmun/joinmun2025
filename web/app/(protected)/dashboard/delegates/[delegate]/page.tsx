@@ -54,6 +54,7 @@ const DelegationTeamPage = () => {
       console.log("📊 Team submission - parsed data:", teamData); // Debug log
 
       // Check if there are any team members with complete data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const teamMembers = Object.values(teamData).filter((member: any) => {
         return member && member.biodata_responses && member.biodata_responses.length > 0;
       });
@@ -61,7 +62,9 @@ const DelegationTeamPage = () => {
       console.log("👥 Valid team members found:", teamMembers.length); // Debug log
 
       if (!teamMembers.length) {
-        setSubmitError("No complete team members found. Please ensure all team members have completed their registration.");
+        setSubmitError(
+          "No complete team members found. Please ensure all team members have completed their registration.",
+        );
         setIsSubmitting(false);
         return;
       }

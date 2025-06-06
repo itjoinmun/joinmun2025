@@ -1,2 +1,1 @@
 aku ingin begini
-

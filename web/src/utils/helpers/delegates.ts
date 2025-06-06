@@ -18,20 +18,20 @@ export type Package = {
   name: string;
   price: string;
   points: string[];
-}
+};
 
 export type Delegate =
   | {
       // For single, observer, advisor
       name: string;
-      type: 'participant' | 'companion';
+      type: "participant" | "companion";
       description: string;
       package: Package[];
     }
   | {
       // For team
       name: string;
-      type: 'participant' | 'companion';
+      type: "participant" | "companion";
       description: string;
       package: TeamPackage[];
     };
@@ -39,7 +39,7 @@ export type Delegate =
 export const DELEGATES: Record<DelegateOptions, Delegate> = {
   ["single"]: {
     name: "Single Delegates",
-    type: 'participant',
+    type: "participant",
     description:
       "One delegate, one country. You'll be the only person representing your assigned country in the council.",
     package: [
@@ -68,7 +68,7 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
   },
   ["team"]: {
     name: "Delegation Team",
-    type: 'participant',
+    type: "participant",
     description: "Two or more delegates, one country.",
     package: [
       {
@@ -151,7 +151,7 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
   },
   ["observer"]: {
     name: "Observer",
-    type: 'companion',
+    type: "companion",
     description:
       "One delegate, no country. You will be an observer in the council, without a specific country assignment.",
     package: [
@@ -180,7 +180,7 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
   },
   ["advisor"]: {
     name: "Faculty Advisor",
-    type: 'companion',
+    type: "companion",
     description:
       "One advisor, no country. You will be an advisor in the council, without a specific country assignment.",
     package: [

@@ -156,10 +156,13 @@ export interface Participant {
   country: string | null;
 }
 
-export async function submitPayment(paymentData: {
-  package: string;
-  payment_amount: number;
-}, paymentFile: File): Promise<{ success: boolean; message: string; payment_id?: number; payment_file?: string }> {
+export async function submitPayment(
+  paymentData: {
+    package: string;
+    payment_amount: number;
+  },
+  paymentFile: File,
+): Promise<{ success: boolean; message: string; payment_id?: number; payment_file?: string }> {
   const accessToken = (await cookies()).get("access_token")?.value;
   const formData = new FormData();
   formData.append("payment", JSON.stringify(paymentData));
@@ -169,8 +172,8 @@ export async function submitPayment(paymentData: {
     method: "POST",
     body: formData,
     headers: {
-      "Accept": "application/json",
-      "Cookie": `access_token=${accessToken}`,
+      Accept: "application/json",
+      Cookie: `access_token=${accessToken}`,
     },
     credentials: "include",
   });
@@ -189,7 +192,9 @@ export async function submitPayment(paymentData: {
   };
 }
 
-export async function submitPositionPaper(file: File): Promise<{ success: boolean; message: string }> {
+export async function submitPositionPaper(
+  file: File,
+): Promise<{ success: boolean; message: string }> {
   const accessToken = (await cookies()).get("access_token")?.value;
   const formData = new FormData();
   formData.append("file", file);
@@ -198,7 +203,7 @@ export async function submitPositionPaper(file: File): Promise<{ success: boolea
     method: "POST",
     body: formData,
     headers: {
-      "Cookie": `access_token=${accessToken}`,
+      Cookie: `access_token=${accessToken}`,
     },
     credentials: "include",
   });

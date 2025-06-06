@@ -1,13 +1,9 @@
 "use client";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import ComingSoon from "@/modules/coming-soon";
-import DashboardNav from "@/modules/dashboard/dashboard-nav";
-import UserProfileInfo from "@/modules/dashboard/user-profile-info";
 import { isRegistrationOpen } from "@/utils/helpers/reveal";
 import { useState } from "react";
-import { Heading } from "@/components/Layout/section-heading";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState<boolean>(false);

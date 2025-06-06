@@ -4,13 +4,13 @@ interface PaymentData {
   payment_amount: number;
   payment_file: File;
   timestamp: number;
-  status: 'pending' | 'submitted' | 'failed';
+  status: "pending" | "submitted" | "failed";
 }
 
 class IndexedDBStorage {
-  private dbName = 'joinmun_payments';
+  private dbName = "joinmun_payments";
   private version = 1;
-  private storeName = 'payments';
+  private storeName = "payments";
 
   private async openDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
@@ -22,18 +22,21 @@ class IndexedDBStorage {
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains(this.storeName)) {
-          const store = db.createObjectStore(this.storeName, { keyPath: 'id', autoIncrement: true });
-          store.createIndex('timestamp', 'timestamp', { unique: false });
-          store.createIndex('status', 'status', { unique: false });
+          const store = db.createObjectStore(this.storeName, {
+            keyPath: "id",
+            autoIncrement: true,
+          });
+          store.createIndex("timestamp", "timestamp", { unique: false });
+          store.createIndex("status", "status", { unique: false });
         }
       };
     });
   }
 
-  async storePayment(paymentData: Omit<PaymentData, 'id'>): Promise<number> {
+  async storePayment(paymentData: Omit<PaymentData, "id">): Promise<number> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readwrite');
+      const transaction = db.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.add(paymentData);
 
@@ -42,10 +45,10 @@ class IndexedDBStorage {
     });
   }
 
-  async updatePaymentStatus(id: number, status: PaymentData['status']): Promise<void> {
+  async updatePaymentStatus(id: number, status: PaymentData["status"]): Promise<void> {
     const db = await this.openDB();
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([this.storeName], 'readwrite');
+      const transaction = db.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const getRequest = store.get(id);
 
@@ -57,7 +60,7 @@ class IndexedDBStorage {
           putRequest.onerror = () => reject(putRequest.error);
           putRequest.onsuccess = () => resolve();
         } else {
-          reject(new Error('Payment not found'));
+          reject(new Error("Payment not found"));
         }
       };
       getRequest.onerror = () => reject(getRequest.error);

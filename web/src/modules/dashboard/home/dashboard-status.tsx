@@ -177,7 +177,7 @@ const getRegistrationStatusInfo = (status: RegistrationStatus) => {
   }
 };
 
-const getDelegateCodeInfo = (status: DelegateCodeStatus,  paymentCode?: string) => {
+const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) => {
   switch (status) {
     case "not_registered":
       return {
@@ -227,7 +227,10 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
   }
 };
 
-const getInformationCenterInfo = (status: InformationCenterStatus, userStatus?: Delegate | null) => {
+const getInformationCenterInfo = (
+  status: InformationCenterStatus,
+  userStatus?: Delegate | null,
+) => {
   switch (status) {
     case "not_registered":
       return {

@@ -1,18 +1,13 @@
 "use client";
-import {
-  DashboardPage,
-  DashboardPageHeader,
-  DashboardPageTitle,
-} from "@/components/dashboard/dashboard-page";
+import { DashboardPage } from "@/components/dashboard/dashboard-page";
 import {
   DashboardModule,
   DashboardModuleContent,
   DashboardModuleHeader,
-  DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Download, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
+import { AlertCircle, Download } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import {
   getDelegatesByTeam,
   getPaymentsByTeam,
@@ -37,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 const DELEGATE_TYPES: { value: DelegateType; label: string }[] = [
   { value: "all", label: "All Types" },
   { value: "single_delegate", label: "Single Delegate" },
@@ -84,7 +80,8 @@ const DashboardAdmin = () => {
     setTimeout(() => scrollActiveTabIntoView(`tab-${tab}`), 100);
   };
 
-  const fetchDelegates = async () => {
+  // Use useCallback to memoize fetch functions
+  const fetchDelegates = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getDelegatesByTeam(
@@ -100,9 +97,9 @@ const DashboardAdmin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [delegateType, timeWave, itemsPerPage, currentPage]);
 
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getPaymentsByTeam(
@@ -111,8 +108,15 @@ const DashboardAdmin = () => {
         itemsPerPage,
         currentPage * itemsPerPage,
       );
-      // Convert the payments_by_team object to array
-      const paymentsArray = Object.values(response.payments_by_team).flat();
+      
+      // Safely handle the payments_by_team data structure
+      let paymentsArray: TeamPaymentSummary[] = [];
+      if (Array.isArray(response.payments_by_team)) {
+        paymentsArray = response.payments_by_team;
+      } else if (typeof response.payments_by_team === 'object' && response.payments_by_team !== null) {
+        paymentsArray = Object.values(response.payments_by_team).flat();
+      }
+      
       setPaymentsData(paymentsArray);
       setTotalPayments(response.total_payments);
     } catch (error) {
@@ -120,9 +124,9 @@ const DashboardAdmin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [delegateType, timeWave, itemsPerPage, currentPage]);
 
-  const fetchPositionPapers = async () => {
+  const fetchPositionPapers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getPositionPapersByTeam(
@@ -137,7 +141,7 @@ const DashboardAdmin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeWave, itemsPerPage, currentPage]);
 
   const handleDownloadCSV = async () => {
     try {
@@ -150,18 +154,23 @@ const DashboardAdmin = () => {
     }
   };
 
-  // Fetch data when filters change
+  // Fixed useEffect hooks - no function calls in dependencies
   useEffect(() => {
     fetchDelegates();
-  }, [delegateType, timeWave, currentPage]);
+  }, [fetchDelegates]);
 
   useEffect(() => {
     fetchPayments();
-  }, [delegateType, timeWave, currentPage]);
+  }, [fetchPayments]);
 
   useEffect(() => {
     fetchPositionPapers();
-  }, [timeWave, currentPage]);
+  }, [fetchPositionPapers]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [delegateType, timeWave]);
 
   const handleDataChange = () => {
     fetchDelegates();
@@ -175,9 +184,7 @@ const DashboardAdmin = () => {
       <DashboardModule>
         <DashboardModuleHeader>
           <div className="mb-2 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
-            {/* <DashboardModuleTitle> */}
             <Heading className="hidden sm:block">Dashboard Admin</Heading>
-            {/* </DashboardModuleTitle> */}
             <Button
               variant="warning"
               className="flex w-fit items-center gap-2 self-end sm:self-auto"

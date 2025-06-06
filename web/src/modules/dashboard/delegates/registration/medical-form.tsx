@@ -166,13 +166,17 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
     // For team registrations, formData should be an object with index keys
     // For individual registrations, it can be an array
-    const currentFormData = slug === "team" 
-      ? (formData as Record<number, DelegateRegistration>) 
-      : (Array.isArray(formData) ? formData : []);
+    const currentFormData =
+      slug === "team"
+        ? (formData as Record<number, DelegateRegistration>)
+        : Array.isArray(formData)
+          ? formData
+          : [];
 
-    const existingDelegateData = slug === "team"
-      ? (currentFormData[index] || ({} as Partial<DelegateRegistration>))
-      : (currentFormData[index] || ({} as Partial<DelegateRegistration>));
+    const existingDelegateData =
+      slug === "team"
+        ? currentFormData[index] || ({} as Partial<DelegateRegistration>)
+        : currentFormData[index] || ({} as Partial<DelegateRegistration>);
 
     const delegateEmail = existingDelegateData.biodata_responses?.[0]?.biodata_answer_text || "";
 

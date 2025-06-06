@@ -28,7 +28,7 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      
+
       // Check file size (2MB limit based on backend)
       if (selectedFile.size > 2 * 1024 * 1024) {
         setSubmitError("File size must be less than 2MB");
@@ -48,7 +48,7 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!file) {
       setSubmitError("Please select a file to upload");
       return;
@@ -77,7 +77,7 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+        <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
           Submit Position Paper
         </Button>
       </DialogTrigger>
@@ -88,12 +88,22 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
             Upload your position paper for {userStatus?.council} representing {userStatus?.country}
           </DialogDescription>
         </DialogHeader>
-        
+
         {submitSuccess ? (
           <div className="flex flex-col items-center justify-center space-y-4 py-8">
             <div className="rounded-full bg-green-100 p-3">
-              <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="h-8 w-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-green-700">Paper Submitted Successfully!</h3>
@@ -120,9 +130,7 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
             </div>
 
             {submitError && (
-              <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                {submitError}
-              </div>
+              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{submitError}</div>
             )}
 
             <div className="space-y-2">
@@ -144,11 +152,7 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={!file || isSubmitting}
-                className="flex-1"
-              >
+              <Button type="submit" disabled={!file || isSubmitting} className="flex-1">
                 {isSubmitting ? "Submitting..." : "Submit Paper"}
               </Button>
             </div>

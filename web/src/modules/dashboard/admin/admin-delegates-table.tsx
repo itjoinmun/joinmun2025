@@ -10,12 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { COUNCILS } from "@/utils/helpers/councils";
-import { TeamDelegateGroup, MUNDelegate, DelegateType } from "@/utils/types/admin";
-import { 
-  approveParticipantRegistration, 
+import { TeamDelegateGroup, MUNDelegate } from "@/utils/types/admin";
+import {
+  approveParticipantRegistration,
   rejectParticipantRegistration,
   updateDelegateCountryAndCouncil,
-  makeDelegatePairing
+  makeDelegatePairing,
 } from "@/utils/helpers/fetch/admin/admin";
 import { Check, Users, X } from "lucide-react";
 import { useState } from "react";
@@ -49,7 +49,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
     const [tempCountry, setTempCountry] = useState(delegate.country || "");
     const [tempCouncil, setTempCouncil] = useState(delegate.council || "");
     const [tempPairEmail, setTempPairEmail] = useState(delegate.pair || "");
-    
+
     const getRegistrationStatus = () => {
       if (delegate.confirmed === "confirmed") {
         return { text: "Approved", color: "bg-green-100 text-green-800" };
@@ -61,25 +61,29 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
     };
 
     const status = getRegistrationStatus();
-    
+
     return (
-      <TableRow className="hover:bg-gray-50 border-b border-gray-100">
-        <TableCell className={cn("py-4 w-1/4 min-w-[200px]", isFirst && "border-t-2 border-t-blue-200")}>
+      <TableRow className="border-b border-gray-100 hover:bg-gray-50">
+        <TableCell
+          className={cn("w-1/4 min-w-[200px] py-4", isFirst && "border-t-2 border-t-blue-200")}
+        >
           <div className="space-y-2">
-            <div className="font-semibold text-gray-900 text-sm">{delegate.mun_delegate_name}</div>
-            <div className="text-xs text-gray-600 break-all">{delegate.mun_delegate_email}</div>
-            <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <div className="text-sm font-semibold text-gray-900">{delegate.mun_delegate_name}</div>
+            <div className="text-xs break-all text-gray-600">{delegate.mun_delegate_email}</div>
+            <div className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
               {delegate.participant_type}
             </div>
             {delegate.type === "double_delegate" && delegate.pair && (
-              <div className="flex items-center gap-1 text-xs text-purple-600 mt-1">
+              <div className="mt-1 flex items-center gap-1 text-xs text-purple-600">
                 <Users className="h-3 w-3" />
                 <span className="break-all">Paired: {delegate.pair}</span>
               </div>
             )}
           </div>
         </TableCell>
-        <TableCell className={cn("py-4 w-1/4 min-w-[180px]", isFirst && "border-t-2 border-t-blue-200")}>
+        <TableCell
+          className={cn("w-1/4 min-w-[180px] py-4", isFirst && "border-t-2 border-t-blue-200")}
+        >
           <div className="space-y-2">
             <select
               value={tempCouncil}
@@ -105,11 +109,16 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
             <Button
               size="sm"
               variant="default"
-              className="w-full h-7 text-xs bg-blue-600 hover:bg-blue-700"
+              className="h-7 w-full bg-blue-600 text-xs hover:bg-blue-700"
               onClick={() => {
                 if (tempCountry && tempCouncil) {
                   handleAction(
-                    () => updateDelegateCountryAndCouncil(delegate.mun_delegate_email, tempCountry, tempCouncil),
+                    () =>
+                      updateDelegateCountryAndCouncil(
+                        delegate.mun_delegate_email,
+                        tempCountry,
+                        tempCouncil,
+                      ),
                     delegate.mun_delegate_email,
                     "assign-council",
                   );
@@ -124,14 +133,16 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
               {loading[`assign-council-${delegate.mun_delegate_email}`] ? "Assigning..." : "Assign"}
             </Button>
             {delegate.country && delegate.council && (
-              <div className="text-xs text-gray-600 p-1 bg-gray-50 rounded">
+              <div className="rounded bg-gray-50 p-1 text-xs text-gray-600">
                 <div>Council: {delegate.council}</div>
                 <div>Country: {delegate.country}</div>
               </div>
             )}
           </div>
         </TableCell>
-        <TableCell className={cn("py-4 w-1/4 min-w-[180px]", isFirst && "border-t-2 border-t-blue-200")}>
+        <TableCell
+          className={cn("w-1/4 min-w-[180px] py-4", isFirst && "border-t-2 border-t-blue-200")}
+        >
           <div className="space-y-2">
             <input
               type="email"
@@ -144,7 +155,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
             <Button
               size="sm"
               variant="default"
-              className="w-full h-7 text-xs bg-purple-600 hover:bg-purple-700"
+              className="h-7 w-full bg-purple-600 text-xs hover:bg-purple-700"
               onClick={() => {
                 if (tempPairEmail && tempPairEmail !== delegate.pair) {
                   handleAction(
@@ -164,25 +175,27 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
             </Button>
             <div className="space-y-1">
               {delegate.type === "double_delegate" && (
-                <div className="text-xs text-green-600 font-medium bg-green-50 p-1 rounded">
+                <div className="rounded bg-green-50 p-1 text-xs font-medium text-green-600">
                   ✓ Double Delegate
                 </div>
               )}
               {delegate.type === "single_delegate" && (
-                <div className="text-xs text-blue-600 font-medium bg-blue-50 p-1 rounded">
+                <div className="rounded bg-blue-50 p-1 text-xs font-medium text-blue-600">
                   Single Delegate
                 </div>
               )}
             </div>
           </div>
         </TableCell>
-        <TableCell className={cn("py-4 w-1/4 min-w-[160px]", isFirst && "border-t-2 border-t-blue-200")}>
+        <TableCell
+          className={cn("w-1/4 min-w-[160px] py-4", isFirst && "border-t-2 border-t-blue-200")}
+        >
           <div className="space-y-2">
             <div className="flex flex-col gap-1">
               <Button
                 size="sm"
                 variant="outline"
-                className="h-7 px-2 text-xs border-green-200 hover:bg-green-50 w-full"
+                className="h-7 w-full border-green-200 px-2 text-xs hover:bg-green-50"
                 onClick={() =>
                   handleAction(
                     () => approveParticipantRegistration(delegate.mun_delegate_email),
@@ -192,16 +205,16 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
                 }
                 disabled={
                   loading[`approve-reg-${delegate.mun_delegate_email}`] ||
-                  delegate.confirmed === "confirmed" 
+                  delegate.confirmed === "confirmed"
                 }
               >
-                <Check className="h-3 w-3 text-green-600 mr-1" />
+                <Check className="mr-1 h-3 w-3 text-green-600" />
                 Approve
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                className="h-7 px-2 text-xs border-red-200 hover:bg-red-50 w-full"
+                className="h-7 w-full border-red-200 px-2 text-xs hover:bg-red-50"
                 onClick={() =>
                   handleAction(
                     () => rejectParticipantRegistration(delegate.mun_delegate_email),
@@ -214,11 +227,13 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
                   delegate.confirmed === "rejected"
                 }
               >
-                <X className="h-3 w-3 text-red-600 mr-1" />
+                <X className="mr-1 h-3 w-3 text-red-600" />
                 Reject
               </Button>
             </div>
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${status.color} w-full justify-center`}>
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${status.color} w-full justify-center`}
+            >
               {status.text}
             </span>
           </div>
@@ -233,25 +248,31 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
         const teamKey = team.mun_team_id || `individual-${team.mun_team_lead}`;
 
         return (
-          <div key={teamKey} className="border rounded-lg overflow-hidden bg-white shadow-sm">
+          <div key={teamKey} className="overflow-hidden rounded-lg border bg-white shadow-sm">
             {/* Team Header */}
-            <div className={cn(
-              "px-6 py-4 border-b",
-              team.mun_team_id ? "bg-blue-50 border-l-4 border-l-blue-500" : "bg-green-50 border-l-4 border-l-green-500"
-            )}>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+            <div
+              className={cn(
+                "border-b px-6 py-4",
+                team.mun_team_id
+                  ? "border-l-4 border-l-blue-500 bg-blue-50"
+                  : "border-l-4 border-l-green-500 bg-green-50",
+              )}
+            >
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {team.mun_team_id ? `Team ${team.mun_team_id}` : 'Individual Registration'}
+                    {team.mun_team_id ? `Team ${team.mun_team_id}` : "Individual Registration"}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="mt-1 text-sm text-gray-600">
                     Team Lead: {team.mun_team_lead} • {team.delegate_count} delegate(s)
                   </p>
                 </div>
-                <div className={cn(
-                  "px-3 py-1 rounded-full text-sm font-medium self-start sm:self-center",
-                  team.mun_team_id ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"
-                )}>
+                <div
+                  className={cn(
+                    "self-start rounded-full px-3 py-1 text-sm font-medium sm:self-center",
+                    team.mun_team_id ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800",
+                  )}
+                >
                   {team.mun_team_id ? "Team" : "Individual"}
                 </div>
               </div>
@@ -262,15 +283,27 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold text-gray-700 w-1/4 min-w-[200px]">Delegate Information</TableHead>
-                    <TableHead className="font-semibold text-gray-700 w-1/4 min-w-[180px]">Council & Country</TableHead>
-                    <TableHead className="font-semibold text-gray-700 w-1/4 min-w-[180px]">Pairing</TableHead>
-                    <TableHead className="font-semibold text-gray-700 w-1/4 min-w-[160px]">Registration Status</TableHead>
+                    <TableHead className="w-1/4 min-w-[200px] font-semibold text-gray-700">
+                      Delegate Information
+                    </TableHead>
+                    <TableHead className="w-1/4 min-w-[180px] font-semibold text-gray-700">
+                      Council & Country
+                    </TableHead>
+                    <TableHead className="w-1/4 min-w-[180px] font-semibold text-gray-700">
+                      Pairing
+                    </TableHead>
+                    <TableHead className="w-1/4 min-w-[160px] font-semibold text-gray-700">
+                      Registration Status
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {team.delegates.map((delegate, index) => (
-                    <DelegateRow key={delegate.mun_delegate_email} delegate={delegate} isFirst={index === 0} />
+                    <DelegateRow
+                      key={delegate.mun_delegate_email}
+                      delegate={delegate}
+                      isFirst={index === 0}
+                    />
                   ))}
                 </TableBody>
               </Table>
@@ -278,9 +311,9 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
           </div>
         );
       })}
-      
+
       {teamsData.length === 0 && (
-        <div className="text-center py-12 text-gray-500 bg-white rounded-lg border">
+        <div className="rounded-lg border bg-white py-12 text-center text-gray-500">
           No delegates found for the selected filters.
         </div>
       )}

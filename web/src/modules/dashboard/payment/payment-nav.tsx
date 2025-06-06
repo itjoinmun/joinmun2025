@@ -81,7 +81,7 @@ const PaymentNav = ({
         </Button>
       </div>
       {submitError && (
-        <div className="fixed inset-x-0 bottom-20 z-20 mx-4 rounded bg-red-100 p-3 text-red-700 md:absolute md:bottom-24 md:right-8 md:left-auto md:mx-0">
+        <div className="fixed inset-x-0 bottom-20 z-20 mx-4 rounded bg-red-100 p-3 text-red-700 md:absolute md:right-8 md:bottom-24 md:left-auto md:mx-0">
           {submitError}
         </div>
       )}

@@ -31,10 +31,11 @@ const ParticipantTable = ({
   onApprovePayment,
   onRejectPayment,
   onAssignCouncil,
-  onAssignCountry,
 }: ParticipantTableProps) => {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
-  const [tempValues, setTempValues] = useState<Record<string, { council: string; country: string }>>({});
+  const [tempValues, setTempValues] = useState<
+    Record<string, { council: string; country: string }>
+  >({});
 
   const handleAction = async (action: () => Promise<void>, email: string, actionType: string) => {
     try {
@@ -45,30 +46,26 @@ const ParticipantTable = ({
     }
   };
 
-  const getTempValue = (email: string, field: 'council' | 'country') => {
-    return tempValues[email]?.[field] || '';
+  const getTempValue = (email: string, field: "council" | "country") => {
+    return tempValues[email]?.[field] || "";
   };
 
-  const setTempValue = (email: string, field: 'council' | 'country', value: string) => {
-    setTempValues(prev => ({
+  const setTempValue = (email: string, field: "council" | "country", value: string) => {
+    setTempValues((prev) => ({
       ...prev,
       [email]: {
         ...prev[email],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const handleAssignCouncilCountry = async (email: string) => {
-    const council = getTempValue(email, 'council');
-    const country = getTempValue(email, 'country');
-    
+    const council = getTempValue(email, "council");
+    const country = getTempValue(email, "country");
+
     if (council && country) {
-      await handleAction(
-        () => onAssignCouncil(email, council),
-        email,
-        "assign-council-country"
-      );
+      await handleAction(() => onAssignCouncil(email, council), email, "assign-council-country");
     }
   };
 
@@ -103,8 +100,8 @@ const ParticipantTable = ({
                 <div className="space-y-2">
                   <select
                     name="Council"
-                    value={getTempValue(participant.email, 'council') || participant.council || ""}
-                    onChange={(e) => setTempValue(participant.email, 'council', e.target.value)}
+                    value={getTempValue(participant.email, "council") || participant.council || ""}
+                    onChange={(e) => setTempValue(participant.email, "council", e.target.value)}
                     className="w-full rounded border p-1 pr-3"
                     disabled={loading[`assign-council-country-${participant.email}`]}
                   >
@@ -117,8 +114,8 @@ const ParticipantTable = ({
                   </select>
                   <input
                     type="text"
-                    value={getTempValue(participant.email, 'country') || participant.country || ""}
-                    onChange={(e) => setTempValue(participant.email, 'country', e.target.value)}
+                    value={getTempValue(participant.email, "country") || participant.country || ""}
+                    onChange={(e) => setTempValue(participant.email, "country", e.target.value)}
                     className="w-full rounded border p-1"
                     placeholder="Enter country"
                     disabled={loading[`assign-council-country-${participant.email}`]}
@@ -130,8 +127,8 @@ const ParticipantTable = ({
                     onClick={() => handleAssignCouncilCountry(participant.email)}
                     disabled={
                       loading[`assign-council-country-${participant.email}`] ||
-                      !getTempValue(participant.email, 'council') ||
-                      !getTempValue(participant.email, 'country')
+                      !getTempValue(participant.email, "council") ||
+                      !getTempValue(participant.email, "country")
                     }
                   >
                     Assign

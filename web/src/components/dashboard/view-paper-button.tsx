@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { getDelegatePaper } from "@/utils/helpers/fetch/delegates/delegates";
 
 export const ViewPaperButton = () => {
@@ -21,8 +27,8 @@ export const ViewPaperButton = () => {
         alert(paperData);
       }
     } catch (error) {
-      console.error('Failed to fetch paper:', error);
-      alert('Failed to load paper. Please try again.');
+      console.error("Failed to fetch paper:", error);
+      alert("Failed to load paper. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -31,44 +37,32 @@ export const ViewPaperButton = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          onClick={handleViewPaper}
-          variant="outline"
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button onClick={handleViewPaper} variant="outline" className="w-full" disabled={isLoading}>
           {isLoading ? "Loading..." : "View Uploaded Paper"}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] w-full">
+      <DialogContent className="max-h-[90vh] w-full max-w-4xl">
         <DialogHeader>
           <DialogTitle>Position Paper</DialogTitle>
         </DialogHeader>
-        <div className="w-full h-[70vh] border rounded-lg overflow-hidden">
+        <div className="h-[70vh] w-full overflow-hidden rounded-lg border">
           {paperUrl ? (
-            <iframe
-              src={paperUrl}
-              className="w-full h-full"
-              title="Position Paper PDF"
-            />
+            <iframe src={paperUrl} className="h-full w-full" title="Position Paper PDF" />
           ) : (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex h-full items-center justify-center">
               <p>Loading PDF...</p>
             </div>
           )}
         </div>
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="mt-4 flex justify-end gap-2">
           <Button
             variant="outline"
-            onClick={() => paperUrl && window.open(paperUrl, '_blank')}
+            onClick={() => paperUrl && window.open(paperUrl, "_blank")}
             disabled={!paperUrl}
           >
             Open in New Tab
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
-          >
+          <Button variant="outline" onClick={() => setOpen(false)}>
             Close
           </Button>
         </div>

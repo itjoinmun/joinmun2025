@@ -14,11 +14,11 @@ const RegistrationBiodataPage = async ({
   // Get current index (for Delegate Team only)
   const index: number = parseInt((await searchParams).idx as string) || 0;
 
-   // Skip this page for advisor or observer
+  // Skip this page for advisor or observer
   if (delegate === "advisor" || delegate === "observer") {
     redirect(`/dashboard/delegates/${delegate}/registration/3`);
   }
-  
+
   return (
     <>
       <MunForm slug={delegate as DelegateOptions} index={index} />
