@@ -31,7 +31,7 @@ const ParticipantStatus = () => {
 const Body = async () => {
   let hasRegistered = false;
   const delegate = await getDelegate();
-  const user = (await getSession()).name;
+  const user = (await getSession())?.name;
 
   if (delegate) {
     hasRegistered = true;

@@ -1,9 +1,8 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
-const getSession = async (): Promise<Session> => {
+const getSession = async (): Promise<Session | null> => {
   const cookieStore = await cookies();
   const access = cookieStore.get("access_token")?.value;
 
@@ -15,13 +14,14 @@ const getSession = async (): Promise<Session> => {
         "Content-Type": "application/json",
         Cookie: `access_token=${access}`,
       },
-    }).then((res) => res.json());
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch session data");
-    }
+    });
 
     const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Failed to fetch session:", data);
+      return null;
+    }
 
     return {
       user: data.user.UserID,
@@ -31,9 +31,7 @@ const getSession = async (): Promise<Session> => {
     };
   } catch (error) {
     console.error("Error fetching session:", error);
-    cookieStore.delete("access_token");
-    cookieStore.delete("refresh_token");
-    redirect("/login");
+    return null;
   }
 };
 
