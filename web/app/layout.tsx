@@ -79,10 +79,8 @@ export default function RootLayout({
           "bg-background text-primary-foreground antialiased",
         )}
       >
-        <AuthProvider>
-          {children}
-          <Analytics />
-        </AuthProvider>
+        {children}
+        <Analytics />
       </body>
     </html>
   );

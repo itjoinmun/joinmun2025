@@ -6,13 +6,14 @@ import ComingSoon from "@/modules/coming-soon";
 import DashboardNav from "@/modules/dashboard/dashboard-nav";
 import UserProfileInfo from "@/modules/dashboard/user-profile-info";
 import { isRegistrationOpen } from "@/utils/helpers/reveal";
+import { AuthProvider } from "@/utils/hooks/use-session";
 import { useState } from "react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <>
+    <AuthProvider>
       {isRegistrationOpen ? (
         <SidebarProvider open={open} onOpenChange={setOpen}>
           <main className="relative flex h-screen w-full flex-col gap-6 md:flex-row md:gap-0 md:overflow-clip">
@@ -34,7 +35,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       ) : (
         <ComingSoon />
       )}
-    </>
+    </AuthProvider>
   );
 };
 
