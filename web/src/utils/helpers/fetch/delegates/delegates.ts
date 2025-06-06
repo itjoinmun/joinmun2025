@@ -14,7 +14,7 @@ export interface Delegate {
   pair: string | null;
   council: string | null;
   country: string | null;
-  confirmed: boolean;
+  confirmed: string;
   confirmed_date: string | null;
   council_date: string | null;
   insert_date: string;
@@ -28,6 +28,9 @@ export async function getDelegate(): Promise<Delegate | null> {
     headers: {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
+    },
+    next: {
+      revalidate: 30,
     },
     credentials: "include",
   });
@@ -53,6 +56,9 @@ export async function getDelegates(): Promise<{
       Cookie: `access_token=${accessToken}`,
       credentials: "include",
     },
+    next: {
+      revalidate: 30,
+    },
   });
 
   if (!res.ok) {
@@ -63,8 +69,14 @@ export async function getDelegates(): Promise<{
   return resBody;
 }
 
-// eslint-disable-next-line
-export async function getDelegatePaper(): Promise<any> {
+interface Paper {
+  mun_delegate_email: string;
+  submission_file: string;
+  submission_date: string;
+  submission_status: string;
+}
+
+export async function getDelegatePaper(): Promise<Paper | null> {
   const accessToken = (await cookies()).get("access_token")?.value;
 
   const res = await fetch(`${process.env.API_URL}/position`, {
@@ -73,6 +85,9 @@ export async function getDelegatePaper(): Promise<any> {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
       credentials: "include",
+    },
+    next: {
+      revalidate: 30,
     },
   });
 
@@ -90,7 +105,7 @@ export interface Payment {
   mun_delegate_email: string;
   package: string;
   payment_file: string;
-  payment_status: "rejected" | "pending" | "checking" | "approved";
+  payment_status: "paid" | "failed" | "pending";
   payment_date: string | null;
   payment_amount: number;
   mun_delegate_name: string;
@@ -103,7 +118,7 @@ export interface Payment {
     mun_delegate_name: string;
     participant_type: apiSlugs;
     confirmed: boolean;
-    payment_status: "rejected" | "pending" | "checking" | "approved";
+    payment_status: "paid" | "failed" | "pending";
     payment_amount: number;
     package: string;
   }[];
@@ -119,6 +134,9 @@ export async function getPayment(): Promise<Payment | null> {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
     },
+    next: {
+      revalidate: 30,
+    },
   });
 
   if (!res.ok) {
@@ -129,128 +147,75 @@ export async function getPayment(): Promise<Payment | null> {
   return resBody;
 }
 
-export async function approveRegistration(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/approve-registration`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to approve registration");
-  }
-
-  return res.json();
-}
-
-export async function rejectRegistration(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/reject-registration`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to reject registration");
-  }
-
-  return res.json();
-}
-
-export async function approvePayment(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/approve-payment`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to approve payment");
-  }
-
-  return res.json();
-}
-
-export async function rejectPayment(id: number) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/reject-payment`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to reject payment");
-  }
-
-  return res.json();
-}
-
-export async function assignCouncil(id: number, council: string) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/assign-council`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-    body: JSON.stringify({ council }),
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to assign council");
-  }
-
-  return res.json();
-}
-
-export async function assignCountry(id: number, country: string) {
-  const accessToken = (await cookies()).get("access_token")?.value;
-
-  const res = await fetch(`${process.env.API_URL}/admin/participants/${id}/assign-country`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `access_token=${accessToken}`,
-    },
-    body: JSON.stringify({ country }),
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to assign country");
-  }
-
-  return res.json();
-}
-
 export interface Participant {
-  id: number;
   name: string;
   email: string;
-  payment_status: "rejected" | "pending" | "approved";
-  registration_status: "rejected" | "pending" | "approved";
+  payment_status: "paid" | "pending" | "failed";
+  registration_status: "rejected" | "pending" | "confirmed";
   council: string | null;
   country: string | null;
+}
+
+export async function submitPayment(
+  paymentData: {
+    package: string;
+    payment_amount: number;
+  },
+  paymentFile: File,
+): Promise<{ success: boolean; message: string; payment_id?: number; payment_file?: string }> {
+  const accessToken = (await cookies()).get("access_token")?.value;
+  const formData = new FormData();
+  formData.append("payment", JSON.stringify(paymentData));
+  formData.append("payment_proof", paymentFile);
+
+  const res = await fetch(`${process.env.API_URL}/payment`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Accept: "application/json",
+      Cookie: `access_token=${accessToken}`,
+    },
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to submit payment");
+  }
+
+  const result = await res.json();
+  return {
+    success: true,
+    message: result.message,
+    payment_id: result.payment_id,
+    payment_file: result.payment_file,
+  };
+}
+
+export async function submitPositionPaper(
+  file: File,
+): Promise<{ success: boolean; message: string }> {
+  const accessToken = (await cookies()).get("access_token")?.value;
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${process.env.API_URL}/position`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Cookie: `access_token=${accessToken}`,
+    },
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to submit position paper");
+  }
+
+  const result = await res.json();
+  return {
+    success: true,
+    message: result.message,
+  };
 }

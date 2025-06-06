@@ -16,12 +16,12 @@ import { useState } from "react";
 
 interface ParticipantTableProps {
   participants: Participant[];
-  onApproveRegistration: (id: number) => Promise<void>;
-  onRejectRegistration: (id: number) => Promise<void>;
-  onApprovePayment: (id: number) => Promise<void>;
-  onRejectPayment: (id: number) => Promise<void>;
-  onAssignCouncil: (id: number, council: string) => Promise<void>;
-  onAssignCountry: (id: number, country: string) => Promise<void>;
+  onApproveRegistration: (email: string) => Promise<void>;
+  onRejectRegistration: (email: string) => Promise<void>;
+  onApprovePayment: (email: string) => Promise<void>;
+  onRejectPayment: (email: string) => Promise<void>;
+  onAssignCouncil: (email: string, council: string) => Promise<void>;
+  onAssignCountry: (email: string, country: string) => Promise<void>;
 }
 
 const ParticipantTable = ({
@@ -31,16 +31,41 @@ const ParticipantTable = ({
   onApprovePayment,
   onRejectPayment,
   onAssignCouncil,
-  onAssignCountry,
 }: ParticipantTableProps) => {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [tempValues, setTempValues] = useState<
+    Record<string, { council: string; country: string }>
+  >({});
 
-  const handleAction = async (action: () => Promise<void>, id: number, actionType: string) => {
+  const handleAction = async (action: () => Promise<void>, email: string, actionType: string) => {
     try {
-      setLoading((prev) => ({ ...prev, [`${actionType}-${id}`]: true }));
+      setLoading((prev) => ({ ...prev, [`${actionType}-${email}`]: true }));
       await action();
     } finally {
-      setLoading((prev) => ({ ...prev, [`${actionType}-${id}`]: false }));
+      setLoading((prev) => ({ ...prev, [`${actionType}-${email}`]: false }));
+    }
+  };
+
+  const getTempValue = (email: string, field: "council" | "country") => {
+    return tempValues[email]?.[field] || "";
+  };
+
+  const setTempValue = (email: string, field: "council" | "country", value: string) => {
+    setTempValues((prev) => ({
+      ...prev,
+      [email]: {
+        ...prev[email],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleAssignCouncilCountry = async (email: string) => {
+    const council = getTempValue(email, "council");
+    const country = getTempValue(email, "country");
+
+    if (council && country) {
+      await handleAction(() => onAssignCouncil(email, council), email, "assign-council-country");
     }
   };
 
@@ -60,58 +85,55 @@ const ParticipantTable = ({
             <TableHead className="w-12">No</TableHead>
             <TableHead className="min-w-[200px]">Nama</TableHead>
             <TableHead className="min-w-[200px]">Email</TableHead>
-            <TableHead className="min-w-[100px]">Council</TableHead>
-            <TableHead className="min-w-[100px]">Country</TableHead>
+            <TableHead className="min-w-[150px]">Council & Country</TableHead>
             <TableHead className="min-w-[100px]">Registration</TableHead>
             <TableHead className="min-w-[100px]">Payment</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="bg-slate-300">
           {participants.map((participant, index) => (
-            <TableRow key={participant.id}>
+            <TableRow key={participant.email}>
               <TableCell className="text-center">{index + 1}</TableCell>
               <TableCell>{participant.name}</TableCell>
               <TableCell>{participant.email}</TableCell>
               <TableCell>
-                <select
-                  name="Council"
-                  onChange={(e) =>
-                    handleAction(
-                      () => onAssignCouncil(participant.id, e.target.value),
-                      participant.id,
-                      "assign-council",
-                    )
-                  }
-                  value={participant.council || ""}
-                  className="w-full rounded border p-1 pr-3"
-                  disabled={loading[`assign-council-${participant.id}`]}
-                >
-                  <option value="">Select Council</option>
-                  {COUNCILS.map((council) => (
-                    <option key={council.slug} value={council.slug}>
-                      {council.name}
-                    </option>
-                  ))}
-                </select>
-              </TableCell>
-              <TableCell>
-                <input
-                  type="text"
-                  value={participant.country || ""}
-                  onChange={(e) => onAssignCountry(participant.id, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleAction(
-                        () => onAssignCountry(participant.id, e.currentTarget.value),
-                        participant.id,
-                        "assign-country",
-                      );
+                <div className="space-y-2">
+                  <select
+                    name="Council"
+                    value={getTempValue(participant.email, "council") || participant.council || ""}
+                    onChange={(e) => setTempValue(participant.email, "council", e.target.value)}
+                    className="w-full rounded border p-1 pr-3"
+                    disabled={loading[`assign-council-country-${participant.email}`]}
+                  >
+                    <option value="">Select Council</option>
+                    {COUNCILS.map((council) => (
+                      <option key={council.slug} value={council.slug}>
+                        {council.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={getTempValue(participant.email, "country") || participant.country || ""}
+                    onChange={(e) => setTempValue(participant.email, "country", e.target.value)}
+                    className="w-full rounded border p-1"
+                    placeholder="Enter country"
+                    disabled={loading[`assign-council-country-${participant.email}`]}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleAssignCouncilCountry(participant.email)}
+                    disabled={
+                      loading[`assign-council-country-${participant.email}`] ||
+                      !getTempValue(participant.email, "council") ||
+                      !getTempValue(participant.email, "country")
                     }
-                  }}
-                  className="w-full rounded border p-1"
-                  placeholder="Enter country and press Enter"
-                  disabled={loading[`assign-country-${participant.id}`]}
-                />
+                  >
+                    Assign
+                  </Button>
+                </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
@@ -122,14 +144,14 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onApproveRegistration(participant.id),
-                          participant.id,
+                          () => onApproveRegistration(participant.email),
+                          participant.email,
                           "approve-reg",
                         )
                       }
                       disabled={
-                        loading[`approve-reg-${participant.id}`] ||
-                        participant.registration_status === "approved"
+                        loading[`approve-reg-${participant.email}`] ||
+                        participant.registration_status === "confirmed"
                       }
                     >
                       <Check className="h-4 w-4 text-green-500" />
@@ -140,13 +162,13 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onRejectRegistration(participant.id),
-                          participant.id,
+                          () => onRejectRegistration(participant.email),
+                          participant.email,
                           "reject-reg",
                         )
                       }
                       disabled={
-                        loading[`reject-reg-${participant.id}`] ||
+                        loading[`reject-reg-${participant.email}`] ||
                         participant.registration_status === "rejected"
                       }
                     >
@@ -154,7 +176,7 @@ const ParticipantTable = ({
                     </Button>
                   </div>
                   <span className="text-sm">
-                    {participant.registration_status === "approved" && "✓ Approved"}
+                    {participant.registration_status === "confirmed" && "✓ Approved"}
                     {participant.registration_status === "rejected" && "✗ Rejected"}
                     {!participant.registration_status && "Pending"}
                   </span>
@@ -169,14 +191,14 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onApprovePayment(participant.id),
-                          participant.id,
+                          () => onApprovePayment(participant.email),
+                          participant.email,
                           "approve-pay",
                         )
                       }
                       disabled={
-                        loading[`approve-pay-${participant.id}`] ||
-                        participant.payment_status === "approved"
+                        loading[`approve-pay-${participant.email}`] ||
+                        participant.payment_status === "paid"
                       }
                     >
                       <Check className="h-4 w-4 text-green-500" />
@@ -187,22 +209,22 @@ const ParticipantTable = ({
                       className="h-8 w-8 p-0"
                       onClick={() =>
                         handleAction(
-                          () => onRejectPayment(participant.id),
-                          participant.id,
+                          () => onRejectPayment(participant.email),
+                          participant.email,
                           "reject-pay",
                         )
                       }
                       disabled={
-                        loading[`reject-pay-${participant.id}`] ||
-                        participant.payment_status === "rejected"
+                        loading[`reject-pay-${participant.email}`] ||
+                        participant.payment_status === "failed"
                       }
                     >
                       <X className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
                   <span className="text-sm">
-                    {participant.payment_status === "approved" && "✓ Approved"}
-                    {participant.payment_status === "rejected" && "✗ Rejected"}
+                    {participant.payment_status === "paid" && "✓ Approved"}
+                    {participant.payment_status === "failed" && "✗ Rejected"}
                     {!participant.payment_status && "Pending"}
                   </span>
                 </div>

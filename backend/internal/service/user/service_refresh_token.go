@@ -116,6 +116,7 @@ func (s *refreshTokenService) BlacklistRefreshToken(refreshToken string) error {
 	if err != nil {
 		errorMessage := "Repo failed to find a valid token"
 		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.BlacklistRefreshToken"})
+		return err
 	}
 
 	// revoke the refresh token
@@ -124,6 +125,7 @@ func (s *refreshTokenService) BlacklistRefreshToken(refreshToken string) error {
 	if err != nil {
 		errorMessage := "Repo failed to revoke refresh token"
 		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.BlacklistRefreshToken"})
+		return err
 	}
 
 	// return nil if the refresh token is revoked successfully

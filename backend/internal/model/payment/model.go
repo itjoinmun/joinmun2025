@@ -36,7 +36,7 @@ type PaymentWithTeamMembers struct {
 	PaymentAmount    int       `json:"payment_amount" db:"payment_amount"`
 	// Delegate information
 	MUNDelegateName string     `json:"mun_delegate_name" db:"mun_delegate_name"`
-	Confirmed       *bool      `json:"confirmed" db:"confirmed"`
+	Confirmed       *string    `json:"confirmed" db:"confirmed"`
 	InsertDate      *time.Time `json:"insert_date" db:"insert_date"`
 	ParticipantType *string    `json:"participant_type" db:"participant_type"`
 	// Team information
@@ -48,7 +48,7 @@ type TeamMemberInfo struct {
 	MUNDelegateEmail string  `json:"mun_delegate_email" db:"mun_delegate_email"`
 	MUNDelegateName  string  `json:"mun_delegate_name" db:"mun_delegate_name"`
 	ParticipantType  *string `json:"participant_type" db:"participant_type"`
-	Confirmed        *bool   `json:"confirmed" db:"confirmed"`
+	Confirmed        *string `json:"confirmed" db:"confirmed"`
 	// Add payment information
 	PaymentStatus string `json:"payment_status" db:"payment_status"`
 	PaymentAmount int    `json:"payment_amount" db:"payment_amount"`

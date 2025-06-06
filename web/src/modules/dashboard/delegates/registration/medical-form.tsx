@@ -164,16 +164,20 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     setSubmitting(true);
     setSubmitError(null);
 
-    // Ensure formData is treated as an array
-    const currentFormDataArray = Array.isArray(formData)
-      ? [...formData]
-      : Object.keys(formData).length > 0
-      // eslint-disable-next-line
-        ? [{ ...(formData as any)[0] }]
-        : [];
+    // For team registrations, formData should be an object with index keys
+    // For individual registrations, it can be an array
+    const currentFormData =
+      slug === "team"
+        ? (formData as Record<number, DelegateRegistration>)
+        : Array.isArray(formData)
+          ? formData
+          : [];
 
     const existingDelegateData =
-      currentFormDataArray[index] || ({} as Partial<DelegateRegistration>);
+      slug === "team"
+        ? currentFormData[index] || ({} as Partial<DelegateRegistration>)
+        : currentFormData[index] || ({} as Partial<DelegateRegistration>);
+
     const delegateEmail = existingDelegateData.biodata_responses?.[0]?.biodata_answer_text || "";
 
     // Structure the form data to match the API requirements
@@ -197,32 +201,52 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       mun_responses: existingDelegateData.mun_responses || [],
     };
 
-    // Prepare the full array of delegates for submission
-    const allDelegatesData = [...currentFormDataArray];
-    // Ensure array is long enough
-    while (allDelegatesData.length <= index) {
-      allDelegatesData.push({} as DelegateRegistration);
+    // Handle different data structures for team vs individual
+    let updatedFormData;
+    if (slug === "team") {
+      // For team, maintain object structure with index keys
+      updatedFormData = {
+        ...currentFormData,
+        [index]: updatedDelegateData,
+      };
+    } else {
+      // For individual, use array structure
+      const allDelegatesData = [...(currentFormData as DelegateRegistration[])];
+      while (allDelegatesData.length <= index) {
+        allDelegatesData.push({} as DelegateRegistration);
+      }
+      allDelegatesData[index] = updatedDelegateData;
+      updatedFormData = allDelegatesData;
     }
-    allDelegatesData[index] = updatedDelegateData;
 
-    try {
-      const { success, error } = await submitDelegateRegistration({
-        formData: allDelegatesData,
-        index,
-        slug,
-        isTeam: false, // Assuming medical form is for one delegate at a time
-      });
+    // Save data to localStorage
+    setFormData(updatedFormData);
 
-      if (success) {
-        setFormData(allDelegatesData);
-        router.push("/dashboard/delegates");
-      } else {
-        setSubmitError(error || "Unknown error occurred during submission");
+    // Handle different flows based on delegation type
+    if (slug === "team") {
+      // For team registrations, redirect to team dashboard
+      setSubmitting(false); // Reset submitting state before redirect
+      router.push("/dashboard/delegates/team");
+    } else {
+      // For individual registrations, submit directly
+      try {
+        const { success, error } = await submitDelegateRegistration({
+          formData: updatedFormData as DelegateRegistration[],
+          index,
+          slug,
+          isTeam: false,
+        });
+
+        if (success) {
+          router.push("/dashboard/delegates");
+        } else {
+          setSubmitError(error || "Unknown error occurred during submission");
+          setSubmitting(false);
+        }
+      } catch (err) {
+        setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
         setSubmitting(false);
       }
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
-      setSubmitting(false);
     }
   };
 

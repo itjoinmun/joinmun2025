@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
-
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
     `${slug}Registration`,
     [],

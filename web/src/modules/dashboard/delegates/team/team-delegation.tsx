@@ -33,13 +33,18 @@ export function TeamRegistrationTable() {
       }
 
       const parsedData = JSON.parse(storedData);
+      console.log("📊 Parsed data structure:", parsedData); // Debug log
+
       const members: TeamMember[] = [];
 
       // Process each team member from the structure
       Object.keys(parsedData).forEach((key) => {
         const index = parseInt(key);
         const member = parsedData[key];
-        if (member.biodata_responses) {
+
+        console.log(`👤 Processing member at index ${index}:`, member); // Debug log
+
+        if (member && member.biodata_responses) {
           // Find name from biodata_responses
           let name = "";
 
@@ -48,13 +53,17 @@ export function TeamRegistrationTable() {
             if (response.biodata_question_id === 2) name = response.biodata_answer_text;
           });
 
-          members.push({
-            name,
-            originalIndex: index,
-          });
+          if (name) {
+            // Only add if we found a name
+            members.push({
+              name,
+              originalIndex: index,
+            });
+          }
         }
       });
 
+      console.log("✅ Final team members:", members); // Debug log
       setTeamMembers(members);
     } catch (error) {
       console.error("Error loading team data:", error);

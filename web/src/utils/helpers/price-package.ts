@@ -1,6 +1,6 @@
 export const pricePackage = {
   single_delegate: {
-    "Early Bird": {
+    EarlyBird: {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: "1,500,000",
@@ -59,7 +59,7 @@ export const pricePackage = {
     },
   },
   team_delegation: {
-    "Early Bird": {
+    EarlyBird: {
       delegateRange: "1-3 Delegates",
       nonAccommodation: {
         label: "Non-Accommodation",
@@ -124,7 +124,7 @@ export const pricePackage = {
     },
   },
   observer: {
-    "Early Bird": {
+    EarlyBird: {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: "1,000,000",
@@ -183,7 +183,7 @@ export const pricePackage = {
     },
   },
   advisor: {
-    "Early Bird": {
+    EarlyBird: {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: "2,000,000",

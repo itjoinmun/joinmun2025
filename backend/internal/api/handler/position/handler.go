@@ -44,7 +44,7 @@ func (h *PositionHandler) GetPositionPaperHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, paper.SubmissionFile)
+	c.JSON(http.StatusOK, paper)
 }
 
 // insert position paper

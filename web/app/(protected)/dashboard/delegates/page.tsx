@@ -9,6 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import { Skeleton } from "@/components/ui/skeleton";
 import DelegatesCompanion from "@/modules/dashboard/delegates/delegates-companion";
 import DelegatesParticipant from "@/modules/dashboard/delegates/delegates-participant";
 import YourRole from "@/modules/dashboard/delegates/your-role";
@@ -30,7 +31,7 @@ const DelegatesPage = () => {
           Welcome to delegates, choose role to see more information
         </DashboardPageDescription>
       </DashboardPageHeader>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Skeleton className="h-96" />}>
         <YourRole />
       </Suspense>
       <Suspense fallback={<></>}>

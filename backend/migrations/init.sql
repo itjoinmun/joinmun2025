@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS mun_delegates (
     council VARCHAR(8) CHECK (council IN ('UNWOMEN', 'WHO', 'UNSC', 'ECOFIN', 'CRISIS', 'BRICS+', 'Press')),
     country VARCHAR(255),
     pair VARCHAR(255),
-    confirmed BOOLEAN DEFAULT FALSE,
+    confirmed VARCHAR(32) CHECK (confirmed IN('rejected', 'confirmed', 'pending')),
     confirmed_date TIMESTAMP,
     council_date TIMESTAMP,
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

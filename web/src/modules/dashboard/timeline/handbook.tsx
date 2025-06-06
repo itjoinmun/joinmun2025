@@ -17,7 +17,11 @@ export default function Handbook() {
             Download Handbook for detailed information.
           </p>
         </div>
-        <Button variant="primary" className="w-full md:ml-auto md:w-fit cursor-pointer" onClick={handleDownload}>
+        <Button
+          variant="primary"
+          className="w-full cursor-pointer md:ml-auto md:w-fit"
+          onClick={handleDownload}
+        >
           Download
         </Button>
       </div>

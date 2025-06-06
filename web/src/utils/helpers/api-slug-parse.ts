@@ -22,6 +22,28 @@ const parseSlug = (slug: DelegateOptions) => {
   return parseSlug;
 };
 
+export const parseSlugFromApi = (slug: apiSlugs): DelegateOptions => {
+  let parseSlug;
+  switch (slug) {
+    case "single_delegate":
+      parseSlug = "single";
+      break;
+    case "observer":
+      parseSlug = "observer";
+      break;
+    case "faculty_advisor":
+      parseSlug = "advisor";
+      break;
+    case "team_delegate":
+      parseSlug = "team";
+      break;
+    default:
+      parseSlug = "no_slug";
+  }
+
+  return parseSlug as DelegateOptions;
+};
+
 export type apiSlugs =
   | "single_delegate"
   | "observer"

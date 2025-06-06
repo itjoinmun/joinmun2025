@@ -45,7 +45,7 @@ type MUNDelegates struct {
 	Pair             *string    `json:"pair" db:"pair" binding:"email,omitempty"`
 	Council          *string    `json:"council" db:"council" binding:"omitempty,oneof=UNWOMEN WHO UNSC ECOFIN CRISIS BRICS+ Press"`
 	Country          *string    `json:"country" db:"country"`
-	Confirmed        *bool      `json:"confirmed" db:"confirmed"`
+	Confirmed        *string    `json:"confirmed" db:"confirmed" binding:"oneof=confirmed rejected pending"`
 	ConfirmedDate    *time.Time `json:"confirmed_date" db:"confirmed_date"`
 	CouncilDate      *time.Time `json:"council_date" db:"council_date"`
 	InsertDate       *time.Time `json:"insert_date" db:"insert_date"`
