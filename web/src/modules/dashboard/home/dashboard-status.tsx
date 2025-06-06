@@ -9,9 +9,11 @@ import { PositionPaperModal } from "@/components/dashboard/position-paper-modal"
 import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
 import { cn } from "@/utils/helpers/cn";
 import {
+  Delegate,
   getDelegate,
   getDelegatePaper,
   getPayment,
+  Payment,
 } from "@/utils/helpers/fetch/delegates/delegates";
 
 type RegistrationStatus =
@@ -76,8 +78,8 @@ const DashboardStatus = async () => {
     return "no_information";
   })();
 
-  const regInfo = getRegistrationStatusInfo(registrationStatus, userStatus);
-  const codeInfo = getDelegateCodeInfo(delegateCode, userStatus, paymentStatus);
+  const regInfo = getRegistrationStatusInfo(registrationStatus);
+  const codeInfo = getDelegateCodeInfo(delegateCode, paymentStatus?.mun_team_id);
   const paperInfo = getPaperSubmissionInfo(paperSubmission);
   const infoInfo = getInformationCenterInfo(informationCenter, userStatus);
 
@@ -117,7 +119,6 @@ const DashboardStatus = async () => {
 };
 
 const StatusCard = ({
-  status,
   description,
   cardHeader,
   cardDescription,
@@ -130,7 +131,7 @@ const StatusCard = ({
   cardHeader: string;
   cardDescription: string;
   canSubmitPaper?: boolean;
-  userStatus?: any;
+  userStatus?: Delegate | null;
   paperUploaded?: boolean;
 }) => {
   return (
@@ -150,7 +151,7 @@ const StatusCard = ({
   );
 };
 
-const getRegistrationStatusInfo = (status: RegistrationStatus, userStatus?: any) => {
+const getRegistrationStatusInfo = (status: RegistrationStatus) => {
   switch (status) {
     case "not_registered":
       return {
@@ -181,7 +182,7 @@ const getRegistrationStatusInfo = (status: RegistrationStatus, userStatus?: any)
   }
 };
 
-const getDelegateCodeInfo = (status: DelegateCodeStatus, userStatus?: any, paymentStatus?: any) => {
+const getDelegateCodeInfo = (status: DelegateCodeStatus,  paymentCode?: string) => {
   switch (status) {
     case "not_registered":
       return {
@@ -194,7 +195,7 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, userStatus?: any, payme
         description: "Code will be available after registration approval",
       };
     case "code_available":
-      const delegateCode = paymentStatus?.mun_team_id || userStatus?.mun_team_id || "Individual";
+      const delegateCode = paymentCode || "Individual";
       return {
         status: delegateCode,
         description: `${delegateCode}`,
@@ -231,7 +232,7 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
   }
 };
 
-const getInformationCenterInfo = (status: InformationCenterStatus, userStatus?: any) => {
+const getInformationCenterInfo = (status: InformationCenterStatus, userStatus?: Delegate | null) => {
   switch (status) {
     case "not_registered":
       return {

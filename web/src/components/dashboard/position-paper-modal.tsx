@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitPositionPaper } from "@/utils/helpers/fetch/delegates/delegates";
+import { Delegate, submitPositionPaper } from "@/utils/helpers/fetch/delegates/delegates";
 
 interface PositionPaperModalProps {
-  userStatus: any;
+  userStatus: Delegate | null;
 }
 
 export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
