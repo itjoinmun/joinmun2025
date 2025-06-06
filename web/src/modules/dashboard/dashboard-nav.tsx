@@ -100,7 +100,7 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
     <Sidebar className="hidden h-full md:block">
       <DashboardContainer className="bg-gray m-2 mr-0 flex h-full w-auto flex-col gap-4 rounded-md py-4 group-data-[collapsible=icon]:p-2">
         <SidebarHeader className="mt-2 w-auto">
-          <Link href={`/dashboard`} className="flex w-full items-center gap-3 select-none">
+          <Link href={`/dashboard/home`} className="flex w-full items-center gap-3 select-none">
             <Image
               src={`/LOGO.png`}
               alt="JOINMUN"
@@ -141,63 +141,45 @@ const DummyNav = ({ pathname }: { pathname: string }) => {
         </SidebarContent>
 
         <SidebarFooter className="mt-auto">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="default" className="w-full cursor-pointer">
-                <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  You will be logged out of your account and redirected to the home page.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-                <Button onClick={handleLogout} variant={`primary`} className="cursor-pointer">
-                  Log out
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <LogoutButton />
         </SidebarFooter>
       </DashboardContainer>
     </Sidebar>
   );
 };
 
-const MobileNavButtons = ({ pathname, className }: { pathname: string; className?: string }) => (
-  <nav
-    className={cn(
-      "no-scrollbar flex w-full max-w-full snap-x snap-mandatory gap-2 overflow-auto bg-transparent",
-      className,
-    )}
-  >
-    {NAV_LINKS.map((link) => (
-      <Link
-        href={link.href}
-        key={link.id}
-        scroll={false}
-        className={cn(
-          buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "gray" }),
-          "shrink-0 snap-start items-center rounded-sm transition-all",
-        )}
-      >
-        {link.logo}
-        {link.name}
-      </Link>
-    ))}
-  </nav>
-);
+const MobileNavButtons = ({ pathname, className }: { pathname: string; className?: string }) => {
+  return (
+    <nav
+      className={cn(
+        "no-scrollbar flex w-full max-w-full snap-x snap-mandatory gap-2 overflow-auto bg-transparent",
+        className,
+      )}
+    >
+      {NAV_LINKS.map((link) => (
+        <Link
+          href={link.href}
+          key={link.id}
+          scroll={false}
+          className={cn(
+            buttonVariants({ variant: pathname.startsWith(link.href) ? "primary" : "gray" }),
+            "shrink-0 snap-start items-center rounded-sm transition-all",
+          )}
+        >
+          {link.logo}
+          {link.name}
+        </Link>
+      ))}
+      <LogoutButton />
+    </nav>
+  );
+};
 
 const MobileNav = ({ pathname }: { pathname: string }) => {
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    // setIsScrolled(latest > 190);
     setIsScrolled(latest > 20);
   });
 
@@ -217,12 +199,10 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
 
         <nav className="space-y-6">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          {/* Use the standalone MobileNavButtons component */}
           <MobileNavButtons pathname={pathname} className="sticky top-0 w-full" />
         </nav>
       </header>
 
-      {/* navbar resolver */}
       <div
         className={cn(
           `h-54 w-full shrink-0 transition-all ease-out md:hidden`,
@@ -230,6 +210,48 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
         )}
       />
     </>
+  );
+};
+
+const LogoutButton = ({ className }: { className?: string }) => {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.ok) {
+      router.push("/");
+    }
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="default" className="cursor-pointer md:w-full">
+          <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="*:text-start">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+          <AlertDialogDescription>
+            You will be logged out of your account and redirected to the home page.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+          <Button onClick={handleLogout} variant={`primary`} className="cursor-pointer">
+            Log out
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
