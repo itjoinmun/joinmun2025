@@ -48,7 +48,7 @@ export default function ComingSoon() {
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 1 }}
-        className="3xl:right-48 absolute -right-8 z-40 translate-x-1/2 translate-y-[6.5rem] rotate-180 overflow-x-clip select-none sm:translate-y-14 md:translate-y-24 lg:-right-24 lg:-translate-y-12 xl:-right-16 2xl:right-24"
+        className="3xl:right-48 absolute -right-8 z-40 translate-x-1/2 translate-y-[6.5rem] rotate-180 select-none sm:translate-y-14 md:translate-y-24 lg:-right-24 lg:-translate-y-12 xl:-right-16 2xl:right-24"
       >
         <Image src="/assets/coming-soon/wave.webp" alt="" width={850} height={126} />
       </motion.div>
@@ -80,7 +80,7 @@ export default function ComingSoon() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1.3, duration: 0.7 }}
-          className="invisible mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100"
+          className="mt-3 scale-75 sm:scale-90 md:mt-8 lg:scale-100"
         >
           <Link href="/">
             <Button variant="gradient" size="longer" className="cursor-pointer">
