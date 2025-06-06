@@ -54,14 +54,17 @@ const Body = async () => {
                 </Bold>
               </p>
             </div>
-            <footer className="mt-auto flex w-full justify-end gap-3 justify-self-end">
+            <footer className="xs:flex-row xs:mt-auto mt-30 flex w-full flex-col justify-end gap-3 justify-self-end">
               <Link href={`/dashboard/delegates`}>
-                <Button variant={`warningOutline`} className="mt-40 w-fit cursor-pointer md:mt-0">
+                <Button
+                  variant={`warningOutline`}
+                  className="xs:mt-40 w-fit cursor-pointer md:mt-0"
+                >
                   See Council
                 </Button>
               </Link>
               <Link href={`/dashboard/timeline`}>
-                <Button variant={`warning`} className="mt-40 w-fit cursor-pointer md:mt-0">
+                <Button variant={`warning`} className="xs:mt-40 w-fit cursor-pointer md:mt-0">
                   See Event Schedule
                 </Button>
               </Link>
@@ -96,13 +99,13 @@ const Body = async () => {
       </div>
 
       {/* Second absolute child with overflow visible */}
-      <div className="absolute inset-0 -z-20 overflow-visible">
+      <div className="absolute inset-0 -z-20 overflow-hidden md:overflow-visible">
         <Image
           src={`/assets/dashboard/home/${hasRegistered ? "model-2.webp" : "model-1.webp"}`}
           alt="Dashboard Image"
           width={250}
           height={250}
-          className="absolute right-0 bottom-0"
+          className="absolute right-0 -bottom-16 md:bottom-0"
         />
       </div>
     </section>

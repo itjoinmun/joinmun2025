@@ -20,7 +20,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { cn } from "@/utils/helpers/cn";
-import { BookOpen, CircleHelp, DollarSign, Home, Hourglass, LogOut } from "lucide-react";
+import { BookOpen, CircleHelp, DollarSign, Home, Hourglass, InfoIcon, LogOut } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -239,7 +239,9 @@ const LogoutButton = ({ className }: { className?: string }) => {
       </AlertDialogTrigger>
       <AlertDialogContent className="*:text-start">
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+          <AlertDialogTitle className="flex items-center gap-2">
+            <InfoIcon className="size-5" /> Are you sure you want to log out?
+          </AlertDialogTitle>
           <AlertDialogDescription>
             You will be logged out of your account and redirected to the home page.
           </AlertDialogDescription>
