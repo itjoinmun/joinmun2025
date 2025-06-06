@@ -21,7 +21,8 @@ type AccessTokenClaims struct {
 }
 
 func GenerateAccessToken(userID int, email, username, role string) (string, error) {
-	expiresAt := time.Now().Add(15 * time.Minute)
+	accessTokenTTL := 1 * 60 * 60 // 1 hour in seconds
+	expiresAt := time.Now().Add(time.Duration(accessTokenTTL))
 	issuedAt := time.Now()
 
 	// Create the claims for the access token
