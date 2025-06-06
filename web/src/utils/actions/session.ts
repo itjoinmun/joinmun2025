@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 const getSession = async (): Promise<Session> => {
   const cookieStore = await cookies();
   const access = cookieStore.get("access_token")?.value;
-  const refresh = cookieStore.get("refresh_token")?.value;
 
   try {
     const res = await fetch(`${process.env.API_URL}/auth/me`, {
