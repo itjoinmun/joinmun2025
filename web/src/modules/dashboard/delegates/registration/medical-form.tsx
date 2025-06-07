@@ -167,7 +167,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     try {
       // Save the health responses to localStorage first
       let currentFormData: DelegateRegistration[] | Record<number, DelegateRegistration>;
-      
+
       if (slug === "team") {
         currentFormData = (formData as Record<number, DelegateRegistration>) || {};
       } else {
@@ -176,8 +176,10 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
       const existingDelegateData =
         slug === "team"
-          ? (currentFormData as Record<number, DelegateRegistration>)[index] || ({} as Partial<DelegateRegistration>)
-          : (currentFormData as DelegateRegistration[])[index] || ({} as Partial<DelegateRegistration>);
+          ? (currentFormData as Record<number, DelegateRegistration>)[index] ||
+            ({} as Partial<DelegateRegistration>)
+          : (currentFormData as DelegateRegistration[])[index] ||
+            ({} as Partial<DelegateRegistration>);
 
       const delegateEmail = existingDelegateData.biodata_responses?.[0]?.biodata_answer_text || "";
 
@@ -190,7 +192,11 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
           type: existingDelegateData.mun_delegates?.type || "",
           council: existingDelegateData.mun_delegates?.council || "",
           country: existingDelegateData.mun_delegates?.country || "",
-          participant_type: parseSlug(slug) as "observer" | "single_delegate" | "faculty_advisor" | "team_delegate",
+          participant_type: parseSlug(slug) as
+            | "observer"
+            | "single_delegate"
+            | "faculty_advisor"
+            | "team_delegate",
         },
         health_responses: formFields.map((field) => ({
           health_question_id: field.id,
@@ -261,7 +267,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
         <FormHeader>Medical Questions</FormHeader>
         <FormContent fields={formFields} onSubmit={onSubmit} />
         {submitError && (
-          <div className="mt-4 border-2 border-red-700 bg-red-500 p-4 font-medium text-white">
+          <div className="bg-red-normal border-red-dark rounded-sm border-2 p-2 text-xs font-medium text-white">
             Error: {submitError}
           </div>
         )}

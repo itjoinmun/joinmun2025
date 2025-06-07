@@ -8,6 +8,7 @@ import {
 import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
 import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
 import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/helpers/cn";
 import {
   Delegate,
@@ -15,7 +16,10 @@ import {
   getDelegatePaper,
   getPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
+import { Users } from "lucide-react";
+import { cookies } from "next/headers";
 import Link from "next/link";
+import DelegateCodeInput from "./delegate-code-input";
 
 type RegistrationStatus =
   | "not_registered"
@@ -23,11 +27,12 @@ type RegistrationStatus =
   | "verified_pending_payment"
   | "payment_checking"
   | "payment_verified";
-
-type DelegateCodeStatus = "not_registered" | "registration_pending" | "code_available";
-
+type DelegateCodeStatus =
+  | "not_registered"
+  | "registration_pending"
+  | "can_input"
+  | "code_available";
 type PaperSubmissionStatus = "not_registered" | "registration_pending" | "can_upload" | "uploaded";
-
 type InformationCenterStatus =
   | "not_registered"
   | "registration_pending"
@@ -62,6 +67,7 @@ const DashboardStatus = async () => {
 
   const delegateCode: DelegateCodeStatus = (() => {
     if (!delegate) return "not_registered";
+    if (delegate.participant_type === "faculty_advisor") return "can_input";
     if (delegate.participant_type !== "single_delegate") return "code_available";
     return "registration_pending";
   })();
@@ -80,33 +86,64 @@ const DashboardStatus = async () => {
   return (
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">
-        <StatusCard
-          cardHeader="Registration Status"
-          cardDescription="Your current registration progress"
-          status={regInfo.status}
-          description={regInfo.description}
-        />
-        <StatusCard
-          cardHeader="Delegate Code"
-          cardDescription="Your unique delegate identifier"
-          status={codeInfo.status}
-          description={codeInfo.description}
-        />
-        <StatusCard
-          cardHeader="Paper Submission"
-          cardDescription="Position paper upload status"
-          status={paperInfo.status}
-          description={paperInfo.description}
-          canSubmitPaper={paperSubmission === "can_upload"}
-          paperUploaded={paperSubmission === "uploaded"}
-          userStatus={delegate}
-        />
-        <StatusCard
-          cardHeader="Assignment Information"
-          cardDescription="Council and country assignment"
-          status={infoInfo.status}
-          description={infoInfo.description}
-        />
+        {(delegate?.participant_type === "single_delegate" ||
+          delegate?.participant_type === "team_delegate") && (
+          <>
+            <StatusCard
+              cardHeader="Registration Status"
+              cardDescription="Your current registration progress"
+              status={regInfo.status}
+              description={regInfo.description}
+            />
+            <StatusCard
+              cardHeader="Delegate Code"
+              cardDescription="Your unique delegate identifier"
+              status={codeInfo.status}
+              description={codeInfo.description}
+            />
+            <StatusCard
+              cardHeader="Paper Submission"
+              cardDescription="Position paper upload status"
+              status={paperInfo.status}
+              description={paperInfo.description}
+              canSubmitPaper={paperSubmission === "can_upload"}
+              paperUploaded={paperSubmission === "uploaded"}
+              userStatus={delegate}
+            />
+            <StatusCard
+              cardHeader="Assignment Information"
+              cardDescription="Council and country assignment"
+              status={infoInfo.status}
+              description={infoInfo.description}
+            />
+          </>
+        )}
+
+        {delegate?.participant_type === "faculty_advisor" && (
+          <>
+            <StatusCard
+              cardHeader="Status"
+              cardDescription="Verification announcement at 15 Dec 2025"
+              description={regInfo.description}
+            />
+            <StatusCard cardHeader="Information Center" description={infoInfo.description} />
+            <StatusCard
+              cardHeader="Delegate Code"
+              cardDescription="Input code from your delegates"
+              description={codeInfo.description}
+            />
+          </>
+        )}
+
+        {delegate?.participant_type === "observer" && (
+          <>
+            <StatusCard
+              cardHeader="Assignment Information"
+              cardDescription="Council and country assignment"
+              description={infoInfo.description}
+            />
+          </>
+        )}
       </section>
     </DashboardModule>
   );
@@ -120,10 +157,10 @@ const StatusCard = ({
   userStatus,
   paperUploaded = false,
 }: {
-  status: string;
+  status?: string;
   description: string | React.ReactNode;
   cardHeader: string;
-  cardDescription: string;
+  cardDescription?: string;
   canSubmitPaper?: boolean;
   userStatus?: Delegate | null;
   paperUploaded?: boolean;
@@ -201,6 +238,10 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) =
             </p>
           </div>
         ),
+      };
+    case "can_input":
+      return {
+        description: <DelegateCodeInput />,
       };
     case "registration_pending":
       return {

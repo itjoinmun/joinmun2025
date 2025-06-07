@@ -214,9 +214,11 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
 };
 
 const LogoutButton = ({ className }: { className?: string }) => {
+  const [pending, setPending] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
+    setPending(true);
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
       credentials: "include",
       method: "POST",
@@ -225,9 +227,12 @@ const LogoutButton = ({ className }: { className?: string }) => {
       },
     });
 
-    if (res.ok) {
-      router.push("/");
+    if (!res.ok) {
+      setPending(false);
+      return;
     }
+
+    router.push("/");
   };
 
   return (
@@ -248,8 +253,13 @@ const LogoutButton = ({ className }: { className?: string }) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-          <Button onClick={handleLogout} variant={`primary`} className="cursor-pointer">
-            Log out
+          <Button
+            onClick={handleLogout}
+            disabled={pending}
+            variant={`primary`}
+            className="cursor-pointer"
+          >
+            {pending ? "Logging out..." : "Log out"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

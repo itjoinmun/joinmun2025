@@ -33,8 +33,6 @@ const Body = async () => {
   const delegate = await getDelegate();
   const user = (await getSession())?.name;
 
-  console.log("delgate: ", delegate);
-
   if (delegate) {
     hasRegistered = true;
   }
@@ -84,7 +82,7 @@ const Body = async () => {
               </p>
             </div>
             <Link
-              href={`/dashboard/register`}
+              href={`/dashboard/delegates`}
               className="mt-40 inline-flex w-fit md:mt-auto md:ml-auto"
             >
               <Button variant={`warning`} className="cursor-pointer">
