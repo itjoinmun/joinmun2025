@@ -152,7 +152,12 @@ const RegisterForm = () => {
 
         {error && <div className="text-center text-sm text-red-500 md:text-start">{error}</div>}
 
-        <Button disabled={pending} type="submit" variant={`primary`} className="w-full">
+        <Button
+          disabled={pending}
+          type="submit"
+          variant={`primary`}
+          className="w-full cursor-pointer"
+        >
           {pending ? (
             <>
               <Loader className="animate-spin" /> Loading...

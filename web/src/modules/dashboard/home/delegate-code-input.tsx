@@ -3,10 +3,11 @@
 import { Input } from "@/components/ui/input";
 import joinTeamWithCode from "@/utils/actions/join-team-with-code";
 import { cn } from "@/utils/helpers/cn";
-import { Users } from "lucide-react";
+import { CheckCircle, Users } from "lucide-react";
 import { useActionState } from "react";
 
 const initialState = {
+  ok: false,
   message: "",
   errors: {},
 };
@@ -20,7 +21,7 @@ const DelegateCodeInput = () => {
         <div className="relative">
           <Input
             name="code"
-            disabled={pending}
+            disabled={pending || state?.ok}
             placeholder="Enter delegate code"
             className={cn(state?.errors.code && "border-red-normal border-2")}
           />
@@ -28,6 +29,12 @@ const DelegateCodeInput = () => {
         </div>
 
         {state?.errors && <p className="text-red-normal mt-1.5 text-xs">{state.errors.code}</p>}
+
+        {state?.ok && (
+          <p className="mt-1.5 flex items-center gap-1 text-xs text-green-600">
+            <CheckCircle className="size-3" /> {state.message}
+          </p>
+        )}
       </form>
     </div>
   );
