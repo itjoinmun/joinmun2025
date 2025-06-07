@@ -94,7 +94,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" autoFocus autoComplete="off" {...field} />
+                <Input placeholder="Enter your name" autoFocus autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,7 +107,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" autoComplete="off" {...field} />
+                <Input placeholder="Enter your email" autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -122,7 +122,7 @@ const RegisterForm = () => {
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="fatimah@badr.co.id"
+                  placeholder="Enter your password"
                   autoComplete="off"
                   {...field}
                 />
@@ -140,7 +140,7 @@ const RegisterForm = () => {
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="fatimah@badr.co.id"
+                  placeholder="Confirm your password"
                   autoComplete="off"
                   {...field}
                 />

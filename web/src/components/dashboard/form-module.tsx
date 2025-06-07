@@ -152,15 +152,10 @@ const FormContent = ({
                 control={form.control}
                 name={field.name}
                 render={({ field: fieldProps }) => (
-                  <FormItem>
+                  <FormItem className="flex min-h-[96px] flex-col justify-between">
                     <FormLabel className="h-fit">{field.label}</FormLabel>
                     <FormControl>
                       <div className="flex flex-col gap-2">
-                        {savedFiles[field.name] && (
-                          <div className="mb-1 text-sm font-medium text-green-500">
-                            Previously uploaded: {savedFiles[field.name]}
-                          </div>
-                        )}
                         <Input
                           placeholder={field.placeholder}
                           type="file"
@@ -171,25 +166,26 @@ const FormContent = ({
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const file = e.target.files?.[0] || null;
                             fieldProps.onChange(file);
-
-                            // Update the display name if a new file is selected
                             if (file) {
-                              // eslint-disable-next-line
                               setSavedFiles((prev: any) => ({
                                 ...prev,
                                 [field.name]: file.name,
                               }));
                             }
                           }}
-                          // value is intentionally not set from fieldProps.value for type="file"
-                          className="cursor-pointer"
+                          className="cursor-pointer text-sm"
                         />
                       </div>
                     </FormControl>
-                    <FormDescription>
+                    {savedFiles[field.name] && (
+                      <div className="-mb-1 text-sm font-medium text-green-500">
+                        Previously uploaded: {savedFiles[field.name]}
+                      </div>
+                    )}
+                    <FormDescription className="min-h-[20px]">
                       {field.description ? field.description : <>&nbsp;</>}
                     </FormDescription>
-                    <FormMessage />
+                    <FormMessage className="min-h-[20px]" />
                   </FormItem>
                 )}
               />
@@ -200,15 +196,15 @@ const FormContent = ({
               control={form.control}
               name={field.name}
               render={({ field: fieldProps }) => (
-                <FormItem>
-                  <FormLabel className="">{field.label}</FormLabel>
+                <FormItem className="flex min-h-[96px] flex-col justify-start">
+                  <FormLabel className="h-fit">{field.label}</FormLabel>
                   <FormControl className="">
-                    <Input placeholder={field.placeholder} {...fieldProps} className="" />
+                    <Input placeholder={field.placeholder} {...fieldProps} />
                   </FormControl>
-                  <FormDescription className="">
-                    {field.description ? field.description : <>&nbsp;</>}
-                  </FormDescription>
-                  <FormMessage />
+                  <FormMessage className="min-h-[20px]" />
+                  {field.description && (
+                    <FormDescription className="min-h-[20px]">{field.description}</FormDescription>
+                  )}
                 </FormItem>
               )}
             />

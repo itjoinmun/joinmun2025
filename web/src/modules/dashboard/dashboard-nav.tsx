@@ -37,8 +37,8 @@ const NAV_LINKS = [
     logo: <Home className={logoStyle} />,
   },
   {
-    id: "delegates",
-    name: "Delegates",
+    id: "registration",
+    name: "Registration",
     href: "/dashboard/delegates",
     logo: <BookOpen className={logoStyle} />,
   },
