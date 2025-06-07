@@ -43,7 +43,7 @@ type MUNDelegates struct {
 	MUNDelegateName  string     `json:"mun_delegate_name" db:"mun_delegate_name"`
 	Type             *string    `json:"type" db:"type" binding:"omitempty,oneof=single_delegate double_delegate"`
 	Pair             *string    `json:"pair" db:"pair" binding:"email,omitempty"`
-	Council          *string    `json:"council" db:"council" binding:"omitempty,oneof=UNWOMEN WHO UNSC ECOFIN CRISIS BRICS+ Press"`
+	Council          *string    `json:"council" db:"council" binding:"omitempty,oneof=UNWomen WHO UNSC ECOFIN CRISIS BRICS+ Press"`
 	Country          *string    `json:"country" db:"country"`
 	Confirmed        *string    `json:"confirmed" db:"confirmed" binding:"oneof=confirmed rejected pending"`
 	ConfirmedDate    *time.Time `json:"confirmed_date" db:"confirmed_date"`

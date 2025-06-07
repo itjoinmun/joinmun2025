@@ -360,11 +360,11 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 		start := time.Date(2025, 6, 16, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 7, 14, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
-	case "regularwave":
+	case "regular":
 		start := time.Date(2025, 7, 28, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 8, 24, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
-	case "latewave":
+	case "late":
 		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
@@ -405,11 +405,11 @@ func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string, limit, 
 		start := time.Date(2025, 6, 16, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 7, 14, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
-	case "regularwave":
+	case "regular":
 		start := time.Date(2025, 7, 28, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 8, 24, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
-	case "latewave":
+	case "late":
 		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
@@ -435,11 +435,11 @@ func (s *adminService) GetPositionPapersByTeam(timeWave string, limit, offset in
 		start := time.Date(2025, 6, 16, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 7, 14, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
-	case "regularwave":
+	case "regular":
 		start := time.Date(2025, 7, 28, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 8, 24, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
-	case "latewave":
+	case "late":
 		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
 		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
 		startDate, endDate = &start, &end
