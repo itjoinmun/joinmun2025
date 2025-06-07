@@ -7,6 +7,7 @@ import {
 } from "@/components/dashboard/dashboard-module";
 import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
 import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/utils/helpers/cn";
 import {
   Delegate,
@@ -14,6 +15,7 @@ import {
   getDelegatePaper,
   getPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
+import Link from "next/link";
 
 type RegistrationStatus =
   | "not_registered"
@@ -33,50 +35,47 @@ type InformationCenterStatus =
   | "has_information";
 
 const DashboardStatus = async () => {
-  const userStatus = await getDelegate();
-  const paperStatus = await getDelegatePaper();
-  const paymentStatus = await getPayment();
+  const delegate = await getDelegate();
+  const paper = await getDelegatePaper();
+  const payment = await getPayment();
 
   const registrationStatus: RegistrationStatus = (() => {
-    if (!userStatus) return "not_registered";
-    if (userStatus.confirmed === "pending") return "waiting_verification";
-    if (userStatus.confirmed === "rejected") return "not_registered";
-    if (
-      userStatus.confirmed === "confirmed" &&
-      (!paymentStatus || paymentStatus.payment_status === "pending")
-    )
+    if (!delegate) return "not_registered";
+    if (delegate.confirmed === "pending") return "waiting_verification";
+    if (delegate.confirmed === "rejected") return "not_registered";
+    if (delegate.confirmed === "confirmed" && (!payment || payment.payment_status === "pending"))
       return "verified_pending_payment";
-    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "pending")
+    if (delegate.confirmed === "confirmed" && payment?.payment_status === "pending")
       return "payment_checking";
-    if (userStatus.confirmed === "confirmed" && paymentStatus?.payment_status === "paid")
+    if (delegate.confirmed === "confirmed" && payment?.payment_status === "paid")
       return "payment_verified";
     return "verified_pending_payment";
   })();
 
   const paperSubmission: PaperSubmissionStatus = (() => {
-    if (!userStatus || userStatus.confirmed !== "confirmed") return "registration_pending";
-    if (!paymentStatus || paymentStatus.payment_status !== "paid") return "registration_pending";
-    if (paperStatus?.submission_file) return "uploaded";
+    if (!delegate) return "not_registered";
+    if (delegate.confirmed !== "confirmed") return "registration_pending";
+    if (!payment || payment.payment_status !== "paid") return "registration_pending";
+    if (paper?.submission_file) return "uploaded";
     return "can_upload";
   })();
 
   const delegateCode: DelegateCodeStatus = (() => {
-    if (!userStatus) return "not_registered";
-    if (userStatus.participant_type !== "single_delegate") return "code_available";
+    if (!delegate) return "not_registered";
+    if (delegate.participant_type !== "single_delegate") return "code_available";
     return "registration_pending";
   })();
 
   const informationCenter: InformationCenterStatus = (() => {
-    if (!userStatus || userStatus.confirmed !== "confirmed") return "registration_pending";
-    // Check if council and country are assigned
-    if (userStatus.council && userStatus.country) return "has_information";
+    if (!delegate) return "not_registered";
+    if (delegate.confirmed !== "confirmed") return "registration_pending";
+    if (delegate.council && delegate.country) return "has_information";
     return "no_information";
   })();
-
   const regInfo = getRegistrationStatusInfo(registrationStatus);
-  const codeInfo = getDelegateCodeInfo(delegateCode, paymentStatus?.mun_team_id);
+  const codeInfo = getDelegateCodeInfo(delegateCode, payment?.mun_team_id);
   const paperInfo = getPaperSubmissionInfo(paperSubmission);
-  const infoInfo = getInformationCenterInfo(informationCenter, userStatus);
+  const infoInfo = getInformationCenterInfo(informationCenter, delegate);
 
   return (
     <DashboardModule className="">
@@ -100,7 +99,7 @@ const DashboardStatus = async () => {
           description={paperInfo.description}
           canSubmitPaper={paperSubmission === "can_upload"}
           paperUploaded={paperSubmission === "uploaded"}
-          userStatus={userStatus}
+          userStatus={delegate}
         />
         <StatusCard
           cardHeader="Assignment Information"
@@ -122,7 +121,7 @@ const StatusCard = ({
   paperUploaded = false,
 }: {
   status: string;
-  description: string;
+  description: string | React.ReactNode;
   cardHeader: string;
   cardDescription: string;
   canSubmitPaper?: boolean;
@@ -138,7 +137,7 @@ const StatusCard = ({
         </DashboardModuleDescription>
       </DashboardModuleHeader>
       <DashboardModuleContent className="mt-auto space-y-3">
-        <p className="text-sm opacity-90">{description}</p>
+        <div className="text-sm opacity-90">{description}</div>
         {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
         {paperUploaded && <ViewPaperButton />}
       </DashboardModuleContent>
@@ -151,28 +150,41 @@ const getRegistrationStatusInfo = (status: RegistrationStatus) => {
     case "not_registered":
       return {
         status: "Not Registered",
-        description: "You haven't registered yet. Please complete your registration.",
+        description: (
+          <div className="flex items-center justify-between gap-4">
+            <p>
+              You haven't registered yet. <strong>Register Now</strong>
+            </p>
+            <Link
+              href="/dashboard/delegates"
+              className={cn(buttonVariants({ variant: "primary", size: "sm" }), "h-7 text-xs")}
+            >
+              Register Now
+            </Link>
+          </div>
+        ),
       };
     case "waiting_verification":
       return {
         status: "Pending Verification",
-        description: "Your registration is being reviewed by administrators.",
+        description: <>Your registration is being reviewed by administrators.</>,
       };
     case "verified_pending_payment":
       return {
         status: "Payment Required",
-        description:
-          "Registration approved! Please proceed with payment to complete your registration.",
+        description: (
+          <>Registration approved! Please proceed with payment to complete your registration.</>
+        ),
       };
     case "payment_checking":
       return {
         status: "Payment Under Review",
-        description: "Your payment is being verified by our team.",
+        description: <>Your payment is being verified by our team.</>,
       };
     case "payment_verified":
       return {
         status: "Fully Registered",
-        description: "Congratulations! Your registration and payment are complete.",
+        description: <>Congratulations! Your registration and payment are complete.</>,
       };
   }
 };
@@ -182,7 +194,13 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) =
     case "not_registered":
       return {
         status: "Not Available",
-        description: "Complete registration to get your delegate code",
+        description: (
+          <div className="flex justify-between gap-4">
+            <p>
+              You haven't registered yet. <strong>Register Now</strong>
+            </p>
+          </div>
+        ),
       };
     case "registration_pending":
       return {
@@ -203,7 +221,13 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
     case "not_registered":
       return {
         status: "Not Available",
-        description: "Register first to submit your paper",
+        description: (
+          <div className="flex justify-between gap-4">
+            <p>
+              You haven't registered yet. <strong>Register Now</strong>
+            </p>
+          </div>
+        ),
         variant: "error" as const,
       };
     case "registration_pending":
@@ -235,7 +259,13 @@ const getInformationCenterInfo = (
     case "not_registered":
       return {
         status: "Not Available",
-        description: "Register to access assignment information",
+        description: (
+          <div className="flex justify-between gap-4">
+            <p>
+              You haven't registered yet. <strong>Register Now</strong>
+            </p>
+          </div>
+        ),
       };
     case "registration_pending":
       return {

@@ -33,6 +33,8 @@ const Body = async () => {
   const delegate = await getDelegate();
   const user = (await getSession())?.name;
 
+  console.log("delgate: ", delegate);
+
   if (delegate) {
     hasRegistered = true;
   }
