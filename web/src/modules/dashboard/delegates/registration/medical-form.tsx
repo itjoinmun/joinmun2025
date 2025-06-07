@@ -159,76 +159,83 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     },
   ];
 
-  // Replace the onSubmit function with:
+  // Simplified submission similar to team page - save to localStorage and then submit directly
   const onSubmit = async (values: Record<string, string>) => {
-    console.log("attempt");
     setSubmitting(true);
     setSubmitError(null);
 
-    // For team registrations, formData should be an object with index keys
-    // For individual registrations, it can be an array
-    const currentFormData =
-      slug === "team"
-        ? (formData as Record<number, DelegateRegistration>)
-        : Array.isArray(formData)
-          ? formData
-          : [];
-
-    const existingDelegateData =
-      slug === "team"
-        ? currentFormData[index] || ({} as Partial<DelegateRegistration>)
-        : currentFormData[index] || ({} as Partial<DelegateRegistration>);
-
-    const delegateEmail = existingDelegateData.biodata_responses?.[0]?.biodata_answer_text || "";
-
-    // Structure the form data to match the API requirements
-    const updatedDelegateData: DelegateRegistration = {
-      ...existingDelegateData,
-      mun_delegates: {
-        ...(existingDelegateData.mun_delegates || {}),
-        mun_delegate_email: delegateEmail,
-        type: existingDelegateData.mun_delegates?.type || "",
-        council: existingDelegateData.mun_delegates?.council || "",
-        country: existingDelegateData.mun_delegates?.country || "",
-        participant_type: parseSlug(slug),
-      },
-      health_responses: formFields.map((field) => ({
-        health_question_id: field.id,
-        delegate_email: delegateEmail,
-        health_answer_text: values[field.name],
-      })),
-      // Ensure biodata_responses and mun_responses are carried over or initialized
-      biodata_responses: existingDelegateData.biodata_responses || [],
-      mun_responses: existingDelegateData.mun_responses || [],
-    };
-
-    // Handle different data structures for team vs individual
-    let updatedFormData;
-    if (slug === "team") {
-      // For team, maintain object structure with index keys
-      updatedFormData = {
-        ...currentFormData,
-        [index]: updatedDelegateData,
-      };
-    } else {
-      // For individual, use array structure
-      const allDelegatesData = [...(currentFormData as DelegateRegistration[])];
-      while (allDelegatesData.length <= index) {
-        allDelegatesData.push({} as DelegateRegistration);
+    try {
+      // Save the health responses to localStorage first
+      let currentFormData: DelegateRegistration[] | Record<number, DelegateRegistration>;
+      
+      if (slug === "team") {
+        currentFormData = (formData as Record<number, DelegateRegistration>) || {};
+      } else {
+        currentFormData = Array.isArray(formData) ? formData : [];
       }
-      allDelegatesData[index] = updatedDelegateData;
-      updatedFormData = allDelegatesData;
-    }
 
-    setFormData(updatedFormData);
+      const existingDelegateData =
+        slug === "team"
+          ? (currentFormData as Record<number, DelegateRegistration>)[index] || ({} as Partial<DelegateRegistration>)
+          : (currentFormData as DelegateRegistration[])[index] || ({} as Partial<DelegateRegistration>);
 
-    if (slug === "team") {
-      setSubmitting(false);
-      router.push("/dashboard/delegates/team");
-    } else {
-      try {
+      const delegateEmail = existingDelegateData.biodata_responses?.[0]?.biodata_answer_text || "";
+
+      // Create the updated delegate data with health responses
+      const updatedDelegateData: DelegateRegistration = {
+        ...existingDelegateData,
+        mun_delegates: {
+          ...(existingDelegateData.mun_delegates || {}),
+          mun_delegate_email: delegateEmail,
+          type: existingDelegateData.mun_delegates?.type || "",
+          council: existingDelegateData.mun_delegates?.council || "",
+          country: existingDelegateData.mun_delegates?.country || "",
+          participant_type: parseSlug(slug) as "observer" | "single_delegate" | "faculty_advisor" | "team_delegate",
+        },
+        health_responses: formFields.map((field) => ({
+          health_question_id: field.id,
+          delegate_email: delegateEmail,
+          health_answer_text: values[field.name] || "",
+        })),
+        biodata_responses: existingDelegateData.biodata_responses || [],
+        mun_responses: existingDelegateData.mun_responses || [],
+      };
+
+      // Update localStorage
+      let updatedFormData;
+      if (slug === "team") {
+        updatedFormData = {
+          ...(currentFormData as Record<number, DelegateRegistration>),
+          [index]: updatedDelegateData,
+        };
+      } else {
+        const allDelegatesData = [...(currentFormData as DelegateRegistration[])];
+        while (allDelegatesData.length <= index) {
+          allDelegatesData.push({} as DelegateRegistration);
+        }
+        allDelegatesData[index] = updatedDelegateData;
+        updatedFormData = allDelegatesData;
+      }
+
+      setFormData(updatedFormData);
+
+      if (slug === "team") {
+        // For team, just navigate back to team page
+        setSubmitting(false);
+        router.push("/dashboard/delegates/team");
+      } else {
+        // Get the complete data from localStorage (like team page does)
+        const storedData = localStorage.getItem(`${slug}Registration`);
+        if (!storedData) {
+          setSubmitError("No registration data found. Please complete all previous steps first.");
+          setSubmitting(false);
+          return;
+        }
+
+        const registrationData: DelegateRegistration[] = JSON.parse(storedData);
+
         const { success, error } = await submitDelegateRegistration({
-          formData: updatedFormData as DelegateRegistration[],
+          formData: registrationData,
           index,
           slug,
           isTeam: false,
@@ -236,15 +243,15 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
 
         if (success) {
           router.push("/dashboard/delegates");
-          setFormData(null);
         } else {
           setSubmitError(error || "Unknown error occurred during submission");
           setSubmitting(false);
         }
-      } catch (err) {
-        setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
-        setSubmitting(false);
       }
+    } catch (err) {
+      console.error("💥 Medical form submission error:", err);
+      setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
+      setSubmitting(false);
     }
   };
 

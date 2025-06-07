@@ -18,7 +18,7 @@ interface BiodataResponse {
 }
 
 interface HealthResponse {
-  health_questions_id: number;
+  health_question_id: number;
   delegate_email: string;
   health_answer_text: string;
 }

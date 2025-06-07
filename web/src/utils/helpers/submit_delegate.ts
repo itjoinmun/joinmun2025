@@ -62,7 +62,9 @@ export const submitDelegateRegistration = async ({
       }
     } else {
       // Single delegate submission (original logic)
-      const completeData = formData[index];
+      const formDataArray = Array.isArray(formData) ? formData : Object.values(formData);
+      const completeData = formDataArray[index];
+      
       if (!completeData) {
         return {
           success: false,
@@ -115,7 +117,8 @@ export const submitDelegateRegistration = async ({
       });
     } else {
       // Single delegate submission
-      const completeData = formData[index];
+      const formDataArray = Array.isArray(formData) ? formData : Object.values(formData);
+      const completeData = formDataArray[index];
       if (completeData?.biodata_responses) {
         completeData.biodata_responses.forEach((response) => {
           if (

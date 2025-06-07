@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 const usePersistedState = <T,>(key: string, initialValue: T) => {
   const [value, setValue] = useState(() => {
     // Make sure we are in the browser, not server
-    if (typeof window === undefined) return initialValue;
+    if (typeof window === "undefined") return initialValue;
 
     try {
       const item = localStorage.getItem(key);
