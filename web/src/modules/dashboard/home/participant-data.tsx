@@ -33,6 +33,7 @@ const ParticipantData = () => {
 
 const Body = async () => {
   const delegates = await getDelegates();
+  const showCouncilAndCountry = process.env.NEXT_PUBLIC_CC_REVEAL === "true";
 
   let participantData: Delegate[] | undefined;
   if (delegates) {
@@ -81,14 +82,16 @@ const Body = async () => {
                         : "Pending"}
                   </span>
                 </TableCell>
-                <TableCell className="py-3 text-gray-700">{participant.council ?? "-"}</TableCell>
+                <TableCell className="py-3 text-gray-700">
+                  {showCouncilAndCountry ? (participant.council ?? "-") : "Wait for reveal"}
+                </TableCell>
                 <TableCell
                   className={cn(
                     "py-3 text-gray-700",
                     index === participantData.length - 1 && "rounded-br-lg",
                   )}
                 >
-                  {participant.country ?? "-"}
+                  {showCouncilAndCountry ? (participant.country ?? "-") : "Wait for reveal"}
                 </TableCell>
               </TableRow>
             ))

@@ -14,6 +14,7 @@ import {
   getDelegate,
   getDelegatePaper,
   getPayment,
+  getDelegates,
 } from "@/utils/helpers/fetch/delegates/delegates";
 import Link from "next/link";
 import DelegateCodeInput from "./delegate-code-input";
@@ -29,7 +30,7 @@ type DelegateCodeStatus =
   | "registration_pending"
   | "can_input"
   | "code_available";
-type PaperSubmissionStatus = "not_registered" | "registration_pending" | "can_upload" | "uploaded";
+type PaperSubmissionStatus = "not_registered" | "registration_pending" | "can_upload" | "uploaded" | "not_revealed";
 type InformationCenterStatus =
   | "not_registered"
   | "registration_pending"
@@ -38,11 +39,49 @@ type InformationCenterStatus =
 
 const DashboardStatus = async () => {
   const delegate = await getDelegate();
+  const delegates = await getDelegates();
   const paper = await getDelegatePaper();
   const payment = await getPayment();
 
   const registrationStatus: RegistrationStatus = (() => {
     if (!delegate) return "not_registered";
+    
+    // Check all team members' registration status
+    if (delegates && delegates.participant_data && delegates.participant_data.length > 0) {
+      const teamMembers = delegates.participant_data;
+      const rejectedMembers = teamMembers.filter(member => member.confirmed === "rejected");
+      const pendingMembers = teamMembers.filter(member => member.confirmed === "pending");
+      const approvedMembers = teamMembers.filter(member => member.confirmed === "confirmed");
+      
+      // If ANY team member is rejected, show not registered
+      if (rejectedMembers.length > 0) return "not_registered";
+      
+      // If ANY team member is still pending, show waiting verification
+      if (pendingMembers.length > 0) return "waiting_verification";
+      
+      // All team members are approved
+      if (approvedMembers.length === teamMembers.length) {
+        // Now check payment status
+        if (!payment) return "verified_pending_payment";
+        
+        // Check payment status for all team members
+        if (payment.team_members && payment.team_members.length > 0) {
+          const allPaid = payment.team_members.every(member => member.payment_status === "paid");
+          const anyPending = payment.team_members.some(member => member.payment_status === "pending");
+          
+          if (allPaid) return "payment_verified";
+          if (anyPending) return "payment_checking";
+        } else {
+          // Fallback to overall payment status
+          if (payment.payment_status === "paid") return "payment_verified";
+          if (payment.payment_status === "pending") return "payment_checking";
+        }
+        
+        return "verified_pending_payment";
+      }
+    }
+    
+    // Fallback to single delegate logic
     if (delegate.confirmed === "pending") return "waiting_verification";
     if (delegate.confirmed === "rejected") return "not_registered";
     if (delegate.confirmed === "confirmed" && (!payment || payment.payment_status === "pending"))
@@ -56,9 +95,29 @@ const DashboardStatus = async () => {
 
   const paperSubmission: PaperSubmissionStatus = (() => {
     if (!delegate) return "not_registered";
-    if (delegate.confirmed !== "confirmed") return "registration_pending";
-    if (!payment || payment.payment_status !== "paid") return "registration_pending";
+    
+    // Check if all team members are approved for registration
+    if (delegates && delegates.participant_data && delegates.participant_data.length > 0) {
+      const teamMembers = delegates.participant_data;
+      const allApproved = teamMembers.every(member => member.confirmed === "confirmed");
+      
+      if (!allApproved) return "registration_pending";
+      
+      // Check if all team members have paid
+      if (payment && payment.team_members && payment.team_members.length > 0) {
+        const allPaid = payment.team_members.every(member => member.payment_status === "paid");
+        if (!allPaid) return "registration_pending";
+      } else if (!payment || payment.payment_status !== "paid") {
+        return "registration_pending";
+      }
+    } else {
+      // Fallback to single delegate logic
+      if (delegate.confirmed !== "confirmed") return "registration_pending";
+      if (!payment || payment.payment_status !== "paid") return "registration_pending";
+    }
+    
     if (paper?.submission_file) return "uploaded";
+    if (process.env.NEXT_PUBLIC_CC_REVEAL === "false") return "not_revealed";
     return "can_upload";
   })();
 
@@ -71,7 +130,27 @@ const DashboardStatus = async () => {
 
   const informationCenter: InformationCenterStatus = (() => {
     if (!delegate) return "not_registered";
-    if (delegate.confirmed !== "confirmed") return "registration_pending";
+    
+    // Check if all team members are approved and paid
+    if (delegates && delegates.participant_data && delegates.participant_data.length > 0) {
+      const teamMembers = delegates.participant_data;
+      const allApproved = teamMembers.every(member => member.confirmed === "confirmed");
+      
+      if (!allApproved) return "registration_pending";
+      
+      // Check payment status
+      if (payment && payment.team_members && payment.team_members.length > 0) {
+        const allPaid = payment.team_members.every(member => member.payment_status === "paid");
+        if (!allPaid) return "registration_pending";
+      } else if (!payment || payment.payment_status !== "paid") {
+        return "registration_pending";
+      }
+    } else {
+      // Fallback to single delegate logic
+      if (delegate.confirmed !== "confirmed") return "registration_pending";
+      if (!payment || payment.payment_status !== "paid") return "registration_pending";
+    }
+    
     if (delegate.council && delegate.country) return "has_information";
     return "no_information";
   })();
@@ -286,6 +365,12 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
         status: "Paper Submitted",
         description: "Your paper has been uploaded successfully",
         variant: "success" as const,
+      };
+    case "not_revealed":
+      return {
+        status: "Not Revealed",
+        description: "Position paper submission is not yet available",
+        variant: "info" as const,
       };
   }
 };
