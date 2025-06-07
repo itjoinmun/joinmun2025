@@ -316,14 +316,14 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) =
           </div>
         ),
       };
-    case "can_input":
-      return {
-        description: <DelegateCodeInput />,
-      };
     case "registration_pending":
       return {
         status: "Pending Approval",
         description: "Code will be available after registration approval",
+      };
+    case "can_input":
+      return {
+        description: <DelegateCodeInput />,
       };
     case "code_available":
       const delegateCode = paymentCode || "Individual";
