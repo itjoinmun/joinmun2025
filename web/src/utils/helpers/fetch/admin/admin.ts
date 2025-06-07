@@ -111,6 +111,9 @@ export const getDelegatesByTeam = async (
   limit: number = 50,
   offset: number = 0,
 ): Promise<{ delegates_by_team: TeamDelegateGroup[]; total_teams: number }> => {
+  if (delegateType === "all") {
+    delegateType="";
+  }
   const params = new URLSearchParams({
     delegate_type: delegateType,
     time: timeWave,
@@ -134,7 +137,10 @@ export const getPaymentsByTeam = async (
   timeWave: TimeWave,
   limit: number = 50,
   offset: number = 0,
-): Promise<{ payments_by_team: Record<string, TeamPaymentSummary[]>; total_payments: number }> => {
+): Promise<{ payments_by_team: TeamPaymentSummary[]; total_payments: number }> => {
+  if (delegateType === "all") {
+    delegateType = "";
+  }
   const params = new URLSearchParams({
     delegate_type: delegateType,
     time: timeWave,
@@ -175,41 +181,6 @@ export const getPositionPapersByTeam = async (
   return response.json();
 };
 
-export const downloadResponsesCSV = async (
-  delegateType: DelegateType,
-  limit: number = 1000,
-  offset: number = 0,
-): Promise<void> => {
-  const params = new URLSearchParams({
-    delegate_type: delegateType || "all",
-    limit: limit.toString(),
-    offset: offset.toString(),
-  });
-
-  const response = await fetch(`${API_BASE_URL}/page/responses?${params}`, {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download responses: ${response.statusText}`);
-  }
-
-  // Get filename from Content-Disposition header
-  const contentDisposition = response.headers.get("Content-Disposition");
-  const filename = contentDisposition?.match(/filename="(.+)"/)?.[1] || "responses.csv";
-
-  const blob = await response.blob();
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
-  document.body.removeChild(a);
-};
-
 export const makeDelegatePairing = async (delegateEmail: string, pairEmail: string) => {
   const response = await fetch(`${API_BASE_URL}/dashboard/make-pairing`, {
     method: "POST",
@@ -226,4 +197,35 @@ export const makeDelegatePairing = async (delegateEmail: string, pairEmail: stri
   }
 
   return response.json();
+};
+
+export const downloadResponsesCSV = async (
+  delegateType: DelegateType,
+  limit: number = 1000,
+  offset: number = 0,
+): Promise<void> => {
+  const params = new URLSearchParams({
+    delegate_type: delegateType || "all",
+    limit: limit.toString(),
+    offset: offset.toString(),
+  });
+
+  const response = await fetch(`${API_BASE_URL}/page/responses?${params}`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to download responses: ${response.statusText}`);
+  }
+
+  // Handle file download
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `responses_${delegateType}_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
 };
