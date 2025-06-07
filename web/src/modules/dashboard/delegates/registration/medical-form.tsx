@@ -5,6 +5,7 @@ import {
   FormHeader,
   RegistrationFormModule,
 } from "@/components/dashboard/form-module";
+import ModalRegistrationCompleted from "@/components/dashboard/modal-registration-completed";
 import parseSlug from "@/utils/helpers/api-slug-parse";
 import { DelegateOptions } from "@/utils/helpers/delegates";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
@@ -12,7 +13,6 @@ import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate"; //
 import { useFormStatus } from "@/utils/hooks/use-form-status";
 import usePersistedState from "@/utils/hooks/use-persisted-state";
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -22,37 +22,24 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     `${slug}Registration`,
     [],
   );
-  const router = useRouter();
 
   const [, setFileStorageInitialized] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Initialize IndexedDB when component mounts
   useEffect(() => {
-    console.log("🚀 Starting IndexedDB initialization...");
-
-    // Check if IndexedDB is already initialized
     fileStorageDB.isInitialized().then((isInit) => {
       if (isInit) {
-        console.log("✅ IndexedDB was already initialized");
         setFileStorageInitialized(true);
 
-        // Log all stored files
         fileStorageDB.getAllKeys().then((keys) => {
           console.log("📂 Currently stored file keys:", keys);
         });
       } else {
-        console.log("🔄 IndexedDB needs initialization");
         fileStorageDB
           .init()
           .then(() => {
             setFileStorageInitialized(true);
-            console.log("✅ IndexedDB initialized successfully");
-
-            // Log all stored files on initialization
-            fileStorageDB.getAllKeys().then((keys) => {
-              console.log("📂 Currently stored file keys:", keys);
-            });
           })
           .catch((err) => {
             console.error("❌ Failed to initialize file storage:", err);
@@ -61,10 +48,8 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     });
   }, []);
 
-  // Get the data from localStorage for this specific form
   const savedData = formData[index]?.health_responses || {};
 
-  // Define our form fields array with all metadata
   const formFields: FormFieldConfig[] = [
     {
       id: 1,
@@ -158,104 +143,54 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       defaultValue: savedData[10]?.health_answer_text || "",
     },
   ];
-
-  // Simplified submission similar to team page - save to localStorage and then submit directly
-  const onSubmit = async (values: Record<string, string>) => {
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  const onSubmit = async (values: any) => {
     setSubmitting(true);
     setSubmitError(null);
 
     try {
-      // Save the health responses to localStorage first
-      let currentFormData: DelegateRegistration[] | Record<number, DelegateRegistration>;
+      const delegateEmail = formData[index]?.biodata_responses?.[0]?.biodata_answer_text || "";
 
-      if (slug === "team") {
-        currentFormData = (formData as Record<number, DelegateRegistration>) || {};
-      } else {
-        currentFormData = Array.isArray(formData) ? formData : [];
-      }
-
-      const existingDelegateData =
-        slug === "team"
-          ? (currentFormData as Record<number, DelegateRegistration>)[index] ||
-            ({} as Partial<DelegateRegistration>)
-          : (currentFormData as DelegateRegistration[])[index] ||
-            ({} as Partial<DelegateRegistration>);
-
-      const delegateEmail = existingDelegateData.biodata_responses?.[0]?.biodata_answer_text || "";
-
-      // Create the updated delegate data with health responses
-      const updatedDelegateData: DelegateRegistration = {
-        ...existingDelegateData,
+      const newData = {
+        ...formData[index],
         mun_delegates: {
-          ...(existingDelegateData.mun_delegates || {}),
           mun_delegate_email: delegateEmail,
-          type: existingDelegateData.mun_delegates?.type || "",
-          council: existingDelegateData.mun_delegates?.council || "",
-          country: existingDelegateData.mun_delegates?.country || "",
-          participant_type: parseSlug(slug) as
-            | "observer"
-            | "single_delegate"
-            | "faculty_advisor"
-            | "team_delegate",
+          type: "",
+          council: "",
+          country: "",
+          participant_type: parseSlug(slug),
         },
         health_responses: formFields.map((field) => ({
           health_question_id: field.id,
           delegate_email: delegateEmail,
           health_answer_text: values[field.name] || "",
         })),
-        biodata_responses: existingDelegateData.biodata_responses || [],
-        mun_responses: existingDelegateData.mun_responses || [],
       };
 
-      // Update localStorage
-      let updatedFormData;
-      if (slug === "team") {
-        updatedFormData = {
-          ...(currentFormData as Record<number, DelegateRegistration>),
-          [index]: updatedDelegateData,
-        };
+      setFormData({
+        ...formData,
+        [index]: newData,
+      });
+
+      const { success, error } = await submitDelegateRegistration({
+        formData: {
+          ...formData,
+          [index]: newData,
+        },
+        index,
+        slug,
+        isTeam: slug === "team",
+      });
+
+      setSubmitting(false);
+
+      if (success) {
+        setSuccessOpen(true);
+        localStorage.removeItem(`${slug}Registration`);
       } else {
-        const allDelegatesData = [...(currentFormData as DelegateRegistration[])];
-        while (allDelegatesData.length <= index) {
-          allDelegatesData.push({} as DelegateRegistration);
-        }
-        allDelegatesData[index] = updatedDelegateData;
-        updatedFormData = allDelegatesData;
-      }
-
-      setFormData(updatedFormData);
-
-      if (slug === "team") {
-        // For team, just navigate back to team page
-        setSubmitting(false);
-        router.push("/dashboard/delegates/team");
-      } else {
-        // Get the complete data from localStorage (like team page does)
-        const storedData = localStorage.getItem(`${slug}Registration`);
-        if (!storedData) {
-          setSubmitError("No registration data found. Please complete all previous steps first.");
-          setSubmitting(false);
-          return;
-        }
-
-        const registrationData: DelegateRegistration[] = JSON.parse(storedData);
-
-        const { success, error } = await submitDelegateRegistration({
-          formData: registrationData,
-          index,
-          slug,
-          isTeam: false,
-        });
-
-        if (success) {
-          router.push("/dashboard/delegates");
-        } else {
-          setSubmitError(error || "Unknown error occurred during submission");
-          setSubmitting(false);
-        }
+        setSubmitError(error || "Unknown error occurred during submission");
       }
     } catch (err) {
-      console.error("💥 Medical form submission error:", err);
       setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
       setSubmitting(false);
     }
@@ -272,6 +207,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
           </div>
         )}
       </RegistrationFormModule>
+      <ModalRegistrationCompleted open={successOpen} />
     </>
   );
 };

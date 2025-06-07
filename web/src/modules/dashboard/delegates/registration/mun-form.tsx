@@ -18,7 +18,6 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
     [],
   );
   const router = useRouter();
-  // Get the saved data from localStorage for this specific form
   const savedData = formData[index]?.mun_responses || {};
 
   const formFields: FormFieldConfig[] = [
@@ -106,11 +105,8 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
 
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
-    // Do something with the form values.
-    // Get email from biodata, not hardcoded
     const delegateEmail = formData[index]?.biodata_responses?.[0]?.biodata_answer_text || "";
 
-    // Structure the form data to match the API requirements
     const newData = {
       ...formData[index],
       mun_delegates: {
@@ -127,7 +123,6 @@ const MunForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number })
       })),
     };
 
-    // Store in localStorage
     setFormData({
       ...formData,
       [index]: newData,

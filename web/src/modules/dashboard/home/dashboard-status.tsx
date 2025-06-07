@@ -8,7 +8,6 @@ import {
 import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
 import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
 import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/helpers/cn";
 import {
   Delegate,
@@ -16,8 +15,6 @@ import {
   getDelegatePaper,
   getPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
-import { Users } from "lucide-react";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import DelegateCodeInput from "./delegate-code-input";
 
@@ -85,7 +82,7 @@ const DashboardStatus = async () => {
 
   return (
     <DashboardModule className="">
-      <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">
+      <section className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {(delegate?.participant_type === "single_delegate" ||
           delegate?.participant_type === "team_delegate") && (
           <>
@@ -138,10 +135,11 @@ const DashboardStatus = async () => {
         {delegate?.participant_type === "observer" && (
           <>
             <StatusCard
-              cardHeader="Assignment Information"
-              cardDescription="Council and country assignment"
-              description={infoInfo.description}
+              cardHeader="Status"
+              cardDescription="Verification announcement at 15 Dec 2025"
+              description={regInfo.description}
             />
+            <StatusCard cardHeader="Information Center" description={infoInfo.description} />
           </>
         )}
       </section>

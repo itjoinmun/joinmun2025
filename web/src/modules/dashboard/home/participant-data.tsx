@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
 import { Delegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
-import Link from "next/link";
 import { Suspense } from "react";
 
 const ParticipantData = () => {
@@ -95,15 +94,8 @@ const Body = async () => {
             ))
           ) : (
             <TableRow className="border-b bg-red-50">
-              <TableCell colSpan={4} className="py-6 text-center font-medium text-red-700">
-                You haven&apos;t registered.{" "}
-                <Link
-                  href={`/dashboard/delegates`}
-                  className="underline transition-colors hover:text-red-800"
-                >
-                  {" "}
-                  Register now
-                </Link>
+              <TableCell colSpan={4} className="text-primary py-6 text-center font-medium">
+                You haven&apos;t registered. Register now
               </TableCell>
             </TableRow>
           )}

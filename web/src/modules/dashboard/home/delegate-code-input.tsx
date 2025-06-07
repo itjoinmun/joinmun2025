@@ -16,7 +16,7 @@ const DelegateCodeInput = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <form action={formAction} className="">
+      <form action={formAction} className="space-y-1">
         <div className="relative">
           <Input
             name="code"

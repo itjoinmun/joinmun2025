@@ -49,7 +49,7 @@ const Body = async () => {
               <p className="text-sm leading-normal">
                 <Bold>
                   {delegate?.council
-                    ? delegate?.council
+                    ? "JOINMUN 2025 Registrant"
                     : "Your council assignment is currently pending admin approval. Please wait for further updates."}
                 </Bold>
               </p>
