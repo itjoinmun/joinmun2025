@@ -85,65 +85,70 @@ const DashboardAdmin = () => {
   };
 
   // Use useCallback to memoize fetch functions
-  const fetchDelegates = useCallback(async (page: number = delegatesPage) => {
-    try {
-      setLoading(true);
-      const response = await getDelegatesByTeam(
-        delegateType,
-        timeWave,
-        itemsPerPage,
-        page * itemsPerPage,
-      );
-      setDelegatesData(response.delegates_by_team);
-      setTotalTeams(response.total_teams);
-    } catch (error) {
-      console.error("Error fetching delegates:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [delegateType, timeWave, itemsPerPage, delegatesPage]);
+  const fetchDelegates = useCallback(
+    async (page: number = delegatesPage) => {
+      try {
+        setLoading(true);
+        const response = await getDelegatesByTeam(
+          delegateType,
+          timeWave,
+          itemsPerPage,
+          page * itemsPerPage,
+        );
+        setDelegatesData(response.delegates_by_team);
+        setTotalTeams(response.total_teams);
+      } catch (error) {
+        console.error("Error fetching delegates:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [delegateType, timeWave, itemsPerPage, delegatesPage],
+  );
 
-  const fetchPayments = useCallback(async (page: number = paymentsPage) => {
-    try {
-      setLoading(true);
-      const response = await getPaymentsByTeam(
-        delegateType,
-        timeWave,
-        itemsPerPage,
-        page * itemsPerPage,
-      );
-      
-      // Safely handle the payments_by_team data structure
-      let paymentsArray: TeamPaymentSummary[] = [];
-      if (Array.isArray(response.payments_by_team)) {
-        paymentsArray = response.payments_by_team;
-      } 
-      
-      setPaymentsData(paymentsArray);
-      setTotalPayments(response.total_payments);
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [delegateType, timeWave, itemsPerPage, paymentsPage]);
+  const fetchPayments = useCallback(
+    async (page: number = paymentsPage) => {
+      try {
+        setLoading(true);
+        const response = await getPaymentsByTeam(
+          delegateType,
+          timeWave,
+          itemsPerPage,
+          page * itemsPerPage,
+        );
 
-  const fetchPositionPapers = useCallback(async (page: number = papersPage) => {
-    try {
-      setLoading(true);
-      const response = await getPositionPapersByTeam(
-        timeWave,
-        itemsPerPage,
-        page * itemsPerPage,
-      );
-      setPositionPapersData(response.papers_by_team);
-      setTotalPapers(response.total_teams);
-    } catch (error) {
-      console.error("Error fetching position papers:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [timeWave, itemsPerPage, papersPage]);
+        // Safely handle the payments_by_team data structure
+        let paymentsArray: TeamPaymentSummary[] = [];
+        if (Array.isArray(response.payments_by_team)) {
+          paymentsArray = response.payments_by_team;
+        }
+
+        setPaymentsData(paymentsArray);
+        setTotalPayments(response.total_payments);
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [delegateType, timeWave, itemsPerPage, paymentsPage],
+  );
+
+  const fetchPositionPapers = useCallback(
+    async (page: number = papersPage) => {
+      try {
+        setLoading(true);
+        const response = await getPositionPapersByTeam(timeWave, itemsPerPage, page * itemsPerPage);
+        setPositionPapersData(response.papers_by_team);
+        setTotalPapers(response.total_teams);
+      } catch (error) {
+        console.error("Error fetching position papers:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [timeWave, itemsPerPage, papersPage],
+  );
 
   const handleDownloadCSV = async () => {
     try {
@@ -217,7 +222,7 @@ const DashboardAdmin = () => {
 
   const handlePageChange = (newPage: number) => {
     paginationInfo.setCurrentPage(newPage);
-    
+
     // Fetch data for the new page
     setTimeout(() => {
       if (activeTab === "delegates") {
@@ -332,7 +337,7 @@ const DashboardAdmin = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="overflow-auto">
+          <div className="no-scrollbar overflow-auto">
             {activeTab === "delegates" && (
               <AdminDelegatesTable teamsData={delegatesData} onDataChange={handleDataChange} />
             )}
@@ -357,7 +362,7 @@ const DashboardAdmin = () => {
               </Button>
 
               <span className="px-4 text-sm text-gray-600">
-                Page {paginationInfo.currentPage + 1} of {totalPages} 
+                Page {paginationInfo.currentPage + 1} of {totalPages}
                 <span className="ml-2 text-xs text-gray-500">
                   ({paginationInfo.totalItems} total {activeTab})
                 </span>
@@ -365,7 +370,9 @@ const DashboardAdmin = () => {
 
               <Button
                 variant="outline"
-                onClick={() => handlePageChange(Math.min(totalPages - 1, paginationInfo.currentPage + 1))}
+                onClick={() =>
+                  handlePageChange(Math.min(totalPages - 1, paginationInfo.currentPage + 1))
+                }
                 disabled={paginationInfo.currentPage >= totalPages - 1 || loading}
                 className="w-full sm:w-auto"
               >

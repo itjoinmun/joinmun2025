@@ -19,7 +19,7 @@ const ModalRegistrationCompleted = ({ open }: { open?: boolean }) => {
         <DialogHeader>
           <DialogTitle className="my-1 flex items-center gap-4">Registration Completed</DialogTitle>
           <hr className="mt-1 opacity-20" />
-          <DialogDescription className="text-start text-[105%] text-white">
+          <DialogDescription className="text-start text-white">
             Wait and check for <b>status in homepage</b>
           </DialogDescription>
         </DialogHeader>

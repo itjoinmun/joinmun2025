@@ -313,7 +313,7 @@ const PaymentWithApprovalCheck = ({
   if (!delegates || !delegates.participant_data || delegates.participant_data.length === 0) {
     return (
       <div className="flex flex-col gap-2">
-        <h1>
+        <h1 className="text-sm">
           <b>No registration found.</b> Register first to proceed with payment.
         </h1>
       </div>
