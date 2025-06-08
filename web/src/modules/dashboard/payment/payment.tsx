@@ -407,7 +407,7 @@ const PaymentWithApprovalCheck = ({
     const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
     console.log("ALL PAID", allPaid);
     const anyPending = payment.team_members.some(
-      (member) => !member.package && member.payment_status === "pending",
+      (member) => !member.package || member.payment_status === "pending",
     );
     console.log("ANY PENDING", anyPending)
     const anyPaymentRejected = payment.team_members.some((member) => member.payment_status === "failed");
