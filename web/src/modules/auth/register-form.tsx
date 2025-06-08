@@ -15,6 +15,7 @@ import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const loginSchema = z
@@ -72,9 +73,12 @@ const RegisterForm = () => {
         return;
       }
 
-      // redirect to dashboard
+      toast.success("Registration Successful", {
+        description: "You have successfully registered. Please log in.",
+        position: "top-center",
+        duration: 3000,
+      });
       router.push("/login");
-      // post to backend api
     } catch (error) {
       console.error(error);
       setPending(false);
@@ -160,7 +164,7 @@ const RegisterForm = () => {
         >
           {pending ? (
             <>
-              <Loader className="animate-spin" /> Loading...
+              <Loader className="animate-spin" /> Creating your account...
             </>
           ) : (
             "Register"

@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/helpers/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { Eye, EyeClosed, Loader } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -27,6 +27,7 @@ const loginSchema = z.object({
 const LoginForm = () => {
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const form = useForm({
@@ -59,8 +60,6 @@ const LoginForm = () => {
     } catch (error) {
       console.error(error);
       setPending(false);
-    } finally {
-      // TO DO: Toast
     }
   };
 
@@ -87,12 +86,23 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Fill Password</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Enter your password"
-                  autoComplete="off"
-                  {...field}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    autoComplete="off"
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    size={`icon`}
+                    variant={`ghost`}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-muted-foreground absolute top-1/2 right-1 -translate-y-1/2 cursor-pointer hover:bg-transparent"
+                  >
+                    {showPassword ? <Eye /> : <EyeClosed />}
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -109,7 +119,7 @@ const LoginForm = () => {
         >
           {pending ? (
             <>
-              <Loader className="animate-spin" /> Loading...
+              <Loader className="animate-spin" /> Logging in...
             </>
           ) : (
             "Login"

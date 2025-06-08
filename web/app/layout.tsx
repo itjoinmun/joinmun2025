@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import { cn } from "@/utils/helpers/cn";
 import { outfit, plusJakartaSans } from "@/utils/helpers/fonts";
@@ -80,6 +81,7 @@ export default function RootLayout({
       >
         {children}
         <Analytics />
+        <Toaster />
       </body>
     </html>
   );
