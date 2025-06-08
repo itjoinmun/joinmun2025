@@ -23,7 +23,7 @@ import {
   updateDelegateCountryAndCouncil,
   makeDelegatePairing,
 } from "@/utils/helpers/fetch/admin/admin";
-import { Check, Users, X, ChevronDown, MoreVertical } from "lucide-react";
+import { Check, Users, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/utils/helpers/cn";
 import {

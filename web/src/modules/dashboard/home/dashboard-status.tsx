@@ -267,7 +267,7 @@ const getRegistrationStatusInfo = (status: RegistrationStatus) => {
         description: (
           <div className="flex items-center justify-between gap-4">
             <p>
-              You haven't registered yet. <strong>Register Now</strong>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
             </p>
             <Link
               href="/dashboard/delegates"
@@ -311,7 +311,7 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) =
         description: (
           <div className="flex justify-between gap-4">
             <p>
-              You haven't registered yet. <strong>Register Now</strong>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
             </p>
           </div>
         ),
@@ -342,7 +342,7 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
         description: (
           <div className="flex justify-between gap-4">
             <p>
-              You haven't registered yet. <strong>Register Now</strong>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
             </p>
           </div>
         ),
@@ -386,7 +386,7 @@ const getInformationCenterInfo = (
         description: (
           <div className="flex justify-between gap-4">
             <p>
-              You haven't registered yet. <strong>Register Now</strong>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
             </p>
           </div>
         ),

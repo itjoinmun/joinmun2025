@@ -20,7 +20,16 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { cn } from "@/utils/helpers/cn";
-import { BookOpen, CircleHelp, DollarSign, Home, Hourglass, InfoIcon, LogOut } from "lucide-react";
+import {
+  BookOpen,
+  CircleHelp,
+  DollarSign,
+  Globe,
+  Home,
+  Hourglass,
+  InfoIcon,
+  LogOut,
+} from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,12 +51,12 @@ const NAV_LINKS = [
     href: "/dashboard/delegates",
     logo: <BookOpen className={logoStyle} />,
   },
-  // {
-  //   id: "councils",
-  //   name: "Councils",
-  //   href: "/dashboard/councils",
-  //   logo: <Globe className={logoStyle} />,
-  // },
+  {
+    id: "councils",
+    name: "Councils",
+    href: "/dashboard/councils",
+    logo: <Globe className={logoStyle} />,
+  },
   {
     id: "payment",
     name: "Payment",
@@ -80,21 +89,21 @@ const DashboardNav = () => {
 };
 
 const DummyNav = ({ pathname }: { pathname: string }) => {
-  const router = useRouter();
+  // const router = useRouter();
 
-  const handleLogout = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  // const handleLogout = async () => {
+  //   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
+  //     credentials: "include",
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
 
-    if (res.ok) {
-      router.push("/");
-    }
-  };
+  //   if (res.ok) {
+  //     router.push("/");
+  //   }
+  // };
 
   return (
     <Sidebar className="hidden h-full md:block">
@@ -213,7 +222,7 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
   );
 };
 
-const LogoutButton = ({ className }: { className?: string }) => {
+const LogoutButton = () => {
   const [pending, setPending] = useState(false);
   const router = useRouter();
 
