@@ -6,8 +6,8 @@ const UserProfileInfo = () => {
   const session = useSession();
 
   return (
-    <div className="flex w-fit items-center gap-2">
-      <p className="hidden md:block">{session.user?.name}</p>
+    <div className="flex w-fit max-w-80 items-center gap-2">
+      <p className="hidden truncate md:block">{session.user?.name}</p>
       <User />
     </div>
   );
