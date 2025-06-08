@@ -23,12 +23,12 @@ import {
   Payment,
   submitPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
+import { useSession } from "@/utils/hooks/use-session";
 import { paymentStorage } from "@/utils/storage/indexeddb";
 import { useContext, useEffect, useState } from "react";
 import PaymentPackageCard from "./package-card";
 import { PackageSelection, PaymentContext } from "./payment-context";
 import PaymentNav from "./payment-nav";
-import { useSession } from "@/utils/hooks/use-session";
 
 const useDelegatesApprovalStatus = () => {
   const [delegates, setDelegates] = useState<{
@@ -84,10 +84,10 @@ const PaymentPage = () => {
   const [submitError, setSubmitError] = useState<string>("");
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const TOTAL_STEPS = 2;
-  
+
   const delegateFromHook = useDelegatesApprovalStatus();
   const paymentFromHook = usePaymentStatus();
-  const {user} = useSession();
+  const { user } = useSession();
   console.log("User from session:", user);
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS && packageSelection) {
@@ -199,19 +199,33 @@ const PaymentPage = () => {
       <DashboardModule>
         <DashboardModuleHeader>
           <DashboardModuleTitle>
-            {delegateFromHook.delegates && delegateFromHook.delegates.participant_data && delegateFromHook.delegates.participant_data.length > 0 && 
-             delegateFromHook.delegates.participant_data.every((delegate) => delegate.confirmed === "confirmed") && 
-             paymentFromHook.payment && paymentFromHook.payment.team_members && 
-             paymentFromHook.payment.team_members.find(member => member.mun_delegate_email === user?.email)?.package
+            {delegateFromHook.delegates &&
+            delegateFromHook.delegates.participant_data &&
+            delegateFromHook.delegates.participant_data.length > 0 &&
+            delegateFromHook.delegates.participant_data.every(
+              (delegate) => delegate.confirmed === "confirmed",
+            ) &&
+            paymentFromHook.payment &&
+            paymentFromHook.payment.team_members &&
+            paymentFromHook.payment.team_members.find(
+              (member) => member.mun_delegate_email === user?.email,
+            )?.package
               ? "Payment Status"
               : "Registration Status"}
           </DashboardModuleTitle>
         </DashboardModuleHeader>
         <DashboardModuleContent>
-          {delegateFromHook.delegates && delegateFromHook.delegates.participant_data && delegateFromHook.delegates.participant_data.length > 0 && 
-           delegateFromHook.delegates.participant_data.every((delegate) => delegate.confirmed === "confirmed") && 
-           paymentFromHook.payment && paymentFromHook.payment.team_members && 
-           paymentFromHook.payment.team_members.find(member => member.mun_delegate_email === user?.email)?.package ? (
+          {delegateFromHook.delegates &&
+          delegateFromHook.delegates.participant_data &&
+          delegateFromHook.delegates.participant_data.length > 0 &&
+          delegateFromHook.delegates.participant_data.every(
+            (delegate) => delegate.confirmed === "confirmed",
+          ) &&
+          paymentFromHook.payment &&
+          paymentFromHook.payment.team_members &&
+          paymentFromHook.payment.team_members.find(
+            (member) => member.mun_delegate_email === user?.email,
+          )?.package ? (
             <ParticipantDataTable
               loading={paymentFromHook.loading}
               participants={paymentFromHook.payment}
@@ -314,15 +328,19 @@ const PaymentWithApprovalCheck = ({
     return (
       <div className="flex flex-col gap-2">
         <h1 className="text-sm">
-          <b>No registration found.</b> Register first to proceed with payment.
+          <b>No approved registration found.</b> Register first to proceed with payment.
         </h1>
       </div>
     );
   }
 
   // Check delegates approval status
-  const allApproved = delegates.participant_data.every((delegate) => delegate.confirmed === "confirmed");
-  const anyRejected = delegates.participant_data.some((delegate) => delegate.confirmed === "rejected");
+  const allApproved = delegates.participant_data.every(
+    (delegate) => delegate.confirmed === "confirmed",
+  );
+  const anyRejected = delegates.participant_data.some(
+    (delegate) => delegate.confirmed === "rejected",
+  );
 
   // If any delegate is rejected, show rejection message
   if (anyRejected) {
@@ -345,7 +363,8 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold text-red-700">Registration Rejected</h2>
         <p className="text-muted-foreground text-center">
-          One or more of your team members' registration has been rejected. Please check the registration status table above.
+          One or more of your team members' registration has been rejected. Please check the
+          registration status table above.
         </p>
       </div>
     );
@@ -372,14 +391,17 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold">Waiting for Registration Approval</h2>
         <p className="text-muted-foreground text-center">
-          Your team's registration is still being reviewed. Payment will be available once all team members are approved.
+          Your team's registration is still being reviewed. Payment will be available once all team
+          members are approved.
         </p>
       </div>
     );
   }
 
   // All delegates approved, now check current user's payment status
-  const currentUserPayment = payment?.team_members?.find(member => member.mun_delegate_email === user);
+  const currentUserPayment = payment?.team_members?.find(
+    (member) => member.mun_delegate_email === user,
+  );
   const currentUserHasPackage = currentUserPayment?.package;
 
   // If current user doesn't have a package, show payment flow
@@ -409,8 +431,10 @@ const PaymentWithApprovalCheck = ({
     const anyPending = payment.team_members.some(
       (member) => !member.package || member.payment_status === "pending",
     );
-    console.log("ANY PENDING", anyPending)
-    const anyPaymentRejected = payment.team_members.some((member) => member.payment_status === "failed");
+    console.log("ANY PENDING", anyPending);
+    const anyPaymentRejected = payment.team_members.some(
+      (member) => member.payment_status === "failed",
+    );
     console.log("ANY PAYMENT REJECTED", anyPaymentRejected);
     if (allPaid) {
       return (
@@ -688,9 +712,11 @@ const ParticipantDataTable = ({
                     ? "Confirmed"
                     : participant.payment_status === "failed"
                       ? "Rejected"
-                      : !participant.package ? "Havent paid" : participant.payment_status === "pending"
-                        ? "Waiting for Admin Approval"
-                        : "Pending"}
+                      : !participant.package
+                        ? "Havent paid"
+                        : participant.payment_status === "pending"
+                          ? "Waiting for Admin Approval"
+                          : "Pending"}
                 </span>
               </TableCell>
             </TableRow>
@@ -698,7 +724,7 @@ const ParticipantDataTable = ({
         ) : (
           <TableRow className="border-b bg-red-50">
             <TableCell colSpan={2} className="text-primary py-6 text-center font-medium">
-              No registration found. Please register first and await approval.
+              No approved registration found. Please register first and await approval.
             </TableCell>
           </TableRow>
         )}
@@ -718,6 +744,13 @@ const RegistrationDataTable = ({
     return <p className="animate-pulse">Loading...</p>;
   }
 
+  if (!delegates || !delegates.participant_data || delegates.participant_data.length === 0)
+    return (
+      <p className="text-sm">
+        <b>No approved registration found.</b> Register first to proceed with payment.
+      </p>
+    );
+
   return (
     <Table>
       <TableHeader>
@@ -729,44 +762,36 @@ const RegistrationDataTable = ({
         </TableRow>
       </TableHeader>
       <TableBody className="bg-blue-50">
-        {delegates?.participant_data && delegates.participant_data.length > 0 ? (
-          delegates.participant_data.map((delegate, index: number) => (
-            <TableRow key={delegate.mun_delegate_name} className="border-b border-gray-100">
-              <TableCell
+        {delegates?.participant_data.map((delegate, index: number) => (
+          <TableRow key={delegate.mun_delegate_name} className="border-b border-gray-100">
+            <TableCell
+              className={cn(
+                "w-full py-3 font-medium text-gray-900",
+                index === delegates.participant_data.length - 1 && "first:rounded-bl-lg",
+              )}
+            >
+              {delegate.mun_delegate_name}
+            </TableCell>
+            <TableCell className="w-auto py-3 text-right whitespace-nowrap">
+              <span
                 className={cn(
-                  "w-full py-3 font-medium text-gray-900",
-                  index === delegates.participant_data.length - 1 && "first:rounded-bl-lg",
+                  "rounded-full px-2 py-1 text-xs font-medium",
+                  delegate.confirmed === "confirmed"
+                    ? "bg-green-100 text-green-800"
+                    : delegate.confirmed === "rejected"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-yellow-100 text-yellow-800",
                 )}
               >
-                {delegate.mun_delegate_name}
-              </TableCell>
-              <TableCell className="w-auto py-3 text-right whitespace-nowrap">
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-1 text-xs font-medium",
-                    delegate.confirmed === "confirmed"
-                      ? "bg-green-100 text-green-800"
-                      : delegate.confirmed === "rejected"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800",
-                  )}
-                >
-                  {delegate.confirmed === "confirmed"
-                    ? "Approved"
-                    : delegate.confirmed === "rejected"
-                      ? "Rejected"
-                      : "Pending"}
-                </span>
-              </TableCell>
-            </TableRow>
-          ))
-        ) : (
-          <TableRow className="border-b bg-red-50">
-            <TableCell colSpan={2} className="text-primary py-6 text-center font-medium">
-              No registration found. Please register first.
+                {delegate.confirmed === "confirmed"
+                  ? "Approved"
+                  : delegate.confirmed === "rejected"
+                    ? "Rejected"
+                    : "Pending"}
+              </span>
             </TableCell>
           </TableRow>
-        )}
+        ))}
       </TableBody>
     </Table>
   );
