@@ -200,7 +200,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     <>
       <RegistrationFormModule>
         <FormHeader>Medical Questions</FormHeader>
-        <FormContent fields={formFields} onSubmit={onSubmit} isMedicalForm={true} />
+        <FormContent fields={formFields} onSubmit={onSubmit} />
         {submitError && (
           <div className="bg-red-normal border-red-dark rounded-sm border-2 p-2 text-xs font-medium text-white">
             Error: {submitError}
