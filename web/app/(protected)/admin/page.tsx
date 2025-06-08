@@ -282,7 +282,7 @@ const DashboardAdmin = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="max-h-[70vh] overflow-auto">
+          <div className=" overflow-auto">
             {activeTab === "delegates" && (
               <AdminDelegatesTable teamsData={delegatesData} onDataChange={handleDataChange} />
             )}

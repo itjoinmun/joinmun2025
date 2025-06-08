@@ -26,6 +26,13 @@ import {
 import { Check, Users, X, ChevronDown, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/utils/helpers/cn";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AdminDelegatesTableProps {
   teamsData: TeamDelegateGroup[];
@@ -71,10 +78,14 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
           className={cn("w-1/4 min-w-[200px] py-4", isFirst && "border-t-2 border-t-blue-200")}
         >
           <div className="space-y-2">
-            <div className="text-sm font-semibold text-gray-900">{delegate?.mun_delegate_name || 'N/A'}</div>
-            <div className="text-xs break-all text-gray-600">{delegate?.mun_delegate_email || 'N/A'}</div>
+            <div className="text-sm font-semibold text-gray-900">
+              {delegate?.mun_delegate_name || "N/A"}
+            </div>
+            <div className="text-xs break-all text-gray-600">
+              {delegate?.mun_delegate_email || "N/A"}
+            </div>
             <div className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-              {delegate?.participant_type || 'N/A'}
+              {delegate?.participant_type || "N/A"}
             </div>
             {delegate?.type === "double_delegate" && delegate?.pair && (
               <div className="mt-1 flex items-center gap-1 text-xs text-purple-600">
@@ -91,54 +102,63 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
         >
           {isConfirmed ? (
             <div className="space-y-2">
-              <select
+              {/* Council */}
+              <Select
                 value={tempCouncil}
-                onChange={(e) => setTempCouncil(e.target.value)}
-                className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                disabled={loading[`assign-council-${delegate?.mun_delegate_email || ''}`]}
+                onValueChange={(value) => setTempCouncil(value)}
+                disabled={loading[`assign-council-${delegate?.mun_delegate_email || ""}`]}
               >
-                <option value="">Select Council</option>
-                {COUNCILS?.map((council) => (
-                  <option key={council?.slug} value={council?.name}>
-                    {council?.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={tempCountry}
-                onChange={(e) => setTempCountry(e.target.value)}
-                placeholder="Enter country"
-                className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                disabled={loading[`assign-council-${delegate?.mun_delegate_email || ''}`]}
-              />
-              <Button
-                size="sm"
-                variant="default"
-                className="h-7 w-full bg-blue-600 text-xs hover:bg-blue-700"
-                onClick={() => {
-                  if (tempCountry && tempCouncil && delegate?.mun_delegate_email) {
-                    handleAction(
-                      () =>
-                        updateDelegateCountryAndCouncil(
-                          delegate.mun_delegate_email,
-                          tempCountry,
-                          tempCouncil,
-                        ),
-                      delegate.mun_delegate_email,
-                      "assign-council",
-                    );
+                <SelectTrigger className="w-full bg-white text-xs">
+                  <SelectValue placeholder="Select Council" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNCILS?.map((council) => (
+                    <SelectItem key={council?.slug} value={council?.name}>
+                      {council?.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {/* Country */}
+              <div className="flex items-center w-full">
+                <input
+                  type="text"
+                  value={tempCountry}
+                  onChange={(e) => setTempCountry(e.target.value)}
+                  placeholder="Enter country"
+                  className="flex-1 rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  disabled={loading[`assign-council-${delegate?.mun_delegate_email || ""}`]}
+                />
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="ml-2 h-8 w-30 bg-blue-600 text-xs hover:bg-blue-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  onClick={() => {
+                    if (tempCountry && tempCouncil && delegate?.mun_delegate_email) {
+                      handleAction(
+                        () =>
+                          updateDelegateCountryAndCouncil(
+                            delegate.mun_delegate_email,
+                            tempCountry,
+                            tempCouncil,
+                          ),
+                        delegate.mun_delegate_email,
+                        "assign-council",
+                      );
+                    }
+                  }}
+                  disabled={
+                    loading[`assign-council-${delegate?.mun_delegate_email || ""}`] ||
+                    !tempCountry ||
+                    !tempCouncil ||
+                    !delegate?.mun_delegate_email
                   }
-                }}
-                disabled={
-                  loading[`assign-council-${delegate?.mun_delegate_email || ''}`] ||
-                  !tempCountry ||
-                  !tempCouncil ||
-                  !delegate?.mun_delegate_email
-                }
-              >
-                {loading[`assign-council-${delegate?.mun_delegate_email || ''}`] ? "Assigning..." : "Assign"}
-              </Button>
+                >
+                  {loading[`assign-council-${delegate?.mun_delegate_email || ""}`]
+                    ? "Assigning..."
+                    : "Assign"}
+                </Button>
+              </div>
               {delegate?.country && delegate?.council && (
                 <div className="rounded bg-gray-50 p-1 text-xs text-gray-600">
                   <div>Council: {delegate.council}</div>
@@ -147,7 +167,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
               )}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full text-xs text-gray-400">
+            <div className="flex h-full items-center justify-center text-xs text-gray-400">
               {isRejected ? "Registration Rejected" : "Awaiting Approval"}
             </div>
           )}
@@ -158,21 +178,25 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
           className={cn("w-1/4 min-w-[180px] py-4", isFirst && "border-t-2 border-t-blue-200")}
         >
           {isConfirmed ? (
-            <div className="space-y-2">
+            <div className="space-y-2 flex flex-col">
               <input
                 type="email"
                 value={tempPairEmail}
                 onChange={(e) => setTempPairEmail(e.target.value)}
                 placeholder="Enter pair email"
                 className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                disabled={loading[`make-pairing-${delegate?.mun_delegate_email || ''}`]}
+                disabled={loading[`make-pairing-${delegate?.mun_delegate_email || ""}`]}
               />
               <Button
                 size="sm"
                 variant="default"
                 className="h-7 w-full bg-purple-600 text-xs hover:bg-purple-700"
                 onClick={() => {
-                  if (tempPairEmail && tempPairEmail !== delegate?.pair && delegate?.mun_delegate_email) {
+                  if (
+                    tempPairEmail &&
+                    tempPairEmail !== delegate?.pair &&
+                    delegate?.mun_delegate_email
+                  ) {
                     handleAction(
                       () => makeDelegatePairing(delegate.mun_delegate_email, tempPairEmail),
                       delegate.mun_delegate_email,
@@ -181,18 +205,20 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
                   }
                 }}
                 disabled={
-                  loading[`make-pairing-${delegate?.mun_delegate_email || ''}`] ||
+                  loading[`make-pairing-${delegate?.mun_delegate_email || ""}`] ||
                   !tempPairEmail ||
                   tempPairEmail === delegate?.pair ||
                   !delegate?.mun_delegate_email
                 }
               >
-                {loading[`make-pairing-${delegate?.mun_delegate_email || ''}`] ? "Pairing..." : "Pair"}
+                {loading[`make-pairing-${delegate?.mun_delegate_email || ""}`]
+                  ? "Pairing..."
+                  : "Pair"}
               </Button>
               <div className="space-y-1">
                 {delegate?.type === "double_delegate" && (
                   <div className="rounded bg-green-50 p-1 text-xs font-medium text-green-600">
-                    ✓ Double Delegate  
+                    ✓ Double Delegate
                   </div>
                 )}
                 {delegate?.type === "single_delegate" && (
@@ -203,7 +229,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full text-xs text-gray-400">
+            <div className="flex h-full items-center justify-center text-xs text-gray-400">
               {isRejected ? "Registration Rejected" : "Awaiting Approval"}
             </div>
           )}
@@ -240,13 +266,15 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
                       }
                     }}
                     disabled={
-                      loading[`approve-reg-${delegate?.mun_delegate_email || ''}`] ||
+                      loading[`approve-reg-${delegate?.mun_delegate_email || ""}`] ||
                       !delegate?.mun_delegate_email
                     }
                     className="cursor-pointer text-green-700 focus:bg-green-50 focus:text-green-800"
                   >
                     <Check className="mr-2 h-3 w-3" />
-                    {loading[`approve-reg-${delegate?.mun_delegate_email || ''}`] ? "Approving..." : "Approve"}
+                    {loading[`approve-reg-${delegate?.mun_delegate_email || ""}`]
+                      ? "Approving..."
+                      : "Approve"}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
@@ -259,26 +287,28 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
                       }
                     }}
                     disabled={
-                      loading[`reject-reg-${delegate?.mun_delegate_email || ''}`] ||
+                      loading[`reject-reg-${delegate?.mun_delegate_email || ""}`] ||
                       !delegate?.mun_delegate_email
                     }
                     className="cursor-pointer text-red-700 focus:bg-red-50 focus:text-red-800"
                   >
                     <X className="mr-2 h-3 w-3" />
-                    {loading[`reject-reg-${delegate?.mun_delegate_email || ''}`] ? "Rejecting..." : "Reject"}
+                    {loading[`reject-reg-${delegate?.mun_delegate_email || ""}`]
+                      ? "Rejecting..."
+                      : "Reject"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            
+
             {/* Status badge */}
             <div
               className={`inline-flex w-full items-center justify-center rounded-full px-3 py-1.5 text-xs font-medium ${
-                isConfirmed 
-                  ? "bg-green-100 text-green-800" 
-                  : isRejected 
-                  ? "bg-red-100 text-red-800" 
-                  : "bg-yellow-100 text-yellow-800"
+                isConfirmed
+                  ? "bg-green-100 text-green-800"
+                  : isRejected
+                    ? "bg-red-100 text-red-800"
+                    : "bg-yellow-100 text-yellow-800"
               }`}
             >
               {isConfirmed ? "Approved" : isRejected ? "Rejected" : "Pending"}
@@ -311,7 +341,8 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
                     {team?.mun_team_id ? `Team ${team.mun_team_id}` : "Individual Registration"}
                   </h3>
                   <p className="mt-1 text-sm text-gray-600">
-                    Team Lead: {team?.mun_team_lead || 'N/A'} • {team?.delegate_count || 0} delegate(s)
+                    Team Lead: {team?.mun_team_lead || "N/A"} • {team?.delegate_count || 0}{" "}
+                    delegate(s)
                   </p>
                 </div>
                 <div
