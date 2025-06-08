@@ -5,7 +5,7 @@ import {
   DashboardPageHeader,
   DashboardPageTitle,
 } from "@/components/dashboard/dashboard-page";
-import { Download, ChevronDown } from "lucide-react";
+import { Download } from "lucide-react";
 import { COUNCILS } from "@/utils/helpers/councils";
 import {
   Accordion,

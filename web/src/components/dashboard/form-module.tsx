@@ -167,6 +167,7 @@ const FormContent = ({
                             const file = e.target.files?.[0] || null;
                             fieldProps.onChange(file);
                             if (file) {
+                              // eslint-disable-next-line
                               setSavedFiles((prev: any) => ({
                                 ...prev,
                                 [field.name]: file.name,
