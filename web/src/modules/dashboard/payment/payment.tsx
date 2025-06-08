@@ -1,15 +1,4 @@
 "use client";
-import { PaymentContext } from "./payment-context";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useContext, useState, useEffect } from "react";
-import { PackageSelection } from "./payment-context";
 import {
   DashboardModule,
   DashboardModuleContent,
@@ -18,18 +7,27 @@ import {
 } from "@/components/dashboard/dashboard-module";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import PaymentPackageCard from "./package-card";
-import PaymentNav from "./payment-nav";
 import {
-  submitPayment,
-  getDelegates,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/utils/helpers/cn";
+import {
   Delegate,
+  getDelegates,
   getPayment,
   Payment,
+  submitPayment,
 } from "@/utils/helpers/fetch/delegates/delegates";
 import { paymentStorage } from "@/utils/storage/indexeddb";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/utils/helpers/cn";
+import { useContext, useEffect, useState } from "react";
+import PaymentPackageCard from "./package-card";
+import { PackageSelection, PaymentContext } from "./payment-context";
+import PaymentNav from "./payment-nav";
 
 const useDelegatesApprovalStatus = () => {
   const [delegates, setDelegates] = useState<{
