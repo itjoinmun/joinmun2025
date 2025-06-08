@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
 import { Delegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
-import Link from "next/link";
 import { Suspense } from "react";
 
 const ParticipantData = () => {
@@ -34,6 +33,7 @@ const ParticipantData = () => {
 
 const Body = async () => {
   const delegates = await getDelegates();
+  const showCouncilAndCountry = process.env.NEXT_PUBLIC_CC_REVEAL === "true";
 
   let participantData: Delegate[] | undefined;
   if (delegates) {
@@ -82,28 +82,23 @@ const Body = async () => {
                         : "Pending"}
                   </span>
                 </TableCell>
-                <TableCell className="py-3 text-gray-700">{participant.council ?? "-"}</TableCell>
+                <TableCell className="py-3 text-gray-700">
+                  {showCouncilAndCountry ? (participant.council ?? "-") : "Wait for reveal"}
+                </TableCell>
                 <TableCell
                   className={cn(
                     "py-3 text-gray-700",
                     index === participantData.length - 1 && "rounded-br-lg",
                   )}
                 >
-                  {participant.country ?? "-"}
+                  {showCouncilAndCountry ? (participant.country ?? "-") : "Wait for reveal"}
                 </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow className="border-b bg-red-50">
-              <TableCell colSpan={4} className="py-6 text-center font-medium text-red-700">
-                You haven&apos;t registered.{" "}
-                <Link
-                  href={`/dashboard/delegates`}
-                  className="underline transition-colors hover:text-red-800"
-                >
-                  {" "}
-                  Register now
-                </Link>
+              <TableCell colSpan={4} className="text-primary py-6 text-center font-medium">
+                You haven&apos;t registered. Register now
               </TableCell>
             </TableRow>
           )}

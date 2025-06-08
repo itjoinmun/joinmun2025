@@ -36,6 +36,7 @@ func (r *delegateRepo) GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDeleg
 	, md.mun_delegate_name
 	, md.council
 	, md.country
+	, md.pair
 	, md.confirmed 
 	, md.confirmed_date
 	, md.participant_type

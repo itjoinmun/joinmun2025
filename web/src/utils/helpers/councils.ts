@@ -19,7 +19,7 @@ export const COUNCILS = [
   {
     slug: "un-women",
     delegate: "Single",
-    name: "UN Women",
+    name: "UNWomen",
     fullname: "UN Women",
     src: "un-women.webp",
     logo: "UN Women.webp",

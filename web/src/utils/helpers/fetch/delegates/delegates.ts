@@ -6,15 +6,14 @@ export interface Delegate {
   id: number;
   name: string;
   email: string;
-  payment_status: "rejected" | "pending" | "approved";
-  registration_status: "rejected" | "pending" | "approved";
+  payment_status: "rejected" | "pending" | "paid";
   mun_delegate_email: string;
   mun_delegate_name: string;
   type: string | null;
   pair: string | null;
   council: string | null;
   country: string | null;
-  confirmed: string;
+  confirmed: "rejected" | "pending" | "confirmed";
   confirmed_date: string | null;
   council_date: string | null;
   insert_date: string;

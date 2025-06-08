@@ -74,7 +74,7 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" autoFocus autoComplete="off" {...field} />
+                <Input placeholder="Enter your email" autoFocus autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -89,7 +89,7 @@ const LoginForm = () => {
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="fatimah@badr.co.id"
+                  placeholder="Enter your password"
                   autoComplete="off"
                   {...field}
                 />
@@ -101,7 +101,12 @@ const LoginForm = () => {
 
         {error && <div className="text-center text-sm text-red-500 md:text-start">{error}</div>}
 
-        <Button disabled={pending} type="submit" variant={`primary`} className="w-full">
+        <Button
+          disabled={pending}
+          type="submit"
+          variant={`primary`}
+          className="w-full cursor-pointer"
+        >
           {pending ? (
             <>
               <Loader className="animate-spin" /> Loading...

@@ -113,9 +113,10 @@ const DashboardAdmin = () => {
       let paymentsArray: TeamPaymentSummary[] = [];
       if (Array.isArray(response.payments_by_team)) {
         paymentsArray = response.payments_by_team;
-      } else if (typeof response.payments_by_team === 'object' && response.payments_by_team !== null) {
-        paymentsArray = Object.values(response.payments_by_team).flat();
-      }
+      } 
+      // else if (typeof response.payments_by_team === 'object' && response.payments_by_team !== null) {
+      //   paymentsArray = Object.values(response.payments_by_team).flat();
+      // }
       
       setPaymentsData(paymentsArray);
       setTotalPayments(response.total_payments);
@@ -281,7 +282,7 @@ const DashboardAdmin = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="max-h-[70vh] overflow-auto">
+          <div className=" overflow-auto">
             {activeTab === "delegates" && (
               <AdminDelegatesTable teamsData={delegatesData} onDataChange={handleDataChange} />
             )}

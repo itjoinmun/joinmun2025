@@ -1,10 +1,11 @@
+import ModalCompleteRegistration from "@/components/dashboard/modal-complete-registration";
 import { Button } from "@/components/ui/button";
 import { useFormStatus } from "@/utils/hooks/use-form-status";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const RegistrationNav = () => {
+const RegistrationNav = ({ onSubmit }: { onSubmit?: () => void }) => {
   const { submitting } = useFormStatus();
   const pathname = usePathname();
 
@@ -49,16 +50,18 @@ const RegistrationNav = () => {
               Previous
             </Button>
           </Link>
-        )}
+        )}{" "}
         {isLastStep ? (
-          <Button
-            type="submit"
-            disabled={submitting}
-            variant={"primary"}
-            className="cursor-pointer"
-          >
-            {submitting ? <>Submitting...</> : <>Submit</>}
-          </Button>
+          <ModalCompleteRegistration submitting={submitting} onSubmit={onSubmit}>
+            <Button
+              type="button"
+              disabled={submitting}
+              variant={"primary"}
+              className="cursor-pointer"
+            >
+              {submitting ? <>Submitting...</> : <>Submit</>}
+            </Button>
+          </ModalCompleteRegistration>
         ) : (
           <Button type="submit" variant={"primary"} className="cursor-pointer">
             {" "}

@@ -22,13 +22,13 @@ const DelegatesPage = () => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage>Delegates</BreadcrumbPage>
+              <BreadcrumbPage>Registration</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         <DashboardPageDescription className="text-base">
-          Welcome to delegates, choose role to see more information
+          Welcome to Registration, choose role to see more information
         </DashboardPageDescription>
       </DashboardPageHeader>
       <Suspense fallback={<Skeleton className="h-96" />}>

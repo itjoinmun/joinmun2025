@@ -1,4 +1,5 @@
 export type DelegateType =
+  | ""
   | "all"
   | "single_delegate"
   | "team_delegate"
@@ -13,7 +14,7 @@ export interface MUNDelegate {
   pair?: string | null;
   council?: string | null;
   country?: string | null;
-  confirmed: "confirmed" | "rejected" | "pending"; // Can be boolean or string ("confirmed", "rejected", "pending")
+  confirmed: "confirmed" | "rejected" | "pending";
   confirmed_date?: string | null;
   council_date?: string | null;
   insert_date: string;
@@ -39,12 +40,12 @@ export interface TeamPaymentSummary {
 }
 
 export interface PaymentResponseWithTeam {
-  payment_id: number;
+  payment_id: string;
   mun_delegate_email: string;
   mun_team_id?: string | null;
   package: string;
   payment_file: string;
-  payment_status: string;
+  payment_status: "pending" | "paid" | "failed";
   payment_date: string;
   payment_amount: number;
   participant_type: string;
@@ -61,10 +62,5 @@ export interface PositionPaper {
   mun_delegate_email: string;
   submission_file: string;
   submission_date: string;
-  submission_status: string;
-}
-
-export interface AmalgamatedResponse {
-  delegate_email: string;
-  answers: Record<string, string>;
+  submission_status: "submitted" | "approved" | "rejected";
 }

@@ -32,7 +32,7 @@ const YourRole = async () => {
             <p className="text-sm">
               You have already registered,{" "}
               <strong>
-                please see the{" "}
+                please see the status on the{" "}
                 <Link href="/dashboard/home" className="underline">
                   homepage
                 </Link>

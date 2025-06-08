@@ -220,7 +220,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 		)
 		SELECT mun_team_id, mun_team_lead
 		FROM team_info
-		ORDER BY earliest_payment
+		ORDER BY earliest_payment DESC
 		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
 
 	args = append(args, limit, offset)
@@ -267,7 +267,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 			paymentArgs = append(paymentArgs, *startDate, *endDate)
 		}
 
-		paymentQuery += " ORDER BY p.payment_date"
+		paymentQuery += " ORDER BY p.payment_date DESC"
 
 		err := r.db.Select(&teamPayments, paymentQuery, paymentArgs...)
 		if err != nil {
@@ -357,7 +357,7 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 			   MIN(earliest_registration) as earliest_registration
 		FROM team_groups
 		GROUP BY mun_team_id, group_lead
-		ORDER BY earliest_registration DESC
+		ORDER BY earliest_registration ASC
 		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
 
 	args = append(args, limit, offset)
@@ -391,6 +391,7 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 				md.council,
 				md.council_date,
 				md.country,
+				md.pair,
 				md.confirmed,
 				md.confirmed_date,
 				md.insert_date,

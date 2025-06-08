@@ -23,6 +23,7 @@ import { TeamRegistrationTable } from "@/modules/dashboard/delegates/team/team-d
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
+import { DelegateRegistration } from "@/utils/types/delegate-registration";
 
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
@@ -50,12 +51,11 @@ const DelegationTeamPage = () => {
         return;
       }
 
-      const teamData = JSON.parse(storedData);
+      const teamData: DelegateRegistration[] = JSON.parse(storedData);
       console.log("📊 Team submission - parsed data:", teamData); // Debug log
 
       // Check if there are any team members with complete data
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const teamMembers = Object.values(teamData).filter((member: any) => {
+      const teamMembers = Object.values(teamData).filter((member) => {
         return member && member.biodata_responses && member.biodata_responses.length > 0;
       });
 

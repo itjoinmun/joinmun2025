@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { fileStorageDB } from "@/utils/helpers/file-storage-db";
+import { useSession } from "@/utils/hooks/use-session";
 
 const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: number }) => {
   const [formData, setFormData] = usePersistedState<DelegateRegistration[] | object>(
@@ -20,10 +21,10 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     [],
   );
 
-  // Initialize file storage
+  const { user } = useSession();
+
   const [fileStorageInitialized, setFileStorageInitialized] = useState(false);
 
-  // Initialize IndexedDB when component mounts
   useEffect(() => {
     fileStorageDB
       .init()
@@ -57,7 +58,6 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     }
   };
 
-  // Check for saved file references
   const identityCardFileKey = savedData[7]?.biodata_answer_text?.startsWith("FILE:")
     ? savedData[7]?.biodata_answer_text.replace("FILE:", "")
     : null;
@@ -70,7 +70,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       placeholder: "Enter your email address",
       description: "This will be used as your login identifier",
       validation: z.string().email("Invalid email address").min(1, "Email is required"),
-      defaultValue: savedData[0]?.biodata_answer_text || "",
+      defaultValue: savedData[0]?.biodata_answer_text || (user?.email as string),
     },
     {
       id: 2,
@@ -118,8 +118,8 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     {
       id: 8,
       name: "lineId",
-      label: "LINE ID",
-      placeholder: "Enter your LINE ID (optional)",
+      label: "Line ID",
+      placeholder: "Enter your Line ID (optional)",
       description: "Optional contact information",
       validation: z.string().optional(),
       defaultValue: savedData[6]?.biodata_answer_text || "",
@@ -129,60 +129,52 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       name: "identityCard",
       type: "file",
       label: "Identification Card",
-      placeholder: "Upload your identification card here",
+      placeholder: "Upload image of your identification card",
       description: ".pdf, .png, .jpg, .jpeg",
       validation: z.instanceof(File).optional().or(z.literal("")).or(z.literal(null)),
-      defaultValue: null, // File inputs don't have default values in the form
-      savedFileKey: identityCardFileKey, // The key for any previously saved file
+      defaultValue: null,
+      savedFileKey: identityCardFileKey,
     },
   ];
 
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   const onSubmit = async (values: any) => {
     if (!fileStorageInitialized) {
-      console.error("❌ File storage not initialized");
       return;
     }
 
-    // Get email from form submission
     const submittedEmail = values.email;
 
-    // Extract the file from form values
     const identityCardFile = values.identityCard;
 
     if (identityCardFile instanceof File) {
-      const fileKey = getFileKey(submittedEmail, 3); // Use submitted email
+      const fileKey = getFileKey(submittedEmail, 3);
 
       try {
         await fileStorageDB.storeFile(fileKey, identityCardFile);
-        // Replace file object with a placeholder in values
         values.identityCard = `FILE:${fileKey}`;
       } catch (error) {
         console.error("❌ Error storing file in IndexedDB:", error);
       }
     } else if (!identityCardFile && identityCardFileKey) {
-      // Keep the previous file reference if no new file was provided
       values.identityCard = `FILE:${identityCardFileKey}`;
     } else {
       console.log("ℹ️ No file selected and no previous file exists");
     }
-    // Process JSON data
     const biodataResponses = formFields.map((field) => {
       let answerValue = values[field.name];
 
-      // Handle special file type fields
       if (field.type === "file") {
         if (answerValue instanceof File) {
           answerValue = `FILE:${getFileKey(submittedEmail, field.id)}`; // Use submitted email
         } else if (!answerValue && field.savedFileKey) {
-          // Use the previously saved file if no new file was uploaded
           answerValue = `FILE:${field.savedFileKey}`;
         }
       }
 
       return {
         biodata_question_id: field.id,
-        delegate_email: submittedEmail, // Use submitted email
+        delegate_email: submittedEmail,
         biodata_answer_text: answerValue || "",
       };
     });
@@ -190,7 +182,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     const newData = {
       ...formData[index],
       mun_delegates: {
-        mun_delegate_email: submittedEmail, // Use submitted email
+        mun_delegate_email: submittedEmail,
         type: "",
         council: "",
         country: "",
@@ -199,17 +191,14 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       biodata_responses: biodataResponses,
     };
 
-    // Update localStorage
     setFormData({
       ...formData,
       [index]: newData,
     });
 
     if (slug === "observer" || slug === "advisor") {
-      // For observer or advisor, navigate to the confirmation page
       router.push("3");
     } else {
-      // Move to next step
       if (slug === "team") {
         router.push(`2?idx=${index}`);
       } else {

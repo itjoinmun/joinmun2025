@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
-const ModalRegistrationCompleted = () => {
+const ModalRegistrationCompleted = ({ open }: { open?: boolean }) => {
+  const { delegates } = useParams();
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Registration Completed</Button>
-      </DialogTrigger>
+    <Dialog open={open}>
       <DialogContent className="p-3">
         <DialogHeader>
           <DialogTitle className="my-1 flex items-center gap-4">Registration Completed</DialogTitle>
@@ -25,8 +25,10 @@ const ModalRegistrationCompleted = () => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Link href={"/dashboard"}>
-            <Button variant={"primary"}>Homepage</Button>
+          <Link href={delegates === "team" ? "/dashboard/delegates/team" : "/dashboard/delegates"}>
+            <Button variant={"primary"} className="cursor-pointer">
+              Homepage
+            </Button>
           </Link>
         </DialogFooter>
       </DialogContent>

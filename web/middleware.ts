@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const AUTH_ROUTES = ["/login", "/register"];
 const GUEST_ROUTES = ["/", "/theme"];
 const PROTECTED_ROUTES = ["/dashboard"];
+const ADMIN_ROUTES = ["/admin"];
 
 export async function middleware(request: NextRequest) {
   const access = request.cookies.get("access_token")?.value;
@@ -14,6 +15,41 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
   const isGuestRoute = GUEST_ROUTES.some((route) => pathname === route);
   const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+  const isAdminRoute = ADMIN_ROUTES.some((route) => pathname.startsWith(route));
+
+  // Check admin access first
+  if (isAdminRoute) {
+    if (!access && !refresh) {
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+
+    try {
+      const res = await fetch(`${process.env.API_URL}/auth/me`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `access_token=${access}`,
+        },
+      });
+
+      if (!res.ok) {
+        url.pathname = "/login";
+        return NextResponse.redirect(url);
+      }
+
+      const data = await res.json();
+      if (data.user.Role !== "admin") {
+        url.pathname = "/dashboard/home";
+        return NextResponse.redirect(url);
+      }
+    } catch (error) {
+      console.error("Failed to verify admin access:", error);
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+  }
 
   if (!access && refresh) {
     try {

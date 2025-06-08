@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS mun_delegates (
     mun_delegate_email VARCHAR(255) PRIMARY KEY UNIQUE CHECK (mun_delegate_email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     mun_delegate_name VARCHAR(255),
     type VARCHAR(16) CHECK (type IN ('single_delegate', 'double_delegate')),
-    council VARCHAR(8) CHECK (council IN ('UNWOMEN', 'WHO', 'UNSC', 'ECOFIN', 'CRISIS', 'BRICS+', 'Press')),
+    council VARCHAR(8) CHECK (council IN ('UNWomen', 'WHO', 'UNSC', 'ECOFIN', 'CRISIS', 'BRICS+', 'Press')),
     country VARCHAR(255),
     pair VARCHAR(255),
     confirmed VARCHAR(32) CHECK (confirmed IN('rejected', 'confirmed', 'pending')),
