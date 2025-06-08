@@ -1,3 +1,4 @@
+"use client";
 import { PaymentContext } from "./payment-context";
 import { useContext, useState, useEffect } from "react";
 import { PackageSelection } from "./payment-context";
@@ -6,7 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PaymentPackageCard from "./package-card";
 import PaymentNav from "./payment-nav";
-import { submitPayment, getDelegates, Delegate, getPayment, Payment } from "@/utils/helpers/fetch/delegates/delegates";
+import {
+  submitPayment,
+  getDelegates,
+  Delegate,
+  getPayment,
+  Payment,
+} from "@/utils/helpers/fetch/delegates/delegates";
 import { paymentStorage } from "@/utils/storage/indexeddb";
 
 // Custom hook for fetching delegate data
@@ -41,7 +48,7 @@ const usePaymentStatus = () => {
   const [payment, setPayment] = useState<Payment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     const fetchPayment = async () => {
       try {
@@ -52,7 +59,7 @@ const usePaymentStatus = () => {
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchPayment();
   }, []);
 
@@ -219,7 +226,11 @@ const PaymentWithApprovalCheck = ({
   packageSelection: PackageSelection | null;
   submitError: string;
 }) => {
-  const { delegates, loading: delegatesLoading, error: delegatesError } = useDelegatesApprovalStatus();
+  const {
+    delegates,
+    loading: delegatesLoading,
+    error: delegatesError,
+  } = useDelegatesApprovalStatus();
   const { payment, loading: paymentLoading, error: paymentError } = usePaymentStatus();
 
   // Show loading if either delegates or payment is loading
@@ -310,13 +321,13 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold text-red-700">Team Registration Rejected</h2>
         <p className="text-center text-gray-600">
-          {rejectedMembers.length === 1 
-            ? "One team member's registration has been rejected" 
-            : `${rejectedMembers.length} team members' registrations have been rejected`}. 
-          Please contact the admin for more information.
+          {rejectedMembers.length === 1
+            ? "One team member's registration has been rejected"
+            : `${rejectedMembers.length} team members' registrations have been rejected`}
+          . Please contact the admin for more information.
         </p>
         <div className="mt-4 text-sm text-gray-500">
-          <p className="font-medium text-red-700 mb-2">Rejected Members:</p>
+          <p className="mb-2 font-medium text-red-700">Rejected Members:</p>
           <ul className="space-y-1">
             {rejectedMembers.map((delegate, index) => (
               <li key={index} className="flex items-center gap-2">
@@ -354,19 +365,22 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold text-blue-700">Team Registration Pending</h2>
         <p className="text-center text-gray-600">
-          {pendingMembers.length === 1 
-            ? "One team member's registration is still" 
-            : `${pendingMembers.length} team members' registrations are still`} pending approval. 
-          Please wait for admin approval of all team members before proceeding with payment.
+          {pendingMembers.length === 1
+            ? "One team member's registration is still"
+            : `${pendingMembers.length} team members' registrations are still`}{" "}
+          pending approval. Please wait for admin approval of all team members before proceeding
+          with payment.
         </p>
         <div className="mt-4 text-sm text-gray-500">
-          <p className="font-medium mb-2">Registration Status ({approvedMembers.length}/{teamMembers.length} approved):</p>
-          
+          <p className="mb-2 font-medium">
+            Registration Status ({approvedMembers.length}/{teamMembers.length} approved):
+          </p>
+
           {/* Approved Members */}
           {approvedMembers.length > 0 && (
             <div className="mb-3">
-              <p className="text-xs font-medium text-green-700 mb-1">✓ Approved Members:</p>
-              <ul className="space-y-1 ml-2">
+              <p className="mb-1 text-xs font-medium text-green-700">✓ Approved Members:</p>
+              <ul className="ml-2 space-y-1">
                 {approvedMembers.map((delegate, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
@@ -382,8 +396,8 @@ const PaymentWithApprovalCheck = ({
 
           {/* Pending Members */}
           <div className="mb-3">
-            <p className="text-xs font-medium text-yellow-700 mb-1">⏳ Pending Members:</p>
-            <ul className="space-y-1 ml-2">
+            <p className="mb-1 text-xs font-medium text-yellow-700">⏳ Pending Members:</p>
+            <ul className="ml-2 space-y-1">
               {pendingMembers.map((delegate, index) => (
                 <li key={index} className="flex items-center gap-2">
                   <span className="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
@@ -399,8 +413,8 @@ const PaymentWithApprovalCheck = ({
           {/* Rejected Members (if any) */}
           {rejectedMembers.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-red-700 mb-1">✗ Rejected Members:</p>
-              <ul className="space-y-1 ml-2">
+              <p className="mb-1 text-xs font-medium text-red-700">✗ Rejected Members:</p>
+              <ul className="ml-2 space-y-1">
                 {rejectedMembers.map((delegate, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <span className="inline-block h-2 w-2 rounded-full bg-red-500"></span>
@@ -421,10 +435,12 @@ const PaymentWithApprovalCheck = ({
   // All team members are approved for registration, now check PAYMENT status
   if (payment) {
     // Check if all team members have paid status
-    const allPaid = payment.team_members?.every(member => member.payment_status === "paid");
+    const allPaid = payment.team_members?.every((member) => member.payment_status === "paid");
     console.log("Payment team members:", payment.team_members);
-    const anyPending = payment.team_members?.some(member => member.package && member.payment_status === "pending");
-    const anyRejected = payment.team_members?.some(member => member.payment_status === "failed");
+    const anyPending = payment.team_members?.some(
+      (member) => member.package && member.payment_status === "pending",
+    );
+    const anyRejected = payment.team_members?.some((member) => member.payment_status === "failed");
 
     if (allPaid) {
       return (
@@ -451,14 +467,13 @@ const PaymentWithApprovalCheck = ({
           <div className="mt-4 rounded-lg p-4 text-sm">
             {/* Team Members Payment Status */}
             <div className="mt-4">
-              <p className="font-medium text-green-700 mb-2">✓ All Team Members Approved:</p>
-              <ul className="space-y-1 ml-2">
+              <p className="mb-2 font-medium text-green-700">✓ All Team Members Approved:</p>
+              <ul className="ml-2 space-y-1">
                 {payment.team_members?.map((member, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
                     <span className="text-green-600">{member.mun_delegate_name}</span>
-                    <span className="text-xs text-gray-400">
-                    </span>
+                    <span className="text-xs text-gray-400"></span>
                   </li>
                 ))}
               </ul>
@@ -469,9 +484,14 @@ const PaymentWithApprovalCheck = ({
     }
 
     if (anyPending || anyRejected) {
-      const paidMembers = payment.team_members?.filter(member => member.payment_status === "paid") || [];
-      const pendingMembers = payment.team_members?.filter(member => member.package && member.payment_status === "pending") || [];
-      const rejectedMembers = payment.team_members?.filter(member => member.payment_status === "failed") || [];
+      const paidMembers =
+        payment.team_members?.filter((member) => member.payment_status === "paid") || [];
+      const pendingMembers =
+        payment.team_members?.filter(
+          (member) => member.package && member.payment_status === "pending",
+        ) || [];
+      const rejectedMembers =
+        payment.team_members?.filter((member) => member.payment_status === "failed") || [];
 
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
@@ -492,27 +512,27 @@ const PaymentWithApprovalCheck = ({
           </div>
           <h2 className="text-xl font-bold text-blue-700">Team Payment Status Mixed</h2>
           <p className="text-center text-gray-600">
-            Your team&apos;s payment has mixed statuses. Please check individual member statuses below.
+            Your team&apos;s payment has mixed statuses. Please check individual member statuses
+            below.
           </p>
-          
-          <div className="mt-4 rounded-lg p-4 text-sm w-full max-w-md">
+
+          <div className="mt-4 w-full max-w-md rounded-lg p-4 text-sm">
             {/* Payment Status Breakdown */}
             <div className="space-y-3">
-              <p className="font-medium mb-2">
+              <p className="mb-2 font-medium">
                 Payment Status ({paidMembers.length}/{payment.team_members?.length || 0} approved):
               </p>
-              
+
               {/* Approved Members */}
               {paidMembers.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-green-700 mb-1">✓ Approved Members:</p>
-                  <ul className="space-y-1 ml-2">
+                  <p className="mb-1 text-xs font-medium text-green-700">✓ Approved Members:</p>
+                  <ul className="ml-2 space-y-1">
                     {paidMembers.map((member, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
                         <span className="text-green-600">{member.mun_delegate_name}</span>
-                        <span className="text-xs text-gray-400">
-                        </span>
+                        <span className="text-xs text-gray-400"></span>
                       </li>
                     ))}
                   </ul>
@@ -522,14 +542,13 @@ const PaymentWithApprovalCheck = ({
               {/* Pending Members */}
               {pendingMembers.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-yellow-700 mb-1">⏳ Pending Members:</p>
-                  <ul className="space-y-1 ml-2">
+                  <p className="mb-1 text-xs font-medium text-yellow-700">⏳ Pending Members:</p>
+                  <ul className="ml-2 space-y-1">
                     {pendingMembers.map((member, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <span className="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
                         <span className="text-yellow-600">{member.mun_delegate_name}</span>
-                        <span className="text-xs text-gray-400">
-                        </span>
+                        <span className="text-xs text-gray-400"></span>
                       </li>
                     ))}
                   </ul>
@@ -539,8 +558,8 @@ const PaymentWithApprovalCheck = ({
               {/* Rejected Members */}
               {rejectedMembers.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-red-700 mb-1">✗ Rejected Members:</p>
-                  <ul className="space-y-1 ml-2">
+                  <p className="mb-1 text-xs font-medium text-red-700">✗ Rejected Members:</p>
+                  <ul className="ml-2 space-y-1">
                     {rejectedMembers.map((member, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <span className="inline-block h-2 w-2 rounded-full bg-red-500"></span>
