@@ -28,6 +28,7 @@ import { useContext, useEffect, useState } from "react";
 import PaymentPackageCard from "./package-card";
 import { PackageSelection, PaymentContext } from "./payment-context";
 import PaymentNav from "./payment-nav";
+import { useSession } from "@/utils/hooks/use-session";
 
 const useDelegatesApprovalStatus = () => {
   const [delegates, setDelegates] = useState<{
@@ -83,7 +84,11 @@ const PaymentPage = () => {
   const [submitError, setSubmitError] = useState<string>("");
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const TOTAL_STEPS = 2;
-
+  
+  const delegateFromHook = useDelegatesApprovalStatus();
+  const paymentFromHook = usePaymentStatus();
+  const {user} = useSession();
+  console.log("User from session:", user);
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS && packageSelection) {
       setCurrentStep(currentStep + 1);
@@ -193,13 +198,30 @@ const PaymentPage = () => {
     <PaymentContext.Provider value={{ packageSelection, setPackageSelection }}>
       <DashboardModule>
         <DashboardModuleHeader>
-          <DashboardModuleTitle>Participant Data</DashboardModuleTitle>
+          <DashboardModuleTitle>
+            {delegateFromHook.delegates && delegateFromHook.delegates.participant_data && delegateFromHook.delegates.participant_data.length > 0 && 
+             delegateFromHook.delegates.participant_data.every((delegate) => delegate.confirmed === "confirmed") && 
+             paymentFromHook.payment && paymentFromHook.payment.team_members && 
+             paymentFromHook.payment.team_members.find(member => member.mun_delegate_email === user?.email)?.package
+              ? "Payment Status"
+              : "Registration Status"}
+          </DashboardModuleTitle>
         </DashboardModuleHeader>
         <DashboardModuleContent>
-          <ParticipantDataTable
-            loading={useDelegatesApprovalStatus().loading}
-            participants={useDelegatesApprovalStatus().delegates?.participant_data || []}
-          />
+          {delegateFromHook.delegates && delegateFromHook.delegates.participant_data && delegateFromHook.delegates.participant_data.length > 0 && 
+           delegateFromHook.delegates.participant_data.every((delegate) => delegate.confirmed === "confirmed") && 
+           paymentFromHook.payment && paymentFromHook.payment.team_members && 
+           paymentFromHook.payment.team_members.find(member => member.mun_delegate_email === user?.email)?.package ? (
+            <ParticipantDataTable
+              loading={paymentFromHook.loading}
+              participants={paymentFromHook.payment}
+            />
+          ) : (
+            <RegistrationDataTable
+              loading={delegateFromHook.loading}
+              delegates={delegateFromHook.delegates}
+            />
+          )}
         </DashboardModuleContent>
       </DashboardModule>
       <DashboardModule>
@@ -217,6 +239,7 @@ const PaymentPage = () => {
             TOTAL_STEPS={TOTAL_STEPS}
             packageSelection={packageSelection}
             submitError={submitError}
+            user={user?.email}
           />
         </DashboardModuleContent>
       </DashboardModule>
@@ -234,6 +257,7 @@ const PaymentWithApprovalCheck = ({
   TOTAL_STEPS,
   packageSelection,
   submitError,
+  user,
 }: {
   renderStepContent: () => React.ReactNode;
   submitSuccess: boolean;
@@ -244,6 +268,7 @@ const PaymentWithApprovalCheck = ({
   TOTAL_STEPS: number;
   packageSelection: PackageSelection | null;
   submitError: string;
+  user: string | undefined;
 }) => {
   const {
     delegates,
@@ -284,6 +309,7 @@ const PaymentWithApprovalCheck = ({
     );
   }
 
+  // Check if no registration found
   if (!delegates || !delegates.participant_data || delegates.participant_data.length === 0) {
     return (
       <div className="flex flex-col gap-2">
@@ -294,14 +320,98 @@ const PaymentWithApprovalCheck = ({
     );
   }
 
-  // All team members are approved for registration, now check PAYMENT status
-  if (payment) {
-    const allPaid = payment.team_members?.every((member) => member.payment_status === "paid");
-    const anyPending = payment.team_members?.some(
-      (member) => member.package && member.payment_status === "pending",
-    );
-    const anyRejected = payment.team_members?.some((member) => member.payment_status === "failed");
+  // Check delegates approval status
+  const allApproved = delegates.participant_data.every((delegate) => delegate.confirmed === "confirmed");
+  const anyRejected = delegates.participant_data.some((delegate) => delegate.confirmed === "rejected");
 
+  // If any delegate is rejected, show rejection message
+  if (anyRejected) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-8">
+        <div className="rounded-full bg-red-100 p-3">
+          <svg
+            className="h-8 w-8 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-red-700">Registration Rejected</h2>
+        <p className="text-muted-foreground text-center">
+          One or more of your team members' registration has been rejected. Please check the registration status table above.
+        </p>
+      </div>
+    );
+  }
+
+  // If not all approved, show message to wait for approval
+  if (!allApproved) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 py-8">
+        <div className="rounded-full bg-blue-100 p-3">
+          <svg
+            className="h-8 w-8 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold">Waiting for Registration Approval</h2>
+        <p className="text-muted-foreground text-center">
+          Your team's registration is still being reviewed. Payment will be available once all team members are approved.
+        </p>
+      </div>
+    );
+  }
+
+  // All delegates approved, now check current user's payment status
+  const currentUserPayment = payment?.team_members?.find(member => member.mun_delegate_email === user);
+  const currentUserHasPackage = currentUserPayment?.package;
+
+  // If current user doesn't have a package, show payment flow
+  if (!currentUserHasPackage) {
+    return (
+      <>
+        {renderStepContent()}
+        {!submitSuccess && (
+          <PaymentNav
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            onSubmit={handleSubmit}
+            isLastStep={currentStep >= TOTAL_STEPS}
+            isFirstStep={currentStep <= 1}
+            canProceed={!!packageSelection}
+            submitError={submitError}
+          />
+        )}
+      </>
+    );
+  }
+
+  // Current user has submitted payment, show payment status
+  if (payment && payment.team_members && payment.team_members.length > 0) {
+    const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
+    console.log("ALL PAID", allPaid);
+    const anyPending = payment.team_members.some(
+      (member) => !member.package && member.payment_status === "pending",
+    );
+    console.log("ANY PENDING", anyPending)
+    const anyPaymentRejected = payment.team_members.some((member) => member.payment_status === "failed");
+    console.log("ANY PAYMENT REJECTED", anyPaymentRejected);
     if (allPaid) {
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
@@ -328,7 +438,7 @@ const PaymentWithApprovalCheck = ({
       );
     }
 
-    if (anyPending || anyRejected) {
+    if (anyPending || anyPaymentRejected) {
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
           <div className="rounded-full bg-blue-100 p-3">
@@ -346,17 +456,16 @@ const PaymentWithApprovalCheck = ({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold">Team Payment Status Mixed</h2>
+          <h2 className="text-xl font-bold">Payment Under Review</h2>
           <p className="text-muted-foreground text-center">
-            Your team&apos;s payment has mixed statuses. Please check individual member statuses in
-            the table above.
+            Your payment is being reviewed. Please check the payment status table above for details.
           </p>
         </div>
       );
     }
   }
 
-  // All team members are approved for registration and no payment found or payment rejected, show normal payment flow
+  // Fallback - show payment flow
   return (
     <>
       {renderStepContent()}
@@ -533,7 +642,7 @@ const ParticipantDataTable = ({
   participants,
   loading,
 }: {
-  participants: Delegate[];
+  participants: Payment | null;
   loading: boolean;
 }) => {
   if (loading) {
@@ -551,13 +660,13 @@ const ParticipantDataTable = ({
         </TableRow>
       </TableHeader>
       <TableBody className="bg-blue-50">
-        {participants.length !== 0 ? (
-          participants.map((participant, index: number) => (
+        {participants?.team_members.length !== 0 ? (
+          participants?.team_members.map((participant, index: number) => (
             <TableRow key={participant.mun_delegate_name} className="border-b border-gray-100">
               <TableCell
                 className={cn(
                   "w-full py-3 font-medium text-gray-900",
-                  index === participants.length - 1 && "first:rounded-bl-lg",
+                  index === participants?.team_members.length - 1 && "first:rounded-bl-lg",
                 )}
               >
                 {participant.mun_delegate_name}
@@ -568,7 +677,7 @@ const ParticipantDataTable = ({
                     "rounded-full px-2 py-1 text-xs font-medium",
                     participant.payment_status === "paid"
                       ? "bg-green-100 text-green-800"
-                      : participant.payment_status === "rejected"
+                      : participant.payment_status === "failed"
                         ? "bg-red-100 text-red-800"
                         : participant.payment_status === "pending"
                           ? "bg-blue-100 text-blue-800"
@@ -577,9 +686,9 @@ const ParticipantDataTable = ({
                 >
                   {participant.payment_status === "paid"
                     ? "Confirmed"
-                    : participant.payment_status === "rejected"
+                    : participant.payment_status === "failed"
                       ? "Rejected"
-                      : participant.payment_status === "pending"
+                      : !participant.package ? "Havent paid" : participant.payment_status === "pending"
                         ? "Waiting for Admin Approval"
                         : "Pending"}
                 </span>
@@ -590,6 +699,71 @@ const ParticipantDataTable = ({
           <TableRow className="border-b bg-red-50">
             <TableCell colSpan={2} className="text-primary py-6 text-center font-medium">
               No registration found. Please register first and await approval.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
+};
+
+const RegistrationDataTable = ({
+  delegates,
+  loading,
+}: {
+  delegates: { participant_data: Delegate[]; team_id: string } | null;
+  loading: boolean;
+}) => {
+  if (loading) {
+    return <p className="animate-pulse">Loading...</p>;
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-background border-b *:text-white">
+          <TableHead className="w-full first:rounded-tl-lg">Name</TableHead>
+          <TableHead className="w-auto text-right whitespace-nowrap last:rounded-tr-lg">
+            Registration Status
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody className="bg-blue-50">
+        {delegates?.participant_data && delegates.participant_data.length > 0 ? (
+          delegates.participant_data.map((delegate, index: number) => (
+            <TableRow key={delegate.mun_delegate_name} className="border-b border-gray-100">
+              <TableCell
+                className={cn(
+                  "w-full py-3 font-medium text-gray-900",
+                  index === delegates.participant_data.length - 1 && "first:rounded-bl-lg",
+                )}
+              >
+                {delegate.mun_delegate_name}
+              </TableCell>
+              <TableCell className="w-auto py-3 text-right whitespace-nowrap">
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-1 text-xs font-medium",
+                    delegate.confirmed === "confirmed"
+                      ? "bg-green-100 text-green-800"
+                      : delegate.confirmed === "rejected"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-yellow-100 text-yellow-800",
+                  )}
+                >
+                  {delegate.confirmed === "confirmed"
+                    ? "Approved"
+                    : delegate.confirmed === "rejected"
+                      ? "Rejected"
+                      : "Pending"}
+                </span>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow className="border-b bg-red-50">
+            <TableCell colSpan={2} className="text-primary py-6 text-center font-medium">
+              No registration found. Please register first.
             </TableCell>
           </TableRow>
         )}

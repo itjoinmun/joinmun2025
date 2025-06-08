@@ -51,10 +51,14 @@ const TIME_WAVES: { value: TimeWave; label: string }[] = [
 const DashboardAdmin = () => {
   const [delegateType, setDelegateType] = useState<DelegateType>("all");
   const [timeWave, setTimeWave] = useState<TimeWave>("all");
-  const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage] = useState(20);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"delegates" | "payments" | "papers">("delegates");
+
+  // Separate pagination for each tab
+  const [delegatesPage, setDelegatesPage] = useState(0);
+  const [paymentsPage, setPaymentsPage] = useState(0);
+  const [papersPage, setPapersPage] = useState(0);
 
   // Data states
   const [delegatesData, setDelegatesData] = useState<TeamDelegateGroup[]>([]);
@@ -81,14 +85,14 @@ const DashboardAdmin = () => {
   };
 
   // Use useCallback to memoize fetch functions
-  const fetchDelegates = useCallback(async () => {
+  const fetchDelegates = useCallback(async (page: number = delegatesPage) => {
     try {
       setLoading(true);
       const response = await getDelegatesByTeam(
         delegateType,
         timeWave,
         itemsPerPage,
-        currentPage * itemsPerPage,
+        page * itemsPerPage,
       );
       setDelegatesData(response.delegates_by_team);
       setTotalTeams(response.total_teams);
@@ -97,16 +101,16 @@ const DashboardAdmin = () => {
     } finally {
       setLoading(false);
     }
-  }, [delegateType, timeWave, itemsPerPage, currentPage]);
+  }, [delegateType, timeWave, itemsPerPage, delegatesPage]);
 
-  const fetchPayments = useCallback(async () => {
+  const fetchPayments = useCallback(async (page: number = paymentsPage) => {
     try {
       setLoading(true);
       const response = await getPaymentsByTeam(
         delegateType,
         timeWave,
         itemsPerPage,
-        currentPage * itemsPerPage,
+        page * itemsPerPage,
       );
       
       // Safely handle the payments_by_team data structure
@@ -114,9 +118,6 @@ const DashboardAdmin = () => {
       if (Array.isArray(response.payments_by_team)) {
         paymentsArray = response.payments_by_team;
       } 
-      // else if (typeof response.payments_by_team === 'object' && response.payments_by_team !== null) {
-      //   paymentsArray = Object.values(response.payments_by_team).flat();
-      // }
       
       setPaymentsData(paymentsArray);
       setTotalPayments(response.total_payments);
@@ -125,15 +126,15 @@ const DashboardAdmin = () => {
     } finally {
       setLoading(false);
     }
-  }, [delegateType, timeWave, itemsPerPage, currentPage]);
+  }, [delegateType, timeWave, itemsPerPage, paymentsPage]);
 
-  const fetchPositionPapers = useCallback(async () => {
+  const fetchPositionPapers = useCallback(async (page: number = papersPage) => {
     try {
       setLoading(true);
       const response = await getPositionPapersByTeam(
         timeWave,
         itemsPerPage,
-        currentPage * itemsPerPage,
+        page * itemsPerPage,
       );
       setPositionPapersData(response.papers_by_team);
       setTotalPapers(response.total_teams);
@@ -142,7 +143,7 @@ const DashboardAdmin = () => {
     } finally {
       setLoading(false);
     }
-  }, [timeWave, itemsPerPage, currentPage]);
+  }, [timeWave, itemsPerPage, papersPage]);
 
   const handleDownloadCSV = async () => {
     try {
@@ -155,30 +156,79 @@ const DashboardAdmin = () => {
     }
   };
 
-  // Fixed useEffect hooks - no function calls in dependencies
+  // Fetch data when active tab changes
   useEffect(() => {
-    fetchDelegates();
-  }, [fetchDelegates]);
+    if (activeTab === "delegates") {
+      fetchDelegates();
+    } else if (activeTab === "payments") {
+      fetchPayments();
+    } else if (activeTab === "papers") {
+      fetchPositionPapers();
+    }
+  }, [activeTab, fetchDelegates, fetchPayments, fetchPositionPapers]);
 
+  // Reset pagination when filters change
   useEffect(() => {
-    fetchPayments();
-  }, [fetchPayments]);
-
-  useEffect(() => {
-    fetchPositionPapers();
-  }, [fetchPositionPapers]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(0);
+    setDelegatesPage(0);
+    setPaymentsPage(0);
+    setPapersPage(0);
   }, [delegateType, timeWave]);
 
   const handleDataChange = () => {
-    fetchDelegates();
-    fetchPayments();
+    if (activeTab === "delegates") {
+      fetchDelegates();
+    } else if (activeTab === "payments") {
+      fetchPayments();
+    }
   };
 
-  const totalPages = Math.ceil(Math.max(totalTeams, totalPayments, totalPapers) / itemsPerPage);
+  // Get current pagination info based on active tab
+  const getCurrentPaginationInfo = () => {
+    switch (activeTab) {
+      case "delegates":
+        return {
+          currentPage: delegatesPage,
+          totalItems: totalTeams,
+          setCurrentPage: setDelegatesPage,
+        };
+      case "payments":
+        return {
+          currentPage: paymentsPage,
+          totalItems: totalPayments,
+          setCurrentPage: setPaymentsPage,
+        };
+      case "papers":
+        return {
+          currentPage: papersPage,
+          totalItems: totalPapers,
+          setCurrentPage: setPapersPage,
+        };
+      default:
+        return {
+          currentPage: 0,
+          totalItems: 0,
+          setCurrentPage: () => {},
+        };
+    }
+  };
+
+  const paginationInfo = getCurrentPaginationInfo();
+  const totalPages = Math.ceil(paginationInfo.totalItems / itemsPerPage);
+
+  const handlePageChange = (newPage: number) => {
+    paginationInfo.setCurrentPage(newPage);
+    
+    // Fetch data for the new page
+    setTimeout(() => {
+      if (activeTab === "delegates") {
+        fetchDelegates(newPage);
+      } else if (activeTab === "payments") {
+        fetchPayments(newPage);
+      } else if (activeTab === "papers") {
+        fetchPositionPapers(newPage);
+      }
+    }, 0);
+  };
 
   return (
     <DashboardPage className="flex flex-col gap-6">
@@ -255,7 +305,7 @@ const DashboardAdmin = () => {
                   : "text-muted-foreground hover:text-background"
               }`}
             >
-              Delegates ({delegatesData?.length || 0})
+              Delegates ({totalTeams})
             </button>
             <button
               id="tab-payments"
@@ -266,7 +316,7 @@ const DashboardAdmin = () => {
                   : "text-muted-foreground hover:text-background"
               }`}
             >
-              Payments ({paymentsData?.length || 0})
+              Payments ({totalPayments})
             </button>
             <button
               id="tab-papers"
@@ -277,12 +327,12 @@ const DashboardAdmin = () => {
                   : "text-muted-foreground hover:text-background"
               }`}
             >
-              Position Papers ({positionPapersData?.length || 0})
+              Position Papers ({totalPapers})
             </button>
           </div>
 
           {/* Tab Content */}
-          <div className=" overflow-auto">
+          <div className="overflow-auto">
             {activeTab === "delegates" && (
               <AdminDelegatesTable teamsData={delegatesData} onDataChange={handleDataChange} />
             )}
@@ -299,21 +349,24 @@ const DashboardAdmin = () => {
             <div className="mt-6 flex flex-col items-center justify-center gap-2 rounded-lg bg-gray-50 p-4 sm:flex-row">
               <Button
                 variant="outline"
-                onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-                disabled={currentPage === 0 || loading}
+                onClick={() => handlePageChange(Math.max(0, paginationInfo.currentPage - 1))}
+                disabled={paginationInfo.currentPage === 0 || loading}
                 className="w-full sm:w-auto"
               >
                 Previous
               </Button>
 
               <span className="px-4 text-sm text-gray-600">
-                Page {currentPage + 1} of {totalPages}
+                Page {paginationInfo.currentPage + 1} of {totalPages} 
+                <span className="ml-2 text-xs text-gray-500">
+                  ({paginationInfo.totalItems} total {activeTab})
+                </span>
               </span>
 
               <Button
                 variant="outline"
-                onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-                disabled={currentPage >= totalPages - 1 || loading}
+                onClick={() => handlePageChange(Math.min(totalPages - 1, paginationInfo.currentPage + 1))}
+                disabled={paginationInfo.currentPage >= totalPages - 1 || loading}
                 className="w-full sm:w-auto"
               >
                 Next
