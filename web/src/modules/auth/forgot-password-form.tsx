@@ -9,19 +9,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { register } from "@/utils/actions/auth-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
-const loginSchema = z
+const passwordSchema = z
   .object({
-    name: z.string().nonempty("Name is required"),
-    email: z.string().email("Email format is invalid").nonempty("Email is required"),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -29,7 +25,7 @@ const loginSchema = z
     confirm_password: z
       .string()
       .min(8, {
-        message: "Password must be at least 8 characters.", // Password must be at least 8 characters.
+        message: "Password must be at least 8 characters.",
       })
       .nonempty("Confirm password is required"),
   })
@@ -37,55 +33,58 @@ const loginSchema = z
     if (confirm_password !== password) {
       ctx.addIssue({
         code: "custom",
-        message: "Passwords do not match.", // Passwords do not match
+        message: "Passwords do not match.",
         path: ["confirm_password"],
       });
     }
   });
 
-const RegisterForm = () => {
+interface ForgotPasswordFormProps {
+  token: string;
+}
+
+const ForgotPasswordForm = ({ token }: ForgotPasswordFormProps) => {
+  const router = useRouter();
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(passwordSchema),
     defaultValues: {
-      name: "",
-      email: "",
       password: "",
       confirm_password: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof passwordSchema>) => {
     setPending(true);
+    setError(null);
     try {
-      const res = await register({
-        username: values.name,
-        email: values.email,
-        password: values.password,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reset_token: token,
+          new_password: values.password,
+        }),
       });
 
-      if (!res.ok) {
-        setPending(false);
-        setError("Registration failed. Please try again.");
-        return;
+      const responseData = await response.json();
+
+      if (response.ok) {
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } else {
+        setError(responseData.error || "An error occurred");
       }
-
-      toast.success("Registration Successful", {
-        description: "You have successfully registered. Please log in.",
-        position: "top-center",
-        duration: 3000,
-      });
-      router.push("/login");
-    } catch (error) {
-      console.error(error);
-      setPending(false);
+    } catch {
+      setError("Failed to reset password");
     } finally {
-      // TO DO: Toast
+      setPending(false);
     }
-    // do something
   };
 
   return (
@@ -93,41 +92,15 @@ const RegisterForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md space-y-6">
         <FormField
           control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your name" autoFocus autoComplete="off" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your email" autoComplete="off" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Fill Password</FormLabel>
+              <FormLabel>New Password</FormLabel>
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="Enter your password"
-                  autoComplete="off"
+                  placeholder="Enter your new password"
+                  autoComplete="new-password"
                   {...field}
                 />
               </FormControl>
@@ -140,12 +113,12 @@ const RegisterForm = () => {
           name="confirm_password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Refill Password</FormLabel>
+              <FormLabel>Confirm Password</FormLabel>
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="Confirm your password"
-                  autoComplete="off"
+                  placeholder="Confirm your new password"
+                  autoComplete="new-password"
                   {...field}
                 />
               </FormControl>
@@ -159,15 +132,15 @@ const RegisterForm = () => {
         <Button
           disabled={pending}
           type="submit"
-          variant={`primary`}
+          variant="primary"
           className="w-full cursor-pointer"
         >
           {pending ? (
             <>
-              <Loader className="animate-spin" /> Creating your account...
+              <Loader className="animate-spin" /> Loading...
             </>
           ) : (
-            "Register"
+            "Change Password"
           )}
         </Button>
       </form>
@@ -175,4 +148,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default ForgotPasswordForm;

@@ -13,7 +13,7 @@ import { ExternalLink } from "lucide-react";
 import { cn } from "@/utils/helpers/cn";
 
 interface AdminPositionPapersTableProps {
-  papersData: TeamPositionPaperGroup[];
+  papersData: TeamPositionPaperGroup[] | null;
 }
 
 const AdminPositionPapersTable = ({ papersData }: AdminPositionPapersTableProps) => {
@@ -30,9 +30,17 @@ const AdminPositionPapersTable = ({ papersData }: AdminPositionPapersTableProps)
     }
   };
 
+  if (!papersData || papersData.length === 0) {
+    return (
+      <div className="rounded-lg border bg-white py-12 text-center text-gray-500">
+        No papers found for the selected filters.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {papersData.map((teamGroup, teamIndex) => (
+      {papersData?.map((teamGroup, teamIndex) => (
         <div
           key={`${teamGroup.mun_team_id || "individual"}-${teamIndex}`}
           className="overflow-hidden rounded-lg border bg-white shadow-sm"
@@ -153,12 +161,6 @@ const AdminPositionPapersTable = ({ papersData }: AdminPositionPapersTableProps)
           </div>
         </div>
       ))}
-
-      {papersData.length === 0 && (
-        <div className="rounded-lg border bg-white py-12 text-center text-gray-500">
-          No position papers found for the selected filters.
-        </div>
-      )}
     </div>
   );
 };

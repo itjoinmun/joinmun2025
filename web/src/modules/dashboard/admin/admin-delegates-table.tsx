@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,6 +7,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -15,24 +21,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/utils/helpers/cn";
 import { COUNCILS } from "@/utils/helpers/councils";
-import { TeamDelegateGroup, MUNDelegate } from "@/utils/types/admin";
 import {
   approveParticipantRegistration,
+  makeDelegatePairing,
   rejectParticipantRegistration,
   updateDelegateCountryAndCouncil,
-  makeDelegatePairing,
 } from "@/utils/helpers/fetch/admin/admin";
-import { Check, Users, X, ChevronDown } from "lucide-react";
+import { MUNDelegate, TeamDelegateGroup } from "@/utils/types/admin";
+import { Check, ChevronDown, Users, X } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/utils/helpers/cn";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface AdminDelegatesTableProps {
   teamsData: TeamDelegateGroup[];
@@ -120,7 +119,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
                 </SelectContent>
               </Select>
               {/* Country */}
-              <div className="flex items-center w-full">
+              <div className="flex w-full items-center">
                 <input
                   type="text"
                   value={tempCountry}
@@ -167,9 +166,9 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
               )}
             </div>
           ) : (
-            <div className="flex h-full items-center justify-center text-xs text-gray-400">
+            <p className="text-xs text-gray-400">
               {isRejected ? "Registration Rejected" : "Awaiting Approval"}
-            </div>
+            </p>
           )}
         </TableCell>
 
@@ -178,7 +177,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
           className={cn("w-1/4 min-w-[180px] py-4", isFirst && "border-t-2 border-t-blue-200")}
         >
           {isConfirmed ? (
-            <div className="space-y-2 flex flex-col">
+            <div className="flex flex-col space-y-2">
               <input
                 type="email"
                 value={tempPairEmail}
@@ -229,32 +228,30 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
               </div>
             </div>
           ) : (
-            <div className="flex h-full items-center justify-center text-xs text-gray-400">
+            <p className="text-xs text-gray-400">
               {isRejected ? "Registration Rejected" : "Awaiting Approval"}
-            </div>
+            </p>
           )}
         </TableCell>
 
         {/* Registration Status Column */}
-        <TableCell
-          className={cn("w-1/4 min-w-[160px] py-4", isFirst && "border-t-2 border-t-blue-200")}
-        >
-          <div className="space-y-3">
+        <TableCell className={cn("min-w-[160px] py-4", isFirst && "border-t-2 border-t-blue-200")}>
+          <div className="flex flex-col gap-2">
             {/* Show approval/rejection buttons only for pending delegates */}
             {isPending && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="h-8 w-full justify-between text-xs"
+                    className="border-accent hover:bg-accent h-8 w-full justify-between border-2 text-xs"
                     disabled={!delegate?.mun_delegate_email}
                   >
                     <span>Actions</span>
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuContent align="start" className="w-40">
                   <DropdownMenuItem
                     onClick={() => {
                       if (delegate?.mun_delegate_email) {
@@ -303,7 +300,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
 
             {/* Status badge */}
             <div
-              className={`inline-flex w-full items-center justify-center rounded-full px-3 py-1.5 text-xs font-medium ${
+              className={`inline-flex w-fit items-center justify-center rounded-full px-2 py-1 text-xs font-medium ${
                 isConfirmed
                   ? "bg-green-100 text-green-800"
                   : isRejected
@@ -357,7 +354,7 @@ const AdminDelegatesTable = ({ teamsData, onDataChange }: AdminDelegatesTablePro
             </div>
 
             {/* Delegates Table */}
-            <div className="overflow-x-auto">
+            <div className="no-scrollbar overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">

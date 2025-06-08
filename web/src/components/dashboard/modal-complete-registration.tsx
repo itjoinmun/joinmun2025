@@ -29,7 +29,7 @@ const ModalCompleteRegistration = ({
               Complete Registration?
             </DialogTitle>
             <hr className="mt-1 opacity-20" />
-            <DialogDescription className="text-start text-[105%] text-white">
+            <DialogDescription className="text-start text-white">
               After the registration, you will have to wait for verification for further information
               and payment!
             </DialogDescription>
