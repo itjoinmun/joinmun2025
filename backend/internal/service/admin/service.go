@@ -100,24 +100,24 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 		retErr = err
 		return retErr
 	}
-	var participantStatus string
+	// var participantStatus string
 	var participantTap string
-	if participant.Confirmed != nil {
-		participantStatus = *participant.Confirmed
-	}
+	// if participant.Confirmed != nil {
+	// 	participantStatus = *participant.Confirmed
+	// }
 	if participant.ParticipantType != nil {
 		participantTap = *participant.ParticipantType
 	}
-	if participantStatus != "" && participantStatus != "pending" {
-		logger.LogError(nil, "Participant already confirmed", map[string]interface{}{
-			"layer":     "service",
-			"operation": "service.UpdateParticipantStatus",
-			"error":     "participant already confirmed",
-			"email":     email,
-		})
-		retErr = fmt.Errorf("email %s is already confirmed", email)
-		return retErr
-	}
+	// if participantStatus != "" && participantStatus != "pending" {
+	// 	logger.LogError(nil, "Participant already confirmed", map[string]interface{}{
+	// 		"layer":     "service",
+	// 		"operation": "service.UpdateParticipantStatus",
+	// 		"error":     "participant already confirmed",
+	// 		"email":     email,
+	// 	})
+	// 	retErr = fmt.Errorf("email %s is already confirmed", email)
+	// 	return retErr
+	// }
 	if participant.ParticipantType == nil || participantTap != "team_delegate" && participantTap != "single_delegate" && participantTap != "faculty_advisor" && participantTap != "observer" {
 		logger.LogError(nil, "Participant is not a delegate", map[string]interface{}{
 			"layer":     "service",
@@ -164,7 +164,8 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 		return err
 	}
 
-	var participantType, participantCountry, participantCouncil string
+	var participantType string
+	// var participantCountry, participantCouncil string
 	var participantStatus string
 
 	// dereference the pointers
@@ -176,13 +177,13 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 		participantStatus = *participant.Confirmed
 	}
 
-	if participant.Country != nil {
-		participantCountry = *participant.Country
-	}
+	// if participant.Country != nil {
+	// 	participantCountry = *participant.Country
+	// }
 
-	if participant.Council != nil {
-		participantCouncil = *participant.Council
-	}
+	// if participant.Council != nil {
+	// 	participantCouncil = *participant.Council
+	// }
 
 	if participantStatus != "confirmed" {
 		logger.LogError(nil, "Participant is not confirmed", map[string]interface{}{
@@ -202,15 +203,15 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 		})
 		return fmt.Errorf("email %s is not a delegate", delegateEmail)
 	}
-	if participantCountry != "" || participantCouncil != "" {
-		logger.LogError(nil, "Participant already has a country and council", map[string]interface{}{
-			"layer":     "service",
-			"operation": "service.UpdateDelegateCountryAndCouncil",
-			"error":     "participant already has the same country and council",
-			"email":     delegateEmail,
-		})
-		return fmt.Errorf("email %s already has a country and council", delegateEmail)
-	}
+	// if participantCountry != "" || participantCouncil != "" {
+	// 	logger.LogError(nil, "Participant already has a country and council", map[string]interface{}{
+	// 		"layer":     "service",
+	// 		"operation": "service.UpdateDelegateCountryAndCouncil",
+	// 		"error":     "participant already has the same country and council",
+	// 		"email":     delegateEmail,
+	// 	})
+	// 	return fmt.Errorf("email %s already has a country and council", delegateEmail)
+	// }
 	err = s.adminRepo.UpdateDelegateCountryAndCouncil(country, council, delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update delegate country and council", map[string]interface{}{
