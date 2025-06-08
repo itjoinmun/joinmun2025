@@ -422,7 +422,8 @@ const PaymentWithApprovalCheck = ({
   if (payment) {
     // Check if all team members have paid status
     const allPaid = payment.team_members?.every(member => member.payment_status === "paid");
-    const anyPending = payment.team_members?.some(member => member.payment_status === "pending");
+    console.log("Payment team members:", payment.team_members);
+    const anyPending = payment.team_members?.some(member => member.package && member.payment_status === "pending");
     const anyRejected = payment.team_members?.some(member => member.payment_status === "failed");
 
     if (allPaid) {
@@ -469,7 +470,7 @@ const PaymentWithApprovalCheck = ({
 
     if (anyPending || anyRejected) {
       const paidMembers = payment.team_members?.filter(member => member.payment_status === "paid") || [];
-      const pendingMembers = payment.team_members?.filter(member => member.payment_status === "pending") || [];
+      const pendingMembers = payment.team_members?.filter(member => member.package && member.payment_status === "pending") || [];
       const rejectedMembers = payment.team_members?.filter(member => member.payment_status === "failed") || [];
 
       return (
