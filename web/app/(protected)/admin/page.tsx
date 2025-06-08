@@ -240,7 +240,7 @@ const DashboardAdmin = () => {
       <DashboardModule>
         <DashboardModuleHeader>
           <div className="mb-2 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
-            <Heading className="hidden sm:block">Dashboard Admin</Heading>
+            <Heading className="hidden sm:block">Admin Dashboard</Heading>
             <Button
               variant="warning"
               className="flex w-fit items-center gap-2 self-end sm:self-auto"
@@ -248,7 +248,7 @@ const DashboardAdmin = () => {
               disabled={loading}
             >
               <Download className="h-4 w-4" />
-              {loading ? "Downloading..." : "Download All Responses CSV"}
+              {loading ? "Downloading..." : "Download All Responses as CSV"}
             </Button>
           </div>
         </DashboardModuleHeader>
@@ -290,7 +290,7 @@ const DashboardAdmin = () => {
           </div>
 
           {/* Note */}
-          <div className="mb-4 flex w-fit flex-col items-center justify-center gap-1 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-600 sm:flex-row sm:gap-2">
+          <div className="border-red-dark bg-red-normal text-red-white mb-4 flex w-fit flex-col items-center justify-center gap-1 rounded-lg border p-2 text-xs sm:flex-row sm:gap-2">
             <div className="flex gap-2 self-start sm:items-center sm:self-auto">
               <AlertCircle className="h-5 w-5" />
               Note:
