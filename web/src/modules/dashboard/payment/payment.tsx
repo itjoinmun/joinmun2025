@@ -162,8 +162,8 @@ const PaymentPage = () => {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-green-700">Payment Submitted Successfully!</h2>
-          <p className="text-center text-gray-600">
+          <h2 className="text-xl font-bold">Payment Submitted Successfully!</h2>
+          <p className="text-muted-foreground text-center">
             Your payment proof has been submitted and is being reviewed. You will receive
             confirmation once approved.
           </p>
@@ -195,6 +195,17 @@ const PaymentPage = () => {
     <PaymentContext.Provider value={{ packageSelection, setPackageSelection }}>
       <DashboardModule>
         <DashboardModuleHeader>
+          <DashboardModuleTitle>Participant Data</DashboardModuleTitle>
+        </DashboardModuleHeader>
+        <DashboardModuleContent>
+          <ParticipantDataTable
+            loading={useDelegatesApprovalStatus().loading}
+            participants={useDelegatesApprovalStatus().delegates?.participant_data || []}
+          />
+        </DashboardModuleContent>
+      </DashboardModule>
+      <DashboardModule>
+        <DashboardModuleHeader>
           <DashboardModuleTitle>Payment Details</DashboardModuleTitle>
         </DashboardModuleHeader>
         <DashboardModuleContent>
@@ -208,16 +219,6 @@ const PaymentPage = () => {
             TOTAL_STEPS={TOTAL_STEPS}
             packageSelection={packageSelection}
             submitError={submitError}
-          />
-        </DashboardModuleContent>
-      </DashboardModule>
-      <DashboardModule>
-        <DashboardModuleHeader>
-          <DashboardModuleTitle>Participant Data</DashboardModuleTitle>
-        </DashboardModuleHeader>
-        <DashboardModuleContent>
-          <ParticipantDataTable
-            participants={useDelegatesApprovalStatus().delegates?.participant_data || []}
           />
         </DashboardModuleContent>
       </DashboardModule>
@@ -280,7 +281,7 @@ const PaymentWithApprovalCheck = ({
           </svg>
         </div>
         <h2 className="text-xl font-bold text-red-700">Error Loading Data</h2>
-        <p className="text-center text-gray-600">{delegatesError || paymentError}</p>
+        <p className="text-muted-foreground text-center">{delegatesError || paymentError}</p>
       </div>
     );
   }
@@ -294,9 +295,6 @@ const PaymentWithApprovalCheck = ({
       </div>
     );
   }
-
-  // Check REGISTRATION approval status from delegates data (prerequisite for payment)
-  const teamMembers = delegates.participant_data;
 
   // All team members are approved for registration, now check PAYMENT status
   if (payment) {
@@ -324,25 +322,10 @@ const PaymentWithApprovalCheck = ({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-green-700">Payment Approved!</h2>
-          <p className="text-center text-gray-600">
+          <h2 className="text-xl font-bold">Payment Approved!</h2>
+          <p className="text-muted-foreground text-center">
             Your team&apos;s payment has been approved. You&apos;re all set for the event!
           </p>
-          <div className="mt-4 rounded-lg p-4 text-sm">
-            {/* Team Members Payment Status */}
-            <div className="mt-4">
-              <p className="mb-2 font-medium text-green-700">✓ All Team Members Approved:</p>
-              <ul className="ml-2 space-y-1">
-                {payment.team_members?.map((member, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-                    <span className="text-green-600">{member.mun_delegate_name}</span>
-                    <span className="text-xs text-gray-400"></span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
         </div>
       );
     }
@@ -365,10 +348,10 @@ const PaymentWithApprovalCheck = ({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-blue-700">Team Payment Status Mixed</h2>
-          <p className="text-center text-gray-600">
-            Your team&apos;s payment has mixed statuses. Please check individual member statuses
-            below.
+          <h2 className="text-xl font-bold">Team Payment Status Mixed</h2>
+          <p className="text-muted-foreground text-center">
+            Your team&apos;s payment has mixed statuses. Please check individual member statuses in
+            the table above.
           </p>
         </div>
       );
@@ -452,21 +435,6 @@ const PaymentDetailsStep = () => {
       number: "1234567890",
       name: "Arthur",
     },
-    {
-      bank: "Mandiri",
-      number: "0987654321",
-      name: "Vale",
-    },
-    {
-      bank: "Mandiri",
-      number: "0987654321",
-      name: "Vale",
-    },
-    {
-      bank: "Mandiri",
-      number: "0987654321",
-      name: "Vale",
-    },
   ];
 
   const handlePaymentProofUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -541,7 +509,7 @@ const PaymentDetailsStep = () => {
         <div className="space-y-4">
           <div>
             <Label htmlFor="payment-proof">Upload Payment Proof</Label>
-            <p className="text-sm text-gray-600">
+            <p className="text-muted-foreground text-sm">
               Please upload a screenshot or photo of your payment receipt
             </p>
           </div>
@@ -553,7 +521,7 @@ const PaymentDetailsStep = () => {
               onChange={handlePaymentProofUpload}
             />
             {paymentProof && (
-              <p className="text-sm text-gray-600">Selected file: {paymentProof.name}</p>
+              <p className="text-muted-foreground text-sm">Selected file: {paymentProof.name}</p>
             )}
           </div>
         </div>
@@ -563,7 +531,17 @@ const PaymentDetailsStep = () => {
   );
 };
 
-const ParticipantDataTable = ({ participants }: { participants: Delegate[] }) => {
+const ParticipantDataTable = ({
+  participants,
+  loading,
+}: {
+  participants: Delegate[];
+  loading: boolean;
+}) => {
+  if (loading) {
+    return <p className="animate-pulse">Loading...</p>;
+  }
+
   return (
     <Table>
       <TableHeader>
