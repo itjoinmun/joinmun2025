@@ -28,6 +28,8 @@ const LoginForm = () => {
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [loadingReset, setLoadingReset] = useState<boolean>(false);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm({
@@ -63,6 +65,37 @@ const LoginForm = () => {
     }
   };
 
+  const handlePasswordReset = async () => {
+    const email = form.getValues("email");
+    if (!email) {
+      setError("Please enter your email to reset your password.");
+      return;
+    }
+
+    try {
+      setLoadingReset(true);
+      setResetMessage(null);
+      setError(null);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/request-password-reset`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        },
+      );
+
+      if (!response.ok) throw new Error("Failed to send password reset email.");
+
+      setResetMessage("A password reset email has been sent to your email address.");
+    } catch (err: any) {
+      setError(err.message || "Failed to send reset email");
+    } finally {
+      setLoadingReset(false);
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-md space-y-6">
@@ -73,7 +106,7 @@ const LoginForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your email" autoFocus autoComplete="off" {...field} />
+                <Input placeholder="Enter your email" autoFocus autoComplete="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,11 +143,14 @@ const LoginForm = () => {
         />
 
         {error && <div className="text-center text-sm text-red-500 md:text-start">{error}</div>}
+        {resetMessage && (
+          <div className="text-center text-sm text-green-500">{resetMessage}</div>
+        )}
 
         <Button
           disabled={pending}
           type="submit"
-          variant={`primary`}
+          variant="primary"
           className="w-full cursor-pointer"
         >
           {pending ? (
@@ -128,12 +164,20 @@ const LoginForm = () => {
 
         <hr className="border-gray mb-6 border-b-2" />
 
-        <Link
-          href={`/forgot-password`}
-          className={cn(buttonVariants({ variant: "gray" }), "w-full")}
+        <Button
+          variant="gray"
+          className={cn("w-full")}
+          onClick={handlePasswordReset}
+          disabled={loadingReset}
         >
-          Forgot Password
-        </Link>
+          {loadingReset ? (
+            <>
+              <Loader className="animate-spin" /> Sending...
+            </>
+          ) : (
+            "Forgot Password"
+          )}
+        </Button>
       </form>
     </Form>
   );
