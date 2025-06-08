@@ -80,7 +80,7 @@ const ForgotPasswordForm = ({ token }: ForgotPasswordFormProps) => {
       } else {
         setError(responseData.error || "An error occurred");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to reset password");
     } finally {
       setPending(false);

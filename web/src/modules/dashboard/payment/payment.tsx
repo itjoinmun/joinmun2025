@@ -363,7 +363,7 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold text-red-700">Registration Rejected</h2>
         <p className="text-muted-foreground text-center">
-          One or more of your team members' registration has been rejected. Please check the
+          One or more of your team members&apos; registration has been rejected. Please check the
           registration status table above.
         </p>
       </div>
@@ -391,7 +391,7 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold">Waiting for Registration Approval</h2>
         <p className="text-muted-foreground text-center">
-          Your team's registration is still being reviewed. Payment will be available once all team
+          Your team&apos;s registration is still being reviewed. Payment will be available once all team
           members are approved.
         </p>
       </div>

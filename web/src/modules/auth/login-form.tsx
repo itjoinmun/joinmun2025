@@ -1,5 +1,5 @@
 "use client";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/helpers/cn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeClosed, Loader } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -89,8 +88,8 @@ const LoginForm = () => {
       if (!response.ok) throw new Error("Failed to send password reset email.");
 
       setResetMessage("A password reset email has been sent to your email address.");
-    } catch (err: any) {
-      setError(err.message || "Failed to send reset email");
+    } catch {
+      setError("Failed to send reset email");
     } finally {
       setLoadingReset(false);
     }
@@ -143,9 +142,7 @@ const LoginForm = () => {
         />
 
         {error && <div className="text-center text-sm text-red-500 md:text-start">{error}</div>}
-        {resetMessage && (
-          <div className="text-center text-sm text-green-500">{resetMessage}</div>
-        )}
+        {resetMessage && <div className="text-center text-sm text-green-500">{resetMessage}</div>}
 
         <Button
           disabled={pending}
