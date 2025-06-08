@@ -1,4 +1,3 @@
-"use client";
 import {
   DashboardPage,
   DashboardPageHeader,
@@ -6,7 +5,6 @@ import {
 } from "@/components/dashboard/dashboard-page";
 import Payment from "@/modules/dashboard/payment/payment";
 import { FormStatusProvider } from "@/utils/hooks/use-form-status";
-import { Suspense } from "react";
 
 const PackageSelectionPage = () => {
   return (
@@ -15,11 +13,9 @@ const PackageSelectionPage = () => {
         <DashboardPageTitle>Payment</DashboardPageTitle>
       </DashboardPageHeader>
 
-      <Suspense fallback={<div>Loading Payment Details...</div>}>
-        <FormStatusProvider>
-          <Payment />
-        </FormStatusProvider>
-      </Suspense>
+      <FormStatusProvider>
+        <Payment />
+      </FormStatusProvider>
     </DashboardPage>
   );
 };

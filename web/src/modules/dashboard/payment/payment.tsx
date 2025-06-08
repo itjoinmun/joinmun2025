@@ -1,15 +1,34 @@
-import { PaymentContext } from "./payment-context";
-import { useContext, useState, useEffect } from "react";
-import { PackageSelection } from "./payment-context";
-import { DashboardModule, DashboardModuleContent } from "@/components/dashboard/dashboard-module";
+"use client";
+import {
+  DashboardModule,
+  DashboardModuleContent,
+  DashboardModuleHeader,
+  DashboardModuleTitle,
+} from "@/components/dashboard/dashboard-module";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import PaymentPackageCard from "./package-card";
-import PaymentNav from "./payment-nav";
-import { submitPayment, getDelegates, Delegate, getPayment, Payment } from "@/utils/helpers/fetch/delegates/delegates";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/utils/helpers/cn";
+import {
+  Delegate,
+  getDelegates,
+  getPayment,
+  Payment,
+  submitPayment,
+} from "@/utils/helpers/fetch/delegates/delegates";
 import { paymentStorage } from "@/utils/storage/indexeddb";
+import { useContext, useEffect, useState } from "react";
+import PaymentPackageCard from "./package-card";
+import { PackageSelection, PaymentContext } from "./payment-context";
+import PaymentNav from "./payment-nav";
 
-// Custom hook for fetching delegate data
 const useDelegatesApprovalStatus = () => {
   const [delegates, setDelegates] = useState<{
     participant_data: Delegate[];
@@ -36,12 +55,11 @@ const useDelegatesApprovalStatus = () => {
   return { delegates, loading, error };
 };
 
-// Custom hook for fetching payment data
 const usePaymentStatus = () => {
   const [payment, setPayment] = useState<Payment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     const fetchPayment = async () => {
       try {
@@ -52,7 +70,7 @@ const usePaymentStatus = () => {
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchPayment();
   }, []);
 
@@ -95,7 +113,6 @@ const PaymentPage = () => {
     };
 
     try {
-      // Store in IndexedDB first for offline support
       const storageId = await paymentStorage.storePayment({
         ...paymentData,
         payment_file: paymentFile,
@@ -103,19 +120,14 @@ const PaymentPage = () => {
         status: "pending",
       });
 
-      // Submit to backend
-      const result = await submitPayment(paymentData, paymentFile);
-
-      // Update storage status on success
+      await submitPayment(paymentData, paymentFile);
       await paymentStorage.updatePaymentStatus(storageId, "submitted");
 
       setSubmitSuccess(true);
-      console.log("Payment submitted successfully:", result);
     } catch (error) {
       console.error("Payment submission failed:", error);
       setSubmitError(error instanceof Error ? error.message : "Failed to submit payment");
 
-      // Try to store locally on failure
       try {
         await paymentStorage.storePayment({
           ...paymentData,
@@ -148,8 +160,8 @@ const PaymentPage = () => {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-green-700">Payment Submitted Successfully!</h2>
-          <p className="text-center text-gray-600">
+          <h2 className="text-xl font-bold">Payment Submitted Successfully!</h2>
+          <p className="text-muted-foreground text-center">
             Your payment proof has been submitted and is being reviewed. You will receive
             confirmation once approved.
           </p>
@@ -180,6 +192,20 @@ const PaymentPage = () => {
   return (
     <PaymentContext.Provider value={{ packageSelection, setPackageSelection }}>
       <DashboardModule>
+        <DashboardModuleHeader>
+          <DashboardModuleTitle>Participant Data</DashboardModuleTitle>
+        </DashboardModuleHeader>
+        <DashboardModuleContent>
+          <ParticipantDataTable
+            loading={useDelegatesApprovalStatus().loading}
+            participants={useDelegatesApprovalStatus().delegates?.participant_data || []}
+          />
+        </DashboardModuleContent>
+      </DashboardModule>
+      <DashboardModule>
+        <DashboardModuleHeader>
+          <DashboardModuleTitle>Payment Details</DashboardModuleTitle>
+        </DashboardModuleHeader>
         <DashboardModuleContent>
           <PaymentWithApprovalCheck
             renderStepContent={renderStepContent}
@@ -219,20 +245,21 @@ const PaymentWithApprovalCheck = ({
   packageSelection: PackageSelection | null;
   submitError: string;
 }) => {
-  const { delegates, loading: delegatesLoading, error: delegatesError } = useDelegatesApprovalStatus();
+  const {
+    delegates,
+    loading: delegatesLoading,
+    error: delegatesError,
+  } = useDelegatesApprovalStatus();
   const { payment, loading: paymentLoading, error: paymentError } = usePaymentStatus();
 
-  // Show loading if either delegates or payment is loading
   if (delegatesLoading || paymentLoading) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-        <p className="text-gray-600">Loading...</p>
-      </div>
+      <>
+        <h1 className="animate-pulse">Loading...</h1>
+      </>
     );
   }
 
-  // Show error if either fetch failed
   if (delegatesError || paymentError) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
@@ -252,178 +279,28 @@ const PaymentWithApprovalCheck = ({
           </svg>
         </div>
         <h2 className="text-xl font-bold text-red-700">Error Loading Data</h2>
-        <p className="text-center text-gray-600">{delegatesError || paymentError}</p>
+        <p className="text-muted-foreground text-center">{delegatesError || paymentError}</p>
       </div>
     );
   }
 
   if (!delegates || !delegates.participant_data || delegates.participant_data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <div className="rounded-full bg-yellow-100 p-3">
-          <svg
-            className="h-8 w-8 text-yellow-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-            />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-yellow-700">No Registration Found</h2>
-        <p className="text-center text-gray-600">
-          You haven&apos;t registered yet. Please register first before proceeding with payment.
-        </p>
-      </div>
-    );
-  }
-
-  // Check REGISTRATION approval status from delegates data (prerequisite for payment)
-  const teamMembers = delegates.participant_data;
-  const rejectedMembers = teamMembers.filter((delegate) => delegate.confirmed === "rejected");
-  const approvedMembers = teamMembers.filter((delegate) => delegate.confirmed === "confirmed");
-  const pendingMembers = teamMembers.filter((delegate) => delegate.confirmed === "pending");
-
-  // If ANY team member registration is rejected, show rejection state
-  if (rejectedMembers.length > 0) {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <div className="rounded-full bg-red-100 p-3">
-          <svg
-            className="h-8 w-8 text-red-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-red-700">Team Registration Rejected</h2>
-        <p className="text-center text-gray-600">
-          {rejectedMembers.length === 1 
-            ? "One team member's registration has been rejected" 
-            : `${rejectedMembers.length} team members' registrations have been rejected`}. 
-          Please contact the admin for more information.
-        </p>
-        <div className="mt-4 text-sm text-gray-500">
-          <p className="font-medium text-red-700 mb-2">Rejected Members:</p>
-          <ul className="space-y-1">
-            {rejectedMembers.map((delegate, index) => (
-              <li key={index} className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-red-500"></span>
-                <span className="text-red-600">{delegate.mun_delegate_name}</span>
-                <span className="text-xs text-gray-400">
-                  ({delegate.participant_type} • {delegate.confirmed})
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    );
-  }
-
-  // If ANY team member registration is still pending, show pending state
-  if (pendingMembers.length > 0) {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <div className="rounded-full bg-blue-100 p-3">
-          <svg
-            className="h-8 w-8 text-blue-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-blue-700">Team Registration Pending</h2>
-        <p className="text-center text-gray-600">
-          {pendingMembers.length === 1 
-            ? "One team member's registration is still" 
-            : `${pendingMembers.length} team members' registrations are still`} pending approval. 
-          Please wait for admin approval of all team members before proceeding with payment.
-        </p>
-        <div className="mt-4 text-sm text-gray-500">
-          <p className="font-medium mb-2">Registration Status ({approvedMembers.length}/{teamMembers.length} approved):</p>
-          
-          {/* Approved Members */}
-          {approvedMembers.length > 0 && (
-            <div className="mb-3">
-              <p className="text-xs font-medium text-green-700 mb-1">✓ Approved Members:</p>
-              <ul className="space-y-1 ml-2">
-                {approvedMembers.map((delegate, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-                    <span className="text-green-600">{delegate.mun_delegate_name}</span>
-                    <span className="text-xs text-gray-400">
-                      ({delegate.participant_type} • {delegate.confirmed})
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Pending Members */}
-          <div className="mb-3">
-            <p className="text-xs font-medium text-yellow-700 mb-1">⏳ Pending Members:</p>
-            <ul className="space-y-1 ml-2">
-              {pendingMembers.map((delegate, index) => (
-                <li key={index} className="flex items-center gap-2">
-                  <span className="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
-                  <span className="text-yellow-600">{delegate.mun_delegate_name}</span>
-                  <span className="text-xs text-gray-400">
-                    ({delegate.participant_type} • {delegate.confirmed})
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Rejected Members (if any) */}
-          {rejectedMembers.length > 0 && (
-            <div>
-              <p className="text-xs font-medium text-red-700 mb-1">✗ Rejected Members:</p>
-              <ul className="space-y-1 ml-2">
-                {rejectedMembers.map((delegate, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <span className="inline-block h-2 w-2 rounded-full bg-red-500"></span>
-                    <span className="text-red-600">{delegate.mun_delegate_name}</span>
-                    <span className="text-xs text-gray-400">
-                      ({delegate.participant_type} • {delegate.confirmed})
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+      <div className="flex flex-col gap-2">
+        <h1>
+          <b>No registration found.</b> Register first to proceed with payment.
+        </h1>
       </div>
     );
   }
 
   // All team members are approved for registration, now check PAYMENT status
   if (payment) {
-    // Check if all team members have paid status
-    const allPaid = payment.team_members?.every(member => member.payment_status === "paid");
-    const anyPending = payment.team_members?.some(member => member.payment_status === "pending");
-    const anyRejected = payment.team_members?.some(member => member.payment_status === "failed");
+    const allPaid = payment.team_members?.every((member) => member.payment_status === "paid");
+    const anyPending = payment.team_members?.some(
+      (member) => member.package && member.payment_status === "pending",
+    );
+    const anyRejected = payment.team_members?.some((member) => member.payment_status === "failed");
 
     if (allPaid) {
       return (
@@ -443,35 +320,15 @@ const PaymentWithApprovalCheck = ({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-green-700">Payment Approved!</h2>
-          <p className="text-center text-gray-600">
+          <h2 className="text-xl font-bold">Payment Approved!</h2>
+          <p className="text-muted-foreground text-center">
             Your team&apos;s payment has been approved. You&apos;re all set for the event!
           </p>
-          <div className="mt-4 rounded-lg p-4 text-sm">
-            {/* Team Members Payment Status */}
-            <div className="mt-4">
-              <p className="font-medium text-green-700 mb-2">✓ All Team Members Approved:</p>
-              <ul className="space-y-1 ml-2">
-                {payment.team_members?.map((member, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-                    <span className="text-green-600">{member.mun_delegate_name}</span>
-                    <span className="text-xs text-gray-400">
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
         </div>
       );
     }
 
     if (anyPending || anyRejected) {
-      const paidMembers = payment.team_members?.filter(member => member.payment_status === "paid") || [];
-      const pendingMembers = payment.team_members?.filter(member => member.payment_status === "pending") || [];
-      const rejectedMembers = payment.team_members?.filter(member => member.payment_status === "failed") || [];
-
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
           <div className="rounded-full bg-blue-100 p-3">
@@ -489,71 +346,11 @@ const PaymentWithApprovalCheck = ({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-blue-700">Team Payment Status Mixed</h2>
-          <p className="text-center text-gray-600">
-            Your team&apos;s payment has mixed statuses. Please check individual member statuses below.
+          <h2 className="text-xl font-bold">Team Payment Status Mixed</h2>
+          <p className="text-muted-foreground text-center">
+            Your team&apos;s payment has mixed statuses. Please check individual member statuses in
+            the table above.
           </p>
-          
-          <div className="mt-4 rounded-lg p-4 text-sm w-full max-w-md">
-            {/* Payment Status Breakdown */}
-            <div className="space-y-3">
-              <p className="font-medium mb-2">
-                Payment Status ({paidMembers.length}/{payment.team_members?.length || 0} approved):
-              </p>
-              
-              {/* Approved Members */}
-              {paidMembers.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-green-700 mb-1">✓ Approved Members:</p>
-                  <ul className="space-y-1 ml-2">
-                    {paidMembers.map((member, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-                        <span className="text-green-600">{member.mun_delegate_name}</span>
-                        <span className="text-xs text-gray-400">
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Pending Members */}
-              {pendingMembers.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-yellow-700 mb-1">⏳ Pending Members:</p>
-                  <ul className="space-y-1 ml-2">
-                    {pendingMembers.map((member, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <span className="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
-                        <span className="text-yellow-600">{member.mun_delegate_name}</span>
-                        <span className="text-xs text-gray-400">
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Rejected Members */}
-              {rejectedMembers.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-red-700 mb-1">✗ Rejected Members:</p>
-                  <ul className="space-y-1 ml-2">
-                    {rejectedMembers.map((member, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <span className="inline-block h-2 w-2 rounded-full bg-red-500"></span>
-                        <span className="text-red-600">{member.mun_delegate_name}</span>
-                        <span className="text-xs text-gray-400">
-                          please contact admin for more information
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       );
     }
@@ -636,21 +433,6 @@ const PaymentDetailsStep = () => {
       number: "1234567890",
       name: "Arthur",
     },
-    {
-      bank: "Mandiri",
-      number: "0987654321",
-      name: "Vale",
-    },
-    {
-      bank: "Mandiri",
-      number: "0987654321",
-      name: "Vale",
-    },
-    {
-      bank: "Mandiri",
-      number: "0987654321",
-      name: "Vale",
-    },
   ];
 
   const handlePaymentProofUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -725,7 +507,7 @@ const PaymentDetailsStep = () => {
         <div className="space-y-4">
           <div>
             <Label htmlFor="payment-proof">Upload Payment Proof</Label>
-            <p className="text-sm text-gray-600">
+            <p className="text-muted-foreground text-sm">
               Please upload a screenshot or photo of your payment receipt
             </p>
           </div>
@@ -737,13 +519,82 @@ const PaymentDetailsStep = () => {
               onChange={handlePaymentProofUpload}
             />
             {paymentProof && (
-              <p className="text-sm text-gray-600">Selected file: {paymentProof.name}</p>
+              <p className="text-muted-foreground text-sm">Selected file: {paymentProof.name}</p>
             )}
           </div>
         </div>
         {!paymentProof && <p className="text-sm text-red-500">Please upload payment proof</p>}
       </div>
     </div>
+  );
+};
+
+const ParticipantDataTable = ({
+  participants,
+  loading,
+}: {
+  participants: Delegate[];
+  loading: boolean;
+}) => {
+  if (loading) {
+    return <p className="animate-pulse">Loading...</p>;
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-background border-b *:text-white">
+          <TableHead className="w-full first:rounded-tl-lg">Name</TableHead>
+          <TableHead className="w-auto text-right whitespace-nowrap last:rounded-tr-lg">
+            Payment Status
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody className="bg-blue-50">
+        {participants.length !== 0 ? (
+          participants.map((participant, index: number) => (
+            <TableRow key={participant.mun_delegate_name} className="border-b border-gray-100">
+              <TableCell
+                className={cn(
+                  "w-full py-3 font-medium text-gray-900",
+                  index === participants.length - 1 && "first:rounded-bl-lg",
+                )}
+              >
+                {participant.mun_delegate_name}
+              </TableCell>
+              <TableCell className="w-auto py-3 text-right whitespace-nowrap">
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-1 text-xs font-medium",
+                    participant.payment_status === "paid"
+                      ? "bg-green-100 text-green-800"
+                      : participant.payment_status === "rejected"
+                        ? "bg-red-100 text-red-800"
+                        : participant.payment_status === "pending"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-yellow-100 text-yellow-800",
+                  )}
+                >
+                  {participant.payment_status === "paid"
+                    ? "Confirmed"
+                    : participant.payment_status === "rejected"
+                      ? "Rejected"
+                      : participant.payment_status === "pending"
+                        ? "Waiting for Admin Approval"
+                        : "Pending"}
+                </span>
+              </TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow className="border-b bg-red-50">
+            <TableCell colSpan={2} className="text-primary py-6 text-center font-medium">
+              No registration found. Please register first and await approval.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   );
 };
 

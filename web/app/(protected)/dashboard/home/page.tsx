@@ -7,7 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import InformationCenter from "@/modules/dashboard/home/dashboard-status";
 import ParticipantData from "@/modules/dashboard/home/participant-data";
 import ParticipantStatus from "@/modules/dashboard/home/participant-status";
-import Playground from "@/modules/dashboard/playground";
 import { Suspense } from "react";
 
 const DashboardHome = () => {
@@ -23,11 +22,9 @@ const DashboardHome = () => {
         <InformationCenter />
       </Suspense>
 
-      <Suspense fallback={<Skeleton className="h-64" />}>
+      <Suspense fallback={<Skeleton className="h-24" />}>
         <ParticipantData />
       </Suspense>
-
-      <Playground />
     </DashboardPage>
   );
 };
