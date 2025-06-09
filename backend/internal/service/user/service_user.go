@@ -130,7 +130,7 @@ func (s *userService) RequestPasswordReset(email string) error {
 	// generate the resetLink
 	var resetLink string
 	if os.Getenv("ENVIRONMENT") == "production" {
-		resetLink = fmt.Sprintf("https://%s/forgot-password/%s", os.Getenv("FRONTEND_URL"), resetToken)
+		resetLink = fmt.Sprintf("https://www.joinmun.id/forgot-password/%s", resetToken)
 	} else {
 		resetLink = fmt.Sprintf("http://localhost:3000/forgot-password/%s", resetToken)
 	}
