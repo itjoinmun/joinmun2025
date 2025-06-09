@@ -6,7 +6,7 @@ import {
   TimeWave,
 } from "@/utils/types/admin";
 
-const API_BASE_URL = "http://localhost:8080/api/v1/admin";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/admin`;
 
 // Participant actions
 export const approveParticipantRegistration = async (participantEmail: string) => {
