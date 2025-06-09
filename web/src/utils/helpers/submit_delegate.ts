@@ -150,9 +150,9 @@ export const submitDelegateRegistration = async ({
     let apiUrl: string;
     // Your backend URL
     if (slug === "observer" || slug === "advisor") {
-      apiUrl = "http://localhost:8080/api/v1/dashboard/advisor-or-observer";
+      apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/dashboard/advisor-or-observer`;
     } else {
-      apiUrl = "http://localhost:8080/api/v1/dashboard/delegates";
+      apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/dashboard/delegates`;
     }
 
     const response = await fetch(apiUrl, {
