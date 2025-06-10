@@ -215,13 +215,13 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 		argIndex += 2
 	}
 
-	teamQuery += fmt.Sprintf(`
+	teamQuery += (`
 			GROUP BY p.mun_team_id, t.mun_team_lead  -- Removed p.mun_delegate_email
 		)
 		SELECT mun_team_id, mun_team_lead
 		FROM team_info
 		ORDER BY earliest_payment DESC
-		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
+		`)
 
 	args = append(args, limit, offset)
 
@@ -351,14 +351,14 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 		)
 	`
 
-	teamQuery += fmt.Sprintf(`
+	teamQuery += (`
 		SELECT mun_team_id, group_lead, 
 			   SUM(delegate_count) as delegate_count,
 			   MIN(earliest_registration) as earliest_registration
 		FROM team_groups
 		GROUP BY mun_team_id, group_lead
 		ORDER BY earliest_registration ASC
-		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
+		`)
 
 	args = append(args, limit, offset)
 
@@ -496,14 +496,14 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time, limit
 		)
 	`
 
-	teamQuery += fmt.Sprintf(`
+	teamQuery += (`
 		SELECT mun_team_id, group_lead, 
 			   SUM(paper_count) as paper_count,
 			   MIN(earliest_submission) as earliest_submission
 		FROM team_groups
 		GROUP BY mun_team_id, group_lead
 		ORDER BY earliest_submission DESC
-		LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
+		`)
 
 	args = append(args, limit, offset)
 
