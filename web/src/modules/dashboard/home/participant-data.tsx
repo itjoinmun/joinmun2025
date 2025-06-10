@@ -16,17 +16,20 @@ import { cn } from "@/utils/helpers/cn";
 import { Delegate, getDelegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
 
 const ParticipantData = async () => {
+  const showCouncilAndCountry = process.env.NEXT_PUBLIC_CC_REVEAL === "true";
   const delegate = await getDelegate();
 
   if (delegate?.participant_type === "observer") return <></>;
 
   const delegates = await getDelegates();
-  const showCouncilAndCountry = process.env.NEXT_PUBLIC_CC_REVEAL === "true";
 
   let participantData: Delegate[] | undefined;
+
   if (delegates) {
     participantData = delegates.participant_data;
   }
+
+  if (delegate?.participant_type === "faculty_advisor" && !participantData) return <></>;
 
   return (
     <DashboardModule>

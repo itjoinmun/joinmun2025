@@ -210,11 +210,13 @@ const DashboardStatus = async () => {
               description={regInfo.description}
             />
             <StatusCard cardHeader="Information Center" description={infoInfo.description} />
-            <StatusCard
-              cardHeader="Delegate Code"
-              cardDescription="Input code from your delegates"
-              description={codeInfo.description}
-            />
+            {delegate?.payment_status === "paid" && (
+              <StatusCard
+                cardHeader="Delegate Code"
+                cardDescription="Input code from your delegates"
+                description={codeInfo.description}
+              />
+            )}
           </>
         )}
 

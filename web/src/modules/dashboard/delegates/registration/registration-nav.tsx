@@ -4,6 +4,7 @@ import { useFormStatus } from "@/utils/hooks/use-form-status";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import path from "path";
 
 const RegistrationNav = ({ onSubmit }: { onSubmit?: () => void }) => {
   const { submitting } = useFormStatus();
@@ -20,7 +21,7 @@ const RegistrationNav = ({ onSubmit }: { onSubmit?: () => void }) => {
   const isFirstStep = currentStep <= 1;
   const isLastStep = currentStep >= TOTAL_STEPS;
 
-  const isObserver = pathSegments.includes("observer");
+  const isCompanion = pathSegments.includes("observer") || pathSegments.includes("advisor");
 
   return (
     <>
@@ -37,7 +38,7 @@ const RegistrationNav = ({ onSubmit }: { onSubmit?: () => void }) => {
           </Button>
         ) : (
           <Link
-            href={`${isObserver ? currentStep - 2 : currentStep - 1}`}
+            href={`${isCompanion ? currentStep - 2 : currentStep - 1}`}
             scroll={false}
             className="md:w-auto"
           >
