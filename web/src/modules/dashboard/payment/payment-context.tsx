@@ -5,6 +5,7 @@ export interface PackageSelection {
   participantType: "single_delegate" | "team_delegation" | "observer" | "advisor";
   accommodationType: "with_accommodation" | "non_accommodation";
   price?: number;
+  teamPackage?: "packageA" | "packageB" | "packageC" | "packageD";
 }
 
 export const PaymentContext = createContext<{

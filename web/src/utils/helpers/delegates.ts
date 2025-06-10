@@ -50,7 +50,7 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
           "Deluxe room for 2 nights",
           "Including breakfast",
           "Meals and coffe break",
-          "Meeting room",
+        "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
           "Access to networking night",

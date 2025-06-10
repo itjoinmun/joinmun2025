@@ -30,6 +30,7 @@ import { useContext, useEffect, useState } from "react";
 import PaymentPackageCard from "./package-card";
 import { PackageSelection, PaymentContext } from "./payment-context";
 import PaymentNav from "./payment-nav";
+import { getCurrentPaymentPhase } from "@/utils/helpers/registration-wave";
 
 const useDelegatesApprovalStatus = () => {
   const [delegates, setDelegates] = useState<{
@@ -522,14 +523,31 @@ const PaymentWithApprovalCheck = ({
 // Step 1: Package Selection
 const PackageSelectionStep = () => {
   const { packageSelection, setPackageSelection } = useContext(PaymentContext);
+  const { delegates } = useDelegatesApprovalStatus();
+
+  // Get number of delegates for team pricing
+  const numberOfDelegates = delegates?.participant_data?.length || 0;
+
+  // Determine which package to use based on number of delegates
+  const getTeamPackage = () => {
+    if (numberOfDelegates <= 5) return "packageA";
+    if (numberOfDelegates <= 8) return "packageB";
+    if (numberOfDelegates <= 12) return "packageC";
+    return "packageD";
+  };
+
+  // Get current wave and map it to package type
+  const currentWave = getCurrentPaymentPhase();
+  const type: "EarlyBird" | "Regular" | "Late" =
+    currentWave === "Early Bird"
+      ? "EarlyBird"
+      : currentWave === "Regular"
+        ? "Regular"
+        : currentWave === "Late"
+          ? "Late"
+          : "EarlyBird";
 
   // Only allow valid values
-  const type: "EarlyBird" | "Regular" | "Late" =
-    packageSelection?.type === "EarlyBird" ||
-    packageSelection?.type === "Regular" ||
-    packageSelection?.type === "Late"
-      ? packageSelection.type
-      : "EarlyBird";
   const participantType: "single_delegate" | "team_delegation" | "observer" | "advisor" =
     packageSelection?.participantType === "single_delegate" ||
     packageSelection?.participantType === "team_delegation" ||
@@ -551,16 +569,17 @@ const PackageSelectionStep = () => {
       participantType,
       accommodationType: accomType === "accommodation" ? "with_accommodation" : "non_accommodation",
       price: Number(price.replace(/[^0-9]/g, "")),
+      teamPackage: participantType === "team_delegation" ? getTeamPackage() : undefined,
     });
   };
 
   return (
     <div className="flex justify-center">
       <PaymentPackageCard
-        type={type}
         participantType={participantType}
         onSelect={handleSelect}
         selectedType={selectedType}
+        teamPackage={participantType === "team_delegation" ? getTeamPackage() : undefined}
       />
     </div>
   );
@@ -570,6 +589,18 @@ const PackageSelectionStep = () => {
 const PaymentDetailsStep = () => {
   const { packageSelection } = useContext(PaymentContext);
   const [paymentProof, setPaymentProof] = useState<File>();
+  const { delegates } = useDelegatesApprovalStatus();
+
+  // Get number of delegates for team pricing
+  const numberOfDelegates = delegates?.participant_data?.length || 0;
+
+  // Determine which package to use based on number of delegates
+  const getTeamPackage = () => {
+    if (numberOfDelegates <= 5) return "packageA";
+    if (numberOfDelegates <= 8) return "packageB";
+    if (numberOfDelegates <= 12) return "packageC";
+    return "packageD";
+  };
 
   const bankAccounts = [
     {
@@ -603,7 +634,6 @@ const PaymentDetailsStep = () => {
       <div className="w-full space-y-3 lg:w-fit lg:min-w-xs">
         <h3>Chosen Package</h3>
         <PaymentPackageCard
-          type={packageSelection?.type || "EarlyBird"}
           participantType={packageSelection?.participantType || "single_delegate"}
           onSelect={() => {}}
           selectedType={
@@ -612,6 +642,9 @@ const PaymentDetailsStep = () => {
               : packageSelection?.accommodationType === "non_accommodation"
                 ? "nonAccommodation"
                 : undefined
+          }
+          teamPackage={
+            packageSelection?.participantType === "team_delegation" ? getTeamPackage() : undefined
           }
         />
       </div>
