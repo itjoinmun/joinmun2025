@@ -195,13 +195,13 @@ func (r *paymentRepo) MakeInitialPaymentsForTeam(tx *sqlx.Tx, delegateEmails []s
 
 	args := make([]interface{}, 0, len(delegateEmails)*7)
 	placeholders := make([]string, 0, len(delegateEmails))
-
+	now := time.Now()
 	for i, email := range delegateEmails {
 		placeholder := fmt.Sprintf("($%d, $%d, $%d, $%d, $%d, $%d, $%d)",
 			i*7+1, i*7+2, i*7+3, i*7+4, i*7+5, i*7+6, i*7+7)
 		placeholders = append(placeholders, placeholder)
 
-		args = append(args, email, teamID, "", "", "pending", time.Time{}, 0)
+		args = append(args, email, teamID, "", "", "pending", now, 0)
 	}
 
 	query += strings.Join(placeholders, ", ")
