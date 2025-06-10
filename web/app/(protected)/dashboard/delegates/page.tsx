@@ -31,7 +31,7 @@ const DelegatesPage = () => {
           Welcome to Registration, choose role to see more information
         </DashboardPageDescription>
       </DashboardPageHeader>
-      <Suspense fallback={<Skeleton className="h-96" />}>
+      <Suspense fallback={<Skeleton className="h-24" />}>
         <YourRole />
       </Suspense>
       <Suspense fallback={<></>}>
