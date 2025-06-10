@@ -72,7 +72,7 @@ const NAV_LINKS = [
   {
     id: "help",
     name: "Help and Support",
-    href: "/dashboard/help",
+    href: "https://www.instagram.com/direct/t/114960663222344",
     logo: <CircleHelp className={logoStyle} />,
   },
 ];
