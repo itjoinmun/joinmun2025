@@ -47,7 +47,7 @@ const Pricing = () => {
                 </h1>
                 <p className="leading-snug">{DELEGATES[active].description}</p>
 
-                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:auto-rows-fr md:grid-cols-3 md:gap-6 md:px-10">
+                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:grid-cols-2 lg:auto-rows-fr lg:grid-cols-3 lg:gap-6 lg:px-10">
                   {DELEGATES[active].package.map((option, index) => (
                     <PricingCard key={index} {...option} />
                   ))}
@@ -123,7 +123,7 @@ const PricingCard = (option: TeamPackage | Package) => {
 
   if (isTeam) {
     return (
-      <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
+      <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center lg:max-w-none">
         <h2 className="text-lg font-bold">{option.name}</h2>
         <div className="mb-2 text-sm">{option.delegateRange}</div>
         <hr className="border-gray-light my-2 w-full" />
@@ -158,7 +158,7 @@ const PricingCard = (option: TeamPackage | Package) => {
 
   // Default card for single, observer, advisor
   return (
-    <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center md:max-w-none">
+    <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center lg:max-w-none">
       <h2 className="text-lg font-bold">{option.name}</h2>
       <h1 className="relative text-4xl font-bold">
         <span className="absolute -top-1 -left-4 text-xl">$</span>

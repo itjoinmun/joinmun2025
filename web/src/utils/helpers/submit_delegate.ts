@@ -3,7 +3,7 @@ import { fileStorageDB } from "@/utils/helpers/file-storage-db";
 
 /**
  * Function to submit registration data to the backend
- * Works for both single delegates and team registrations
+ * Works for both single delegate and team registrations
  */
 export const submitDelegateRegistration = async ({
   formData,

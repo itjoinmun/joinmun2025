@@ -77,7 +77,7 @@ const Body = async () => {
                 You Haven&apos;t Been Identified as a Participant. <Bold>Register Now</Bold>!
               </h1>
               <p className="text-sm leading-normal">
-                Register as <Bold>Single Delegates</Bold>, <Bold>Double Delegates</Bold>,{" "}
+                Register as <Bold>Single Delegate</Bold>, <Bold>Double Delegates</Bold>,{" "}
                 <Bold>Delegates Team</Bold>, <Bold>Observer or Faculty Advisor</Bold>
               </p>
             </div>
