@@ -72,7 +72,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                     {team.mun_team_id ? `Team ${team.mun_team_id}` : "Individual Payment"}
                   </h3>
                   <p className="mt-1 text-sm text-gray-600">
-                    Team Lead: {team.mun_team_lead} • Total Amount: ${team.total_amount}
+                    Team Lead: {team.mun_team_lead} • Total Amount: IDR {team.total_amount.toLocaleString('en-US')}
                   </p>
                   <div className="mt-1 flex gap-4 text-xs text-gray-500">
                     <span className="text-green-600">Paid: {team.paid_count}</span>
@@ -81,7 +81,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">${team.total_amount}</div>
+                  <div className="text-2xl font-bold text-gray-900">IDR {team.total_amount.toLocaleString('en-US')}</div>
                   <div className="text-sm text-gray-500">{team.payment_count} payment(s)</div>
                 </div>
               </div>
@@ -132,7 +132,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                       >
                         <div className="space-y-1">
                           <div className="text-xl font-bold text-gray-900">
-                            ${payment.payment_amount}
+                            IDR {payment.payment_amount.toLocaleString('en-US')}
                           </div>
                           <div className="text-sm font-medium text-gray-600">{payment.package}</div>
                         </div>
@@ -144,7 +144,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                           <Button
                             size="sm"
                             variant="outline"
-                            className="flex items-center gap-2 border-blue-200 hover:bg-blue-50"
+                            className="flex items-center gap-2 border-blue-200 hover:bg-blue-50 text-white hover:text-black"
                             onClick={() => window.open(payment.payment_file, "_blank")}
                           >
                             <ExternalLink className="h-3 w-3" />
@@ -162,7 +162,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-8 border-green-200 px-3 hover:bg-green-50"
+                              className="h-8 border-green-200 px-3 hover:bg-green-50 text-white hover:text-black"
                               onClick={() =>
                                 handleAction(
                                   () => approvePayment(payment.mun_delegate_email),
@@ -181,7 +181,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-8 border-red-200 px-3 hover:bg-red-50"
+                              className="h-8 border-red-200 px-3 hover:bg-red-50 text-white hover:text-black"
                               onClick={() =>
                                 handleAction(
                                   () => rejectPayment(payment.mun_delegate_email),

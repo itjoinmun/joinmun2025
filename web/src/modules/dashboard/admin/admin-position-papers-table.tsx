@@ -144,7 +144,7 @@ const AdminPositionPapersTable = ({ papersData }: AdminPositionPapersTableProps)
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-7 w-full border-blue-200 px-2 text-xs hover:bg-blue-50"
+                          className="h-7 w-full border-blue-200 px-2 text-xs hover:bg-blue-50 text-white hover:text-black"
                           onClick={() => window.open(paper.submission_file, "_blank")}
                         >
                           <ExternalLink className="mr-1 h-3 w-3" />
