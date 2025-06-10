@@ -228,7 +228,7 @@ const LogoutButton = () => {
 
   const handleLogout = async () => {
     setPending(true);
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
       credentials: "include",
       method: "POST",
       headers: {

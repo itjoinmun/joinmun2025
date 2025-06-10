@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
+import { fileStorageDB } from "@/utils/helpers/file-storage-db"; // Added import
 
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
@@ -40,10 +41,29 @@ const DelegationTeamPage = () => {
     setSubmitError(null);
 
     try {
-      // Get team data from localStorage
-      const storedData = localStorage.getItem("teamRegistration");
+      // Check if fileStorageDB is initialized, attempt to initialize if not
+      let isInitialized = await fileStorageDB.isInitialized();
+      if (!isInitialized) {
+        try {
+          await fileStorageDB.init();
+          isInitialized = await fileStorageDB.isInitialized();
+        } catch (initError) {
+          console.error("❌ Failed to initialize file storage:", initError);
+          setSubmitError(
+            `Failed to initialize file storage: ${initError instanceof Error ? initError.message : "Unknown error"}. Please try again.`,
+          );
+          setIsSubmitting(false);
+          return;
+        }
+      }
 
-      console.log("🚀 Team submission - raw data:", storedData); // Debug log
+      if (!isInitialized) {
+        setSubmitError("File storage could not be initialized. Please refresh the page and try again.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const storedData = localStorage.getItem("teamRegistration");
 
       if (!storedData) {
         setSubmitError("No team data found. Please add team members first.");
@@ -52,14 +72,10 @@ const DelegationTeamPage = () => {
       }
 
       const teamData: DelegateRegistration[] = JSON.parse(storedData);
-      console.log("📊 Team submission - parsed data:", teamData); // Debug log
 
-      // Check if there are any team members with complete data
       const teamMembers = Object.values(teamData).filter((member) => {
         return member && member.biodata_responses && member.biodata_responses.length > 0;
       });
-
-      console.log("👥 Valid team members found:", teamMembers.length); // Debug log
 
       if (!teamMembers.length) {
         setSubmitError(
@@ -77,8 +93,6 @@ const DelegationTeamPage = () => {
       });
 
       if (success) {
-        console.log("✅ Team submission successful"); // Debug log
-        // Clear localStorage after successful submission
         localStorage.removeItem("teamRegistration");
         router.push("/dashboard/delegates");
       } else {

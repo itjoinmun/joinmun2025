@@ -161,6 +161,7 @@ const DashboardStatus = async () => {
     if (delegate.council && delegate.country) return "has_information";
     return "no_information";
   })();
+
   const regInfo = getRegistrationStatusInfo(registrationStatus);
   const codeInfo = getDelegateCodeInfo(delegateCode, payment?.mun_team_id);
   const paperInfo = getPaperSubmissionInfo(paperSubmission);
@@ -170,7 +171,8 @@ const DashboardStatus = async () => {
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {(delegate?.participant_type === "single_delegate" ||
-          delegate?.participant_type === "team_delegate") && (
+          delegate?.participant_type === "team_delegate" ||
+          !delegate) && (
           <>
             <StatusCard
               cardHeader="Registration Status"
@@ -210,11 +212,13 @@ const DashboardStatus = async () => {
               description={regInfo.description}
             />
             <StatusCard cardHeader="Information Center" description={infoInfo.description} />
-            <StatusCard
-              cardHeader="Delegate Code"
-              cardDescription="Input code from your delegates"
-              description={codeInfo.description}
-            />
+            {delegate?.payment_status === "paid" && (
+              <StatusCard
+                cardHeader="Delegate Code"
+                cardDescription="Input code from your delegates"
+                description={codeInfo.description}
+              />
+            )}
           </>
         )}
 

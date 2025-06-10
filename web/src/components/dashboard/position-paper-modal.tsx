@@ -130,7 +130,10 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
             </div>
 
             {submitError && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{submitError}</div>
+              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+                An unknown error occurred during submission. Please try again later or contact
+                support.
+              </div>
             )}
 
             <div className="space-y-2">

@@ -70,7 +70,8 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       placeholder: "Enter your email address",
       description: "This will be used as your login identifier",
       validation: z.string().email("Invalid email address").min(1, "Email is required"),
-      defaultValue: savedData[0]?.biodata_answer_text || (user?.email as string),
+      defaultValue:
+        savedData[0]?.biodata_answer_text || (slug !== "team" && (user?.email as string)),
     },
     {
       id: 2,
@@ -159,7 +160,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     } else if (!identityCardFile && identityCardFileKey) {
       values.identityCard = `FILE:${identityCardFileKey}`;
     } else {
-      console.log("ℹ️ No file selected and no previous file exists");
+      console.warn("ℹ️ No file selected and no previous file exists");
     }
     const biodataResponses = formFields.map((field) => {
       let answerValue = values[field.name];

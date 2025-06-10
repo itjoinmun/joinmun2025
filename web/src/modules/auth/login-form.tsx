@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -43,12 +42,13 @@ const LoginForm = () => {
     setPending(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/login`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, {
         method: "POST",
         body: JSON.stringify({
           email: values.email,
           password: values.password,
         }),
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -60,6 +60,7 @@ const LoginForm = () => {
       router.push("/dashboard/home");
     } catch (error) {
       console.error(error);
+      setError("An error occurred while logging in. Please try again later.");
       setPending(false);
     }
   };

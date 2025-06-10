@@ -18,7 +18,7 @@ const DashboardHome = () => {
 
       <ParticipantStatus />
 
-      <Suspense fallback={<Skeleton className="h-64" />}>
+      <Suspense fallback={<Skeleton className="h-42" />}>
         <InformationCenter />
       </Suspense>
 

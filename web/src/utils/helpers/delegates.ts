@@ -38,7 +38,7 @@ export type Delegate =
 
 export const DELEGATES: Record<DelegateOptions, Delegate> = {
   ["single"]: {
-    name: "Single Delegates",
+    name: "Single Delegate",
     type: "participant",
     description:
       "One delegate, one country. You'll be the only person representing your assigned country in the council.",
@@ -47,10 +47,13 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
         name: "Accomodation",
         price: "50",
         points: [
-          "Deluxe single room for 2 nights",
+          "Deluxe room for 2 nights",
+          "Including breakfast",
           "Meals and coffe break",
-          "Meeting room",
+        "Meeting room",
           "Transportation (Shuttle Bus)",
+          "Access to opening ceremony",
+          "Access to networking night",
           "Many more",
         ],
       },
@@ -61,6 +64,8 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
           "Meals and coffe break",
           "Meeting room",
           "Transportation (Shuttle Bus)",
+          "Access to opening ceremony",
+          "Access to networking night",
           "Many more",
         ],
       },
@@ -69,11 +74,12 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
   ["team"]: {
     name: "Delegation Team",
     type: "participant",
-    description: "Two or more delegates, one country.",
+    description:
+      "Two or more delegates for more affordable rates. Each delegate can select their own country and councils independently.",
     package: [
       {
         name: "Package A",
-        delegateRange: "For 1-3 Delegates",
+        delegateRange: "For 2-5 Delegates",
         nonAccommodation: {
           price: "50",
           label: "Non-Accommodation",
@@ -81,18 +87,20 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
         accommodation: {
           price: "50",
           label: "Accommodation",
-          description: "Deluxe single room for 2 nights",
+          description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
           "Meals and coffe break",
           "Meeting room",
           "Transportation (Shuttle Bus)",
+          "Access to opening ceremony",
+          "Access to networking night",
           "Many more",
         ],
       },
       {
         name: "Package B",
-        delegateRange: "For 4-7 Delegates",
+        delegateRange: "For 6-8 Delegates",
         nonAccommodation: {
           price: "90",
           label: "Non-Accommodation",
@@ -100,18 +108,19 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
         accommodation: {
           price: "90",
           label: "Accommodation",
-          description: "Deluxe single room for 2 nights",
+          description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
           "Meals and coffe break",
           "Meeting room",
           "Transportation (Shuttle Bus)",
+          "Access to opening ceremony and networking night",
           "Many more",
         ],
       },
       {
         name: "Package C",
-        delegateRange: "For 8-12 Delegates",
+        delegateRange: "For 9-12 Delegates",
         nonAccommodation: {
           price: "90",
           label: "Non-Accommodation",
@@ -119,12 +128,14 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
         accommodation: {
           price: "90",
           label: "Accommodation",
-          description: "Deluxe single room for 2 nights",
+          description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
           "Meals and coffe break",
           "Meeting room",
           "Transportation (Shuttle Bus)",
+          "Access to opening ceremony",
+          "Access to networking night",
           "Many more",
         ],
       },
@@ -138,12 +149,14 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
         accommodation: {
           price: "90",
           label: "Accommodation",
-          description: "Deluxe single room for 2 nights",
+          description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
           "Meals and coffe break",
           "Meeting room",
           "Transportation (Shuttle Bus)",
+          "Access to opening ceremony",
+          "Access to networking night",
           "Many more",
         ],
       },
@@ -153,28 +166,23 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
     name: "Observer",
     type: "companion",
     description:
-      "One delegate, no country. You will be an observer in the council, without a specific country assignment.",
+      "One participant without a country assignment. You will observe the council and have access to participate in multiple selected councils.",
     package: [
       {
         name: "Accomodation",
         price: "50",
         points: [
-          "Deluxe single room for 2 nights",
+          "Deluxe room for 2 nights",
+          "Including breakfast",
           "Meals and coffe break",
           "Meeting room",
-          "Transportation (Shuttle Bus)",
           "Many more",
         ],
       },
       {
         name: "Non-Accommodation",
         price: "50",
-        points: [
-          "Meals and coffe break",
-          "Meeting room",
-          "Transportation (Shuttle Bus)",
-          "Many more",
-        ],
+        points: ["Meals and coffe break", "Meeting room", "Many more"],
       },
     ],
   },
@@ -182,15 +190,14 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
     name: "Faculty Advisor",
     type: "companion",
     description:
-      "One advisor, no country. You will be an advisor in the council, without a specific country assignment.",
+      "You will accompany and support your delegation team throughout the event, providing guidance and assistance as needed.",
     package: [
       {
         name: "Accomodation",
         price: "50",
         points: [
-          "Deluxe single room for 2 nights",
-          "Meals and coffe break",
-          "Meeting room",
+          "Deluxe room for 2 nights",
+          "Including breakfast",
           "Transportation (Shuttle Bus)",
           "Many more",
         ],
@@ -198,12 +205,7 @@ export const DELEGATES: Record<DelegateOptions, Delegate> = {
       {
         name: "Non-Accommodation",
         price: "50",
-        points: [
-          "Meals and coffe break",
-          "Meeting room",
-          "Transportation (Shuttle Bus)",
-          "Many more",
-        ],
+        points: ["Transportation (Shuttle Bus)", "Many more"],
       },
     ],
   },

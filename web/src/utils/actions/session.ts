@@ -14,6 +14,9 @@ const getSession = async (): Promise<Session | null> => {
         "Content-Type": "application/json",
         Cookie: `access_token=${access}`,
       },
+      next: {
+        revalidate: 30,
+      },
     });
 
     const data = await res.json();

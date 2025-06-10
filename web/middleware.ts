@@ -17,7 +17,6 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
   const isAdminRoute = ADMIN_ROUTES.some((route) => pathname.startsWith(route));
 
-  // Check admin access first
   if (isAdminRoute) {
     if (!access && !refresh) {
       url.pathname = "/login";
@@ -51,22 +50,30 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  let hasValidSession = Boolean(access || refresh);
+
   if (!access && refresh) {
     try {
       const response = await refreshTokenMiddleware(request);
       if (response) {
+        hasValidSession = true;
+
+        if (isAuthRoute || isGuestRoute) {
+          url.pathname = "/dashboard/home";
+          return NextResponse.redirect(url);
+        }
+
         return response;
       }
     } catch (error) {
       console.error("Failed to refresh token in middleware:", error);
+      hasValidSession = false;
       if (isProtectedRoute) {
         url.pathname = "/login";
         return NextResponse.redirect(url);
       }
     }
   }
-
-  const hasValidSession = access || refresh;
 
   if (hasValidSession) {
     if (isAuthRoute || isGuestRoute) {

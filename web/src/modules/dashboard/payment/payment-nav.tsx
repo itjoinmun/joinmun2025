@@ -82,7 +82,7 @@ const PaymentNav = ({
       </div>
       {submitError && (
         <div className="fixed inset-x-0 bottom-20 z-20 mx-4 rounded bg-red-100 p-3 text-red-700 md:absolute md:right-8 md:bottom-24 md:left-auto md:mx-0">
-          {submitError}
+          An unknown error occurred during submission. Please try again later or contact
         </div>
       )}
       <div className="h-8 w-full md:hidden" />

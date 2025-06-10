@@ -18,6 +18,7 @@ import {
 import { cn } from "@/utils/helpers/cn";
 import {
   Delegate,
+  getDelegate,
   getDelegates,
   getPayment,
   Payment,
@@ -29,6 +30,7 @@ import { useContext, useEffect, useState } from "react";
 import PaymentPackageCard from "./package-card";
 import { PackageSelection, PaymentContext } from "./payment-context";
 import PaymentNav from "./payment-nav";
+import { getCurrentPaymentPhase } from "@/utils/helpers/registration-wave";
 
 const useDelegatesApprovalStatus = () => {
   const [delegates, setDelegates] = useState<{
@@ -42,6 +44,20 @@ const useDelegatesApprovalStatus = () => {
     const fetchDelegates = async () => {
       try {
         const data = await getDelegates();
+        if (!data || !data.participant_data) {
+          try{
+            const observerOrAdvisorData = await getDelegate();
+            setDelegates({
+              participant_data: observerOrAdvisorData ? [observerOrAdvisorData] : [],
+              team_id: "",
+            });
+          } catch (error) {
+            setError(error instanceof Error ? error.message : "Failed to fetch delegates");
+          } finally {
+            setLoading(false);
+          }
+          return;
+        }
         setDelegates(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch delegates");
@@ -88,7 +104,6 @@ const PaymentPage = () => {
   const delegateFromHook = useDelegatesApprovalStatus();
   const paymentFromHook = usePaymentStatus();
   const { user } = useSession();
-  console.log("User from session:", user);
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS && packageSelection) {
       setCurrentStep(currentStep + 1);
@@ -391,8 +406,8 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold">Waiting for Registration Approval</h2>
         <p className="text-muted-foreground text-center">
-          Your team&apos;s registration is still being reviewed. Payment will be available once all team
-          members are approved.
+          Your team&apos;s registration is still being reviewed. Payment will be available once all
+          team members are approved.
         </p>
       </div>
     );
@@ -427,15 +442,12 @@ const PaymentWithApprovalCheck = ({
   // Current user has submitted payment, show payment status
   if (payment && payment.team_members && payment.team_members.length > 0) {
     const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
-    console.log("ALL PAID", allPaid);
     const anyPending = payment.team_members.some(
       (member) => !member.package || member.payment_status === "pending",
     );
-    console.log("ANY PENDING", anyPending);
     const anyPaymentRejected = payment.team_members.some(
       (member) => member.payment_status === "failed",
     );
-    console.log("ANY PAYMENT REJECTED", anyPaymentRejected);
     if (allPaid) {
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
@@ -511,14 +523,31 @@ const PaymentWithApprovalCheck = ({
 // Step 1: Package Selection
 const PackageSelectionStep = () => {
   const { packageSelection, setPackageSelection } = useContext(PaymentContext);
+  const { delegates } = useDelegatesApprovalStatus();
+
+  // Get number of delegates for team pricing
+  const numberOfDelegates = delegates?.participant_data?.length || 0;
+
+  // Determine which package to use based on number of delegates
+  const getTeamPackage = () => {
+    if (numberOfDelegates <= 5) return "packageA";
+    if (numberOfDelegates <= 8) return "packageB";
+    if (numberOfDelegates <= 12) return "packageC";
+    return "packageD";
+  };
+
+  // Get current wave and map it to package type
+  const currentWave = getCurrentPaymentPhase();
+  const type: "EarlyBird" | "Regular" | "Late" =
+    currentWave === "Early Bird"
+      ? "EarlyBird"
+      : currentWave === "Regular"
+        ? "Regular"
+        : currentWave === "Late"
+          ? "Late"
+          : "EarlyBird";
 
   // Only allow valid values
-  const type: "EarlyBird" | "Regular" | "Late" =
-    packageSelection?.type === "EarlyBird" ||
-    packageSelection?.type === "Regular" ||
-    packageSelection?.type === "Late"
-      ? packageSelection.type
-      : "EarlyBird";
   const participantType: "single_delegate" | "team_delegation" | "observer" | "advisor" =
     packageSelection?.participantType === "single_delegate" ||
     packageSelection?.participantType === "team_delegation" ||
@@ -540,16 +569,17 @@ const PackageSelectionStep = () => {
       participantType,
       accommodationType: accomType === "accommodation" ? "with_accommodation" : "non_accommodation",
       price: Number(price.replace(/[^0-9]/g, "")),
+      teamPackage: participantType === "team_delegation" ? getTeamPackage() : undefined,
     });
   };
 
   return (
     <div className="flex justify-center">
       <PaymentPackageCard
-        type={type}
         participantType={participantType}
         onSelect={handleSelect}
         selectedType={selectedType}
+        teamPackage={participantType === "team_delegation" ? getTeamPackage() : undefined}
       />
     </div>
   );
@@ -559,6 +589,18 @@ const PackageSelectionStep = () => {
 const PaymentDetailsStep = () => {
   const { packageSelection } = useContext(PaymentContext);
   const [paymentProof, setPaymentProof] = useState<File>();
+  const { delegates } = useDelegatesApprovalStatus();
+
+  // Get number of delegates for team pricing
+  const numberOfDelegates = delegates?.participant_data?.length || 0;
+
+  // Determine which package to use based on number of delegates
+  const getTeamPackage = () => {
+    if (numberOfDelegates <= 5) return "packageA";
+    if (numberOfDelegates <= 8) return "packageB";
+    if (numberOfDelegates <= 12) return "packageC";
+    return "packageD";
+  };
 
   const bankAccounts = [
     {
@@ -592,7 +634,6 @@ const PaymentDetailsStep = () => {
       <div className="w-full space-y-3 lg:w-fit lg:min-w-xs">
         <h3>Chosen Package</h3>
         <PaymentPackageCard
-          type={packageSelection?.type || "EarlyBird"}
           participantType={packageSelection?.participantType || "single_delegate"}
           onSelect={() => {}}
           selectedType={
@@ -601,6 +642,9 @@ const PaymentDetailsStep = () => {
               : packageSelection?.accommodationType === "non_accommodation"
                 ? "nonAccommodation"
                 : undefined
+          }
+          teamPackage={
+            packageSelection?.participantType === "team_delegation" ? getTeamPackage() : undefined
           }
         />
       </div>

@@ -3,26 +3,55 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/helpers/cn";
 import { pricePackage as basePricing } from "@/utils/helpers/price-package";
+import { getCurrentPaymentPhase } from "@/utils/helpers/registration-wave";
 
 type PackageType = "EarlyBird" | "Regular" | "Late";
 type ParticipantType = "single_delegate" | "team_delegation" | "observer" | "advisor";
 type AccommodationType = "accommodation" | "nonAccommodation";
 
+interface PackageOption {
+  delegateRange?: string;
+  nonAccommodation: {
+    label: string;
+    price: string;
+    description: string;
+  };
+  accommodation: {
+    label: string;
+    price: string;
+    description: string;
+  };
+  points: string[];
+}
+
 interface PackageCardProps {
-  type: PackageType;
   participantType: ParticipantType;
   onSelect: (type: AccommodationType, price: string) => void;
   selectedType?: AccommodationType;
+  teamPackage?: "packageA" | "packageB" | "packageC" | "packageD";
 }
 
 const PaymentPackageCard = ({
-  type,
   participantType,
   onSelect,
   selectedType,
+  teamPackage,
 }: PackageCardProps) => {
-  const option = basePricing[participantType][type];
+  // Get current wave and map it to package type
+  const currentWave = getCurrentPaymentPhase();
+  const type: PackageType =
+    currentWave === "Early Bird"
+      ? "EarlyBird"
+      : currentWave === "Regular"
+        ? "Regular"
+        : currentWave === "Late"
+          ? "Late"
+          : "EarlyBird";
+
   const isTeam = participantType === "team_delegation";
+  const option: PackageOption = isTeam
+    ? basePricing[participantType][type][teamPackage || "packageA"]
+    : basePricing[participantType][type];
 
   return (
     <article className="bg-background border-gray-light mr-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center">
@@ -34,11 +63,9 @@ const PaymentPackageCard = ({
             : participantType === "observer"
               ? "Observer"
               : "Advisor"}{" "}
-        - {type}
+        - {currentWave}
       </h2>
-      {isTeam && "delegateRange" in option && (
-        <div className="mb-2 text-sm">{option.delegateRange}</div>
-      )}
+      {isTeam && option.delegateRange && <div className="mb-2 text-sm">{option.delegateRange}</div>}
       <hr className="border-gray-light my-2 w-full" />
       <div className="grid w-full grid-cols-1 gap-4">
         <div>
