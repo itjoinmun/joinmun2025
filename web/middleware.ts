@@ -120,8 +120,11 @@ const refreshTokenMiddleware = async (request: NextRequest) => {
       throw new Error("Failed to retrieve tokens from response headers");
     }
 
+    response.cookies.delete("refresh_token");
+
     response.cookies.set({
       name: "access_token",
+      domain: accessToken.domain,
       value: accessToken.value,
       path: accessToken.path,
       maxAge: accessToken.maxAge || 3600,
@@ -132,6 +135,7 @@ const refreshTokenMiddleware = async (request: NextRequest) => {
 
     response.cookies.set({
       name: "refresh_token",
+      domain: refreshToken.domain,
       value: refreshToken.value,
       path: refreshToken.path,
       maxAge: refreshToken.maxAge || 2592000,
