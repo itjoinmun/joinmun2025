@@ -42,7 +42,7 @@ const Body = async () => {
       <div className="flex h-full flex-col gap-5 md:min-h-50 md:flex-row">
         {hasRegistered ? (
           <>
-            <div className="flex flex-col gap-3 md:max-w-1/2">
+            <div className="flex w-full flex-col gap-3 md:max-w-1/2">
               <h1 className="text-2xl leading-normal">
                 Welcome Back! <br /> <Bold>{user}</Bold>
               </h1>
@@ -72,7 +72,7 @@ const Body = async () => {
           </>
         ) : (
           <>
-            <div className="flex flex-col gap-3 md:max-w-1/2">
+            <div className="flex flex-col gap-3 w-full md:max-w-1/2">
               <h1 className="text-2xl leading-normal">
                 You Haven&apos;t Been Identified as a Participant. <Bold>Register Now</Bold>!
               </h1>
