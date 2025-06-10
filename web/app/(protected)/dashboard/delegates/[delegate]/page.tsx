@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate";
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
+import { fileStorageDB } from "@/utils/helpers/file-storage-db"; // Added import
 
 // This page is ONLY for the delegation team, which is a special case of delegates which has a different registration process.
 
@@ -40,6 +41,28 @@ const DelegationTeamPage = () => {
     setSubmitError(null);
 
     try {
+      // Check if fileStorageDB is initialized, attempt to initialize if not
+      let isInitialized = await fileStorageDB.isInitialized();
+      if (!isInitialized) {
+        try {
+          await fileStorageDB.init();
+          isInitialized = await fileStorageDB.isInitialized();
+        } catch (initError) {
+          console.error("❌ Failed to initialize file storage:", initError);
+          setSubmitError(
+            `Failed to initialize file storage: ${initError instanceof Error ? initError.message : "Unknown error"}. Please try again.`,
+          );
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      if (!isInitialized) {
+        setSubmitError("File storage could not be initialized. Please refresh the page and try again.");
+        setIsSubmitting(false);
+        return;
+      }
+
       const storedData = localStorage.getItem("teamRegistration");
 
       if (!storedData) {
@@ -117,8 +140,7 @@ const DelegationTeamPage = () => {
 
           {submitError && (
             <div className="mt-4 border-2 border-red-700 bg-red-500 p-4 font-medium text-white">
-              An unknown error occurred during submission. Please try again later or contact
-              support.
+              Error: {submitError}
             </div>
           )}
 
