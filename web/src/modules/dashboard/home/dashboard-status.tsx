@@ -193,7 +193,7 @@ const getInformationCenterStatus = (
   if (!requirementsMet) return "registration_pending";
 
   // Check if council and country are assigned
-  return delegate.council && delegate.country ? "has_information" : "no_information";
+  return delegate.council && delegate.country && process.env.NEXT_PUBLIC_GROUP_REVEAL === "true" ? "has_information" : "no_information";
 };
 
 const DashboardStatus = async () => {
@@ -210,7 +210,7 @@ const DashboardStatus = async () => {
   const regInfo = getRegistrationStatusInfo(registrationStatus);
   const codeInfo = getDelegateCodeInfo(delegateCode, payment?.mun_team_id);
   const paperInfo = getPaperSubmissionInfo(paperSubmission);
-  const infoInfo = getInformationCenterInfo(informationCenter, delegate);
+  const infoInfo = getInformationCenterInfo(informationCenter);
 
   return (
     <DashboardModule className="">
@@ -432,7 +432,6 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
 
 const getInformationCenterInfo = (
   status: InformationCenterStatus,
-  userStatus?: Delegate | null,
 ) => {
   switch (status) {
     case "not_registered":
