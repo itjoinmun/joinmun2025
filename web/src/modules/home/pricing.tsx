@@ -33,11 +33,11 @@ interface TeamDelegationPackages {
   packageD: TeamPackage;
 }
 
-interface WavePackages {
-  EarlyBird: BasePackage | TeamDelegationPackages;
-  Regular: BasePackage | TeamDelegationPackages;
-  Late: BasePackage | TeamDelegationPackages;
-}
+// interface WavePackages {
+//   EarlyBird: BasePackage | TeamDelegationPackages;
+//   Regular: BasePackage | TeamDelegationPackages;
+//   Late: BasePackage | TeamDelegationPackages;
+// }
 
 const Pricing = () => {
   const [active, setActive] = useState<DelegateOptions>("single");

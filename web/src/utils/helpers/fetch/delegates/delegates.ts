@@ -1,7 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
 import { apiSlugs } from "../../api-slug-parse";
-import { revalidateTag } from "next/cache";
 
 export interface Delegate {
   id: number;
