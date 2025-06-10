@@ -159,7 +159,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     } else if (!identityCardFile && identityCardFileKey) {
       values.identityCard = `FILE:${identityCardFileKey}`;
     } else {
-      console.log("ℹ️ No file selected and no previous file exists");
+      console.warn("ℹ️ No file selected and no previous file exists");
     }
     const biodataResponses = formFields.map((field) => {
       let answerValue = values[field.name];

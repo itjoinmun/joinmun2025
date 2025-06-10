@@ -88,7 +88,6 @@ const PaymentPage = () => {
   const delegateFromHook = useDelegatesApprovalStatus();
   const paymentFromHook = usePaymentStatus();
   const { user } = useSession();
-  console.log("User from session:", user);
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS && packageSelection) {
       setCurrentStep(currentStep + 1);
@@ -391,8 +390,8 @@ const PaymentWithApprovalCheck = ({
         </div>
         <h2 className="text-xl font-bold">Waiting for Registration Approval</h2>
         <p className="text-muted-foreground text-center">
-          Your team&apos;s registration is still being reviewed. Payment will be available once all team
-          members are approved.
+          Your team&apos;s registration is still being reviewed. Payment will be available once all
+          team members are approved.
         </p>
       </div>
     );
@@ -427,15 +426,12 @@ const PaymentWithApprovalCheck = ({
   // Current user has submitted payment, show payment status
   if (payment && payment.team_members && payment.team_members.length > 0) {
     const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
-    console.log("ALL PAID", allPaid);
     const anyPending = payment.team_members.some(
       (member) => !member.package || member.payment_status === "pending",
     );
-    console.log("ANY PENDING", anyPending);
     const anyPaymentRejected = payment.team_members.some(
       (member) => member.payment_status === "failed",
     );
-    console.log("ANY PAYMENT REJECTED", anyPaymentRejected);
     if (allPaid) {
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">

@@ -33,16 +33,12 @@ export function TeamRegistrationTable() {
       }
 
       const parsedData = JSON.parse(storedData);
-      console.log("📊 Parsed data structure:", parsedData); // Debug log
 
       const members: TeamMember[] = [];
 
-      // Process each team member from the structure
       Object.keys(parsedData).forEach((key) => {
         const index = parseInt(key);
         const member = parsedData[key];
-
-        console.log(`👤 Processing member at index ${index}:`, member); // Debug log
 
         if (member && member.biodata_responses) {
           // Find name from biodata_responses
@@ -63,7 +59,6 @@ export function TeamRegistrationTable() {
         }
       });
 
-      console.log("✅ Final team members:", members); // Debug log
       setTeamMembers(members);
     } catch (error) {
       console.error("Error loading team data:", error);

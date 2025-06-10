@@ -40,10 +40,7 @@ const DelegationTeamPage = () => {
     setSubmitError(null);
 
     try {
-      // Get team data from localStorage
       const storedData = localStorage.getItem("teamRegistration");
-
-      console.log("🚀 Team submission - raw data:", storedData); // Debug log
 
       if (!storedData) {
         setSubmitError("No team data found. Please add team members first.");
@@ -52,14 +49,10 @@ const DelegationTeamPage = () => {
       }
 
       const teamData: DelegateRegistration[] = JSON.parse(storedData);
-      console.log("📊 Team submission - parsed data:", teamData); // Debug log
 
-      // Check if there are any team members with complete data
       const teamMembers = Object.values(teamData).filter((member) => {
         return member && member.biodata_responses && member.biodata_responses.length > 0;
       });
-
-      console.log("👥 Valid team members found:", teamMembers.length); // Debug log
 
       if (!teamMembers.length) {
         setSubmitError(
@@ -77,8 +70,6 @@ const DelegationTeamPage = () => {
       });
 
       if (success) {
-        console.log("✅ Team submission successful"); // Debug log
-        // Clear localStorage after successful submission
         localStorage.removeItem("teamRegistration");
         router.push("/dashboard/delegates");
       } else {
@@ -126,7 +117,8 @@ const DelegationTeamPage = () => {
 
           {submitError && (
             <div className="mt-4 border-2 border-red-700 bg-red-500 p-4 font-medium text-white">
-              Error: {submitError}
+              An unknown error occurred during submission. Please try again later or contact
+              support.
             </div>
           )}
 

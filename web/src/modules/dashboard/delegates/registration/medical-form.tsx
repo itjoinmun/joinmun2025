@@ -33,10 +33,6 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     fileStorageDB.isInitialized().then((isInit) => {
       if (isInit) {
         setFileStorageInitialized(true);
-
-        fileStorageDB.getAllKeys().then((keys) => {
-          console.log("📂 Currently stored file keys:", keys);
-        });
       } else {
         fileStorageDB
           .init()
@@ -209,7 +205,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
         <FormContent fields={formFields} onSubmit={onSubmit} />
         {submitError && (
           <div className="bg-red-normal border-red-dark rounded-sm border-2 p-2 text-xs font-medium text-white">
-            Error: {submitError}
+            An unknown error occured during submission. Please try again later or contact support.
           </div>
         )}
       </RegistrationFormModule>
