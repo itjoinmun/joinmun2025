@@ -7,7 +7,7 @@ import {
 } from "@/components/dashboard/dashboard-module";
 import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
 import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/utils/helpers/cn";
 import {
   Delegate,
@@ -15,6 +15,9 @@ import {
   getDelegatePaper,
   getPayment,
   getDelegates,
+  Payment,
+  Delegates,
+  Paper,
 } from "@/utils/helpers/fetch/delegates/delegates";
 import Link from "next/link";
 import DelegateCodeInput from "./delegate-code-input";
@@ -42,125 +45,167 @@ type InformationCenterStatus =
   | "no_information"
   | "has_information";
 
-const DashboardStatus = async () => {
-  const delegate = await getDelegate();
-  const delegates = await getDelegates();
-  const paper = await getDelegatePaper();
-  const payment = await getPayment();
+/**
+ * Function 1: Registration Status Logic
+ * Handles only registration and verification status
+ */
+const getRegistrationStatus = (
+  delegate: Delegate,
+  delegates: Delegates,
+  payment: Payment,
+): RegistrationStatus => {
+  if (!delegate) return "not_registered";
 
-  const registrationStatus: RegistrationStatus = (() => {
-    if (!delegate) return "not_registered";
+  // Team logic
+  if (delegates?.participant_data?.length > 0) {
+    const teamMembers = delegates.participant_data;
+    const hasRejected = teamMembers.some((member) => member.confirmed === "rejected");
+    const hasPending = teamMembers.some((member) => member.confirmed === "pending");
+    const allApproved = teamMembers.every((member) => member.confirmed === "confirmed");
 
-    // Check all team members' registration status
-    if (delegates && delegates.participant_data && delegates.participant_data.length > 0) {
-      const teamMembers = delegates.participant_data;
-      const rejectedMembers = teamMembers.filter((member) => member.confirmed === "rejected");
-      const pendingMembers = teamMembers.filter((member) => member.confirmed === "pending");
-      const approvedMembers = teamMembers.filter((member) => member.confirmed === "confirmed");
+    if (hasRejected) return "not_registered";
+    if (hasPending) return "waiting_verification";
 
-      // If ANY team member is rejected, show not registered
-      if (rejectedMembers.length > 0) return "not_registered";
+    if (allApproved) {
+      if (!payment) return "verified_pending_payment";
 
-      // If ANY team member is still pending, show waiting verification
-      if (pendingMembers.length > 0) return "waiting_verification";
+      // Check team payment status
+      if (payment.team_members?.length > 0) {
+        const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
+        const anyPending = payment.team_members.some(
+          (member) => member.payment_status === "pending",
+        );
 
-      // All team members are approved
-      if (approvedMembers.length === teamMembers.length) {
-        // Now check payment status
-        if (!payment) return "verified_pending_payment";
-
-        // Check payment status for all team members
-        if (payment.team_members && payment.team_members.length > 0) {
-          const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
-          const anyPending = payment.team_members.some(
-            (member) => member.payment_status === "pending",
-          );
-
-          if (allPaid) return "payment_verified";
-          if (anyPending) return "payment_checking";
-        } else {
-          // Fallback to overall payment status
-          if (payment.payment_status === "paid") return "payment_verified";
-          if (payment.payment_status === "pending") return "payment_checking";
-        }
-
+        if (allPaid) return "payment_verified";
+        if (anyPending) return "payment_checking";
         return "verified_pending_payment";
       }
-    }
 
-    // Fallback to single delegate logic
-    if (delegate.confirmed === "pending") return "waiting_verification";
-    if (delegate.confirmed === "rejected") return "not_registered";
-    if (delegate.confirmed === "confirmed" && (!payment || payment.payment_status === "pending"))
+      // Fallback to single payment check
+      if (payment.payment_status === "paid") return "payment_verified";
+      if (payment.payment_status === "pending") return "payment_checking";
       return "verified_pending_payment";
-    if (delegate.confirmed === "confirmed" && payment?.payment_status === "pending")
-      return "payment_checking";
-    if (delegate.confirmed === "confirmed" && payment?.payment_status === "paid")
-      return "payment_verified";
+    }
+  }
+
+  // Single delegate fallback
+  if (delegate.confirmed === "pending") return "waiting_verification";
+  if (delegate.confirmed === "rejected") return "not_registered";
+  if (delegate.confirmed === "confirmed") {
+    if (!payment) return "verified_pending_payment";
+    if (payment.payment_status === "paid") return "payment_verified";
+    if (payment.payment_status === "pending") return "payment_checking";
     return "verified_pending_payment";
-  })();
+  }
 
-  const paperSubmission: PaperSubmissionStatus = (() => {
-    if (!delegate) return "not_registered";
+  return "verified_pending_payment";
+};
 
-    // Check if all team members are approved for registration
-    if (delegates && delegates.participant_data && delegates.participant_data.length > 0) {
-      const teamMembers = delegates.participant_data;
-      const allApproved = teamMembers.every((member) => member.confirmed === "confirmed");
+/**
+ * Function 2: Delegate Code Status Logic
+ * Handles delegate code availability
+ */
+const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates): DelegateCodeStatus => {
+  if (!delegate) return "not_registered";
 
-      if (!allApproved) return "registration_pending";
+  // Faculty advisor special case
+  if (delegate.participant_type === "faculty_advisor" && !delegate.pair) {
+    return "can_input";
+  }
 
-      // Check if all team members have paid
-      if (payment && payment.team_members && payment.team_members.length > 0) {
-        const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
-        if (!allPaid) return "registration_pending";
-      } else if (!payment || payment.payment_status !== "paid") {
-        return "registration_pending";
-      }
+  // Check if all team members are approved
+  if (delegates?.participant_data?.length > 0) {
+    const allApproved = delegates.participant_data.every(
+      (member) => member.confirmed === "confirmed",
+    );
+    return allApproved ? "code_available" : "registration_pending";
+  }
+
+  // Single delegate
+  return delegate.confirmed === "confirmed" ? "code_available" : "registration_pending";
+};
+
+/**
+ * Function 3: Paper Submission Status Logic
+ * Handles position paper submission status
+ */
+const getPaperSubmissionStatus = (
+  delegate: Delegate,
+  delegates: Delegates,
+  payment: Payment,
+  paper: Paper,
+): PaperSubmissionStatus => {
+  if (!delegate) return "not_registered";
+
+  // Check if registration requirements are met
+  let registrationComplete = false;
+  let paymentComplete = false;
+
+  // Team logic
+  if (delegates?.participant_data?.length > 0) {
+    const allApproved = delegates.participant_data.every(
+      (member) => member.confirmed === "confirmed",
+    );
+    registrationComplete = allApproved;
+
+    if (payment?.team_members?.length > 0) {
+      paymentComplete = payment.team_members.every((member) => member.payment_status === "paid");
     } else {
-      // Fallback to single delegate logic
-      if (delegate.confirmed !== "confirmed") return "registration_pending";
-      if (!payment || payment.payment_status !== "paid") return "registration_pending";
+      paymentComplete = payment?.payment_status === "paid";
     }
+  } else {
+    // Single delegate
+    registrationComplete = delegate.confirmed === "confirmed";
+    paymentComplete = payment?.payment_status === "paid";
+  }
 
-    if (paper?.submission_file) return "uploaded";
-    if (process.env.NEXT_PUBLIC_CC_REVEAL === "false") return "not_revealed";
-    return "can_upload";
-  })();
-
-  const delegateCode: DelegateCodeStatus = (() => {
-    if (!delegate) return "not_registered";
-    if (delegate.participant_type === "faculty_advisor" && !delegate.pair) return "can_input";
-    if (delegate.participant_type !== "single_delegate") return "code_available";
+  if (!registrationComplete || !paymentComplete) {
     return "registration_pending";
-  })();
+  }
 
-  const informationCenter: InformationCenterStatus = (() => {
-    if (!delegate) return "not_registered";
+  // Check paper status
+  if (paper?.submission_file) return "uploaded";
+  if (process.env.NEXT_PUBLIC_CC_REVEAL === "false") return "not_revealed";
+  return "can_upload";
+};
 
-    // Check if all team members are approved and paid
-    if (delegates && delegates.participant_data && delegates.participant_data.length > 0) {
-      const teamMembers = delegates.participant_data;
-      const allApproved = teamMembers.every((member) => member.confirmed === "confirmed");
+/**
+ * Function 4: Information Center Status Logic
+ * Handles council/country assignment information
+ */
+const getInformationCenterStatus = (
+  delegate: Delegate,
+  delegates: Delegates,
+  payment: Payment,
+): InformationCenterStatus => {
+  if (!delegate) return "not_registered";
 
-      if (!allApproved) return "registration_pending";
+  let requirementsMet = false;
 
-      // Check payment status
-      if (payment && payment.team_members && payment.team_members.length > 0) {
-        const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
-        if (!allPaid) return "registration_pending";
-      } else if (!payment || payment.payment_status !== "paid") {
-        return "registration_pending";
-      }
-    } else {
-      // Fallback to single delegate logic
-      if (delegate.confirmed !== "confirmed") return "registration_pending";
-      if (!payment || payment.payment_status !== "paid") return "registration_pending";
-    }
+  const allApproved = delegates.participant_data.every(
+    (member) => member.confirmed === "confirmed",
+  );
 
-    if (delegate.council && delegate.country) return "has_information";
-    return "no_information";
-  })();
+  const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
+
+  requirementsMet = allApproved && allPaid;
+
+  if (!requirementsMet) return "registration_pending";
+
+  // Check if council and country are assigned
+  return delegate.council && delegate.country ? "has_information" : "no_information";
+};
+
+const DashboardStatus = async () => {
+  const delegate = (await getDelegate()) as Delegate;
+  const delegates = (await getDelegates()) as Delegates;
+  const paper = (await getDelegatePaper()) as Paper;
+  const payment = (await getPayment()) as Payment;
+
+  const registrationStatus = getRegistrationStatus(delegate, delegates, payment);
+  const delegateCode = getDelegateCodeStatus(delegate, delegates);
+  const paperSubmission = getPaperSubmissionStatus(delegate, delegates, payment, paper);
+  const informationCenter = getInformationCenterStatus(delegate, delegates, payment);
 
   const regInfo = getRegistrationStatusInfo(registrationStatus);
   const codeInfo = getDelegateCodeInfo(delegateCode, payment?.mun_team_id);
@@ -196,9 +241,8 @@ const DashboardStatus = async () => {
               userStatus={delegate}
             />
             <StatusCard
-              cardHeader="Assignment Information"
-              cardDescription="Council and country assignment"
-              status={infoInfo.status}
+              cardHeader="Information Center"
+              cardDescription=""
               description={infoInfo.description}
             />
           </>
@@ -261,7 +305,7 @@ const StatusCard = ({
           {cardDescription}
         </DashboardModuleDescription>
       </DashboardModuleHeader>
-      <DashboardModuleContent className="mt-auto space-y-3">
+      <DashboardModuleContent className="mt-auto min-h-20 justify-center space-y-3">
         <div className="text-sm opacity-90">{description}</div>
         {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
         {paperUploaded && <ViewPaperButton />}
@@ -320,7 +364,7 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) =
       return {
         status: "Not Available",
         description: (
-          <div className="flex justify-between gap-4">
+          <div className="flex items-center justify-between gap-4">
             <p>
               You haven&apos;t registered yet. <strong>Register Now</strong>
             </p>
@@ -415,7 +459,21 @@ const getInformationCenterInfo = (
     case "has_information":
       return {
         status: "Assignment Available",
-        description: `Council: ${userStatus?.council || "TBA"} | Country: ${userStatus?.country || "TBA"}`,
+        description: (
+          <div className="flex items-center justify-between gap-2">
+            <p>Join whatsapp group:</p>
+            <Link
+              rel="noopener noreferrer"
+              target="_blank"
+              // TODO : GRUP WA
+              href="https://chat.whatsapp.com/D666666666666666666666666666666666666666"
+            >
+              <Button variant="primary" className="h-8 text-xs" size="sm">
+                Join
+              </Button>
+            </Link>
+          </div>
+        ),
       };
   }
 };
