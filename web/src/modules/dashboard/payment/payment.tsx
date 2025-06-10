@@ -18,6 +18,7 @@ import {
 import { cn } from "@/utils/helpers/cn";
 import {
   Delegate,
+  getDelegate,
   getDelegates,
   getPayment,
   Payment,
@@ -42,6 +43,20 @@ const useDelegatesApprovalStatus = () => {
     const fetchDelegates = async () => {
       try {
         const data = await getDelegates();
+        if (!data || !data.participant_data) {
+          try{
+            const observerOrAdvisorData = await getDelegate();
+            setDelegates({
+              participant_data: observerOrAdvisorData ? [observerOrAdvisorData] : [],
+              team_id: "",
+            });
+          } catch (error) {
+            setError(error instanceof Error ? error.message : "Failed to fetch delegates");
+          } finally {
+            setLoading(false);
+          }
+          return;
+        }
         setDelegates(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch delegates");
