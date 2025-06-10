@@ -60,6 +60,7 @@ const LoginForm = () => {
       router.push("/dashboard/home");
     } catch (error) {
       console.error(error);
+      setError("An error occurred while logging in. Please try again later.");
       setPending(false);
     }
   };

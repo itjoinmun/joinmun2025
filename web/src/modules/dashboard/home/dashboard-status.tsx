@@ -167,8 +167,6 @@ const DashboardStatus = async () => {
   const paperInfo = getPaperSubmissionInfo(paperSubmission);
   const infoInfo = getInformationCenterInfo(informationCenter, delegate);
 
-  console.log("Delegate Information:", delegate);
-
   return (
     <DashboardModule className="">
       <section className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
