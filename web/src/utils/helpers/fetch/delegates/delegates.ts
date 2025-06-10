@@ -42,10 +42,12 @@ export async function getDelegate(): Promise<Delegate | null> {
   return data;
 }
 
-export async function getDelegates(): Promise<{
+export interface Delegates {
   participant_data: Delegate[];
   team_id: string;
-} | null> {
+}
+
+export async function getDelegates(): Promise<Delegates | null> {
   const accessToken = (await cookies()).get("access_token")?.value;
 
   const res = await fetch(`${process.env.API_URL}/dashboard/participants`, {
@@ -68,7 +70,7 @@ export async function getDelegates(): Promise<{
   return resBody;
 }
 
-interface Paper {
+export interface Paper {
   mun_delegate_email: string;
   submission_file: string;
   submission_date: string;

@@ -118,12 +118,8 @@ const DashboardAdmin = () => {
         );
 
         // Safely handle the payments_by_team data structure
-        let paymentsArray: TeamPaymentSummary[] = [];
-        if (Array.isArray(response.payments_by_team)) {
-          paymentsArray = response.payments_by_team;
-        }
-
-        setPaymentsData(paymentsArray);
+        const paymentArray = Object.values(response.payments_by_team).flat();
+        setPaymentsData(paymentArray);
         setTotalPayments(response.total_payments);
       } catch (error) {
         console.error("Error fetching payments:", error);

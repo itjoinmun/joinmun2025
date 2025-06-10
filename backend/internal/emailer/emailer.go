@@ -143,10 +143,8 @@ func (s *EmailService) SendPasswordResetEmail(to, resetLink string) error {
 // SendBiodataApprovalEmail sends biodata approval confirmation to user
 func (s *EmailService) SendBiodataApprovalEmail(to string) error {
 	// Override default sender for this email
-	emailSender := "JOINMUN 2025 <noreply@joinmun.web.id>"
-
 	msg := mail.NewMsg()
-	if err := msg.From(emailSender); err != nil {
+	if err := msg.From(s.defaultFrom); err != nil {
 		return err
 	}
 	if err := msg.To(to); err != nil {
@@ -203,6 +201,7 @@ func (s *EmailService) SendBiodataApprovalEmail(to string) error {
 				</div>
 				<div class="next-steps">
 					<h3>Next Steps:</h3>
+					<p>If you are registered as a delegation team, make sure all of your teammates has also been confirmed</p>
 					<p>Please proceed with the payment to complete your registration. You can find payment details in your account dashboard.</p>
 				</div>
 				<div class="footer">
@@ -280,7 +279,7 @@ func (s *EmailService) SendPaymentApprovalEmail(to string) error {
 				</div>
 				<div class="confirmation">
 					<h3>What's Next?</h3>
-					<p>Please check your email regularly for updates about the event schedule, preparation materials, and other important information.</p>
+					<p>Please check the website regularly for updates about the event schedule, preparation materials, and other important information.</p>
 				</div>
 				<div class="footer">
 					<p>Best regards,<br>JOINMUN 2025 Organizing Committee</p>
