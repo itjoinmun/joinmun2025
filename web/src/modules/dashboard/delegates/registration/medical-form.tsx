@@ -13,6 +13,7 @@ import { submitDelegateRegistration } from "@/utils/helpers/submit_delegate"; //
 import { useFormStatus } from "@/utils/hooks/use-form-status";
 import usePersistedState from "@/utils/hooks/use-persisted-state";
 import { DelegateRegistration } from "@/utils/types/delegate-registration";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -23,6 +24,7 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
     [],
   );
 
+  const router = useRouter();
   const [, setFileStorageInitialized] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -172,23 +174,27 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
         [index]: newData,
       });
 
-      const { success, error } = await submitDelegateRegistration({
-        formData: {
-          ...formData,
-          [index]: newData,
-        },
-        index,
-        slug,
-        isTeam: slug === "team",
-      });
+      if (slug !== "team") {
+        const { success, error } = await submitDelegateRegistration({
+          formData: {
+            ...formData,
+            [index]: newData,
+          },
+          index,
+          slug,
+          isTeam: false,
+        });
 
-      setSubmitting(false);
+        setSubmitting(false);
 
-      if (success) {
-        setSuccessOpen(true);
-        localStorage.removeItem(`${slug}Registration`);
+        if (success) {
+          setSuccessOpen(true);
+          localStorage.removeItem(`${slug}Registration`);
+        } else {
+          setSubmitError(error || "Unknown error occurred during submission");
+        }
       } else {
-        setSubmitError(error || "Unknown error occurred during submission");
+        router.push("/dashboard/delegates/team");
       }
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Unknown error occurred");
