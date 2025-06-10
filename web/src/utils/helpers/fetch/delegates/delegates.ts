@@ -31,7 +31,6 @@ export async function getDelegate(): Promise<Delegate | null> {
     },
     next: {
       revalidate: 30,
-      tags: [`delegate-${accessToken}`],
     },
     credentials: "include",
   });
@@ -59,7 +58,6 @@ export async function getDelegates(): Promise<{
     },
     next: {
       revalidate: 30,
-      tags: [`delegates-${accessToken}`],
     },
   });
 
@@ -90,7 +88,6 @@ export async function getDelegatePaper(): Promise<Paper | null> {
     },
     next: {
       revalidate: 30,
-      tags: [`delegate-paper-${accessToken}`],
     },
   });
 
@@ -139,7 +136,6 @@ export async function getPayment(): Promise<Payment | null> {
     },
     next: {
       revalidate: 30,
-      tags: [`payment-${accessToken}`],
     },
   });
 
@@ -188,8 +184,6 @@ export async function submitPayment(
   }
 
   const result = await res.json();
-  revalidateTag(`payment-${accessToken}`);
-  revalidateTag(`delegates-${accessToken}`);
   return {
     success: true,
     message: result.message,
