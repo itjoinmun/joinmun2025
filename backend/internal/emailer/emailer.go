@@ -284,7 +284,7 @@ func (s *EmailService) SendPaymentApprovalEmail(to string) error {
 				</div>
 				<div class="footer">
 					<p>Best regards,<br>JOINMUN 2025 Organizing Committee</p>
-					<p>If you have any questions, please contact us at <a href="mailto:eventjoinmun2025@gmail.com">eventjoimun2025@gmail.com</a></p>
+					<p>If you have any questions, please contact us at <a href="mailto:eventjoinmun2025@gmail.com">eventjoinmun2025@gmail.com</a></p>
 				</div>
 			</div>
 		</body>
