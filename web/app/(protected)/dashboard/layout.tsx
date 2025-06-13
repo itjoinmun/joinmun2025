@@ -6,14 +6,24 @@ import ComingSoon from "@/modules/coming-soon";
 import DashboardNav from "@/modules/dashboard/dashboard-nav";
 import UserProfileInfo from "@/modules/dashboard/user-profile-info";
 import { isRegistrationOpen } from "@/utils/helpers/reveal";
-import { AuthProvider } from "@/utils/hooks/use-session";
+import { AuthProvider, useSession } from "@/utils/hooks/use-session";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useState } from "react";
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayoutContent = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState<boolean>(false);
+  const { user } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.role?.toLowerCase() === "admin") {
+      router.push("/admin");
+    }
+  }, [user, router]);
 
   return (
-    <AuthProvider>
+    <>
       {isRegistrationOpen ? (
         <SidebarProvider open={open} onOpenChange={setOpen}>
           <main className="relative flex h-screen w-full flex-col gap-6 md:flex-row md:gap-0 md:overflow-clip">
@@ -35,6 +45,14 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       ) : (
         <ComingSoon />
       )}
+    </>
+  );
+};
+
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <AuthProvider>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
     </AuthProvider>
   );
 };
