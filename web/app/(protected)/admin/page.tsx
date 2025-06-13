@@ -52,7 +52,7 @@ const TIME_WAVES: { value: TimeWave; label: string }[] = [
 const DashboardAdmin = () => {
   const [delegateType, setDelegateType] = useState<DelegateType>("all");
   const [timeWave, setTimeWave] = useState<TimeWave>("all");
-  const [itemsPerPage] = useState(20);
+  const [itemsPerPage] = useState(2);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"delegates" | "payments" | "papers">("delegates");
 
@@ -86,66 +86,88 @@ const DashboardAdmin = () => {
   };
 
   // Use useCallback to memoize fetch functions
-  const fetchDelegates = useCallback(
-    async (page: number = delegatesPage) => {
-      try {
-        setLoading(true);
-        const response = await getDelegatesByTeam(
-          delegateType,
-          timeWave,
-          itemsPerPage,
-          page * itemsPerPage,
-        );
-        setDelegatesData(response.delegates_by_team);
-        setTotalTeams(response.total_teams);
-      } catch (error) {
-        console.error("Error fetching delegates:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [delegateType, timeWave, itemsPerPage, delegatesPage],
-  );
+  const fetchDelegates = useCallback(async () => {
+    try {
+      setLoading(true);
+      // Fetch all data from backend (no pagination on backend)
+      const response = await getDelegatesByTeam(
+        delegateType,
+        timeWave,
+        1000, // Large limit to get all data
+        0, // No offset needed
+      );
 
-  const fetchPayments = useCallback(
-    async (page: number = paymentsPage) => {
-      try {
-        setLoading(true);
-        const response = await getPaymentsByTeam(
-          delegateType,
-          timeWave,
-          itemsPerPage,
-          page * itemsPerPage,
-        );
+      // Store all data
+      const allData = response.delegates_by_team;
+      setTotalTeams(allData.length);
 
-        // Safely handle the payments_by_team data structure
-        const paymentArray = Object.values(response.payments_by_team).flat();
-        setPaymentsData(paymentArray);
-        setTotalPayments(response.total_payments);
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [delegateType, timeWave, itemsPerPage, paymentsPage],
-  );
+      // Implement frontend pagination - slice the data
+      const startIndex = delegatesPage * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedData = allData.slice(startIndex, endIndex);
 
-  const fetchPositionPapers = useCallback(
-    async (page: number = papersPage) => {
-      try {
-        setLoading(true);
-        const response = await getPositionPapersByTeam(timeWave, itemsPerPage, page * itemsPerPage);
-        setPositionPapersData(response.papers_by_team);
-        setTotalPapers(response.total_teams);
-      } catch (error) {
-        console.error("Error fetching position papers:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [timeWave, itemsPerPage, papersPage],
-  );
+      setDelegatesData(paginatedData);
+    } catch (error) {
+      console.error("Error fetching delegates:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [delegateType, timeWave, itemsPerPage, delegatesPage]);
+
+  const fetchPayments = useCallback(async () => {
+    try {
+      setLoading(true);
+      // Fetch all data from backend (no pagination on backend)
+      const response = await getPaymentsByTeam(
+        delegateType,
+        timeWave,
+        1000, // Large limit to get all data
+        0, // No offset needed
+      );
+
+      // Safely handle the payments_by_team data structure
+      const allData = Object.values(response.payments_by_team).flat();
+      setTotalPayments(allData.length);
+
+      // Implement frontend pagination - slice the data
+      const startIndex = paymentsPage * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedData = allData.slice(startIndex, endIndex);
+
+      setPaymentsData(paginatedData);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [delegateType, timeWave, itemsPerPage, paymentsPage]);
+
+  const fetchPositionPapers = useCallback(async () => {
+    try {
+      setLoading(true);
+      // Fetch all data from backend (no pagination on backend)
+      const response = await getPositionPapersByTeam(
+        timeWave,
+        1000, // Large limit to get all data
+        0, // No offset needed
+      );
+
+      // Store all data
+      const allData = response.papers_by_team;
+      setTotalPapers(allData.length);
+
+      // Implement frontend pagination - slice the data
+      const startIndex = papersPage * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedData = allData.slice(startIndex, endIndex);
+
+      setPositionPapersData(paginatedData);
+    } catch (error) {
+      console.error("Error fetching position papers:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [timeWave, itemsPerPage, papersPage]);
 
   const handleDownloadCSV = async () => {
     try {
@@ -223,11 +245,11 @@ const DashboardAdmin = () => {
     // Fetch data for the new page
     setTimeout(() => {
       if (activeTab === "delegates") {
-        fetchDelegates(newPage);
+        fetchDelegates();
       } else if (activeTab === "payments") {
-        fetchPayments(newPage);
+        fetchPayments();
       } else if (activeTab === "papers") {
-        fetchPositionPapers(newPage);
+        fetchPositionPapers();
       }
     }, 0);
   };
