@@ -246,7 +246,7 @@ func (h *AdminHandler) GetAmalgamatedResponsesHandler(c *gin.Context) {
 		actualDelegateType = "" // Pass empty string to service to fetch all types
 	}
 
-	responses, err := h.adminService.GetAmalgamatedResponses(actualDelegateType, limit, offset)
+	responses, err := h.adminService.GetAmalgamatedResponses(actualDelegateType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve amalgamated responses", "details": err.Error()})
 		return
@@ -295,7 +295,7 @@ func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
 		return
 	}
 
-	responses, err := h.adminService.GetDelegatePaymentResponses(delegateType, timeWave, limit, offset)
+	responses, err := h.adminService.GetDelegatePaymentResponses(delegateType, timeWave)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates payment", "details": err.Error()})
 		return
@@ -345,7 +345,7 @@ func (h *AdminHandler) GetDelegatesHandler(c *gin.Context) {
 		return
 	}
 
-	teamDelegates, err := h.adminService.GetDelegatesByTeam(delegateType, timeWave, limit, offset)
+	teamDelegates, err := h.adminService.GetDelegatesByTeam(delegateType, timeWave)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve delegates", "details": err.Error()})
 		return
@@ -379,7 +379,7 @@ func (h *AdminHandler) GetDelegatePositionPaperHandler(c *gin.Context) {
 		return
 	}
 
-	teamPapers, err := h.adminService.GetPositionPapersByTeam(timeWave, limit, offset)
+	teamPapers, err := h.adminService.GetPositionPapersByTeam(timeWave)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve position papers", "details": err.Error()})
 		return

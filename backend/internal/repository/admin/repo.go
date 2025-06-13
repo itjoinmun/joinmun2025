@@ -17,12 +17,12 @@ type AdminRepo interface {
 	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error
 	UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail string) error
 	UpdatePaymentStatus(delegateEmail, status string) error
-	GetDelegateHealthResponses(delegateType string, limit, offset int) ([]dashboard.HealthResponseWithQuestion, error)
-	GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error)
-	GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]dashboard.BiodataResponseWithQuestion, error)
-	GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.TeamPaymentSummary, error)
-	GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]dashboard.TeamDelegateGroup, error)
-	GetPositionPapersByTeam(startDate, endDate *time.Time, limit, offset int) ([]position.TeamPositionPaperGroup, error)
+	GetDelegateHealthResponses(delegateType string) ([]dashboard.HealthResponseWithQuestion, error)
+	GetDelegateMUNResponses() ([]dashboard.MUNResponseWithQuestion, error)
+	GetDelegateBiodataResponses(delegateType string) ([]dashboard.BiodataResponseWithQuestion, error)
+	GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time) ([]payment.TeamPaymentSummary, error)
+	GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time) ([]dashboard.TeamDelegateGroup, error)
+	GetPositionPapersByTeam(startDate, endDate *time.Time) ([]position.TeamPositionPaperGroup, error)
 }
 
 type adminRepo struct {
@@ -133,7 +133,7 @@ func (r *adminRepo) UpdatePaymentStatus(delegateEmail, status string) error {
 	return err
 }
 
-func (r *adminRepo) GetDelegateBiodataResponses(delegateType string, limit, offset int) ([]dashboard.BiodataResponseWithQuestion, error) {
+func (r *adminRepo) GetDelegateBiodataResponses(delegateType string) ([]dashboard.BiodataResponseWithQuestion, error) {
 	var responses []dashboard.BiodataResponseWithQuestion
 	query := `
 		SELECT 
@@ -151,7 +151,7 @@ func (r *adminRepo) GetDelegateBiodataResponses(delegateType string, limit, offs
 	return responses, err
 }
 
-func (r *adminRepo) GetDelegateHealthResponses(delegateType string, limit, offset int) ([]dashboard.HealthResponseWithQuestion, error) {
+func (r *adminRepo) GetDelegateHealthResponses(delegateType string) ([]dashboard.HealthResponseWithQuestion, error) {
 	var responses []dashboard.HealthResponseWithQuestion
 	query := `
 		SELECT 
@@ -169,7 +169,7 @@ func (r *adminRepo) GetDelegateHealthResponses(delegateType string, limit, offse
 	return responses, err
 }
 
-func (r *adminRepo) GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNResponseWithQuestion, error) {
+func (r *adminRepo) GetDelegateMUNResponses() ([]dashboard.MUNResponseWithQuestion, error) {
 	var responses []dashboard.MUNResponseWithQuestion
 	query := `
 		SELECT 
@@ -187,7 +187,7 @@ func (r *adminRepo) GetDelegateMUNResponses(limit, offset int) ([]dashboard.MUNR
 }
 
 // vibe coded, haven't tested and reviewed yetx
-func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]payment.TeamPaymentSummary, error) {
+func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time) ([]payment.TeamPaymentSummary, error) {
 	var teamSummaries []payment.TeamPaymentSummary
 
 	// First, get unique teams with pagination
@@ -222,8 +222,6 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 		FROM team_info
 		ORDER BY earliest_payment DESC
 		`)
-
-	args = append(args, limit, offset)
 
 	type TeamInfo struct {
 		MUNTeamID   *string `db:"mun_team_id"`
@@ -310,7 +308,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 	return teamSummaries, nil
 }
 
-func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time, limit, offset int) ([]dashboard.TeamDelegateGroup, error) {
+func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time) ([]dashboard.TeamDelegateGroup, error) {
 	var teamGroups []dashboard.TeamDelegateGroup
 
 	// First, get unique teams with pagination
@@ -359,8 +357,6 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 		GROUP BY mun_team_id, group_lead
 		ORDER BY earliest_registration ASC
 		`)
-
-	args = append(args, limit, offset)
 
 	type TeamInfo struct {
 		MUNTeamID            *string   `db:"mun_team_id"`
@@ -455,7 +451,7 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 	return teamGroups, nil
 }
 
-func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time, limit, offset int) ([]position.TeamPositionPaperGroup, error) {
+func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time) ([]position.TeamPositionPaperGroup, error) {
 	var teamGroups []position.TeamPositionPaperGroup
 
 	// First, get unique teams with position papers
@@ -504,8 +500,6 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time, limit
 		GROUP BY mun_team_id, group_lead
 		ORDER BY earliest_submission DESC
 		`)
-
-	args = append(args, limit, offset)
 
 	type TeamInfo struct {
 		MUNTeamID          *string   `db:"mun_team_id"`
