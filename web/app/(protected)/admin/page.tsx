@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { LogoutButton } from "@/modules/dashboard/dashboard-nav";
 
 const DELEGATE_TYPES: { value: DelegateType; label: string }[] = [
   { value: "all", label: "All Types" },
@@ -237,15 +238,18 @@ const DashboardAdmin = () => {
         <DashboardModuleHeader>
           <div className="mb-2 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
             <Heading className="hidden sm:block">Admin Dashboard</Heading>
-            <Button
-              variant="warning"
-              className="flex w-fit items-center gap-2 self-end sm:self-auto"
-              onClick={handleDownloadCSV}
-              disabled={loading}
-            >
-              <Download className="h-4 w-4" />
-              {loading ? "Downloading..." : "Download All Responses as CSV"}
-            </Button>
+            <div className="flex w-fit items-center justify-between gap-2">
+              <Button
+                variant="warning"
+                className="flex w-fit items-center gap-2 self-end sm:self-auto"
+                onClick={handleDownloadCSV}
+                disabled={loading}
+              >
+                <Download className="h-4 w-4" />
+                {loading ? "Downloading..." : "Download All Responses as CSV"}
+              </Button>
+              <LogoutButton isAdmin={true} />
+            </div>
           </div>
         </DashboardModuleHeader>
 
