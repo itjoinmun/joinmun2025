@@ -86,6 +86,7 @@ async function refreshTokenAndRedirect(request: NextRequest) {
     const refresh = request.cookies.get("refresh_token")?.value;
     const originalUrl = request.nextUrl.clone(); // The URL we want to go to
 
+
     // If for some reason refresh token isn't here, go to login
     if (!refresh) {
         const loginUrl = new URL("/login", request.url);
