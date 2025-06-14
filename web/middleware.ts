@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // --- Session-based Redirects ---
-    const hasValidSession = !!refresh;
+    const hasValidSession = !!access;
 
     if (hasValidSession) {
         if (isAuthRoute || isGuestRoute) {
