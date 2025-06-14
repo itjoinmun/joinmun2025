@@ -138,7 +138,10 @@ export const getPaymentsByTeam = async (
   timeWave: TimeWave,
   limit: number = 50,
   offset: number = 0,
-): Promise<{ payments_by_team: TeamPaymentSummary[]; total_payments: number }> => {
+): Promise<{
+  payments_by_team: Record<string, any[]> | TeamPaymentSummary[];
+  total_payments: number;
+}> => {
   const params = new URLSearchParams({
     delegate_type: delegateType === "all" ? "" : delegateType,
     time: timeWave,
@@ -156,7 +159,7 @@ export const getPaymentsByTeam = async (
 
   const data = await response.json();
   return {
-    payments_by_team: data.payments_by_team || [],
+    payments_by_team: data.payments_by_team || {},
     total_payments: data.total_payments || 0,
   };
 };
