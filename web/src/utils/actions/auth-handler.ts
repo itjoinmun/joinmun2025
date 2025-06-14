@@ -1,7 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { parseTokensFromHeaders } from "../helpers/fetch/headers";
 
 const API_URL = process.env.API_URL || "http://localhost:3000/api/v1";
 
