@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // --- Session-based Redirects ---
-    const hasValidSession = !!access;
+    const hasValidSession = !!refresh;
 
     if (hasValidSession) {
         if (isAuthRoute || isGuestRoute) {
@@ -113,6 +113,7 @@ async function refreshTokenAndRedirect(request: NextRequest) {
         // Create a redirect response to the original URL
         const response = NextResponse.redirect(originalUrl);
         
+        response.cookies.delete("refresh_token");
         // Set the new cookies on the redirect response
         response.cookies.set({
             name: "access_token",
