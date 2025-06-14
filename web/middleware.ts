@@ -92,12 +92,12 @@ export async function middleware(request: NextRequest) {
 
 const refreshTokenMiddleware = async (request: NextRequest) => {
   const refresh = request.cookies.get("refresh_token")?.value;
-
+  const originalUrl = request.nextUrl.clone();
   if (!refresh) {
     throw new Error("No refresh token available");
   }
 
-  const response = NextResponse.next();
+  const response = NextResponse.redirect(originalUrl);
 
   try {
     const res = await fetch(`${process.env.API_URL}/user/refresh`, {
