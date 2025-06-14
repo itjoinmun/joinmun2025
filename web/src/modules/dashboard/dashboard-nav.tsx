@@ -19,6 +19,7 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import { clearCookies } from "@/utils/actions/auth-handler";
 import { cn } from "@/utils/helpers/cn";
 import {
   BookOpen,
@@ -237,6 +238,7 @@ const LogoutButton = () => {
     });
 
     if (!res.ok) {
+      clearCookies();
       setPending(false);
       return;
     }
