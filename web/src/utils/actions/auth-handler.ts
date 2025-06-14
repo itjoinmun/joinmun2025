@@ -103,54 +103,6 @@ const getUserProfile = async (): Promise<AuthResponseApi> => {
   };
 };
 
-const refreshToken = async (): Promise<{ refreshToken: string; accessToken: string }> => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("refresh_token")?.value;
-
-  const res = await fetch(`${API_URL}/user/refresh`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: `refresh_token=${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    cookieStore.delete("refresh_token");
-    throw new Error(errorData.message || "Failed to refresh access token");
-  }
-
-  const { accessToken, refreshToken } = parseTokensFromHeaders(res.headers);
-
-  if (!accessToken || !refreshToken) {
-    cookieStore.delete("refresh_token");
-    throw new Error("Failed to retrieve tokens from response headers");
-  }
-
-  cookieStore.set("access_token", accessToken.value, {
-    path: accessToken.path,
-    maxAge: accessToken.maxAge || 900,
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  cookieStore.set("refresh_token", refreshToken.value, {
-    path: refreshToken.path,
-    maxAge: refreshToken.maxAge || 2592000,
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  return {
-    accessToken: accessToken.value,
-    refreshToken: refreshToken.value,
-  };
-};
-
 /**
  * This function extracts access and refresh tokens from the response headers.
  * It assumes that the tokens are set in the "set-cookie" header.
@@ -174,6 +126,5 @@ export {
   forgotPassword,
   resetPassword,
   getUserProfile,
-  refreshToken,
   getTokensFromCookies,
 };
