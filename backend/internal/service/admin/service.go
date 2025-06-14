@@ -65,10 +65,10 @@ type AdminService interface {
 	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error
 	MakePairing(delegateEmail, pair string) error
 	UpdatePaymentStatus(email, status string) error
-	GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error)
-	GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.TeamPaymentSummary, error)
-	GetDelegatesByTeam(delegateType, timeWave string, limit, offset int) ([]delegateModel.TeamDelegateGroup, error)
-	GetPositionPapersByTeam(timeWave string, limit, offset int) ([]positionModel.TeamPositionPaperGroup, error)
+	GetAmalgamatedResponses(delegateType string) ([]AmalgamatedDelegateResponse, error)
+	GetDelegatePaymentResponses(delegateType, timeWave string) ([]paymentModel.TeamPaymentSummary, error)
+	GetDelegatesByTeam(delegateType, timeWave string) ([]delegateModel.TeamDelegateGroup, error)
+	GetPositionPapersByTeam(timeWave string) ([]positionModel.TeamPositionPaperGroup, error)
 }
 
 type adminService struct {
@@ -276,22 +276,22 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail, status string) error {
 	return nil
 }
 
-func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offset int) ([]AmalgamatedDelegateResponse, error) {
+func (s *adminService) GetAmalgamatedResponses(delegateType string) ([]AmalgamatedDelegateResponse, error) {
 	// Note: limit and offset are applied to each category fetch.
 	// For true pagination over amalgamated results, a more complex query or post-fetch slicing would be needed.
 	// This implementation fetches up to 'limit' from each category and then merges.
 
-	biodata, err := s.adminRepo.GetDelegateBiodataResponses(delegateType, limit, offset)
+	biodata, err := s.adminRepo.GetDelegateBiodataResponses(delegateType)
 	if err != nil {
 		logger.LogError(err, "Failed to get biodata for amalgamation", map[string]interface{}{"layer": "service"})
 		return nil, err
 	}
-	health, err := s.adminRepo.GetDelegateHealthResponses(delegateType, limit, offset)
+	health, err := s.adminRepo.GetDelegateHealthResponses(delegateType)
 	if err != nil {
 		logger.LogError(err, "Failed to get health data for amalgamation", map[string]interface{}{"layer": "service"})
 		return nil, err
 	}
-	mun, err := s.adminRepo.GetDelegateMUNResponses(limit, offset) // MUN responses are not filtered by delegateType in repo
+	mun, err := s.adminRepo.GetDelegateMUNResponses() // MUN responses are not filtered by delegateType in repo
 	if err != nil {
 		logger.LogError(err, "Failed to get MUN data for amalgamation", map[string]interface{}{"layer": "service"})
 		return nil, err
@@ -353,7 +353,7 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string, limit, offse
 	return result, nil
 }
 
-func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string, limit, offset int) ([]paymentModel.TeamPaymentSummary, error) {
+func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string) ([]paymentModel.TeamPaymentSummary, error) {
 	var startDate, endDate *time.Time
 
 	switch timeWave {
@@ -374,7 +374,7 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 		startDate, endDate = nil, nil
 	}
 
-	teamPaymentSummaries, err := s.adminRepo.GetTeamPaymentSummaries(delegateType, startDate, endDate, limit, offset)
+	teamPaymentSummaries, err := s.adminRepo.GetTeamPaymentSummaries(delegateType, startDate, endDate)
 	if err != nil {
 		logger.LogError(err, "Failed to get delegate payment responses", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
 		return nil, err
@@ -398,7 +398,7 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 	return teamPaymentSummaries, nil
 }
 
-func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string, limit, offset int) ([]delegateModel.TeamDelegateGroup, error) {
+func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string) ([]delegateModel.TeamDelegateGroup, error) {
 	var startDate, endDate *time.Time
 
 	switch timeWave {
@@ -418,7 +418,7 @@ func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string, limit, 
 		startDate, endDate = nil, nil
 	}
 
-	teamDelegates, err := s.adminRepo.GetDelegatesByTeam(delegateType, startDate, endDate, limit, offset)
+	teamDelegates, err := s.adminRepo.GetDelegatesByTeam(delegateType, startDate, endDate)
 	if err != nil {
 		logger.LogError(err, "Failed to get delegates by team", map[string]interface{}{"layer": "service", "operation": "GetDelegatesByTeam"})
 		return nil, err
@@ -428,7 +428,7 @@ func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string, limit, 
 	return teamDelegates, nil
 }
 
-func (s *adminService) GetPositionPapersByTeam(timeWave string, limit, offset int) ([]positionModel.TeamPositionPaperGroup, error) {
+func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel.TeamPositionPaperGroup, error) {
 	var startDate, endDate *time.Time
 
 	switch timeWave {
@@ -448,7 +448,7 @@ func (s *adminService) GetPositionPapersByTeam(timeWave string, limit, offset in
 		startDate, endDate = nil, nil
 	}
 
-	teamPapers, err := s.adminRepo.GetPositionPapersByTeam(startDate, endDate, limit, offset)
+	teamPapers, err := s.adminRepo.GetPositionPapersByTeam(startDate, endDate)
 	if err != nil {
 		logger.LogError(err, "Failed to get position papers by team", map[string]interface{}{"layer": "service", "operation": "GetPositionPapersByTeam"})
 		return nil, err

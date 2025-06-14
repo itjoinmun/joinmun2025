@@ -120,8 +120,6 @@ const refreshTokenMiddleware = async (request: NextRequest) => {
       throw new Error("Failed to retrieve tokens from response headers");
     }
 
-    response.cookies.delete("refresh_token");
-
     response.cookies.set({
       name: "access_token",
       domain: accessToken.domain,
