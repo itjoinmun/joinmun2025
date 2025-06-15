@@ -1,3 +1,4 @@
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 "use client";
 import { DashboardPage } from "@/components/dashboard/dashboard-page";
 import {
@@ -16,7 +17,6 @@ import {
 } from "@/utils/helpers/fetch/admin/admin";
 import {
   TeamDelegateGroup,
-  TeamPaymentSummary,
   TeamPositionPaperGroup,
   DelegateType,
   TimeWave,

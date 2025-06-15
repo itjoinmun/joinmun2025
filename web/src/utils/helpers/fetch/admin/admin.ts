@@ -139,6 +139,7 @@ export const getPaymentsByTeam = async (
   limit: number = 50,
   offset: number = 0,
 ): Promise<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payments_by_team: Record<string, any[]> | TeamPaymentSummary[];
   total_payments: number;
 }> => {
