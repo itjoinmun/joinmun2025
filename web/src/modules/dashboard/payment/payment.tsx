@@ -414,9 +414,11 @@ const PaymentWithApprovalCheck = ({
   }
 
   // All delegates approved, now check current user's payment status
-  const currentUserPayment = payment?.team_members?.find(
-    (member) => member.mun_delegate_email === user,
-  );
+  const currentUserPayment =
+    payment?.team_members && payment.team_members.length > 0
+      ? payment.team_members.find((member) => member.mun_delegate_email === user)
+      : payment; // Fallback to top-level payment if team_members is empty or null
+
   const currentUserHasPackage = currentUserPayment?.package;
 
   // If current user doesn't have a package, show payment flow
@@ -440,14 +442,26 @@ const PaymentWithApprovalCheck = ({
   }
 
   // Current user has submitted payment, show payment status
-  if (payment && payment.team_members && payment.team_members.length > 0) {
-    const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
-    const anyPending = payment.team_members.some(
-      (member) => !member.package || member.payment_status === "pending",
-    );
-    const anyPaymentRejected = payment.team_members.some(
-      (member) => member.payment_status === "failed",
-    );
+  if (payment) {
+    let allPaid = false;
+    let anyPending = false;
+    let anyPaymentRejected = false;
+
+    if (payment.team_members && payment.team_members.length > 0) {
+      allPaid = payment.team_members.every((member) => member.payment_status === "paid");
+      anyPending = payment.team_members.some(
+        (member) => !member.package || member.payment_status === "pending",
+      );
+      anyPaymentRejected = payment.team_members.some(
+        (member) => member.payment_status === "failed",
+      );
+    } else if (payment.payment_status) {
+      // Handle single payment scenario (no team_members)
+      allPaid = payment.payment_status === "paid";
+      anyPending = !payment.package || payment.payment_status === "pending";
+      anyPaymentRejected = payment.payment_status === "failed";
+    }
+
     if (allPaid) {
       return (
         <div className="flex flex-col items-center justify-center space-y-4 py-8">
@@ -468,7 +482,9 @@ const PaymentWithApprovalCheck = ({
           </div>
           <h2 className="text-xl font-bold">Payment Approved!</h2>
           <p className="text-muted-foreground text-center">
-            Your team&apos;s payment has been approved. You&apos;re all set for the event!
+            {payment.team_members && payment.team_members.length > 0
+              ? "Your team's payment has been approved. You're all set for the event!"
+              : "Your payment has been approved. You're all set for the event!"}
           </p>
         </div>
       );
@@ -717,6 +733,8 @@ const ParticipantDataTable = ({
     return <p className="animate-pulse">Loading...</p>;
   }
 
+  const members = participants?.team_members;
+
   return (
     <Table>
       <TableHeader>
@@ -728,13 +746,13 @@ const ParticipantDataTable = ({
         </TableRow>
       </TableHeader>
       <TableBody className="bg-blue-50">
-        {participants?.team_members.length !== 0 ? (
-          participants?.team_members.map((participant, index: number) => (
+        {members && members.length > 0 ? (
+          members.map((participant, index: number) => (
             <TableRow key={participant.mun_delegate_name} className="border-b border-gray-100">
               <TableCell
                 className={cn(
                   "w-full py-3 font-medium text-gray-900",
-                  index === participants?.team_members.length - 1 && "first:rounded-bl-lg",
+                  index === members.length - 1 && "first:rounded-bl-lg",
                 )}
               >
                 {participant.mun_delegate_name}
@@ -765,6 +783,37 @@ const ParticipantDataTable = ({
               </TableCell>
             </TableRow>
           ))
+        ) : participants && participants.payment_status ? ( // Handle single participant payment display
+          <TableRow className="border-b border-gray-100">
+            <TableCell className="w-full py-3 font-medium text-gray-900 first:rounded-bl-lg">
+              {/* Assuming user's name can be fetched or is known; otherwise, a generic label */}
+              Registered Participant
+            </TableCell>
+            <TableCell className="w-auto py-3 text-right whitespace-nowrap">
+              <span
+                className={cn(
+                  "rounded-full px-2 py-1 text-xs font-medium",
+                  participants.payment_status === "paid"
+                    ? "bg-green-100 text-green-800"
+                    : participants.payment_status === "failed"
+                      ? "bg-red-100 text-red-800"
+                      : participants.payment_status === "pending"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-yellow-100 text-yellow-800",
+                )}
+              >
+                {participants.payment_status === "paid"
+                  ? "Confirmed"
+                  : participants.payment_status === "failed"
+                    ? "Rejected"
+                    : !participants.package
+                      ? "Havent paid"
+                      : participants.payment_status === "pending"
+                        ? "Waiting for Admin Approval"
+                        : "Pending"}
+              </span>
+            </TableCell>
+          </TableRow>
         ) : (
           <TableRow className="border-b bg-red-50">
             <TableCell colSpan={2} className="text-primary py-6 text-center font-medium">
