@@ -103,7 +103,7 @@ func main() {
 
 	// security middleware
 	r.Use(rateLimiterMiddleware())
-	r.Use(requestSizeLimitMiddleware(2 << 20))
+	r.Use(requestSizeLimitMiddleware(28 << 20))
 	r.Use(timeoutMiddleware(20 * time.Second))
 
 	// initialize the routes
