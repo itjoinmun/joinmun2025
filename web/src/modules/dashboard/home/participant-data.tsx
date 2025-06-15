@@ -38,7 +38,7 @@ const ParticipantData = async () => {
       </DashboardModuleHeader>
 
       <DashboardModuleContent className="no-scrollbar max-h-96 overflow-scroll">
-        <p className="mb-2 text-xs">Announcement at 12 December 2025</p>
+        {/* <p className="mb-2 text-xs">Announcement at 12 December 2025</p> */}
         <Table>
           <TableHeader>
             <TableRow className="bg-background border-b *:text-white">
