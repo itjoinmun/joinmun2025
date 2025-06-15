@@ -75,9 +75,7 @@ const getRegistrationStatus = (
         const anyPending = payment.team_members.some(
           (member) => member.payment_status === "pending",
         );
-        const haventPaid = payment.team_members.some(
-          (member) => !member.package,
-        );
+        const haventPaid = payment.team_members.some((member) => !member.package);
 
         if (haventPaid) return "verified_pending_payment";
         if (allPaid) return "payment_verified";
@@ -93,10 +91,10 @@ const getRegistrationStatus = (
     }
   }
 
-    // Single delegate fallback
-    if (delegate.confirmed === "pending") return "waiting_verification";
-    if (delegate.confirmed === "rejected") return "not_registered";
-    if (delegate.confirmed === "confirmed") {
+  // Single delegate fallback
+  if (delegate.confirmed === "pending") return "waiting_verification";
+  if (delegate.confirmed === "rejected") return "not_registered";
+  if (delegate.confirmed === "confirmed") {
     if (!payment) return "verified_pending_payment";
     if (!payment.package) return "verified_pending_payment";
     if (payment.payment_status === "paid") return "payment_verified";
@@ -143,16 +141,17 @@ const getPaperSubmissionStatus = (
 ): PaperSubmissionStatus => {
   if (!delegate) return "not_registered";
 
-  // Check if registration requirements are met
   let registrationComplete = false;
   let paymentComplete = false;
+
+  console.log("delegate: ", delegate);
 
   // Team logic
   if (delegates?.participant_data?.length > 0) {
     const allApproved = delegates.participant_data.every(
       (member) => member.confirmed === "confirmed",
     );
-    registrationComplete = allApproved;
+    registrationComplete = allApproved && !!delegate.council && !!delegate.country;
 
     if (payment?.team_members?.length > 0) {
       paymentComplete = payment.team_members.every((member) => member.payment_status === "paid");
@@ -161,9 +160,12 @@ const getPaperSubmissionStatus = (
     }
   } else {
     // Single delegate
-    registrationComplete = delegate.confirmed === "confirmed";
+    registrationComplete =
+      delegate.confirmed === "confirmed" && !!delegate.council && !!delegate.country;
     paymentComplete = payment?.payment_status === "paid";
   }
+
+  console.log("booleans: ", registrationComplete, paymentComplete);
 
   if (!registrationComplete || !paymentComplete) {
     return "registration_pending";
@@ -258,7 +260,9 @@ const DashboardStatus = async () => {
               cardDescription="Position paper upload status"
               status={paperInfo.status}
               description={paperInfo.description}
-              canSubmitPaper={paperSubmission === "can_upload"}
+              canSubmitPaper={
+                paperSubmission === "can_upload" && !!delegate.country && !!delegate.council
+              }
               paperUploaded={paperSubmission === "uploaded"}
               userStatus={delegate}
             />
@@ -327,7 +331,7 @@ const StatusCard = ({
           {cardDescription}
         </DashboardModuleDescription>
       </DashboardModuleHeader>
-      <DashboardModuleContent className="mt-auto min-h-20 justify-center space-y-3">
+      <DashboardModuleContent className="mt-auto min-h-20 flex-row items-center gap-4">
         <div className="text-sm opacity-90">{description}</div>
         {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
         {paperUploaded && <ViewPaperButton />}
@@ -452,9 +456,7 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
   }
 };
 
-const getInformationCenterInfo = (
-  status: InformationCenterStatus,
-) => {
+const getInformationCenterInfo = (status: InformationCenterStatus) => {
   switch (status) {
     case "not_registered":
       return {

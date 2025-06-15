@@ -77,14 +77,16 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+        <Button size={`sm`} variant={`primary`} className="h-7 cursor-pointer text-xs">
           Submit Position Paper
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="p-4">
         <DialogHeader>
-          <DialogTitle>Submit Position Paper</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="border-gray-light border-b pb-4">
+            Submit Position Paper
+          </DialogTitle>
+          <DialogDescription className="text-primary-foreground-muted">
             Upload your position paper for {userStatus?.council} representing {userStatus?.country}
           </DialogDescription>
         </DialogHeader>
@@ -151,11 +153,16 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={isSubmitting}
-                className="flex-1"
+                className="flex-1 cursor-pointer"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={!file || isSubmitting} className="flex-1">
+              <Button
+                type="submit"
+                variant={`primary`}
+                disabled={!file || isSubmitting}
+                className="flex-1 cursor-pointer"
+              >
                 {isSubmitting ? "Submitting..." : "Submit Paper"}
               </Button>
             </div>

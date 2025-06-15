@@ -205,7 +205,8 @@ const MedicalForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
         <FormContent fields={formFields} onSubmit={onSubmit} />
         {submitError && (
           <div className="bg-red-normal border-red-dark rounded-sm border-2 p-2 text-xs font-medium text-white">
-            An unknown error occured during submission. Please try again later or contact support.
+            An unknown error occured during submission. Please make sure all fields are filled out
+            correctly. If this keeps happening, try again later or contact support.
           </div>
         )}
       </RegistrationFormModule>
