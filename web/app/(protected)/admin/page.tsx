@@ -1,3 +1,4 @@
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 "use client";
 import { DashboardPage } from "@/components/dashboard/dashboard-page";
 import {
@@ -7,7 +8,7 @@ import {
 } from "@/components/dashboard/dashboard-module";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Download } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   getDelegatesByTeam,
   getPaymentsByTeam,
@@ -16,7 +17,6 @@ import {
 } from "@/utils/helpers/fetch/admin/admin";
 import {
   TeamDelegateGroup,
-  TeamPaymentSummary,
   TeamPositionPaperGroup,
   DelegateType,
   TimeWave,
@@ -32,226 +32,338 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { LogoutButton } from "@/modules/dashboard/dashboard-nav";
+import { cn } from "@/utils/helpers/cn";
 
-const DELEGATE_TYPES: { value: DelegateType; label: string }[] = [
+// ========================================================================================
+// CONSTANTS & TYPES
+// ========================================================================================
+
+const DELEGATE_TYPES: readonly { value: DelegateType; label: string }[] = [
   { value: "all", label: "All Types" },
   { value: "single_delegate", label: "Single Delegate" },
   { value: "team_delegate", label: "Delegation Team" },
   { value: "faculty_advisor", label: "Faculty Advisor" },
   { value: "observer", label: "Observer" },
-];
+] as const;
 
-const TIME_WAVES: { value: TimeWave; label: string }[] = [
+const TIME_WAVES: readonly { value: TimeWave; label: string }[] = [
   { value: "all", label: "All Waves" },
   { value: "earlybird", label: "Early Bird" },
   { value: "regular", label: "Regular" },
   { value: "late", label: "Late" },
-];
+] as const;
+
+const ITEMS_PER_PAGE = 2;
+const MAX_FETCH_LIMIT = 1000;
+
+type TabType = "delegates" | "payments" | "papers";
+
+interface TabData {
+  delegates: TeamDelegateGroup[];
+  payments: any[]; // Raw payment data from backend (flat array)
+  papers: TeamPositionPaperGroup[];
+}
+
+interface PaginationState {
+  delegates: number;
+  payments: number;
+  papers: number;
+}
+
+// ========================================================================================
+// CUSTOM HOOKS
+// ========================================================================================
+
+/**
+ * Custom hook for managing pagination state across all tabs
+ */
+const usePagination = () => {
+  const [pages, setPages] = useState<PaginationState>({
+    delegates: 0,
+    payments: 0,
+    papers: 0,
+  });
+
+  const updatePage = useCallback((tab: TabType, page: number) => {
+    setPages((prev) => ({ ...prev, [tab]: page }));
+  }, []);
+
+  const resetPagination = useCallback(() => {
+    setPages({ delegates: 0, payments: 0, papers: 0 });
+  }, []);
+
+  return { pages, updatePage, resetPagination };
+};
+
+/**
+ * Custom hook for managing all tab data and total counts
+ */
+const useTabData = () => {
+  const [allData, setAllData] = useState<TabData>({
+    delegates: [],
+    payments: [],
+    papers: [],
+  });
+
+  const [totals, setTotals] = useState({
+    delegates: 0,
+    payments: 0,
+    papers: 0,
+  });
+
+  const updateTabData = useCallback((tab: TabType, data: any[], total: number) => {
+    setAllData((prev) => ({ ...prev, [tab]: data }));
+    setTotals((prev) => ({ ...prev, [tab]: total }));
+  }, []);
+
+  return { allData, totals, updateTabData };
+};
+
+/**
+ * Custom hook for efficient data fetching with caching
+ */
+const useDataFetcher = (
+  delegateType: DelegateType,
+  timeWave: TimeWave,
+  updateTabData: (tab: TabType, data: any[], total: number) => void,
+) => {
+  const [loading, setLoading] = useState(false);
+  const [dataCache, setDataCache] = useState<Map<string, any>>(new Map());
+
+  const getCacheKey = useCallback((tab: TabType, type: string, wave: string) => {
+    return `${tab}-${type}-${wave}`;
+  }, []);
+
+  const fetchWithCache = useCallback(
+    async (
+      tab: TabType,
+      fetchFn: () => Promise<any>,
+      dataExtractor: (response: any) => { data: any[]; total: number },
+    ) => {
+      const cacheKey = getCacheKey(tab, delegateType, timeWave);
+
+      // Check cache first
+      if (dataCache.has(cacheKey)) {
+        const cachedResult = dataCache.get(cacheKey);
+        updateTabData(tab, cachedResult.data, cachedResult.total);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await fetchFn();
+        const result = dataExtractor(response);
+
+        // Cache the result
+        setDataCache((prev) => new Map(prev).set(cacheKey, result));
+        updateTabData(tab, result.data, result.total);
+      } catch (error) {
+        console.error(`Error fetching ${tab}:`, error);
+        updateTabData(tab, [], 0);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [delegateType, timeWave, dataCache, getCacheKey, updateTabData],
+  );
+
+  const fetchDelegates = useCallback(() => {
+    return fetchWithCache(
+      "delegates",
+      () => getDelegatesByTeam(delegateType, timeWave, MAX_FETCH_LIMIT, 0),
+      (response) => ({
+        data: response.delegates_by_team || [],
+        total: response.total_teams || response.delegates_by_team?.length || 0,
+      }),
+    );
+  }, [fetchWithCache, delegateType, timeWave]);
+
+  const fetchPayments = useCallback(() => {
+    return fetchWithCache(
+      "payments",
+      () => getPaymentsByTeam(delegateType, timeWave, MAX_FETCH_LIMIT, 0),
+      (response) => {
+        // Simple approach like delegates - use the raw data from backend
+        const paymentsData = response.payments_by_team || {};
+
+        // Convert Map to flat array for frontend pagination
+        const paymentsArray = Object.values(paymentsData).flat();
+
+        return {
+          data: paymentsArray,
+          total: response.total_payments || paymentsArray.length || 0,
+        };
+      },
+    );
+  }, [fetchWithCache, delegateType, timeWave]);
+
+  const fetchPositionPapers = useCallback(() => {
+    return fetchWithCache(
+      "papers",
+      () => getPositionPapersByTeam(timeWave, MAX_FETCH_LIMIT, 0),
+      (response) => ({
+        data: response.papers_by_team || [],
+        total: response.total_teams || response.papers_by_team?.length || 0,
+      }),
+    );
+  }, [fetchWithCache, timeWave]);
+
+  // Clear cache when filters change
+  useEffect(() => {
+    setDataCache(new Map());
+  }, [delegateType, timeWave]);
+
+  const clearCache = useCallback(() => {
+    setDataCache(new Map());
+  }, []);
+
+  return { loading, fetchDelegates, fetchPayments, fetchPositionPapers, clearCache };
+};
+
+// ========================================================================================
+// MAIN COMPONENT
+// ========================================================================================
 
 const DashboardAdmin = () => {
+  // ==================== STATE MANAGEMENT ====================
   const [delegateType, setDelegateType] = useState<DelegateType>("all");
   const [timeWave, setTimeWave] = useState<TimeWave>("all");
-  const [itemsPerPage] = useState(20);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"delegates" | "payments" | "papers">("delegates");
+  const [activeTab, setActiveTab] = useState<TabType>("delegates");
+  const [downloading, setDownloading] = useState(false);
 
-  // Separate pagination for each tab
-  const [delegatesPage, setDelegatesPage] = useState(0);
-  const [paymentsPage, setPaymentsPage] = useState(0);
-  const [papersPage, setPapersPage] = useState(0);
+  // ==================== CUSTOM HOOKS ====================
+  const { pages, updatePage, resetPagination } = usePagination();
+  const { allData, totals, updateTabData } = useTabData();
+  const { loading, fetchDelegates, fetchPayments, fetchPositionPapers, clearCache } =
+    useDataFetcher(delegateType, timeWave, updateTabData);
 
-  // Data states
-  const [delegatesData, setDelegatesData] = useState<TeamDelegateGroup[]>([]);
-  const [paymentsData, setPaymentsData] = useState<TeamPaymentSummary[]>([]);
-  const [positionPapersData, setPositionPapersData] = useState<TeamPositionPaperGroup[]>([]);
+  // ==================== MEMOIZED VALUES ====================
+  const paginatedDelegatesData = useMemo(() => {
+    if (activeTab !== "delegates") return [];
+    const currentPage = pages.delegates;
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return allData.delegates.slice(startIndex, endIndex);
+  }, [allData.delegates, activeTab, pages.delegates]);
 
-  // Totals for pagination
-  const [totalTeams, setTotalTeams] = useState(0);
-  const [totalPayments, setTotalPayments] = useState(0);
-  const [totalPapers, setTotalPapers] = useState(0);
+  const paginatedPaymentsData = useMemo(() => {
+    if (activeTab !== "payments") return [];
+    const currentPage = pages.payments;
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return allData.payments.slice(startIndex, endIndex);
+  }, [allData.payments, activeTab, pages.payments]);
 
-  // Function to ensure active tab is visible
-  const scrollActiveTabIntoView = (tabId: string) => {
+  const paginatedPapersData = useMemo(() => {
+    if (activeTab !== "papers") return [];
+    const currentPage = pages.papers;
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return allData.papers.slice(startIndex, endIndex);
+  }, [allData.papers, activeTab, pages.papers]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(totals[activeTab] / ITEMS_PER_PAGE);
+  }, [totals, activeTab]);
+
+  const currentPage = pages[activeTab];
+
+  // ==================== HANDLERS ====================
+  const scrollActiveTabIntoView = useCallback((tabId: string) => {
     const tabElement = document.getElementById(tabId);
     if (tabElement) {
       tabElement.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     }
-  };
+  }, []);
 
-  // Update active tab and ensure it's visible
-  const handleTabChange = (tab: "delegates" | "payments" | "papers") => {
-    setActiveTab(tab);
-    setTimeout(() => scrollActiveTabIntoView(`tab-${tab}`), 100);
-  };
-
-  // Use useCallback to memoize fetch functions
-  const fetchDelegates = useCallback(
-    async (page: number = delegatesPage) => {
-      try {
-        setLoading(true);
-        const response = await getDelegatesByTeam(
-          delegateType,
-          timeWave,
-          itemsPerPage,
-          page * itemsPerPage,
-        );
-        setDelegatesData(response.delegates_by_team);
-        setTotalTeams(response.total_teams);
-      } catch (error) {
-        console.error("Error fetching delegates:", error);
-      } finally {
-        setLoading(false);
-      }
+  const handleTabChange = useCallback(
+    (tab: TabType) => {
+      setActiveTab(tab);
+      setTimeout(() => scrollActiveTabIntoView(`tab-${tab}`), 100);
     },
-    [delegateType, timeWave, itemsPerPage, delegatesPage],
+    [scrollActiveTabIntoView],
   );
 
-  const fetchPayments = useCallback(
-    async (page: number = paymentsPage) => {
-      try {
-        setLoading(true);
-        const response = await getPaymentsByTeam(
-          delegateType,
-          timeWave,
-          itemsPerPage,
-          page * itemsPerPage,
-        );
-
-        // Safely handle the payments_by_team data structure
-        const paymentArray = Object.values(response.payments_by_team).flat();
-        setPaymentsData(paymentArray);
-        setTotalPayments(response.total_payments);
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-      } finally {
-        setLoading(false);
-      }
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      updatePage(activeTab, newPage);
     },
-    [delegateType, timeWave, itemsPerPage, paymentsPage],
+    [activeTab, updatePage],
   );
 
-  const fetchPositionPapers = useCallback(
-    async (page: number = papersPage) => {
-      try {
-        setLoading(true);
-        const response = await getPositionPapersByTeam(timeWave, itemsPerPage, page * itemsPerPage);
-        setPositionPapersData(response.papers_by_team);
-        setTotalPapers(response.total_teams);
-      } catch (error) {
-        console.error("Error fetching position papers:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [timeWave, itemsPerPage, papersPage],
-  );
+  const handleDataChange = useCallback(() => {
+    // Force refresh by clearing cache and refetching
+    clearCache(); // Clear all cache
+    const fetchMap = {
+      delegates: fetchDelegates,
+      payments: fetchPayments,
+      papers: fetchPositionPapers,
+    };
+    fetchMap[activeTab]?.();
+  }, [activeTab, fetchDelegates, fetchPayments, fetchPositionPapers, clearCache]);
 
-  const handleDownloadCSV = async () => {
+  const handleDownloadCSV = useCallback(async () => {
     try {
-      setLoading(true);
-      await downloadResponsesCSV(delegateType, 1000, 0);
+      setDownloading(true);
+      await downloadResponsesCSV(delegateType, MAX_FETCH_LIMIT, 0);
     } catch (error) {
       console.error("Error downloading CSV:", error);
     } finally {
-      setLoading(false);
+      setDownloading(false);
     }
-  };
+  }, [delegateType]);
 
+  // ==================== EFFECTS ====================
   // Fetch data when active tab changes
   useEffect(() => {
-    if (activeTab === "delegates") {
-      fetchDelegates();
-    } else if (activeTab === "payments") {
-      fetchPayments();
-    } else if (activeTab === "papers") {
-      fetchPositionPapers();
-    }
+    const fetchMap = {
+      delegates: fetchDelegates,
+      payments: fetchPayments,
+      papers: fetchPositionPapers,
+    };
+    fetchMap[activeTab]?.();
   }, [activeTab, fetchDelegates, fetchPayments, fetchPositionPapers]);
 
   // Reset pagination when filters change
   useEffect(() => {
-    setDelegatesPage(0);
-    setPaymentsPage(0);
-    setPapersPage(0);
-  }, [delegateType, timeWave]);
+    resetPagination();
+  }, [delegateType, timeWave, resetPagination]);
 
-  const handleDataChange = () => {
-    if (activeTab === "delegates") {
-      fetchDelegates();
-    } else if (activeTab === "payments") {
-      fetchPayments();
-    }
-  };
-
-  // Get current pagination info based on active tab
-  const getCurrentPaginationInfo = () => {
-    switch (activeTab) {
-      case "delegates":
-        return {
-          currentPage: delegatesPage,
-          totalItems: totalTeams,
-          setCurrentPage: setDelegatesPage,
-        };
-      case "payments":
-        return {
-          currentPage: paymentsPage,
-          totalItems: totalPayments,
-          setCurrentPage: setPaymentsPage,
-        };
-      case "papers":
-        return {
-          currentPage: papersPage,
-          totalItems: totalPapers,
-          setCurrentPage: setPapersPage,
-        };
-      default:
-        return {
-          currentPage: 0,
-          totalItems: 0,
-          setCurrentPage: () => {},
-        };
-    }
-  };
-
-  const paginationInfo = getCurrentPaginationInfo();
-  const totalPages = Math.ceil(paginationInfo.totalItems / itemsPerPage);
-
-  const handlePageChange = (newPage: number) => {
-    paginationInfo.setCurrentPage(newPage);
-
-    // Fetch data for the new page
-    setTimeout(() => {
-      if (activeTab === "delegates") {
-        fetchDelegates(newPage);
-      } else if (activeTab === "payments") {
-        fetchPayments(newPage);
-      } else if (activeTab === "papers") {
-        fetchPositionPapers(newPage);
-      }
-    }, 0);
-  };
-
+  // ==================== RENDER ====================
   return (
     <DashboardPage className="flex flex-col gap-6">
       <DashboardModule>
         <DashboardModuleHeader>
           <div className="mb-2 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
             <Heading className="hidden sm:block">Admin Dashboard</Heading>
-            <Button
-              variant="warning"
-              className="flex w-fit items-center gap-2 self-end sm:self-auto"
-              onClick={handleDownloadCSV}
-              disabled={loading}
-            >
-              <Download className="h-4 w-4" />
-              {loading ? "Downloading..." : "Download All Responses as CSV"}
-            </Button>
+            <div className="flex w-fit items-center justify-between gap-2">
+              <Button
+                variant="warning"
+                className="flex w-fit items-center gap-2 self-end sm:self-auto"
+                onClick={handleDownloadCSV}
+                disabled={downloading}
+              >
+                <Download className="h-4 w-4" />
+                {downloading ? "Downloading..." : "Download All Responses as CSV"}
+              </Button>
+              <LogoutButton isAdmin={true} />
+            </div>
           </div>
         </DashboardModuleHeader>
 
         <DashboardModuleContent>
+          {/* Note */}
+          <div className="border-red-dark bg-red-normal text-red-white mb-4 flex w-fit flex-col items-center justify-center gap-1 rounded-lg border p-2 text-xs sm:flex-row sm:gap-2">
+            <div className="flex gap-2 self-start sm:items-center sm:self-auto">
+              <AlertCircle className="h-5 w-5" />
+              Note:
+            </div>
+            <p className="text-pretty">Response files are only valid for 8 hours after download.</p>
+          </div>
+
           {/* Filters */}
-          <div className="xs:flex-row mb-6 flex flex-col gap-4">
+          <div className="xs:flex-row mb-3 flex flex-col gap-4">
             <Select
               value={delegateType}
               onValueChange={(value: string) => setDelegateType(value as DelegateType)}
@@ -285,15 +397,6 @@ const DashboardAdmin = () => {
             </Select>
           </div>
 
-          {/* Note */}
-          <div className="border-red-dark bg-red-normal text-red-white mb-4 flex w-fit flex-col items-center justify-center gap-1 rounded-lg border p-2 text-xs sm:flex-row sm:gap-2">
-            <div className="flex gap-2 self-start sm:items-center sm:self-auto">
-              <AlertCircle className="h-5 w-5" />
-              Note:
-            </div>
-            <p className="text-pretty">Response files are only valid for 8 hours after download.</p>
-          </div>
-
           {/* Tab Navigation */}
           <h3>Choose one out of three</h3>
           <div className="bg-muted mb-4 flex w-full space-x-1 overflow-x-auto rounded-lg p-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:w-fit [&::-webkit-scrollbar]:hidden">
@@ -306,7 +409,7 @@ const DashboardAdmin = () => {
                   : "text-muted-foreground hover:text-background"
               }`}
             >
-              Delegates ({totalTeams})
+              Delegates ({totals.delegates})
             </button>
             <button
               id="tab-payments"
@@ -317,7 +420,7 @@ const DashboardAdmin = () => {
                   : "text-muted-foreground hover:text-background"
               }`}
             >
-              Payments ({totalPayments})
+              Payments ({totals.payments})
             </button>
             <button
               id="tab-papers"
@@ -328,52 +431,170 @@ const DashboardAdmin = () => {
                   : "text-muted-foreground hover:text-background"
               }`}
             >
-              Position Papers ({totalPapers})
+              Position Papers ({totals.papers})
             </button>
           </div>
 
           {/* Tab Content */}
           <div className="no-scrollbar overflow-auto">
             {activeTab === "delegates" && (
-              <AdminDelegatesTable teamsData={delegatesData} onDataChange={handleDataChange} />
+              <AdminDelegatesTable
+                teamsData={paginatedDelegatesData}
+                onDataChange={handleDataChange}
+              />
             )}
 
             {activeTab === "payments" && (
-              <AdminPaymentsTable paymentsData={paymentsData} onDataChange={handleDataChange} />
+              <AdminPaymentsTable
+                paymentsData={paginatedPaymentsData}
+                onDataChange={handleDataChange}
+              />
             )}
 
-            {activeTab === "papers" && <AdminPositionPapersTable papersData={positionPapersData} />}
+            {activeTab === "papers" && (
+              <AdminPositionPapersTable papersData={paginatedPapersData} />
+            )}
           </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-6 flex flex-col items-center justify-center gap-2 rounded-lg bg-gray-50 p-4 sm:flex-row">
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange(Math.max(0, paginationInfo.currentPage - 1))}
-                disabled={paginationInfo.currentPage === 0 || loading}
-                className="w-full sm:w-auto"
-              >
-                Previous
-              </Button>
-
-              <span className="px-4 text-sm text-gray-600">
-                Page {paginationInfo.currentPage + 1} of {totalPages}
-                <span className="ml-2 text-xs text-gray-500">
-                  ({paginationInfo.totalItems} total {activeTab})
+            <div className="mt-6 flex flex-col items-center justify-center gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:justify-between">
+              {/* Page Info */}
+              <div className="text-center">
+                <span className="text-sm text-gray-600">
+                  Page {currentPage + 1} of {totalPages}
                 </span>
-              </span>
+                <span className="ml-2 text-xs text-gray-500">
+                  ({totals[activeTab]} total {activeTab})
+                </span>
+              </div>
 
-              <Button
-                variant="outline"
-                onClick={() =>
-                  handlePageChange(Math.min(totalPages - 1, paginationInfo.currentPage + 1))
-                }
-                disabled={paginationInfo.currentPage >= totalPages - 1 || loading}
-                className="w-full sm:w-auto"
-              >
-                Next
-              </Button>
+              {/* Pagination Controls */}
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {/* Previous Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
+                  disabled={currentPage === 0 || loading}
+                  className="px-3 py-1 text-xs"
+                >
+                  Previous
+                </Button>
+
+                {/* Page Numbers - Always show consistent buttons */}
+                {(() => {
+                  const maxVisiblePages = 5;
+                  const startPage = Math.max(
+                    0,
+                    Math.min(
+                      currentPage - Math.floor(maxVisiblePages / 2),
+                      totalPages - maxVisiblePages,
+                    ),
+                  );
+                  const endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+                  const pages = [];
+
+                  // Show first page + ellipsis if we're far from start
+                  if (startPage > 0) {
+                    pages.push(
+                      <Button
+                        key={0}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(0)}
+                        disabled={loading}
+                        className="h-8 w-8 p-0 text-xs"
+                      >
+                        1
+                      </Button>,
+                    );
+                    if (startPage > 1) {
+                      pages.push(
+                        <span key="start-ellipsis" className="px-1 text-sm text-gray-400">
+                          ...
+                        </span>,
+                      );
+                    }
+                  }
+
+                  // Show main page numbers
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <Button
+                        key={i}
+                        variant={currentPage === i ? "white" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(i)}
+                        disabled={loading}
+                        className={cn(
+                          "h-8 w-8 p-0 text-xs",
+                          currentPage === i
+                            ? "text-background border-background border bg-white shadow-md"
+                            : "",
+                        )}
+                      >
+                        {i + 1}
+                      </Button>,
+                    );
+                  }
+
+                  // Show ellipsis + last page if we're far from end
+                  if (endPage < totalPages - 1) {
+                    if (endPage < totalPages - 2) {
+                      pages.push(
+                        <span key="end-ellipsis" className="px-1 text-sm text-gray-400">
+                          ...
+                        </span>,
+                      );
+                    }
+                    pages.push(
+                      <Button
+                        key={totalPages - 1}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(totalPages - 1)}
+                        disabled={loading}
+                        className="h-8 w-8 p-0 text-xs"
+                      >
+                        {totalPages}
+                      </Button>,
+                    );
+                  }
+
+                  return pages;
+                })()}
+
+                {/* Next Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(Math.min(totalPages - 1, currentPage + 1))}
+                  disabled={currentPage >= totalPages - 1 || loading}
+                  className="px-3 py-1 text-xs"
+                >
+                  Next
+                </Button>
+              </div>
+
+              {/* Mobile-friendly page selector for many pages */}
+              {totalPages > 7 && (
+                <div className="flex items-center gap-2 sm:hidden">
+                  <span className="text-xs text-gray-600">Go to page:</span>
+                  <select
+                    value={currentPage}
+                    onChange={(e) => handlePageChange(parseInt(e.target.value))}
+                    disabled={loading}
+                    className="rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  >
+                    {Array.from({ length: totalPages }, (_, index) => (
+                      <option key={index} value={index}>
+                        {index + 1}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           )}
         </DashboardModuleContent>

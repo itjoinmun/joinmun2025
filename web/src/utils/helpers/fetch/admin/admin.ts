@@ -111,11 +111,8 @@ export const getDelegatesByTeam = async (
   limit: number = 50,
   offset: number = 0,
 ): Promise<{ delegates_by_team: TeamDelegateGroup[]; total_teams: number }> => {
-  if (delegateType === "all") {
-    delegateType="";
-  }
   const params = new URLSearchParams({
-    delegate_type: delegateType,
+    delegate_type: delegateType === "all" ? "" : delegateType,
     time: timeWave,
     limit: limit.toString(),
     offset: offset.toString(),
@@ -129,7 +126,11 @@ export const getDelegatesByTeam = async (
     throw new Error(`Failed to fetch delegates: ${response.statusText}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return {
+    delegates_by_team: data.delegates_by_team || [],
+    total_teams: data.total_teams || 0,
+  };
 };
 
 export const getPaymentsByTeam = async (
@@ -137,12 +138,13 @@ export const getPaymentsByTeam = async (
   timeWave: TimeWave,
   limit: number = 50,
   offset: number = 0,
-): Promise<{ payments_by_team: TeamPaymentSummary[]; total_payments: number }> => {
-  if (delegateType === "all") {
-    delegateType = "";
-  }
+): Promise<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payments_by_team: Record<string, any[]> | TeamPaymentSummary[];
+  total_payments: number;
+}> => {
   const params = new URLSearchParams({
-    delegate_type: delegateType,
+    delegate_type: delegateType === "all" ? "" : delegateType,
     time: timeWave,
     limit: limit.toString(),
     offset: offset.toString(),
@@ -156,7 +158,11 @@ export const getPaymentsByTeam = async (
     throw new Error(`Failed to fetch payments: ${response.statusText}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return {
+    payments_by_team: data.payments_by_team || {},
+    total_payments: data.total_payments || 0,
+  };
 };
 
 export const getPositionPapersByTeam = async (
@@ -178,7 +184,11 @@ export const getPositionPapersByTeam = async (
     throw new Error(`Failed to fetch position papers: ${response.statusText}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return {
+    papers_by_team: data.papers_by_team || [],
+    total_teams: data.total_teams || 0,
+  };
 };
 
 export const makeDelegatePairing = async (delegateEmail: string, pairEmail: string) => {
@@ -221,9 +231,9 @@ export const downloadResponsesCSV = async (
   // Handle file download
   const blob = await response.blob();
   const url = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
-  link.download = `responses_${delegateType}_${new Date().toISOString().split('T')[0]}.csv`;
+  link.download = `responses_${delegateType}_${new Date().toISOString().split("T")[0]}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

@@ -14,13 +14,80 @@ import { approvePayment, rejectPayment } from "@/utils/helpers/fetch/admin/admin
 import { Check, ExternalLink, X } from "lucide-react";
 import { cn } from "@/utils/helpers/cn";
 
+interface PaymentData {
+  payment_id?: string | number;
+  mun_delegate_email: string;
+  mun_team_id?: string | null;
+  package?: string;
+  payment_file?: string;
+  payment_status?: string;
+  payment_date?: string;
+  payment_amount?: number;
+  participant_type?: string;
+}
+
 interface AdminPaymentsTableProps {
-  paymentsData: TeamPaymentSummary[];
+  paymentsData: PaymentData[] | TeamPaymentSummary[];
   onDataChange: () => void;
 }
 
 const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTableProps) => {
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+
+  // Function to convert flat payment array to team groupings
+  const convertToTeamSummaries = (flatPayments: PaymentData[]): TeamPaymentSummary[] => {
+    const teamGroups: { [key: string]: PaymentData[] } = {};
+
+    // Group payments by team
+    flatPayments.forEach((payment) => {
+      const teamKey = payment.mun_team_id || `individual-${payment.mun_delegate_email}`;
+      if (!teamGroups[teamKey]) {
+        teamGroups[teamKey] = [];
+      }
+      teamGroups[teamKey].push(payment);
+    });
+
+    // Convert to TeamPaymentSummary format
+    return Object.entries(teamGroups).map(([teamKey, payments]) => {
+      const firstPayment = payments[0];
+      const isIndividual = teamKey.startsWith("individual-");
+
+      return {
+        mun_team_id: isIndividual ? null : teamKey,
+        mun_team_lead: firstPayment.mun_delegate_email,
+        team_payments: payments.map((p) => ({
+          payment_id: String(p.payment_id || ""),
+          mun_delegate_email: p.mun_delegate_email,
+          mun_team_id: p.mun_team_id,
+          package: p.package || "",
+          payment_file: p.payment_file || "",
+          payment_status: (p.payment_status as "pending" | "paid" | "failed") || "pending",
+          payment_date: p.payment_date || "",
+          payment_amount: p.payment_amount || 0,
+          participant_type: p.participant_type || "",
+        })),
+        total_amount: payments.reduce((sum, p) => sum + (Number(p.payment_amount) || 0), 0),
+        payment_count: payments.length,
+        pending_count: payments.filter((p) => p.payment_status === "pending").length,
+        paid_count: payments.filter((p) => p.payment_status === "paid").length,
+        failed_count: payments.filter((p) => p.payment_status === "failed").length,
+      };
+    });
+  };
+
+  // Determine if data is flat array or already team summaries
+  const teamSummaries: TeamPaymentSummary[] = (() => {
+    if (!paymentsData || paymentsData.length === 0) return [];
+
+    // Check if first item has team_payments property (TeamPaymentSummary format)
+    const firstItem = paymentsData[0];
+    if ("team_payments" in firstItem) {
+      return paymentsData as TeamPaymentSummary[];
+    } else {
+      // Convert flat array to team summaries
+      return convertToTeamSummaries(paymentsData as PaymentData[]);
+    }
+  })();
 
   const handleAction = async (
     action: () => Promise<void>,
@@ -50,9 +117,17 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
     }
   };
 
+  if (teamSummaries.length === 0) {
+    return (
+      <div className="rounded-lg border bg-white py-12 text-center text-gray-500">
+        No payments found for the selected filters.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {paymentsData.map((team) => {
+      {teamSummaries.map((team) => {
         const teamKey = team.mun_team_id || `individual-${team.mun_team_lead}`;
 
         return (
@@ -72,7 +147,8 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                     {team.mun_team_id ? `Team ${team.mun_team_id}` : "Individual Payment"}
                   </h3>
                   <p className="mt-1 text-sm text-gray-600">
-                    Team Lead: {team.mun_team_lead} • Total Amount: IDR {team.total_amount.toLocaleString('en-US')}
+                    Team Lead: {team.mun_team_lead} • Total Amount: IDR{" "}
+                    {team.total_amount.toLocaleString("en-US")}
                   </p>
                   <div className="mt-1 flex gap-4 text-xs text-gray-500">
                     <span className="text-green-600">Paid: {team.paid_count}</span>
@@ -81,7 +157,9 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">IDR {team.total_amount.toLocaleString('en-US')}</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    IDR {team.total_amount.toLocaleString("en-US")}
+                  </div>
                   <div className="text-sm text-gray-500">{team.payment_count} payment(s)</div>
                 </div>
               </div>
@@ -132,7 +210,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                       >
                         <div className="space-y-1">
                           <div className="text-xl font-bold text-gray-900">
-                            IDR {payment.payment_amount.toLocaleString('en-US')}
+                            IDR {payment.payment_amount.toLocaleString("en-US")}
                           </div>
                           <div className="text-sm font-medium text-gray-600">{payment.package}</div>
                         </div>
@@ -144,7 +222,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                           <Button
                             size="sm"
                             variant="outline"
-                            className="flex items-center gap-2 border-blue-200 hover:bg-blue-50 text-white hover:text-black"
+                            className="flex items-center gap-2 border-blue-200 text-white hover:bg-blue-50 hover:text-black"
                             onClick={() => window.open(payment.payment_file, "_blank")}
                           >
                             <ExternalLink className="h-3 w-3" />
@@ -162,7 +240,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-8 border-green-200 px-3 hover:bg-green-50 text-white hover:text-black"
+                              className="h-8 border-green-200 px-3 text-white hover:bg-green-50 hover:text-black"
                               onClick={() =>
                                 handleAction(
                                   () => approvePayment(payment.mun_delegate_email),
@@ -181,7 +259,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-8 border-red-200 px-3 hover:bg-red-50 text-white hover:text-black"
+                              className="h-8 border-red-200 px-3 text-white hover:bg-red-50 hover:text-black"
                               onClick={() =>
                                 handleAction(
                                   () => rejectPayment(payment.mun_delegate_email),

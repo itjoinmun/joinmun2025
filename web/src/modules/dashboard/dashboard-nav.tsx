@@ -223,7 +223,11 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
   );
 };
 
-const LogoutButton = () => {
+type LogoutButtonProps = {
+  isAdmin?: boolean;
+};
+
+export const LogoutButton = ({ isAdmin }: LogoutButtonProps) => {
   const [pending, setPending] = useState(false);
   const router = useRouter();
 
@@ -249,7 +253,10 @@ const LogoutButton = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="default" className="cursor-pointer md:w-full">
+        <Button
+          variant="default"
+          className={cn("cursor-pointer", isAdmin ? "md:w-fit" : "md:w-full")}
+        >
           <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
         </Button>
       </AlertDialogTrigger>
