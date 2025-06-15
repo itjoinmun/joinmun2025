@@ -52,23 +52,27 @@ const NAV_LINKS = [
     href: "/dashboard/delegates",
     logo: <BookOpen className={logoStyle} />,
   },
-  {
-    id: "councils",
-    name: "Councils",
-    href: "/dashboard/councils",
-    logo: <Globe className={logoStyle} />,
-  },
+  ...(process.env.NEXT_PUBLIC_TIMELINE_AND_STUDY_GUIDE_REVEAL === "true"
+    ? [
+        {
+          id: "councils",
+          name: "Councils",
+          href: "/dashboard/councils",
+          logo: <Globe className={logoStyle} />,
+        },
+        {
+          id: "timeline",
+          name: "Timeline",
+          href: "/dashboard/timeline",
+          logo: <Hourglass className={logoStyle} />,
+        },
+      ]
+    : []),
   {
     id: "payment",
     name: "Payment",
     href: "/dashboard/payment",
     logo: <DollarSign className={logoStyle} />,
-  },
-  {
-    id: "timeline",
-    name: "Timeline",
-    href: "/dashboard/timeline",
-    logo: <Hourglass className={logoStyle} />,
   },
   {
     id: "help",
