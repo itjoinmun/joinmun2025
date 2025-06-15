@@ -103,9 +103,9 @@ const Body = async () => {
         <Image
           src={`/assets/dashboard/home/${hasRegistered ? "model-2.webp" : "model-1.webp"}`}
           alt="Dashboard Image"
-          width={250}
-          height={250}
-          className="absolute right-0 -bottom-16 md:bottom-0"
+          width={1048}
+          height={1403}
+          className="absolute max-w-[250px] right-0 -bottom-16 md:bottom-0"
         />
       </div>
     </section>
