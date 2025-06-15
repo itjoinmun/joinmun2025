@@ -112,6 +112,7 @@ const getRegistrationStatus = (
 const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates, payment: Payment): DelegateCodeStatus => {
   if (!delegate) return "not_registered";
   // Faculty advisor special case
+  
   if (delegate.participant_type === "faculty_advisor" && payment.payment_status === "paid") {
     return "can_input";
   }
