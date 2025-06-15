@@ -115,7 +115,7 @@ const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates): Delega
   if (!delegate) return "not_registered";
 
   // Faculty advisor special case
-  if (delegate.participant_type === "faculty_advisor" && !delegate.pair) {
+  if (delegate.participant_type === "faculty_advisor" && delegate.payment_status === "paid") {
     return "can_input";
   }
 
