@@ -70,20 +70,8 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 	}
 
 	// Handle team requirements based on participant type
-	if participantType == "faculty_advisor" {
-		// Faculty advisors must have a team
-		teamID, err := s.delegateRepo.GetTeamIDByDelegateEmail(payment.MUNDelegateEmail)
-		if err != nil {
-			logger.LogError(err, "Failed to get team ID by delegate email", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
-			return err
-		}
-		if teamID == "" {
-			logger.LogError(nil, "Faculty advisor must join a team first", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
-			return fmt.Errorf("faculty advisor must join a team first: %s", payment.MUNDelegateEmail)
-		}
-		payment.MUNTeamID = &teamID
-	} else if participantType == "observer" {
-		// Observers don't need a team
+	if participantType == "observer" || participantType == "faculty_advisor" {
+		// Observers and faculty advisors don't need a team to pay
 		payment.MUNTeamID = nil
 	} else {
 		// For other participant types, get team ID
