@@ -787,8 +787,7 @@ const ParticipantDataTable = ({
         ) : participants && participants.payment_status ? ( // Handle single participant payment display
           <TableRow className="border-b border-gray-100">
             <TableCell className="w-full py-3 font-medium text-gray-900 first:rounded-bl-lg">
-              {/* Assuming user's name can be fetched or is known; otherwise, a generic label */}
-              Registered Participant
+              {participants.mun_delegate_name}
             </TableCell>
             <TableCell className="w-auto py-3 text-right whitespace-nowrap">
               <span
