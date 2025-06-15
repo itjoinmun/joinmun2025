@@ -109,11 +109,10 @@ const getRegistrationStatus = (
  * Function 2: Delegate Code Status Logic
  * Handles delegate code availability
  */
-const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates): DelegateCodeStatus => {
+const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates, payment: Payment): DelegateCodeStatus => {
   if (!delegate) return "not_registered";
-
   // Faculty advisor special case
-  if (delegate.participant_type === "faculty_advisor" && delegate.payment_status === "paid") {
+  if (delegate.participant_type === "faculty_advisor" && payment.payment_status === "paid") {
     return "can_input";
   }
 
@@ -223,7 +222,7 @@ const DashboardStatus = async () => {
   const payment = (await getPayment()) as Payment;
 
   const registrationStatus = getRegistrationStatus(delegate, delegates, payment);
-  const delegateCode = getDelegateCodeStatus(delegate, delegates);
+  const delegateCode = getDelegateCodeStatus(delegate, delegates, payment);
   const paperSubmission = getPaperSubmissionStatus(delegate, delegates, payment, paper);
   const informationCenter = getInformationCenterStatus(delegate, delegates, payment);
 
@@ -278,7 +277,7 @@ const DashboardStatus = async () => {
               description={regInfo.description}
             />
             <StatusCard cardHeader="Information Center" description={infoInfo.description} />
-            {delegate?.payment_status === "paid" && (
+            {delegateCode === "can_input" && (
               <StatusCard
                 cardHeader="Delegate Code"
                 cardDescription="Input code from your delegates"
@@ -400,6 +399,7 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) =
       };
     case "can_input":
       return {
+        status: "Input Delegate Code",
         description: <DelegateCodeInput />,
       };
     case "code_available":

@@ -28,9 +28,7 @@ export async function getDelegate(): Promise<Delegate | null> {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
     },
-    next: {
-      revalidate: 30,
-    },
+
     credentials: "include",
   });
 
@@ -56,9 +54,6 @@ export async function getDelegates(): Promise<Delegates | null> {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
       credentials: "include",
-    },
-    next: {
-      revalidate: 30,
     },
   });
 
@@ -134,9 +129,6 @@ export async function getPayment(): Promise<Payment | null> {
     headers: {
       "Content-Type": "application/json",
       Cookie: `access_token=${accessToken}`,
-    },
-    next: {
-      revalidate: 30,
     },
   });
 

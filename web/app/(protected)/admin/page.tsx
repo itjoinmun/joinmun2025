@@ -54,7 +54,7 @@ const TIME_WAVES: readonly { value: TimeWave; label: string }[] = [
   { value: "late", label: "Late" },
 ] as const;
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 10;
 const MAX_FETCH_LIMIT = 1000;
 
 type TabType = "delegates" | "payments" | "papers";
