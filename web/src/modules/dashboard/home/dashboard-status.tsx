@@ -144,8 +144,6 @@ const getPaperSubmissionStatus = (
   let registrationComplete = false;
   let paymentComplete = false;
 
-  console.log("delegate: ", delegate);
-
   // Team logic
   if (delegates?.participant_data?.length > 0) {
     const allApproved = delegates.participant_data.every(
@@ -164,8 +162,6 @@ const getPaperSubmissionStatus = (
       delegate.confirmed === "confirmed" && !!delegate.council && !!delegate.country;
     paymentComplete = payment?.payment_status === "paid";
   }
-
-  console.log("booleans: ", registrationComplete, paymentComplete);
 
   if (!registrationComplete || !paymentComplete) {
     return "registration_pending";
