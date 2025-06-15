@@ -180,26 +180,36 @@ const getInformationCenterStatus = (
 ): InformationCenterStatus => {
   if (!delegate) return "not_registered";
 
-  let requirementsMet = false;
+  let registrationComplete = false;
+  let paymentComplete = false;
 
-  if (delegates?.participant_data?.length === 0) {
-    // Single delegate case
-    if (delegate.confirmed !== "confirmed" && payment.payment_status !== "paid") return "registration_pending";
+  // Team logic
+  if (delegates?.participant_data?.length > 0) {
+    registrationComplete = delegates.participant_data.every(
+      (member) => member.confirmed === "confirmed",
+    );
+
+    if (payment?.team_members?.length > 0) {
+      paymentComplete = payment.team_members.every((member) => member.payment_status === "paid");
+    } else {
+      // Fallback for team if team_members is not populated but a general payment status exists
+      // This case might need review based on actual data structure for team payments without team_members array
+      paymentComplete = payment?.payment_status === "paid";
+    }
+  } else {
+    // Single delegate
+    registrationComplete = delegate.confirmed === "confirmed";
+    paymentComplete = payment?.payment_status === "paid";
   }
 
-  const allApproved = delegates.participant_data.every(
-    (member) => member.confirmed === "confirmed",
-  );
-
-  const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
-
-  requirementsMet = allApproved && allPaid;
+  const requirementsMet = registrationComplete && paymentComplete;
 
   if (!requirementsMet) return "registration_pending";
 
   // Check if council and country are assigned
-  return delegate.council && delegate.country && process.env.NEXT_PUBLIC_GROUP_REVEAL === "true" ? "has_information" : "no_information";
-
+  return delegate.council && delegate.country && process.env.NEXT_PUBLIC_GROUP_REVEAL === "true"
+    ? "has_information"
+    : "no_information";
 };
 
 const DashboardStatus = async () => {
