@@ -13,7 +13,7 @@ const buttonVariants = cva(
         primary: "bg-red-normal border-none text-primary-foreground shadow-xs hover:bg-red-dark",
         gray: "bg-gray text-white shadow-xs hover:bg-gray/80",
         outline:
-          "border border-gray-light bg-background shadow-xs hover:bg-gray-light/20 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "border border-gray-light bg-background shadow-xs hover:bg-background/80 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         insideCard: "bg-background/80 text-primary-foreground hover:bg-background shadow-xs",
         gradient:
           "bg-gradient-to-t from-white/20 to-white text-foreground hover:text-red-dark-hover hover:bg-primary-foreground",
