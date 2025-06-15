@@ -75,7 +75,11 @@ const getRegistrationStatus = (
         const anyPending = payment.team_members.some(
           (member) => member.payment_status === "pending",
         );
+        const haventPaid = payment.team_members.some(
+          (member) => !member.package,
+        );
 
+        if (haventPaid) return "verified_pending_payment";
         if (allPaid) return "payment_verified";
         if (anyPending) return "payment_checking";
         return "verified_pending_payment";
