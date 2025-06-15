@@ -743,7 +743,7 @@ const PaymentDetailsStep = () => {
           <div>
             <Label htmlFor="payment-proof">Upload Payment Proof</Label>
             <p className="text-muted-foreground text-sm">
-              Please upload a screenshot or photo of your payment receipt
+              Please upload a screenshot or photo of your payment receipt (MAX 2MB)
             </p>
           </div>
           <div className="space-y-2">
