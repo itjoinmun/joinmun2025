@@ -274,7 +274,7 @@ const DashboardStatus = async () => {
           <>
             <StatusCard
               cardHeader="Status"
-              cardDescription="Verification announcement at 15 Dec 2025"
+              cardDescription=""
               description={regInfo.description}
             />
             <StatusCard cardHeader="Information Center" description={infoInfo.description} />
@@ -292,7 +292,7 @@ const DashboardStatus = async () => {
           <>
             <StatusCard
               cardHeader="Status"
-              cardDescription="Verification announcement at 15 Dec 2025"
+              cardDescription=""
               description={regInfo.description}
             />
             <StatusCard cardHeader="Information Center" description={infoInfo.description} />
