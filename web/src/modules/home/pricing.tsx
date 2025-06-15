@@ -12,7 +12,10 @@ import * as motion from "motion/react-client";
 // Type definitions for package structures
 interface PackageOption {
   label: string;
-  price: string;
+  price: {
+    usd: string;
+    idr: string;
+  };
   description: string;
 }
 
@@ -59,7 +62,7 @@ const Pricing = () => {
       case "single":
         return "single_delegate";
       case "team":
-        return "team_delegation";
+        return "team_delegate";
       case "observer":
         return "observer";
       case "advisor":
@@ -110,7 +113,7 @@ const Pricing = () => {
                   {active === "team" ? (
                     // For team, show all packages
                     Object.entries(
-                      pricePackage.team_delegation[type] as TeamDelegationPackages,
+                      pricePackage.team_delegate[type] as TeamDelegationPackages,
                     ).map(([packageKey, packageData]) => (
                       <PricingCard
                         key={packageKey}
@@ -238,23 +241,32 @@ const PricingCard = ({
   if (isTeam) {
     return (
       <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center lg:max-w-none">
-        <h2 className="text-lg font-bold">{name}</h2>
+        <h2 className="text-xl font-bold">{name}</h2>
         <div className="mb-2 text-sm">{delegateRange}</div>
         <hr className="border-gray-light my-2 w-full" />
         <div className="flex w-full flex-col gap-4">
           <div>
-            <div className="font-bold">{nonAccommodation.label}</div>
+            <div className="text-lg font-bold">{nonAccommodation.label}</div>
             <div className="relative text-4xl font-bold">
-              <span className="absolute -top-1 right-0 left-0 -translate-x-8 text-xl">$</span>
-              {nonAccommodation.price}
+              <p>${nonAccommodation.price.usd}</p>
+              <p className="text-sm">or</p>
+              <p>Rp{nonAccommodation.price.idr}</p>
             </div>
           </div>
           <div>
             <div className="font-bold">{accommodation.label}</div>
-            <div className="text-xs">{accommodation.description}</div>
+
             <div className="relative text-4xl font-bold">
-              <span className="absolute -top-1 right-0 left-0 -translate-x-8 text-xl">$</span>
-              {accommodation.price}
+              <p>${accommodation.price.usd}</p>
+              <p className="text-sm">or</p>
+              <p>Rp{accommodation.price.idr}</p>
+            </div>
+            <div className="mt-2 text-xs">
+              {accommodation.description.split(",").map((part, index) => (
+                <p key={index} className="mb-1">
+                  {part.trim()}
+                </p>
+              ))}
             </div>
           </div>
         </div>
@@ -274,12 +286,19 @@ const PricingCard = ({
   return (
     <article className="bg-gray border-gray-light mx-auto flex w-full max-w-xs flex-col items-center gap-2 rounded-sm border p-8 text-center lg:max-w-none">
       <h2 className="text-lg font-bold">{name}</h2>
-      <h1 className="relative text-4xl font-bold">
-        <span className="absolute -top-1 -left-4 text-xl">$</span>
-        {nonAccommodation.price}
-      </h1>
-      <div className="mt-2 text-xs">{nonAccommodation.description}</div>
-      <ul className="mt-4 mb-auto w-full list-inside list-disc space-y-1.5 text-start text-sm font-light">
+      <div className="relative text-4xl font-bold">
+        <p>${nonAccommodation.price.usd}</p>
+        <p className="text-sm">or</p>
+        <p>Rp{nonAccommodation.price.idr}</p>
+      </div>
+      <div className="mt-2 text-xs">
+        {nonAccommodation.description.split(",").map((part, index) => (
+          <p key={index} className="mb-1">
+            {part.trim()}
+          </p>
+        ))}
+      </div>
+      <ul className="mt-2 mb-auto w-full list-inside list-disc space-y-1.5 text-start text-sm font-light">
         {points.map((point: string, index: number) => (
           <li key={index}>{point}</li>
         ))}
