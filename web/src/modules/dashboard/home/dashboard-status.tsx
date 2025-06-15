@@ -75,9 +75,7 @@ const getRegistrationStatus = (
         const anyPending = payment.team_members.some(
           (member) => member.payment_status === "pending",
         );
-        const haventPaid = payment.team_members.some(
-          (member) => !member.package,
-        );
+        const haventPaid = payment.team_members.some((member) => !member.package);
 
         if (haventPaid) return "verified_pending_payment";
         if (allPaid) return "payment_verified";
@@ -93,10 +91,10 @@ const getRegistrationStatus = (
     }
   }
 
-    // Single delegate fallback
-    if (delegate.confirmed === "pending") return "waiting_verification";
-    if (delegate.confirmed === "rejected") return "not_registered";
-    if (delegate.confirmed === "confirmed") {
+  // Single delegate fallback
+  if (delegate.confirmed === "pending") return "waiting_verification";
+  if (delegate.confirmed === "rejected") return "not_registered";
+  if (delegate.confirmed === "confirmed") {
     if (!payment) return "verified_pending_payment";
     if (!payment.package) return "verified_pending_payment";
     if (payment.payment_status === "paid") return "payment_verified";
@@ -111,11 +109,11 @@ const getRegistrationStatus = (
  * Function 2: Delegate Code Status Logic
  * Handles delegate code availability
  */
-const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates): DelegateCodeStatus => {
+const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates, payment: Payment): DelegateCodeStatus => {
   if (!delegate) return "not_registered";
-
   // Faculty advisor special case
-  if (delegate.participant_type === "faculty_advisor" && delegate.payment_status === "paid") {
+  
+  if (delegate.participant_type === "faculty_advisor" && payment.payment_status === "paid") {
     return "can_input";
   }
 
@@ -143,7 +141,6 @@ const getPaperSubmissionStatus = (
 ): PaperSubmissionStatus => {
   if (!delegate) return "not_registered";
 
-  // Check if registration requirements are met
   let registrationComplete = false;
   let paymentComplete = false;
 
@@ -152,7 +149,7 @@ const getPaperSubmissionStatus = (
     const allApproved = delegates.participant_data.every(
       (member) => member.confirmed === "confirmed",
     );
-    registrationComplete = allApproved;
+    registrationComplete = allApproved && !!delegate.council && !!delegate.country;
 
     if (payment?.team_members?.length > 0) {
       paymentComplete = payment.team_members.every((member) => member.payment_status === "paid");
@@ -161,7 +158,8 @@ const getPaperSubmissionStatus = (
     }
   } else {
     // Single delegate
-    registrationComplete = delegate.confirmed === "confirmed";
+    registrationComplete =
+      delegate.confirmed === "confirmed" && !!delegate.council && !!delegate.country;
     paymentComplete = payment?.payment_status === "paid";
   }
 
@@ -225,7 +223,7 @@ const DashboardStatus = async () => {
   const payment = (await getPayment()) as Payment;
 
   const registrationStatus = getRegistrationStatus(delegate, delegates, payment);
-  const delegateCode = getDelegateCodeStatus(delegate, delegates);
+  const delegateCode = getDelegateCodeStatus(delegate, delegates, payment);
   const paperSubmission = getPaperSubmissionStatus(delegate, delegates, payment, paper);
   const informationCenter = getInformationCenterStatus(delegate, delegates, payment);
 
@@ -258,7 +256,9 @@ const DashboardStatus = async () => {
               cardDescription="Position paper upload status"
               status={paperInfo.status}
               description={paperInfo.description}
-              canSubmitPaper={paperSubmission === "can_upload"}
+              canSubmitPaper={
+                paperSubmission === "can_upload" && !!delegate.country && !!delegate.council
+              }
               paperUploaded={paperSubmission === "uploaded"}
               userStatus={delegate}
             />
@@ -278,7 +278,7 @@ const DashboardStatus = async () => {
               description={regInfo.description}
             />
             <StatusCard cardHeader="Information Center" description={infoInfo.description} />
-            {delegate?.payment_status === "paid" && (
+            {delegateCode === "can_input" && (
               <StatusCard
                 cardHeader="Delegate Code"
                 cardDescription="Input code from your delegates"
@@ -327,7 +327,7 @@ const StatusCard = ({
           {cardDescription}
         </DashboardModuleDescription>
       </DashboardModuleHeader>
-      <DashboardModuleContent className="mt-auto min-h-20 justify-center space-y-3">
+      <DashboardModuleContent className="mt-auto min-h-20 flex-row items-center gap-4">
         <div className="text-sm opacity-90">{description}</div>
         {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
         {paperUploaded && <ViewPaperButton />}
@@ -400,6 +400,7 @@ const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) =
       };
     case "can_input":
       return {
+        status: "Input Delegate Code",
         description: <DelegateCodeInput />,
       };
     case "code_available":
@@ -452,9 +453,7 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
   }
 };
 
-const getInformationCenterInfo = (
-  status: InformationCenterStatus,
-) => {
+const getInformationCenterInfo = (status: InformationCenterStatus) => {
   switch (status) {
     case "not_registered":
       return {
