@@ -86,17 +86,19 @@ const getRegistrationStatus = (
       }
 
       // Fallback to single payment check
+      if (!payment.package) return "verified_pending_payment";
       if (payment.payment_status === "paid") return "payment_verified";
       if (payment.payment_status === "pending") return "payment_checking";
       return "verified_pending_payment";
     }
   }
 
-  // Single delegate fallback
-  if (delegate.confirmed === "pending") return "waiting_verification";
-  if (delegate.confirmed === "rejected") return "not_registered";
-  if (delegate.confirmed === "confirmed") {
+    // Single delegate fallback
+    if (delegate.confirmed === "pending") return "waiting_verification";
+    if (delegate.confirmed === "rejected") return "not_registered";
+    if (delegate.confirmed === "confirmed") {
     if (!payment) return "verified_pending_payment";
+    if (!payment.package) return "verified_pending_payment";
     if (payment.payment_status === "paid") return "payment_verified";
     if (payment.payment_status === "pending") return "payment_checking";
     return "verified_pending_payment";
