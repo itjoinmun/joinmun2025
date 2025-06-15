@@ -2,9 +2,12 @@ import { createContext } from "react";
 
 export interface PackageSelection {
   type: "EarlyBird" | "Regular" | "Late";
-  participantType: "single_delegate" | "team_delegation" | "observer" | "advisor";
+  participantType: "single_delegate" | "team_delegate" | "observer" | "advisor";
   accommodationType: "with_accommodation" | "non_accommodation";
-  price?: number;
+  price: {
+    usd: number;
+    idr: number;
+  };
   teamPackage?: "packageA" | "packageB" | "packageC" | "packageD";
 }
 

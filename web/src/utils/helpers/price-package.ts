@@ -1,14 +1,37 @@
+// Checklist:
+// Early Bird:
+// - Single Delegate: Done
+// - Team Delegation: Done
+// - Observer: Done
+// - Faculty Advisor: Done
+// Regular:
+// - Single Delegate: 
+// - Team Delegation:
+// - Observer:
+// - Faculty Advisor:
+// Late:
+// - Single Delegate: 
+// - Team Delegation:
+// - Observer:
+// - Faculty Advisor:
+
 export const pricePackage = {
   single_delegate: {
     EarlyBird: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "120",
+          idr: "1.450.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "170",
+          idr: "2.250.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
       points: [
@@ -18,17 +41,23 @@ export const pricePackage = {
         "Access to opening ceremony",
         "Access to networking night",
         "Many more",
-      ],
+      ],  
     },
     Regular: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
       points: [
@@ -43,12 +72,18 @@ export const pricePackage = {
     Late: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
       points: [
@@ -61,18 +96,24 @@ export const pricePackage = {
       ],
     },
   },
-  team_delegation: {
+  team_delegate: {
     EarlyBird: {
       packageA: {
         delegateRange: "For 2-5 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "50",
+          price: {
+            usd: "118",
+            idr: "1.400.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "50",
+          price: {
+            usd: "168",
+            idr: "2.200.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -80,6 +121,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -88,12 +130,18 @@ export const pricePackage = {
         delegateRange: "For 6-8 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "116",
+            idr: "1.350.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "166",
+            idr: "2.150.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -101,6 +149,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -109,12 +158,18 @@ export const pricePackage = {
         delegateRange: "For 9-12 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "114",
+            idr: "1.300.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "164",
+            idr: "2.100.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -122,6 +177,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -130,12 +186,18 @@ export const pricePackage = {
         delegateRange: "For > 12 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "112",
+            idr: "1.250.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "162",
+            idr: "2.050.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -143,6 +205,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -153,12 +216,18 @@ export const pricePackage = {
         delegateRange: "For 2-5 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "50",
+          price: {
+            usd: "50",
+            idr: "750.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "50",
+          price: {
+            usd: "50",
+            idr: "750.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -166,6 +235,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -174,12 +244,18 @@ export const pricePackage = {
         delegateRange: "For 6-8 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -194,12 +270,18 @@ export const pricePackage = {
         delegateRange: "For 9-12 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -207,6 +289,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -215,12 +298,18 @@ export const pricePackage = {
         delegateRange: "For > 12 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -228,6 +317,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -238,12 +328,18 @@ export const pricePackage = {
         delegateRange: "For 2-5 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "50",
+          price: {
+            usd: "50",
+            idr: "750.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "50",
+          price: {
+            usd: "50",
+            idr: "750.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -251,6 +347,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -259,12 +356,18 @@ export const pricePackage = {
         delegateRange: "For 6-8 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -279,12 +382,18 @@ export const pricePackage = {
         delegateRange: "For 9-12 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -292,6 +401,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -300,12 +410,18 @@ export const pricePackage = {
         delegateRange: "For > 12 Delegates",
         nonAccommodation: {
           label: "Non-Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
-          price: "90",
+          price: {
+            usd: "90",
+            idr: "1.350.000",
+          },
           description: "Deluxe room for 2 nights, including breakfast",
         },
         points: [
@@ -313,6 +429,7 @@ export const pricePackage = {
           "Meeting room",
           "Transportation (Shuttle Bus)",
           "Access to opening ceremony",
+          "Access to awarding ceremony",
           "Access to networking night",
           "Many more",
         ],
@@ -323,82 +440,154 @@ export const pricePackage = {
     EarlyBird: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "90",
+          idr: "950.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "140",
+          idr: "1.750.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
-      points: ["Meals and coffe break", "Meeting room", "Many more"],
+        points: [
+          "Meals and coffe break",
+          "Meeting room",
+          "Access to opening ceremony",
+          "Access to awarding ceremony",
+          "Transportation (Shuttle Bus)",
+          "Many more",
+        ],
     },
     Regular: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
-      points: ["Meals and coffe break", "Meeting room", "Many more"],
+      points: [
+        "Meals and coffe break",
+        "Meeting room",
+        "Access to opening ceremony",
+        "Access to awarding ceremony",
+        "Transportation (Shuttle Bus)",
+        "Many more",
+      ],
     },
     Late: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
-      points: ["Meals and coffe break", "Meeting room", "Many more"],
+      points: [
+        "Meals and coffe break",
+        "Meeting room",
+        "Access to opening ceremony",
+        "Access to awarding ceremony",
+        "Transportation (Shuttle Bus)",
+        "Many more",
+      ],
     },
   },
   advisor: {
     EarlyBird: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "80",
+          idr: "750.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "120",
+          idr: "1.450.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
-      points: ["Transportation (Shuttle Bus)", "Many more"],
+      points: [
+        "Access to opening ceremony",
+        "Access to awarding ceremony",
+        "Transportation (Shuttle Bus)",
+        "Many more",
+      ],
     },
     Regular: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
-      points: ["Transportation (Shuttle Bus)", "Many more"],
+      points: [
+        "Access to opening ceremony",
+        "Access to awarding ceremony",
+        "Transportation (Shuttle Bus)",
+        "Many more",
+      ],
     },
     Late: {
       nonAccommodation: {
         label: "Non-Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
-        price: "50",
+        price: {
+          usd: "50",
+          idr: "750.000",
+        },
         description: "Deluxe room for 2 nights, including breakfast",
       },
-      points: ["Transportation (Shuttle Bus)", "Many more"],
+      points: [
+        "Access to opening ceremony",
+        "Access to awarding ceremony",
+        "Transportation (Shuttle Bus)",
+        "Many more",
+      ],
     },
   },
 };

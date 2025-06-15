@@ -45,7 +45,7 @@ const useDelegatesApprovalStatus = () => {
       try {
         const data = await getDelegates();
         if (!data || !data.participant_data) {
-          try{
+          try {
             const observerOrAdvisorData = await getDelegate();
             setDelegates({
               participant_data: observerOrAdvisorData ? [observerOrAdvisorData] : [],
@@ -116,6 +116,27 @@ const PaymentPage = () => {
     }
   };
 
+  // const handleSelect = (
+  //   accomType: "accommodation" | "nonAccommodation",
+  //   price: { idr: string; usd: string },
+  // ) => {
+  //   const idr = Number(price.idr.replace("Rp", "").replace(/\./g, ""));
+  //   const usd = Number(price.usd.replace("$", ""));
+
+  //   const selection: PackageSelection = {
+  //     type,
+  //     participantType,
+  //     accommodationType: accomType === "accommodation" ? "with_accommodation" : "non_accommodation",
+  //     price: {
+  //       usd,
+  //       idr,
+  //     },
+  //     teamPackage: participantType === "team_delegate" ? getTeamPackage() : undefined,
+  //   };
+
+  //   setPackageSelection(selection);
+  // };
+
   const handleSubmit = async (paymentFile: File) => {
     if (!packageSelection) {
       setSubmitError("Please select a package first");
@@ -127,18 +148,26 @@ const PaymentPage = () => {
     // Format package string as expected by backend: "type - accommodation"
     const packageString = `${packageSelection.type} - ${packageSelection.accommodationType}`;
 
+    // Data untuk backend (hanya USD)
     const paymentData = {
       package: packageString,
-      payment_amount: packageSelection.price || 0,
+      payment_amount: packageSelection.price.usd,
+    };
+
+    // Data untuk local storage (IDR dan USD)
+    const storageData = {
+      ...paymentData,
+      payment_amount: {
+        usd: packageSelection.price.usd,
+        idr: packageSelection.price.idr,
+      },
+      payment_file: paymentFile,
+      timestamp: Date.now(),
+      status: "pending" as const,
     };
 
     try {
-      const storageId = await paymentStorage.storePayment({
-        ...paymentData,
-        payment_file: paymentFile,
-        timestamp: Date.now(),
-        status: "pending",
-      });
+      const storageId = await paymentStorage.storePayment(storageData);
 
       await submitPayment(paymentData, paymentFile);
       await paymentStorage.updatePaymentStatus(storageId, "submitted");
@@ -150,10 +179,8 @@ const PaymentPage = () => {
 
       try {
         await paymentStorage.storePayment({
-          ...paymentData,
-          payment_file: paymentFile,
-          timestamp: Date.now(),
-          status: "failed",
+          ...storageData,
+          status: "failed" as const,
         });
       } catch (storageError) {
         console.error("Failed to store payment locally:", storageError);
@@ -547,9 +574,9 @@ const PackageSelectionStep = () => {
 
   // Determine which package to use based on number of delegates
   const getTeamPackage = () => {
-    if (numberOfDelegates <= 5) return "packageA";
-    if (numberOfDelegates <= 8) return "packageB";
-    if (numberOfDelegates <= 12) return "packageC";
+    if (numberOfDelegates >= 2 && numberOfDelegates <= 5) return "packageA";
+    if (numberOfDelegates >= 6 && numberOfDelegates <= 8) return "packageB";
+    if (numberOfDelegates >= 9 && numberOfDelegates <= 12) return "packageC";
     return "packageD";
   };
 
@@ -564,14 +591,17 @@ const PackageSelectionStep = () => {
           ? "Late"
           : "EarlyBird";
 
-  // Only allow valid values
-  const participantType: "single_delegate" | "team_delegation" | "observer" | "advisor" =
-    packageSelection?.participantType === "single_delegate" ||
-    packageSelection?.participantType === "team_delegation" ||
-    packageSelection?.participantType === "observer" ||
-    packageSelection?.participantType === "advisor"
-      ? packageSelection.participantType
+  // Determine participant type from delegate data
+  const participantType: "single_delegate" | "team_delegate" | "observer" | "advisor" =
+    delegates?.participant_data?.[0]?.participant_type === "single_delegate" ||
+    delegates?.participant_data?.[0]?.participant_type === "team_delegate" ||
+    delegates?.participant_data?.[0]?.participant_type === "observer" ||
+    delegates?.participant_data?.[0]?.participant_type === "faculty_advisor"
+      ? delegates.participant_data[0].participant_type === "faculty_advisor"
+        ? "advisor"
+        : delegates.participant_data[0].participant_type
       : "single_delegate";
+
   const selectedType =
     packageSelection?.accommodationType === "with_accommodation"
       ? "accommodation"
@@ -580,14 +610,25 @@ const PackageSelectionStep = () => {
         : undefined;
 
   // Handler for PaymentPackageCard selection
-  const handleSelect = (accomType: "accommodation" | "nonAccommodation", price: string) => {
-    setPackageSelection({
+  const handleSelect = (
+    accomType: "accommodation" | "nonAccommodation",
+    price: { idr: string; usd: string },
+  ) => {
+    const idr = Number(price.idr.replace("Rp", "").replace(/\./g, ""));
+    const usd = Number(price.usd.replace("$", ""));
+
+    const selection: PackageSelection = {
       type,
       participantType,
       accommodationType: accomType === "accommodation" ? "with_accommodation" : "non_accommodation",
-      price: Number(price.replace(/[^0-9]/g, "")),
-      teamPackage: participantType === "team_delegation" ? getTeamPackage() : undefined,
-    });
+      price: {
+        usd,
+        idr,
+      },
+      teamPackage: participantType === "team_delegate" ? getTeamPackage() : undefined,
+    };
+
+    setPackageSelection(selection);
   };
 
   return (
@@ -596,7 +637,7 @@ const PackageSelectionStep = () => {
         participantType={participantType}
         onSelect={handleSelect}
         selectedType={selectedType}
-        teamPackage={participantType === "team_delegation" ? getTeamPackage() : undefined}
+        teamPackage={participantType === "team_delegate" ? getTeamPackage() : undefined}
       />
     </div>
   );
@@ -607,23 +648,22 @@ const PaymentDetailsStep = () => {
   const { packageSelection } = useContext(PaymentContext);
   const [paymentProof, setPaymentProof] = useState<File>();
   const { delegates } = useDelegatesApprovalStatus();
-
   // Get number of delegates for team pricing
   const numberOfDelegates = delegates?.participant_data?.length || 0;
 
   // Determine which package to use based on number of delegates
   const getTeamPackage = () => {
-    if (numberOfDelegates <= 5) return "packageA";
-    if (numberOfDelegates <= 8) return "packageB";
-    if (numberOfDelegates <= 12) return "packageC";
+    if (numberOfDelegates >= 2 && numberOfDelegates <= 5) return "packageA";
+    if (numberOfDelegates >= 6 && numberOfDelegates <= 8) return "packageB";
+    if (numberOfDelegates >= 9 && numberOfDelegates <= 12) return "packageC";
     return "packageD";
   };
 
   const bankAccounts = [
     {
-      bank: "BCA",
-      number: "1234567890",
-      name: "Arthur",
+      bank: "Bank Mandiri",
+      number: "1370025432184",
+      name: "Drasthya Wironegoro",
     },
   ];
 
@@ -661,7 +701,7 @@ const PaymentDetailsStep = () => {
                 : undefined
           }
           teamPackage={
-            packageSelection?.participantType === "team_delegation" ? getTeamPackage() : undefined
+            packageSelection?.participantType === "team_delegate" ? getTeamPackage() : undefined
           }
         />
       </div>
@@ -693,7 +733,8 @@ const PaymentDetailsStep = () => {
         <div className="items-centerp-2 flex justify-between rounded-lg *:text-2xl">
           <h3 className="font-bold">Total: </h3>
           <span className="font-bold">
-            Rp {packageSelection?.price?.toLocaleString("id-ID") || "0"}
+            Rp {packageSelection?.price?.idr.toLocaleString()} / $
+            {packageSelection?.price?.usd.toLocaleString()}
           </span>
         </div>
 

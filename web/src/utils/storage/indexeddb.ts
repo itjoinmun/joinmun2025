@@ -1,7 +1,10 @@
 interface PaymentData {
   id?: number;
   package: string;
-  payment_amount: number;
+  payment_amount: {
+    usd: number;
+    idr: number;
+  };
   payment_file: File;
   timestamp: number;
   status: "pending" | "submitted" | "failed";
