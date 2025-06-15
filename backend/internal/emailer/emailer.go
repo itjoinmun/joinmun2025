@@ -295,6 +295,136 @@ func (s *EmailService) SendPaymentApprovalEmail(to string) error {
 	return s.SendEmail(msg)
 }
 
+func (s *EmailService) SendRejectionEmail(to string) error {
+	msg := mail.NewMsg()
+	if err := msg.From(s.defaultFrom); err != nil {
+		return err
+	}
+	if err := msg.To(to); err != nil {
+		return err
+	}
+
+	msg.Subject("Registration Rejected - JOINMUN 2025")
+
+	// Create formatted HTML body
+	htmlBody := `
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<title>Registration Rejected</title>
+			<style>
+				.container {
+					width: 100%;
+					max-width: 500px;
+					margin: 0 auto;
+					padding: 20px;
+					border-radius: 10px;
+					box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+					font-family: Arial, sans-serif;
+					background-color: #ffffff;
+				}
+				.header {
+					color: #d9534f;
+					text-align: center;
+				}
+				.content {
+					margin: 20px 0;
+					line-height: 1.5;
+				}
+				.footer {
+					margin-top: 20px;
+					font-size: 12px;
+					color: #666;
+					text-align: center;
+				}
+			</style>
+		</head>
+		<body>
+			<div class="container">
+				<h2 class="header">Registration Rejected</h2>
+				<div class="content">
+					<p>We regret to inform you that your registration for JOINMUN 2025 has been rejected.</p>
+					<p>Unfortunately, your application did not meet the requirements for participation.</p>
+				</div>
+				<div class="footer">
+					<p>Best regards,<br>JOINMUN 2025 Organizing Committee</p>
+					<p>If you have any questions, please contact us at <a href="mailto:eventjoinmun2025@gmail.com">eventjoinmun2025@gmail.com</a></p>
+				</div>
+			</div>
+		</body>
+		</html>`
+
+	msg.SetBodyString(mail.TypeTextPlain, "We regret to inform you that your registration for JOINMUN 2025 has been rejected. Unfortunately, your application did not meet the requirements for participation.")
+	msg.SetBodyString(mail.TypeTextHTML, htmlBody)
+
+	return s.SendEmail(msg)
+}
+
+func (s *EmailService) SendPaymentFailureEmail(to string) error {
+	msg := mail.NewMsg()
+	if err := msg.From(s.defaultFrom); err != nil {
+		return err
+	}
+	if err := msg.To(to); err != nil {
+		return err
+	}
+
+	msg.Subject("Payment Failed - JOINMUN 2025")
+
+	// Create formatted HTML body
+	htmlBody := `
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<title>Payment Failed</title>
+			<style>
+				.container {
+					width: 100%;
+					max-width: 500px;
+					margin: 0 auto;
+					padding: 20px;
+					border-radius: 10px;
+					box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+					font-family: Arial, sans-serif;
+					background-color: #ffffff;
+				}
+				.header {
+					color: #d9534f;
+					text-align: center;
+				}
+				.content {
+					margin: 20px 0;
+					line-height: 1.5;
+				}
+				.footer {
+					margin-top: 20px;
+					font-size: 12px;
+					color: #666;
+					text-align: center;
+				}
+			</style>
+		</head>
+		<body>
+			<div class="container">
+				<h2 class="header">Payment Failed</h2>
+				<div class="content">
+					<p>We regret to inform you that your payment for JOINMUN 2025 has failed.</p>
+					<p>Please contact us for assistance.</p>
+				</div>
+				<div class="footer">
+					<p>Best regards,<br>JOINMUN 2025 Organizing Committee</p>
+					<p>If you have any questions, please contact us at <a href="mailto:eventjoinmun2025@gmail.com">eventjoinmun2025@gmail.com</a></p>
+				</div>
+			</div>
+		</body>
+		</html>`
+
+	msg.SetBodyString(mail.TypeTextPlain, "We regret to inform you that your payment for JOINMUN 2025 has failed. Please contact us for assistance.")
+	msg.SetBodyString(mail.TypeTextHTML, htmlBody)
+
+	return s.SendEmail(msg)
+}
+
 // Helper function to get SMTP port from environment
 func getSMTPPort() int {
 	port := os.Getenv("BREVO_SMTP_PORT")
