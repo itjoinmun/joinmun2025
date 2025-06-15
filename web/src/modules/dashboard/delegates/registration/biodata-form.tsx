@@ -68,10 +68,10 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       name: "email",
       label: "Email",
       placeholder: "Enter your email address",
-      description: "This will be used as your login identifier",
+      description: "This will be used as your login identifier, use a valid email address.",
       validation: z.string().email("Invalid email address").min(1, "Email is required"),
       defaultValue:
-        savedData[0]?.biodata_answer_text || (slug !== "team" && (user?.email as string)),
+        savedData[0]?.biodata_answer_text || (slug !== "team" ? (user?.email as string) : ""),
     },
     {
       id: 2,
@@ -130,9 +130,12 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       name: "identityCard",
       type: "file",
       label: "Identification Card",
-      placeholder: "Upload image of your identification card",
+      placeholder: "Upload image of your identification card (Max 2MB)",
       description: ".pdf, .png, .jpg, .jpeg",
-      validation: z.instanceof(File).optional().or(z.literal("")).or(z.literal(null)),
+      validation:
+      identityCardFileKey
+        ? z.union([z.instanceof(File), z.literal("")])
+        : z.instanceof(File, { message: "You must upload your identification card" }),
       defaultValue: null,
       savedFileKey: identityCardFileKey,
     },

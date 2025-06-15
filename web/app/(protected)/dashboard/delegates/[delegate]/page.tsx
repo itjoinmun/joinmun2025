@@ -77,9 +77,9 @@ const DelegationTeamPage = () => {
         return member && member.biodata_responses && member.biodata_responses.length > 0;
       });
 
-      if (!teamMembers.length) {
+      if (teamMembers.length < 2) {
         setSubmitError(
-          "No complete team members found. Please ensure all team members have completed their registration.",
+          "A team must have at least 2 members to register. Please add more team members.",
         );
         setIsSubmitting(false);
         return;
