@@ -209,38 +209,39 @@ const PaymentPage = () => {
     }
   };
 
+  const allDelegatesConfirmed =
+    delegateFromHook.delegates &&
+    delegateFromHook.delegates.participant_data &&
+    delegateFromHook.delegates.participant_data.length > 0 &&
+    delegateFromHook.delegates.participant_data.every(
+      (delegate) => delegate.confirmed === "confirmed",
+    );
+
+  const paymentInfo = paymentFromHook.payment;
+  let userHasPackage = false;
+
+  if (paymentInfo) {
+    if (paymentInfo.team_members && paymentInfo.team_members.length > 0) {
+      userHasPackage = !!paymentInfo.team_members.find(
+        (member) => member.mun_delegate_email === user?.email,
+      )?.package;
+    } else {
+      userHasPackage = !!paymentInfo.package;
+    }
+  }
+
+  const showPaymentStatus = allDelegatesConfirmed && userHasPackage;
+
   return (
     <PaymentContext.Provider value={{ packageSelection, setPackageSelection }}>
       <DashboardModule>
         <DashboardModuleHeader>
           <DashboardModuleTitle>
-            {delegateFromHook.delegates &&
-            delegateFromHook.delegates.participant_data &&
-            delegateFromHook.delegates.participant_data.length > 0 &&
-            delegateFromHook.delegates.participant_data.every(
-              (delegate) => delegate.confirmed === "confirmed",
-            ) &&
-            paymentFromHook.payment &&
-            paymentFromHook.payment.team_members &&
-            paymentFromHook.payment.team_members.find(
-              (member) => member.mun_delegate_email === user?.email,
-            )?.package
-              ? "Payment Status"
-              : "Registration Status"}
+            {showPaymentStatus ? "Payment Status" : "Registration Status"}
           </DashboardModuleTitle>
         </DashboardModuleHeader>
         <DashboardModuleContent>
-          {delegateFromHook.delegates &&
-          delegateFromHook.delegates.participant_data &&
-          delegateFromHook.delegates.participant_data.length > 0 &&
-          delegateFromHook.delegates.participant_data.every(
-            (delegate) => delegate.confirmed === "confirmed",
-          ) &&
-          paymentFromHook.payment &&
-          paymentFromHook.payment.team_members &&
-          paymentFromHook.payment.team_members.find(
-            (member) => member.mun_delegate_email === user?.email,
-          )?.package ? (
+          {showPaymentStatus ? (
             <ParticipantDataTable
               loading={paymentFromHook.loading}
               participants={paymentFromHook.payment}
