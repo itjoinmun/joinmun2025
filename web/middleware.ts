@@ -118,6 +118,7 @@ async function refreshTokenAndRedirect(request: NextRequest) {
         response.cookies.set({
             name: "access_token",
             value: accessToken.value,
+            domain: accessToken.domain,
             maxAge: accessToken.maxAge || 3600, // 1 hour
             httpOnly: true,
             path: "/",
@@ -128,6 +129,7 @@ async function refreshTokenAndRedirect(request: NextRequest) {
         response.cookies.set({
             name: "refresh_token",
             value: refreshToken.value,
+            domain: refreshToken.domain,
             maxAge: refreshToken.maxAge || 2592000, // 30 days
             httpOnly: true,
             path: "/",
