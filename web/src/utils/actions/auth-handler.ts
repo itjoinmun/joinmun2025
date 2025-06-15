@@ -58,6 +58,12 @@ const forgotPassword = async (data: { email: string }): Promise<{ message: strin
   return res.json();
 };
 
+const clearCookies = async () => {
+  const cookieStore = await cookies();
+  cookieStore.delete("access_token");
+  cookieStore.delete("refresh_token");
+};
+
 const resetPassword = async (data: {
   token: string;
   newPassword: string;
@@ -124,6 +130,7 @@ export {
   register,
   forgotPassword,
   resetPassword,
+  clearCookies,
   getUserProfile,
   getTokensFromCookies,
 };
