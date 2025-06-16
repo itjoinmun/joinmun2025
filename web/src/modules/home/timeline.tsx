@@ -14,7 +14,7 @@ import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-v
 
 const TIMELINE_CONTENT = [
   {
-    date: "Coming Soon",
+    date: "16 June - 14 July",
     title: "Early Bird Registration",
   },
   {
