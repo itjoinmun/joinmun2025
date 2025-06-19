@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import { cn } from "@/utils/helpers/cn";
 import { outfit, plusJakartaSans } from "@/utils/helpers/fonts";
-import getMetadata from "@/utils/helpers/metadata";
+// import getMetadata from "@/utils/helpers/metadata";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import Script from "next/script";
