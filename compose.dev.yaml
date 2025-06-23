@@ -1,30 +1,30 @@
 services:
-    joinmun-web:
-        container_name: joinmun-web
-        build:
-            context: ./web
-            dockerfile: Dockerfile.dev 
+    # joinmun-web:
+    #     container_name: joinmun-web
+    #     build:
+    #         context: ./web
+    #         dockerfile: Dockerfile.dev 
 
-        # Set environment variables based on the .env file
-        env_file:
-            # - .env
-            - web/.env
+    #     # Set environment variables based on the .env file
+    #     env_file:
+    #         # - .env
+    #         - web/.env
 
-        environment:
-            - WATCHPACK_POLLING=true
-            # - CHOKIDAR_USEPOLLING=true
-            - NODE_ENV=development
+    #     environment:
+    #         - WATCHPACK_POLLING=true
+    #         # - CHOKIDAR_USEPOLLING=true
+    #         - NODE_ENV=development
 
-        volumes:
-            - ./web:/app
-            - /app/node_modules
+    #     volumes:
+    #         - ./web:/app
+    #         - /app/node_modules
 
-        restart: always
+    #     restart: always
 
-        ports:
-            - 3000:3000
-        networks:
-            - joinmun-network
+    #     ports:
+    #         - 3000:3000
+    #     networks:
+    #         - joinmun-network
 
     # auth service
     # Database for the auth service

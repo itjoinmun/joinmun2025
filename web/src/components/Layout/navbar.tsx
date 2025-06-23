@@ -46,7 +46,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`bg-background fixed z-40 flex h-16 items-center transition-all duration-500 ease-out ${
+      className={`bg-background fixed z-[99] flex h-16 items-center transition-all duration-500 ease-out ${
         isScrolled
           ? "inset-x-0 top-0 md:inset-x-5 md:top-5 md:rounded-2xl md:drop-shadow-2xl"
           : "inset-x-0 top-0"
