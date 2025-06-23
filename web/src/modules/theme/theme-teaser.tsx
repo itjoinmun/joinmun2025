@@ -36,7 +36,7 @@ const ThemeTeaser = () => {
         <HeroVideoDialog
           className="z-20 block dark:hidden"
           animationStyle="from-bottom"
-          videoSrc="/assets/theme/like him.mp4?autoplay=1&mute=1"
+          videoSrc="/video/Teaser.mov?autoplay=1&mute=1"
           thumbnailSrc="/assets/theme/teaser-thumbnail.webp"
           thumbnailAlt="JOINMUN 2025 Teaser"
         />

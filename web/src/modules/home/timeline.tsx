@@ -113,7 +113,7 @@ const TimelineCard = ({ date, title, index }: { date: string; title: string; ind
     >
       <h2 className="w-full text-center">{date}</h2>
       <motion.div
-        className="my-2 w-full border-b"
+        className="my-2 w-full border-b border-white"
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true, amount: 0.6 }}
