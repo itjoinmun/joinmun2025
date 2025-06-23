@@ -34,12 +34,19 @@ export const EVENTS: EventSection[] = [
         src: "main-event-opening.webp",
         loc: "",
       },
+      // {
+      //   title: "Committee Session",
+      //   location: "Coming Soon",
+      //   date: "1 - 2 Nov",
+      //   src: "main-event-committee-session.webp",
+      //   loc: "Coming Soon",
+      // },
       {
         title: "Committee Session",
-        location: "Coming Soon",
+        location: "at Royal Ambarrukmo",
         date: "1 - 2 Nov",
         src: "main-event-committee-session.webp",
-        loc: "Coming Soon",
+        loc: "https://maps.app.goo.gl/r4EfgQtxUd5r46DU9",
       },
       {
         title: "Networking Night",
@@ -68,13 +75,6 @@ export const EVENTS: EventSection[] = [
       //   date: "31 Oct",
       //   src: "main-event-opening.webp",
       //   loc: "https://maps.app.goo.gl/dteZUHp4wAyvuUEs8",
-      // },
-      // {
-      //   title: "Committee Session",
-      //   location: "at Royal Ambarrukmo",
-      //   date: "1 - 2 Nov",
-      //   src: "main-event-committee-session.webp",
-      //   loc: "https://maps.app.goo.gl/r4EfgQtxUd5r46DU9",
       // },
       // {
       //   title: "Networking Night",

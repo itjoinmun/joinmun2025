@@ -116,27 +116,6 @@ const PaymentPage = () => {
     }
   };
 
-  // const handleSelect = (
-  //   accomType: "accommodation" | "nonAccommodation",
-  //   price: { idr: string; usd: string },
-  // ) => {
-  //   const idr = Number(price.idr.replace("Rp", "").replace(/\./g, ""));
-  //   const usd = Number(price.usd.replace("$", ""));
-
-  //   const selection: PackageSelection = {
-  //     type,
-  //     participantType,
-  //     accommodationType: accomType === "accommodation" ? "with_accommodation" : "non_accommodation",
-  //     price: {
-  //       usd,
-  //       idr,
-  //     },
-  //     teamPackage: participantType === "team_delegate" ? getTeamPackage() : undefined,
-  //   };
-
-  //   setPackageSelection(selection);
-  // };
-
   const handleSubmit = async (paymentFile: File) => {
     if (!packageSelection) {
       setSubmitError("Please select a package first");
