@@ -5,11 +5,12 @@ import (
 	"backend/internal/s3"
 	dashboardService "backend/internal/service/dashboard"
 	"backend/pkg/utils/dashboard"
+	"backend/pkg/utils/helper"
 	"encoding/json"
 	"fmt"
-	"path/filepath"
-
 	"net/http"
+	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,6 +29,18 @@ func NewDashboardHandler(dashboardService dashboardService.DashboardService, upl
 
 // register the delegates will accept
 func (h *DashboardHandler) InsertDelegatesHandler(c *gin.Context) {
+	now := time.Now()
+
+	valid, phase, err := helper.TimeValidator(now)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate time", "details": err.Error()})
+		return
+	}
+	if !valid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Registration is not open", "phase": phase})
+		return
+	}
+
 	// Initialize the struct to hold the request data
 	type DelegateWithResponses struct {
 		MUNDelegates     dashboardModel.MUNDelegates       `json:"mun_delegates"`
@@ -202,6 +215,17 @@ func cleanupFiles(uploader *s3.S3Uploader, fileKeys []string) {
 }
 
 func (h *DashboardHandler) InsertAdvisorOrObserverHandler(c *gin.Context) {
+	now := time.Now()
+	valid, phase, err := helper.TimeValidator(now)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate time", "details": err.Error()})
+		return
+	}
+	if !valid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Registration is not open", "phase": phase})
+		return
+	}
+
 	type AdvisorOrObserverStruct struct {
 		AdvisorOrObserver *dashboardModel.MUNDelegates      `json:"mun_delegates"`
 		BiodataResponses  []dashboardModel.BiodataResponses `json:"biodata_responses"`
