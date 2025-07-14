@@ -900,7 +900,7 @@ const RegistrationDataTable = ({
                   ? "Approved"
                   : delegate.confirmed === "rejected"
                     ? "Rejected"
-                    : "Pending"}
+                    : "Registration Success, Waiting for Admin Approval"}
               </span>
             </TableCell>
           </TableRow>
