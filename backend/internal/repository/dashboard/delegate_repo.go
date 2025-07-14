@@ -40,6 +40,7 @@ func (r *delegateRepo) GetDelegatesByTeamID(teamID string) ([]dashboard.MUNDeleg
 	, md.confirmed 
 	, md.confirmed_date
 	, md.participant_type
+	, md.insert_date
 	FROM mun_delegates md 
 	JOIN mun_team_members mtm ON md.mun_delegate_email = mtm.mun_delegate_email WHERE mtm.mun_team_id = $1`
 	err := r.db.Select(&delegates, query, teamID)

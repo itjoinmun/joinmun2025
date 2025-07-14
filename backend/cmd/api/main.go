@@ -123,7 +123,7 @@ func main() {
 
 	// Start server in a goroutine
 	go func() {
-		logger.Log.Info().Msg("Server starting on port " + port)
+		logger.Log.Info().Msg("Server starting on port" + port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Log.Fatal().Err(err).Msg("Server failed to start")
 		}

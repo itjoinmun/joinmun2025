@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -16,14 +15,11 @@ const (
 
 func TimeValidator(timeNow time.Time) (bool, RegistrationPhase, error) {
 	// Use Asia/Jakarta timezone
-	loc, err := time.LoadLocation("Asia/Jakarta")
-	if err != nil {
-		return false, "", fmt.Errorf("failed to load timezone: %w", err)
-	}
+	loc := time.FixedZone("Bangkok", 7*60*60) // UTC+7
 
 	// Define the registration windows in Jakarta time
 	earlyBirdStart := time.Date(2025, 5, 16, 0, 0, 0, 0, loc)
-	earlyBirdEnd := time.Date(2025, 7, 14, 23, 59, 59, 0, loc)
+	earlyBirdEnd := time.Date(2025, 7, 15, 1, 0, 0, 0, loc)
 
 	regularStart := time.Date(2025, 7, 28, 0, 0, 0, 0, loc)
 	regularEnd := time.Date(2025, 8, 24, 23, 59, 59, 0, loc)
