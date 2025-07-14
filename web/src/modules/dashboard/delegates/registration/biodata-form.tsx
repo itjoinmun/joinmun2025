@@ -105,7 +105,14 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       name: "phoneNumber",
       label: "Phone Number",
       placeholder: "Enter your phone number",
-      validation: z.string().min(1, "Phone number is required"),
+      description: "Example: '+628...', '(+1) 890...', or '081...'",
+      validation: z
+        .string()
+        .min(1, "Phone number is required")
+        .regex(
+          /^(\+?\d{1,3}|\(\+\d{1,3}\))?\s?\d{5,}$/,
+          "Invalid phone number format. Example: '+6281234567890', '(+1) 8903212345', or '07879878'",
+        ),
       defaultValue: savedData[4]?.biodata_answer_text || "",
     },
     {
@@ -132,8 +139,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       label: "Identification Card",
       placeholder: "Upload image of your identification card (Max 2MB)",
       description: ".pdf, .png, .jpg, .jpeg format with Max. 2MB",
-      validation:
-      identityCardFileKey
+      validation: identityCardFileKey
         ? z.union([z.instanceof(File), z.literal("")])
         : z.instanceof(File, { message: "You must upload your identification card" }),
       defaultValue: null,
