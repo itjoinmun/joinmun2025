@@ -131,7 +131,7 @@ const BiodataForm = ({ slug, index = 0 }: { slug: DelegateOptions; index?: numbe
       type: "file",
       label: "Identification Card",
       placeholder: "Upload image of your identification card (Max 2MB)",
-      description: ".pdf, .png, .jpg, .jpeg",
+      description: ".pdf, .png, .jpg, .jpeg format with Max. 2MB",
       validation:
       identityCardFileKey
         ? z.union([z.instanceof(File), z.literal("")])
