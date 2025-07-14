@@ -19,7 +19,8 @@ func TimeValidator(timeNow time.Time) (bool, RegistrationPhase, error) {
 
 	// Define the registration windows in Jakarta time
 	earlyBirdStart := time.Date(2025, 5, 16, 0, 0, 0, 0, loc)
-	earlyBirdEnd := time.Date(2025, 7, 15, 1, 0, 0, 0, loc)
+	earlyBirdEnd := time.Date(2025, 7, 15, 1, 30, 0, 0, loc)
+
 	regularStart := time.Date(2025, 7, 28, 0, 0, 0, 0, loc)
 	regularEnd := time.Date(2025, 8, 24, 23, 59, 59, 0, loc)
 
