@@ -546,11 +546,13 @@ const PaymentWithApprovalCheck = ({
 // Step 1: Package Selection
 const PackageSelectionStep = () => {
   const { packageSelection, setPackageSelection } = useContext(PaymentContext);
-  const { delegates } = useDelegatesApprovalStatus();
-
+  const { delegates, loading } = useDelegatesApprovalStatus();
+  if (loading || !delegates?.participant_data?.[0]?.insert_date) {
+    return <p className="animate-pulse">Loading...</p>;
+  }
   // Get number of delegates for team pricing
   const numberOfDelegates = delegates?.participant_data?.length || 0;
-  //const delegateDate = delegates?.participant_data?.[0]?.insert_date;
+  const delegateTime = delegates?.participant_data?.[0]?.insert_date;
 
   // Determine which package to use based on number of delegates
   const getTeamPackage = () => {
@@ -561,7 +563,7 @@ const PackageSelectionStep = () => {
   };
 
   // Get current wave and map it to package type
-  const currentWave = getCurrentPaymentPhase();
+  const currentWave = getCurrentPaymentPhase(delegateTime);
   const type: "EarlyBird" | "Regular" | "Late" =
     currentWave === "Early Bird"
       ? "EarlyBird"
