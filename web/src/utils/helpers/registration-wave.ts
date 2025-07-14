@@ -1,27 +1,25 @@
-import { toZonedTime } from "date-fns-tz";
-
 export const getCurrentPaymentPhase = () => {
-  const timeZone = "Asia/Jakarta";
-  const now = new Date();
-  const currentDate = toZonedTime(now, timeZone);
+  const now = new Date(); // UTC sekarang
 
-  const earlyBirdStart = toZonedTime(new Date("2025-05-16T00:00:00Z"), timeZone); // Timeline Testing
-  // const earlyBirdStart = toZonedTime(new Date("2025-06-16T00:00:00Z"), timeZone); // Timeline Asli
-  const earlyBirdEnd = toZonedTime(new Date("2025-07-15T01:30:00Z"), timeZone);
+  // WIB = UTC+7, jadi WIB 00:00:00 = UTC 17:00:00 (hari sebelumnya)
+  const earlyBirdStart = new Date(Date.UTC(2025, 4, 15, 17, 0, 0)); // 2025-05-16 00:00:00 WIB
+  const earlyBirdEnd = new Date(Date.UTC(2025, 6, 14, 18, 30, 0)); // 2025-07-14 23:59:59 WIB
 
-  const regularStart = toZonedTime(new Date("2025-07-28T00:00:00Z"), timeZone);
-  const regularEnd = toZonedTime(new Date("2025-08-24T23:59:59Z"), timeZone);
+  const regularStart = new Date(Date.UTC(2025, 6, 27, 17, 0, 0)); // 2025-07-28 00:00:00 WIB
+  const regularEnd = new Date(Date.UTC(2025, 7, 24, 16, 59, 59)); // 2025-08-24 23:59:59 WIB
 
-  const lateStart = toZonedTime(new Date("2025-09-08T00:00:00Z"), timeZone);
-  const lateEnd = toZonedTime(new Date("2025-09-29T23:59:59Z"), timeZone);
+  const lateStart = new Date(Date.UTC(2025, 8, 7, 17, 0, 0)); // 2025-09-08 00:00:00 WIB
+  const lateEnd = new Date(Date.UTC(2025, 8, 29, 16, 59, 59)); // 2025-09-29 23:59:59 WIB
 
-  if (currentDate >= earlyBirdStart && currentDate <= earlyBirdEnd) {
+  if (now >= earlyBirdStart && now <= earlyBirdEnd) {
     return "Early Bird";
-  } else if (currentDate >= earlyBirdEnd && currentDate <= regularStart) {
+  } else if (now > earlyBirdEnd && now < regularStart) {
     return "Closed After Early Bird";
-  } else if (currentDate >= regularStart && currentDate <= regularEnd) {
+  } else if (now >= regularStart && now <= regularEnd) {
     return "Regular";
-  } else if (currentDate >= lateStart && currentDate <= lateEnd) {
+  } else if (now > regularEnd && now < lateStart) {
+    return "Closed After Regular";
+  } else if (now >= lateStart && now <= lateEnd) {
     return "Late";
   } else {
     return "Closed";
