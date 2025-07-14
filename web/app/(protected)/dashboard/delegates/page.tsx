@@ -33,7 +33,7 @@ const DelegatesPage = () => {
           Welcome to Registration, choose role to see more information
         </DashboardPageDescription>
       </DashboardPageHeader>
-      {getCurrentPaymentPhase() === "Closed" ? (
+      {getCurrentPaymentPhase() === "Closed After Early Bird" ? (
         <>
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <h1 className="mb-4 text-2xl font-bold">
@@ -46,6 +46,24 @@ const DelegatesPage = () => {
               If you have already registered during the Early Bird phase, please wait for the
               verification process. You may still proceed with your payment. If you haven&apos;t
               registered yet, please wait for the Regular Wave Registration to open on July 28th.
+              <br />
+              <br />
+              Thank you for your understanding.
+            </p>
+          </div>
+        </>
+      ) : getCurrentPaymentPhase() === "Closed" ? (
+        <>
+          <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+            <h1 className="mb-4 text-2xl font-bold">
+              <span className="flex items-center gap-2">
+                Registration Has Closed
+                <SquareXIcon className="size-10" />
+              </span>
+            </h1>
+            <p className="max-w-2xl text-sm sm:text-base lg:max-w-3xl lg:text-lg">
+              If you have already registered, please wait for the verification process. You may
+              still proceed with your payment.
               <br />
               <br />
               Thank you for your understanding.

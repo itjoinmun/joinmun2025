@@ -17,6 +17,8 @@ export const getCurrentPaymentPhase = () => {
 
   if (currentDate >= earlyBirdStart && currentDate <= earlyBirdEnd) {
     return "Early Bird";
+  } else if (currentDate >= earlyBirdEnd && currentDate <= regularStart) {
+    return "Closed After Early Bird";
   } else if (currentDate >= regularStart && currentDate <= regularEnd) {
     return "Regular";
   } else if (currentDate >= lateStart && currentDate <= lateEnd) {
