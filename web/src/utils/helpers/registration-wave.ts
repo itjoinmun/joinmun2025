@@ -7,7 +7,7 @@ export const getCurrentPaymentPhase = () => {
 
   const earlyBirdStart = toZonedTime(new Date("2025-05-16T00:00:00Z"), timeZone); // Timeline Testing
   // const earlyBirdStart = toZonedTime(new Date("2025-06-16T00:00:00Z"), timeZone); // Timeline Asli
-  const earlyBirdEnd = toZonedTime(new Date("2025-07-15T00:30:00Z"), timeZone);
+  const earlyBirdEnd = toZonedTime(new Date("2025-07-15T01:30:00Z"), timeZone);
 
   const regularStart = toZonedTime(new Date("2025-07-28T00:00:00Z"), timeZone);
   const regularEnd = toZonedTime(new Date("2025-08-24T23:59:59Z"), timeZone);

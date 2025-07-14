@@ -550,7 +550,7 @@ const PackageSelectionStep = () => {
 
   // Get number of delegates for team pricing
   const numberOfDelegates = delegates?.participant_data?.length || 0;
-  const delegateDate = delegates?.participant_data?.[0]?.insert_date;
+  //const delegateDate = delegates?.participant_data?.[0]?.insert_date;
 
   // Determine which package to use based on number of delegates
   const getTeamPackage = () => {
