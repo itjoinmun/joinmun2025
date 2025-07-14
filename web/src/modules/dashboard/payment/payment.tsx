@@ -550,6 +550,7 @@ const PackageSelectionStep = () => {
 
   // Get number of delegates for team pricing
   const numberOfDelegates = delegates?.participant_data?.length || 0;
+  const delegateDate = delegates?.participant_data?.[0]?.insert_date;
 
   // Determine which package to use based on number of delegates
   const getTeamPackage = () => {
@@ -569,7 +570,6 @@ const PackageSelectionStep = () => {
         : currentWave === "Late"
           ? "Late"
           : "EarlyBird";
-
   // Determine participant type from delegate data
   const participantType: "single_delegate" | "team_delegate" | "observer" | "advisor" =
     delegates?.participant_data?.[0]?.participant_type === "single_delegate" ||
