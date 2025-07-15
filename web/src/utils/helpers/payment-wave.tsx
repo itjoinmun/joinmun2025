@@ -1,4 +1,4 @@
-export const getCurrentPaymentPhase = (delegateTime?: string) => {
+export const getCurrentPhase = () => {
   const now = new Date(); // UTC sekarang
 
   // WIB = UTC+7, jadi WIB 00:00:00 = UTC 17:00:00 (hari sebelumnya)
@@ -11,21 +11,15 @@ export const getCurrentPaymentPhase = (delegateTime?: string) => {
   const lateStart = new Date(Date.UTC(2025, 8, 7, 17, 0, 0)); // 2025-09-08 00:00:00 WIB
   const lateEnd = new Date(Date.UTC(2025, 8, 29, 16, 59, 59)); // 2025-09-29 23:59:59 WIB
 
-  const delegateDate = delegateTime ? new Date(delegateTime) : null;
-
-  if (
-    (delegateDate && delegateDate <= earlyBirdEnd) ||
-    (now >= earlyBirdStart && now <= earlyBirdEnd)
-  ) {
+  if (now >= earlyBirdStart && now <= earlyBirdEnd) {
     return "Early Bird";
-  } else if (now >= earlyBirdEnd && now <= regularStart) {
+  } else if (now > earlyBirdEnd && now < regularStart) {
     return "Closed After Early Bird";
-  } else if (
-    (delegateDate && delegateDate <= regularEnd) ||
-    (now >= regularStart && now <= regularEnd)
-  ) {
+  } else if (now >= regularStart && now <= regularEnd) {
     return "Regular";
-  } else if ((delegateDate && delegateDate <= lateEnd) || (now >= lateStart && now <= lateEnd)) {
+  } else if (now > regularEnd && now < lateStart) {
+    return "Closed After Regular";
+  } else if (now >= lateStart && now <= lateEnd) {
     return "Late";
   } else {
     return "Closed";

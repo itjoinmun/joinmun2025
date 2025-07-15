@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
 import { DelegateOptions, DELEGATES } from "@/utils/helpers/delegates";
 import { pricePackage } from "@/utils/helpers/price-package";
-import { getCurrentPaymentPhase } from "@/utils/helpers/registration-wave";
 import { isPriceReveal } from "@/utils/helpers/reveal";
 import { useState } from "react";
 import * as motion from "motion/react-client";
+import { getCurrentPhase } from "@/utils/helpers/payment-wave";
 
 // Type definitions for package structures
 interface PackageOption {
@@ -46,7 +46,7 @@ const Pricing = () => {
   const [active, setActive] = useState<DelegateOptions>("single");
 
   // Get current wave and map it to package type
-  const currentWave = getCurrentPaymentPhase();
+  const currentWave = getCurrentPhase();
   const type =
     currentWave === "Early Bird"
       ? "EarlyBird"
