@@ -38,7 +38,7 @@ const DelegatesPage = () => {
         <>
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <h1 className="mb-4 text-2xl font-bold">
-              <span className="flex items-center gap-2">
+              <span className="flex flex-col-reverse md:flex-row items-center gap-2">
                 Early Bird Registration Has Closed
                 <SquareXIcon className="size-10" />
               </span>
@@ -57,7 +57,7 @@ const DelegatesPage = () => {
         <>
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <h1 className="mb-4 text-2xl font-bold">
-              <span className="flex items-center gap-2">
+              <span className="flex flex-col-reverse md:flex-row items-center gap-2">
                 Regular Wave Registration Has Closed
                 <SquareXIcon className="size-10" />
               </span>
@@ -76,7 +76,7 @@ const DelegatesPage = () => {
         <>
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <h1 className="mb-4 text-2xl font-bold">
-              <span className="flex items-center gap-2">
+              <span className="flex flex-col-reverse md:flex-row items-center gap-2">
                 Registration Has Closed
                 <SquareXIcon className="size-10" />
               </span>
