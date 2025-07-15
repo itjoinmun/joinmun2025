@@ -41,3 +41,25 @@ func TimeValidator(timeNow time.Time) (bool, RegistrationPhase, error) {
 		return false, DefaultPhase, nil
 	}
 }
+
+func GetWaveDates(wave string) (*time.Time, *time.Time, error) {
+	loc := time.FixedZone("Bangkok", 7*60*60) // UTC+7
+
+	var start, end time.Time
+
+	switch wave {
+	case "earlybird":
+		start = time.Date(2025, 6, 16, 0, 0, 0, 0, loc)
+		end = time.Date(2025, 7, 14, 23, 59, 59, 0, loc)
+	case "regular":
+		start = time.Date(2025, 7, 28, 0, 0, 0, 0, loc)
+		end = time.Date(2025, 8, 24, 23, 59, 59, 0, loc)
+	case "late":
+		start = time.Date(2025, 9, 1, 0, 0, 0, 0, loc)
+		end = time.Date(2025, 9, 29, 23, 59, 59, 0, loc)
+	default:
+		return nil, nil, nil // No filtering if invalid or unspecified wave
+	}
+
+	return &start, &end, nil
+}

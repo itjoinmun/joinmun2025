@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"backend/pkg/utils"
+	"backend/pkg/utils/helper"
 	"backend/pkg/utils/logger"
 	"fmt"
 
@@ -376,22 +377,10 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string) ([]Amalgamat
 func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string) ([]paymentModel.TeamPaymentSummary, error) {
 	var startDate, endDate *time.Time
 
-	switch timeWave {
-	case "earlybird":
-		start := time.Date(2025, 6, 16, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 7, 14, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "regular":
-		start := time.Date(2025, 7, 28, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 8, 24, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "late":
-		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	default:
-		// nil means no filter
-		startDate, endDate = nil, nil
+	startDate, endDate, err := helper.GetWaveDates(timeWave)
+	if err != nil {
+		logger.LogError(err, "Failed to get wave dates", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
+		return nil, err
 	}
 
 	teamPaymentSummaries, err := s.adminRepo.GetTeamPaymentSummaries(delegateType, startDate, endDate)
@@ -419,23 +408,10 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 }
 
 func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string) ([]delegateModel.TeamDelegateGroup, error) {
-	var startDate, endDate *time.Time
-
-	switch timeWave {
-	case "earlybird":
-		start := time.Date(2025, 6, 16, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 7, 14, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "regular":
-		start := time.Date(2025, 7, 28, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 8, 24, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "late":
-		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	default:
-		startDate, endDate = nil, nil
+	startDate, endDate, err := helper.GetWaveDates(timeWave)
+	if err != nil {
+		logger.LogError(err, "Failed to get wave dates", map[string]interface{}{"layer": "service", "operation": "GetDelegatesByTeam"})
+		return nil, err
 	}
 
 	teamDelegates, err := s.adminRepo.GetDelegatesByTeam(delegateType, startDate, endDate)
@@ -449,23 +425,11 @@ func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string) ([]dele
 }
 
 func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel.TeamPositionPaperGroup, error) {
-	var startDate, endDate *time.Time
 
-	switch timeWave {
-	case "earlybird":
-		start := time.Date(2025, 6, 16, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 7, 14, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "regular":
-		start := time.Date(2025, 7, 28, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 8, 24, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	case "late":
-		start := time.Date(2025, 9, 1, 0, 0, 0, 0, time.UTC)
-		end := time.Date(2025, 9, 29, 23, 59, 59, 0, time.UTC)
-		startDate, endDate = &start, &end
-	default:
-		startDate, endDate = nil, nil
+	startDate, endDate, err := helper.GetWaveDates(timeWave)
+	if err != nil {
+		logger.LogError(err, "Failed to get wave dates", map[string]interface{}{"layer": "service", "operation": "GetPositionPapersByTeam"})
+		return nil, err
 	}
 
 	teamPapers, err := s.adminRepo.GetPositionPapersByTeam(startDate, endDate)
