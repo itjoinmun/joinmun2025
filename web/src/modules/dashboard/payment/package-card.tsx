@@ -32,6 +32,7 @@ interface PackageOption {
 
 interface PackageCardProps {
   participantType: ParticipantType;
+  delegateDate?: string;
   onSelect: (type: AccommodationType, price: { idr: string; usd: string }) => void;
   selectedType?: AccommodationType;
   teamPackage?: "packageA" | "packageB" | "packageC" | "packageD";
@@ -39,12 +40,13 @@ interface PackageCardProps {
 
 const PaymentPackageCard = ({
   participantType,
+  delegateDate,
   onSelect,
   selectedType,
   teamPackage,
 }: PackageCardProps) => {
   // Get current wave and map it to package type
-  const currentWave = getCurrentPaymentPhase();
+  const currentWave = getCurrentPaymentPhase(delegateDate);
   const type: PackageType =
     currentWave === "Early Bird"
       ? "EarlyBird"

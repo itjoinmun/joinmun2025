@@ -12,27 +12,18 @@ export const getCurrentPaymentPhase = (delegateTime?: string) => {
   const lateEnd = new Date(Date.UTC(2025, 8, 29, 16, 59, 59)); // 2025-09-29 23:59:59 WIB
 
   const delegateDate = delegateTime ? new Date(delegateTime) : null;
-  if (delegateTime) {
-    console.log("Current Date:", now);
-    console.log("Delegate Date:", delegateDate);
-    console.log("delegateTime:", delegateTime);
-    console.log("Early Bird End:", earlyBirdEnd);
-  }
 
   if (
     (delegateDate && delegateDate <= earlyBirdEnd) ||
     (now >= earlyBirdStart && now <= earlyBirdEnd)
   ) {
-    console.log("Early Bird Phase");
     return "Early Bird";
   } else if (now >= earlyBirdEnd && now <= regularStart) {
-    console.log("Closed After Early Bird Phase");
     return "Closed After Early Bird";
   } else if (
     (delegateDate && delegateDate <= regularEnd) ||
     (now >= regularStart && now <= regularEnd)
   ) {
-    console.log("Regular Phase");
     return "Regular";
   } else if ((delegateDate && delegateDate <= lateEnd) || (now >= lateStart && now <= lateEnd)) {
     return "Late";

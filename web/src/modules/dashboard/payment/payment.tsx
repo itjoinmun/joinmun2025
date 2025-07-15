@@ -608,7 +608,6 @@ const PackageSelectionStep = () => {
       },
       teamPackage: participantType === "team_delegate" ? getTeamPackage() : undefined,
     };
-
     setPackageSelection(selection);
   };
 
@@ -616,6 +615,7 @@ const PackageSelectionStep = () => {
     <div className="flex justify-center">
       <PaymentPackageCard
         participantType={participantType}
+        delegateDate={delegateTime}
         onSelect={handleSelect}
         selectedType={selectedType}
         teamPackage={participantType === "team_delegate" ? getTeamPackage() : undefined}
