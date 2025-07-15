@@ -13,7 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DelegatesCompanion from "@/modules/dashboard/delegates/delegates-companion";
 import DelegatesParticipant from "@/modules/dashboard/delegates/delegates-participant";
 import YourRole from "@/modules/dashboard/delegates/your-role";
-import { getCurrentPaymentPhase } from "@/utils/helpers/registration-wave";
+import { getCurrentPhase } from "@/utils/helpers/payment-wave";
+
 import { SquareXIcon } from "lucide-react";
 import { Suspense } from "react";
 
@@ -33,7 +34,7 @@ const DelegatesPage = () => {
           Welcome to Registration, choose role to see more information
         </DashboardPageDescription>
       </DashboardPageHeader>
-      {getCurrentPaymentPhase() === "Closed After Early Bird" ? (
+      {getCurrentPhase() === "Closed After Early Bird" ? (
         <>
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <h1 className="mb-4 text-2xl font-bold">
@@ -52,7 +53,26 @@ const DelegatesPage = () => {
             </p>
           </div>
         </>
-      ) : getCurrentPaymentPhase() === "Closed" ? (
+      ) : getCurrentPhase() === "Closed After Regular" ? (
+        <>
+          <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+            <h1 className="mb-4 text-2xl font-bold">
+              <span className="flex items-center gap-2">
+                Regular Wave Registration Has Closed
+                <SquareXIcon className="size-10" />
+              </span>
+            </h1>
+            <p className="max-w-2xl text-sm sm:text-base lg:max-w-3xl lg:text-lg">
+              If you have already registered during the Regular phase, please wait for the
+              verification process. You may still proceed with your payment. If you haven&apos;t
+              registered yet, please wait for the Late Wave Registration to open soon.
+              <br />
+              <br />
+              Thank you for your understanding.
+            </p>
+          </div>
+        </>
+      ) : getCurrentPhase() === "Closed" ? (
         <>
           <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
             <h1 className="mb-4 text-2xl font-bold">
