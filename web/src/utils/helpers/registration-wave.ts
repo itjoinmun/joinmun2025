@@ -18,8 +18,6 @@ export const getCurrentPaymentPhase = (delegateTime?: string) => {
     (now >= earlyBirdStart && now <= earlyBirdEnd)
   ) {
     return "Early Bird";
-  } else if (now >= earlyBirdEnd && now <= regularStart) {
-    return "Closed After Early Bird";
   } else if (
     (delegateDate && delegateDate <= regularEnd) ||
     (now >= regularStart && now <= regularEnd)
