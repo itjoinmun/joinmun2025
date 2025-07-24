@@ -31,5 +31,10 @@ func InitializeAdminRoutes(r *gin.Engine, adminHandler *admin.AdminHandler) *gin
 		adminPage.GET("/delegates", adminHandler.GetDelegatesHandler)
 		adminPage.GET("/responses", adminHandler.GetAmalgamatedResponsesHandler)
 	}
+
+	adminEmail := admin.Group("/email")
+	{
+		adminEmail.POST("/send-payment-reminder", adminHandler.SendPaymentReminderEmailHandler)
+	}
 	return r
 }

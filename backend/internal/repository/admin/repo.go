@@ -23,8 +23,8 @@ type AdminRepo interface {
 	GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time) ([]payment.TeamPaymentSummary, error)
 	GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time) ([]dashboard.TeamDelegateGroup, error)
 	GetPositionPapersByTeam(startDate, endDate *time.Time) ([]position.TeamPositionPaperGroup, error)
+	GetUnpaidDelegateEmails() ([]string, error)
 }
-
 type adminRepo struct {
 	db *sqlx.DB
 }
@@ -601,4 +601,22 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time) ([]po
 	}
 
 	return teamGroups, nil
+}
+
+func (r *adminRepo) GetUnpaidDelegateEmails() ([]string, error) {
+	var emails []string
+	query := `
+		SELECT mun_delegate_email
+		FROM payment
+		WHERE payment_file = ''
+	`
+	err := r.db.Select(&emails, query)
+	if err != nil {
+		logger.LogError(err, "Failed to get unpaid delegate emails", map[string]interface{}{
+			"layer":     "repository",
+			"operation": "repo.GetUnpaidDelegateEmails",
+		})
+		return nil, err
+	}
+	return emails, nil
 }
