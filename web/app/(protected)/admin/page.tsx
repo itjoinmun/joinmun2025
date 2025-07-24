@@ -7,13 +7,14 @@ import {
   DashboardModuleHeader,
 } from "@/components/dashboard/dashboard-module";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Download } from "lucide-react";
+import { AlertCircle, Download, Upload } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   getDelegatesByTeam,
   getPaymentsByTeam,
   getPositionPapersByTeam,
   downloadResponsesCSV,
+  sendPaymentReminderEmail,
 } from "@/utils/helpers/fetch/admin/admin";
 import {
   TeamDelegateGroup,
@@ -231,6 +232,7 @@ const DashboardAdmin = () => {
   const [timeWave, setTimeWave] = useState<TimeWave>("all");
   const [activeTab, setActiveTab] = useState<TabType>("delegates");
   const [downloading, setDownloading] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   // ==================== CUSTOM HOOKS ====================
   const { pages, updatePage, resetPagination } = usePagination();
@@ -314,6 +316,16 @@ const DashboardAdmin = () => {
     }
   }, [delegateType]);
 
+  const handleSendEmail = useCallback(async () => {
+    try {
+      setSendingEmail(true);
+      await sendPaymentReminderEmail();
+    } catch (error) {
+      console.error("Error sending email:", error);
+    } finally {
+      setSendingEmail(false);
+    }
+  }, []);
   // ==================== EFFECTS ====================
   // Fetch data when active tab changes
   useEffect(() => {
@@ -338,6 +350,15 @@ const DashboardAdmin = () => {
           <div className="mb-2 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
             <Heading className="hidden sm:block">Admin Dashboard</Heading>
             <div className="flex w-fit items-center justify-between gap-2">
+              <Button 
+                variant="warning"
+                className="flex w-fit items-center gap-2 self-end sm:self-auto"
+                onClick={handleSendEmail}
+                disabled={sendingEmail}
+                >
+                <Upload className="h-4 w-4" />
+                {sendingEmail ? "Sending..." : "Send Payment Reminder Email"}
+                </Button>
               <Button
                 variant="warning"
                 className="flex w-fit items-center gap-2 self-end sm:self-auto"

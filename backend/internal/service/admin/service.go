@@ -9,6 +9,7 @@ import (
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
 	"backend/internal/s3"
+	"sync"
 	"time"
 
 	"backend/pkg/utils"
@@ -70,6 +71,7 @@ type AdminService interface {
 	GetDelegatePaymentResponses(delegateType, timeWave string) ([]paymentModel.TeamPaymentSummary, error)
 	GetDelegatesByTeam(delegateType, timeWave string) ([]delegateModel.TeamDelegateGroup, error)
 	GetPositionPapersByTeam(timeWave string) ([]positionModel.TeamPositionPaperGroup, error)
+	SendPaymentReminderEmail() error
 }
 
 type adminService struct {
@@ -455,4 +457,60 @@ func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel
 
 	logger.LogDebug("Position papers by team retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetPositionPapersByTeam"})
 	return teamPapers, nil
+}
+
+func (s *adminService) SendPaymentReminderEmail() error {
+	emails, err := s.adminRepo.GetUnpaidDelegateEmails()
+	if err != nil {
+		logger.LogError(err, "Failed to get unpaid delegate emails", map[string]interface{}{
+			"layer":     "service",
+			"operation": "SendPaymentReminderEmail",
+		})
+		return err
+	}
+
+	const maxWorkers = 5
+	emailCh := make(chan string)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+
+	failedEmails := make([]string, 0)
+
+	// Start worker pool
+	for i := 0; i < maxWorkers; i++ {
+		wg.Add(1)
+		go func(workerID int) {
+			defer wg.Done()
+			for email := range emailCh {
+				if err := s.emailer.SendPaymentReminderEmail(email); err != nil {
+					logger.LogError(err, "Failed to send payment reminder email", map[string]any{
+						"layer":     "service",
+						"operation": "SendPaymentReminderEmail",
+						"email":     email,
+						"worker":    workerID,
+					})
+					mu.Lock()
+					failedEmails = append(failedEmails, email)
+					mu.Unlock()
+				}
+			}
+		}(i)
+	}
+
+	// Feed the jobs
+	go func() {
+		for _, email := range emails {
+			emailCh <- email
+		}
+		close(emailCh)
+	}()
+
+	// Wait for all workers
+	wg.Wait()
+
+	if len(failedEmails) > 0 {
+		return fmt.Errorf("failed to send payment reminder emails to: %v", failedEmails)
+	}
+
+	return nil
 }

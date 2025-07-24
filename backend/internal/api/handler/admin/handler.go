@@ -390,3 +390,19 @@ func (h *AdminHandler) GetDelegatePositionPaperHandler(c *gin.Context) {
 		"total_teams":    len(teamPapers),
 	})
 }
+
+func (h *AdminHandler) SendPaymentReminderEmailHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok || userContext.Role != "admin" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	err := h.adminService.SendPaymentReminderEmail()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send payment reminder email", "details": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Payment reminder email sent successfully"})
+}
