@@ -3,7 +3,7 @@ export const getCurrentPaymentPhase = (delegateTime?: string) => {
 
   // WIB = UTC+7, jadi WIB 00:00:00 = UTC 17:00:00 (hari sebelumnya)
   const earlyBirdStart = new Date(Date.UTC(2025, 4, 15, 17, 0, 0)); // 2025-05-16 00:00:00 WIB
-  const earlyBirdEnd = new Date(Date.UTC(2025, 6, 15, 14, 30, 0)); // 2025-07-14 23:59:59 WIB
+  const earlyBirdEnd = new Date(Date.UTC(2025, 6, 15, 14, 50, 0)); // 2025-07-14 23:59:59 WIB
 
   const regularStart = new Date(Date.UTC(2025, 6, 27, 17, 0, 0)); // 2025-07-28 00:00:00 WIB
   const regularEnd = new Date(Date.UTC(2025, 7, 24, 16, 59, 59)); // 2025-08-24 23:59:59 WIB
@@ -18,8 +18,6 @@ export const getCurrentPaymentPhase = (delegateTime?: string) => {
     (now >= earlyBirdStart && now <= earlyBirdEnd)
   ) {
     return "Early Bird";
-  } else if (now >= earlyBirdEnd && now <= regularStart) {
-    return "Closed After Early Bird";
   } else if (
     (delegateDate && delegateDate <= regularEnd) ||
     (now >= regularStart && now <= regularEnd)
