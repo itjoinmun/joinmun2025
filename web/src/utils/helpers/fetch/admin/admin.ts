@@ -239,3 +239,17 @@ export const downloadResponsesCSV = async (
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
 };
+
+export const sendPaymentReminderEmail = async () => {
+  const response = await fetch(`${API_BASE_URL}/email/send-payment-reminder`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to send payment reminder email: ${response.statusText}`);
+  }
+
+  return response.json();
+}
