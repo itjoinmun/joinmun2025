@@ -441,44 +441,90 @@ func (s *EmailService) SendPaymentReminderEmail(to string) error {
 		<!DOCTYPE html>
 		<html>
 		<head>
-			<title>Payment Reminder</title>
+			<title>Payment Reminder - JOINMUN 2025</title>
 			<style>
+				body {
+					background-color: #f9f9f9;
+					margin: 0;
+					padding: 0;
+					font-family: 'Arial', sans-serif;
+					color: #1f1f1f;
+				}
 				.container {
 					width: 100%;
-					max-width: 500px;
-					margin: 0 auto;
-					padding: 20px;
-					border-radius: 10px;
-					box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-					font-family: Arial, sans-serif;
+					max-width: 600px;
+					margin: 40px auto;
+					padding: 30px;
 					background-color: #ffffff;
+					border-radius: 12px;
+					box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 				}
 				.header {
 					color: #f0ad4e;
 					text-align: center;
+					font-size: 24px;
+					font-weight: bold;
+					margin-bottom: 20px;
 				}
 				.content {
-					margin: 20px 0;
-					line-height: 1.5;
+					font-size: 15px;
+					line-height: 1.7;
+				}
+				.content p {
+					margin-bottom: 16px;
+				}
+				.highlight {
+					background-color: #fff3d4;
+					padding: 10px;
+					border-left: 4px solid #f0ad4e;
+					border-radius: 6px;
+					margin: 16px 0;
+				}
+				.info {
+					background-color: #f8f9fa;
+					border-radius: 8px;
+					padding: 12px 16px;
+					margin: 16px 0;
+					border-left: 4px solid #f0ad4e;
 				}
 				.footer {
-					margin-top: 20px;
-					font-size: 12px;
-					color: #666;
 					text-align: center;
+					font-size: 13px;
+					color: #777;
+					margin-top: 30px;
+				}
+				a {
+					color: #f0ad4e;
+					text-decoration: none;
 				}
 			</style>
 		</head>
 		<body>
 			<div class="container">
-				<h2 class="header">Payment Reminder</h2>
 				<div class="content">
-					<p>This is a friendly reminder that your payment for JOINMUN 2025 is due soon.</p>
-					<p>Please ensure that you complete the payment to secure your registration.</p>
+					<p>Dear Participants,</p>
+					<p>We hope this message finds you well.</p>
+					<p class="highlight">
+						This is a friendly reminder that the payment for <strong>JOINMUN 2025</strong> is due <strong>tomorrow, 28 July 2025</strong>. According to our records, we have not yet received your payment.
+					</p>
+					<p>To secure your participation, kindly complete your payment before the deadline.</p>
+					<div class="info">
+						Bank Name: Bank Mandiri<br>
+						Account Number: 1370025432184<br>
+						Account Holder: Drasthya Wironegoro
+					</div>
+					<p>Once your payment is completed, please upload your proof of payment through our website: <a href="https://joinmun.id" target="_blank">joinmun.id</a>.</p>
+					<p>If you have already made the payment and uploaded your proof, you may kindly disregard this email.</p>
+					<p>For any issues or questions, feel free to contact us via WhatsApp:</p>
+					<div class="info">
+						Ticketing: +62 821-3495-5541 (Raras)<br>
+						Accommodation: +62 813-9156-0441 (Rajwa)
+					</div>
+					<p>Thank you for your prompt attention, and we&apos;re excited to welcome you to <strong>JOINMUN 2025</strong>!</p>
+					<p>Best regards,<br><strong>JOINMUN 2025 Organizing Committee</strong></p>
 				</div>
 				<div class="footer">
-					<p>Best regards,<br>JOINMUN 2025 Organizing Committee</p>
-					<p>If you have any questions, please contact us at <a href="mailto:eventjoinmun2025@gmail.com">eventjoinmun2025@gmail.com</a></p>
+					Need help? Contact us at <a href="https://instagram.com/joinmun.ugm/">@joinmun.ugm on Instagram</a>
 				</div>
 			</div>
 		</body>
