@@ -272,7 +272,7 @@ export const pricePackage = {
           label: "Non-Accommodation",
           price: {
             usd: "124",
-            idr: "1.40.000",
+            idr: "1.400.000",
           },
           description: "Per delegate",
         },
