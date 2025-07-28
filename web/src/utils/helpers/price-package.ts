@@ -47,16 +47,16 @@ export const pricePackage = {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: {
-          usd: "50",
-          idr: "750.000",
+          usd: "130",
+          idr: "1.550.000",
         },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
         price: {
-          usd: "50",
-          idr: "750.000",
+          usd: "180",
+          idr: "2.450.000",
         },
         description: "Deluxe shared room for 2 nights, including breakfast",
       },
@@ -217,16 +217,16 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "50",
-            idr: "750.000",
+            usd: "128",
+            idr: "1.500.000",
           },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "50",
-            idr: "750.000",
+            usd: "178",
+            idr: "2.400.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -245,16 +245,16 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "90",
-            idr: "1.350.000",
+            usd: "128",
+            idr: "1.500.000",
           },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "90",
-            idr: "1.350.000",
+            usd: "176",
+            idr: "2.350.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -271,16 +271,16 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "90",
-            idr: "1.350.000",
+            usd: "124",
+            idr: "1.40.000",
           },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "90",
-            idr: "1.350.000",
+            usd: "174",
+            idr: "2.300.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -299,7 +299,7 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "90",
+            usd: "122",
             idr: "1.350.000",
           },
           description: "Per delegate",
@@ -307,8 +307,8 @@ export const pricePackage = {
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "90",
-            idr: "1.350.000",
+            usd: "172",
+            idr: "2.250.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -467,16 +467,16 @@ export const pricePackage = {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: {
-          usd: "50",
-          idr: "750.000",
+          usd: "100",
+          idr: "1.050.000",
         },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
         price: {
-          usd: "50",
-          idr: "750.000",
+          usd: "150",
+          idr: "1.850.000",
         },
         description: "Deluxe shared room for 2 nights, including breakfast",
       },
@@ -545,16 +545,16 @@ export const pricePackage = {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: {
-          usd: "50",
-          idr: "750.000",
+          usd: "90",
+          idr: "850.000",
         },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
         price: {
-          usd: "50",
-          idr: "750.000",
+          usd: "130",
+          idr: "1.550.000",
         },
         description: "Deluxe shared room for 2 nights, including breakfast",
       },
