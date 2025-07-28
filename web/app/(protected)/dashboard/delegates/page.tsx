@@ -46,7 +46,7 @@ const DelegatesPage = () => {
             <p className="max-w-2xl text-sm sm:text-base lg:max-w-3xl lg:text-lg">
               If you have already registered during the Early Bird phase, please wait for the
               verification process. You may still proceed with your payment. If you haven&apos;t
-              registered yet, please wait for the Regular Wave Registration to open on July 28th.
+              registered yet, please wait for the Regular Wave Registration to open soon.
               <br />
               <br />
               Thank you for your understanding.
