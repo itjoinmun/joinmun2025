@@ -502,26 +502,25 @@ func (s *EmailService) SendPaymentReminderEmail(to string) error {
 		<body>
 			<div class="container">
 				<div class="content">
-					<p>Dear Participants,</p>
+					<p>Dear JOINMUN 2025 Participants,</p>
 					<p>We hope this message finds you well.</p>
-					<p class="highlight">
-						This is a friendly reminder that the payment for <strong>JOINMUN 2025</strong> is due <strong>tomorrow, 28 July 2025</strong>. According to our records, we have not yet received your payment.
+					<p>Thank you for your enthusiasm and commitment to participating in Joinmun 2025. We are thrilled to have you join us.</p>
+					<p>
+					    To secure your place and ensure a smooth preparation process, we kindly urge you to finalize your payment and package selection as soon as possible. This is a friendly reminder that the deadline for selecting your preferred package (Accommodation or Non-accommodation) and completing your payment in
 					</p>
-					<p>To secure your participation, kindly complete your payment before the deadline.</p>
 					<div class="info">
-						Bank Name: Bank Mandiri<br>
-						Account Number: 1370025432184<br>
-						Account Holder: Drasthya Wironegoro
+						🗓  : August 9, 2025
+						<br />
+						🕒  : 11:59PM WIB
 					</div>
-					<p>Once your payment is completed, please upload your proof of payment through our website: <a href="https://joinmun.id" target="_blank">joinmun.id</a>.</p>
-					<p>If you have already made the payment and uploaded your proof, you may kindly disregard this email.</p>
-					<p>For any issues or questions, feel free to contact us via WhatsApp:</p>
+					<p>Please be advised that your registration will be considered invalid and will be automatically canceled if payment and package selection are not completed by this deadline.</p>
+					<p>Should you have any questions or require assistance, please do not hesitate to contact us.</p>
 					<div class="info">
 						Ticketing: +62 821-3495-5541 (Raras)<br>
 						Accommodation: +62 813-9156-0441 (Rajwa)
 					</div>
 					<p>Thank you for your prompt attention, and we&apos;re excited to welcome you to <strong>JOINMUN 2025</strong>!</p>
-					<p>Best regards,<br><strong>JOINMUN 2025 Organizing Committee</strong></p>
+					<p>Warm regards,<br><strong>⚜️JOINMUN 2025 Committee⚜️</strong></p>
 				</div>
 				<div class="footer">
 					Need help? Contact us at <a href="https://instagram.com/joinmun.ugm/">@joinmun.ugm on Instagram</a>
