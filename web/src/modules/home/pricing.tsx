@@ -47,14 +47,19 @@ const Pricing = () => {
 
   // Get current wave and map it to package type
   const currentWave = getCurrentPhase();
-  const type =
-    currentWave === "Early Bird"
-      ? "EarlyBird"
-      : currentWave === "Regular"
-        ? "Regular"
-        : currentWave === "Late"
-          ? "Late"
-          : "EarlyBird";
+  // const currentWave = "Closed";
+  const type = (() => {
+    switch (currentWave) {
+      case "Early Bird":
+        return "EarlyBird";
+      case "Regular":
+        return "Regular";
+      case "Late":
+        return "Late";
+      default:
+        return "Closed";
+    }
+  })();
 
   // Map delegate type to price package type
   const getParticipantType = (delegateType: DelegateOptions) => {
@@ -79,91 +84,7 @@ const Pricing = () => {
         className="invisible h-0 scroll-mt-12 md:scroll-mt-[6.5rem]"
         aria-hidden="true"
       />
-      {isPriceReveal ? (
-        // If price reveal is true, show the pricing page
-        <main className="relative z-0 overflow-hidden pb-12">
-          <Container className="gap-2">
-            <section className="flex flex-col items-center gap-2">
-              <Heading>Pricing</Heading>
-
-              <div className="text-center text-sm text-white md:max-w-2xl">
-                Find the Right Fit — We&apos;ve Got Options For You.
-              </div>
-
-              <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
-                {Object.entries(DELEGATES).map(([key, value]) => (
-                  <Button
-                    key={key}
-                    onClick={() => setActive(key as DelegateOptions)}
-                    variant={active === key ? "primary" : "outline"}
-                    className="shrink-0 snap-start transition-all"
-                  >
-                    {value.name}
-                  </Button>
-                ))}
-              </nav>
-
-              <div className="mt-8 flex w-full flex-col items-start gap-2">
-                <h1 className="text-xl leading-snug font-bold md:text-2xl">
-                  {DELEGATES[active].name}
-                </h1>
-                <p className="leading-snug">{DELEGATES[active].description}</p>
-
-                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:grid-cols-2 lg:auto-rows-fr lg:grid-cols-3 lg:gap-6 lg:px-10">
-                  {active === "team" ? (
-                    // For team, show all packages
-                    Object.entries(
-                      pricePackage.team_delegate[type] as TeamDelegationPackages,
-                    ).map(([packageKey, packageData]) => (
-                      <PricingCard
-                        key={packageKey}
-                        name={`Package ${packageKey.slice(-1)}`}
-                        delegateRange={packageData.delegateRange}
-                        nonAccommodation={packageData.nonAccommodation}
-                        accommodation={packageData.accommodation}
-                        points={packageData.points}
-                      />
-                    ))
-                  ) : (
-                    // For others, show both accommodation and non-accommodation cards
-                    <>
-                      <PricingCard
-                        name="Non-Accommodation"
-                        nonAccommodation={
-                          (pricePackage[getParticipantType(active)][type] as BasePackage)
-                            .nonAccommodation
-                        }
-                        accommodation={
-                          (pricePackage[getParticipantType(active)][type] as BasePackage)
-                            .nonAccommodation
-                        }
-                        points={
-                          (pricePackage[getParticipantType(active)][type] as BasePackage).points
-                        }
-                      />
-                      <PricingCard
-                        name="With Accommodation"
-                        nonAccommodation={
-                          (pricePackage[getParticipantType(active)][type] as BasePackage)
-                            .accommodation
-                        }
-                        accommodation={
-                          (pricePackage[getParticipantType(active)][type] as BasePackage)
-                            .accommodation
-                        }
-                        points={
-                          (pricePackage[getParticipantType(active)][type] as BasePackage).points
-                        }
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-            </section>
-          </Container>
-        </main>
-      ) : (
-        // If price reveal is false, show the coming soon page
+      {!isPriceReveal || (type !== "EarlyBird" && type !== "Regular" && type !== "Late") ? (
         <motion.div
           className="bg-background relative min-h-[85dvh] w-full overflow-hidden md:min-h-[70vh]"
           initial={{ opacity: 0 }}
@@ -215,6 +136,89 @@ const Pricing = () => {
             </Container>
           </div>
         </motion.div>
+      ) : (
+        // If price reveal is true, show the pricing page
+        <main className="relative z-0 overflow-hidden pb-12">
+          <Container className="gap-2">
+            <section className="flex flex-col items-center gap-2">
+              <Heading>Pricing</Heading>
+
+              <div className="text-center text-sm text-white md:max-w-2xl">
+                Find the Right Fit — We&apos;ve Got Options For You.
+              </div>
+
+              <nav className="no-scrollbar mt-10 flex w-full max-w-full snap-x snap-mandatory gap-5 overflow-auto md:justify-center lg:gap-10">
+                {Object.entries(DELEGATES).map(([key, value]) => (
+                  <Button
+                    key={key}
+                    onClick={() => setActive(key as DelegateOptions)}
+                    variant={active === key ? "primary" : "outline"}
+                    className="shrink-0 snap-start transition-all"
+                  >
+                    {value.name}
+                  </Button>
+                ))}
+              </nav>
+
+              <div className="mt-8 flex w-full flex-col items-start gap-2">
+                <h1 className="text-xl leading-snug font-bold md:text-2xl">
+                  {DELEGATES[active].name}
+                </h1>
+                <p className="leading-snug">{DELEGATES[active].description}</p>
+
+                <div className="mt-10 grid min-h-80 w-full auto-cols-min grid-cols-1 gap-10 md:grid-cols-2 lg:auto-rows-fr lg:grid-cols-3 lg:gap-6 lg:px-10">
+                  {active === "team" ? (
+                    // For team, show all packages
+                    Object.entries(pricePackage.team_delegate[type] as TeamDelegationPackages).map(
+                      ([packageKey, packageData]) => (
+                        <PricingCard
+                          key={packageKey}
+                          name={`Package ${packageKey.slice(-1)}`}
+                          delegateRange={packageData.delegateRange}
+                          nonAccommodation={packageData.nonAccommodation}
+                          accommodation={packageData.accommodation}
+                          points={packageData.points}
+                        />
+                      ),
+                    )
+                  ) : (
+                    // For others, show both accommodation and non-accommodation cards
+                    <>
+                      <PricingCard
+                        name="Non-Accommodation"
+                        nonAccommodation={
+                          (pricePackage[getParticipantType(active)][type] as BasePackage)
+                            .nonAccommodation
+                        }
+                        accommodation={
+                          (pricePackage[getParticipantType(active)][type] as BasePackage)
+                            .nonAccommodation
+                        }
+                        points={
+                          (pricePackage[getParticipantType(active)][type] as BasePackage).points
+                        }
+                      />
+                      <PricingCard
+                        name="With Accommodation"
+                        nonAccommodation={
+                          (pricePackage[getParticipantType(active)][type] as BasePackage)
+                            .accommodation
+                        }
+                        accommodation={
+                          (pricePackage[getParticipantType(active)][type] as BasePackage)
+                            .accommodation
+                        }
+                        points={
+                          (pricePackage[getParticipantType(active)][type] as BasePackage).points
+                        }
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            </section>
+          </Container>
+        </main>
       )}
     </>
   );
