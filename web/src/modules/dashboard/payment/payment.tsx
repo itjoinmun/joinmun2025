@@ -94,6 +94,14 @@ const usePaymentStatus = () => {
   return { payment, loading, error };
 };
 
+// Helper function to determine team package based on number of delegates
+const getTeamPackage = (numberOfDelegates: number) => {
+  if (numberOfDelegates >= 2 && numberOfDelegates <= 5) return "packageA";
+  if (numberOfDelegates >= 6 && numberOfDelegates <= 8) return "packageB";
+  if (numberOfDelegates >= 9 && numberOfDelegates <= 12) return "packageC";
+  return "packageD";
+};
+
 const PaymentPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [packageSelection, setPackageSelection] = useState<PackageSelection | null>(null);
@@ -554,14 +562,6 @@ const PackageSelectionStep = () => {
   const numberOfDelegates = delegates?.participant_data?.length || 0;
   const delegateTime = delegates?.participant_data?.[0]?.insert_date;
 
-  // Determine which package to use based on number of delegates
-  const getTeamPackage = () => {
-    if (numberOfDelegates >= 2 && numberOfDelegates <= 5) return "packageA";
-    if (numberOfDelegates >= 6 && numberOfDelegates <= 8) return "packageB";
-    if (numberOfDelegates >= 9 && numberOfDelegates <= 12) return "packageC";
-    return "packageD";
-  };
-
   // Get current wave and map it to package type
   const currentWave = getCurrentPaymentPhase(delegateTime);
   const type: "EarlyBird" | "Regular" | "Late" =
@@ -606,7 +606,8 @@ const PackageSelectionStep = () => {
         usd,
         idr,
       },
-      teamPackage: participantType === "team_delegate" ? getTeamPackage() : undefined,
+      teamPackage:
+        participantType === "team_delegate" ? getTeamPackage(numberOfDelegates) : undefined,
     };
     setPackageSelection(selection);
   };
@@ -618,7 +619,9 @@ const PackageSelectionStep = () => {
         delegateDate={delegateTime}
         onSelect={handleSelect}
         selectedType={selectedType}
-        teamPackage={participantType === "team_delegate" ? getTeamPackage() : undefined}
+        teamPackage={
+          participantType === "team_delegate" ? getTeamPackage(numberOfDelegates) : undefined
+        }
       />
     </div>
   );
@@ -631,14 +634,6 @@ const PaymentDetailsStep = () => {
   const { delegates } = useDelegatesApprovalStatus();
   // Get number of delegates for team pricing
   const numberOfDelegates = delegates?.participant_data?.length || 0;
-
-  // Determine which package to use based on number of delegates
-  const getTeamPackage = () => {
-    if (numberOfDelegates >= 2 && numberOfDelegates <= 5) return "packageA";
-    if (numberOfDelegates >= 6 && numberOfDelegates <= 8) return "packageB";
-    if (numberOfDelegates >= 9 && numberOfDelegates <= 12) return "packageC";
-    return "packageD";
-  };
 
   const bankAccounts = [
     {
@@ -673,6 +668,7 @@ const PaymentDetailsStep = () => {
         <h3>Chosen Package</h3>
         <PaymentPackageCard
           participantType={packageSelection?.participantType || "single_delegate"}
+          delegateDate={delegates?.participant_data?.[0]?.insert_date}
           onSelect={() => {}}
           selectedType={
             packageSelection?.accommodationType === "with_accommodation"
@@ -682,7 +678,9 @@ const PaymentDetailsStep = () => {
                 : undefined
           }
           teamPackage={
-            packageSelection?.participantType === "team_delegate" ? getTeamPackage() : undefined
+            packageSelection?.participantType === "team_delegate"
+              ? getTeamPackage(numberOfDelegates)
+              : undefined
           }
         />
       </div>
