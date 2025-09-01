@@ -73,16 +73,16 @@ export const pricePackage = {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: {
-          usd: "0",
-          idr: "0",
+          usd: "140",
+          idr: "1.650.000",
         },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
         price: {
-          usd: "0",
-          idr: "0",
+          usd: "190",
+          idr: "2.550.000",
         },
         description: "Deluxe shared room for 2 nights, including breakfast",
       },
@@ -329,16 +329,16 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "138",
+            idr: "1.600.000",
           },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "188",
+            idr: "2.400.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -357,16 +357,16 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "136",
+            idr: "1.550.000",
           },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "186",
+            idr: "2.350.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -383,16 +383,16 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "134",
+            idr: "1.500.000",
           },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "184",
+            idr: "2.300.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -411,16 +411,16 @@ export const pricePackage = {
         nonAccommodation: {
           label: "Non-Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "132",
+            idr: "1.450.000",
           },
           description: "Per delegate",
         },
         accommodation: {
           label: "With Accommodation",
           price: {
-            usd: "0",
-            idr: "0",
+            usd: "182",
+            idr: "2.250.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -493,16 +493,16 @@ export const pricePackage = {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: {
-          usd: "0",
-          idr: "0",
+          usd: "110",
+          idr: "1.150.000",
         },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
         price: {
-          usd: "0",
-          idr: "0",
+          usd: "160",
+          idr: "1.950.000",
         },
         description: "Deluxe shared room for 2 nights, including breakfast",
       },
@@ -569,16 +569,16 @@ export const pricePackage = {
       nonAccommodation: {
         label: "Non-Accommodation",
         price: {
-          usd: "0",
-          idr: "0",
+          usd: "100",
+          idr: "950.000",
         },
         description: "Without accommodation",
       },
       accommodation: {
         label: "With Accommodation",
         price: {
-          usd: "0",
-          idr: "0",
+          usd: "140",
+          idr: "1.650.000",
         },
         description: "Deluxe shared room for 2 nights, including breakfast",
       },
