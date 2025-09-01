@@ -12,9 +12,10 @@ import (
 
 // EmailService handles all email communication
 type EmailService struct {
-	apiKey      string
-	defaultFrom string
-	httpClient  *http.Client
+	apiKey       string
+	defaultName  string
+	defaultEmail string
+	httpClient   *http.Client
 }
 
 // NewEmailService creates a new email service with configured client
@@ -25,9 +26,10 @@ func NewEmailService() (*EmailService, error) {
 	}
 
 	return &EmailService{
-		apiKey:      apiKey,
-		defaultFrom: "JOINMUN 2025 <info@joinmun.id>",
-		httpClient:  &http.Client{Timeout: 10 * time.Second},
+		apiKey:       apiKey,
+		defaultName:  "JOINMUN 2025",
+		defaultEmail: "info@joinmun.id",
+		httpClient:   &http.Client{Timeout: 10 * time.Second},
 	}, nil
 }
 
@@ -35,8 +37,8 @@ func NewEmailService() (*EmailService, error) {
 func (s *EmailService) SendEmail(to, subject, htmlContent, textContent string) error {
 	reqBody := map[string]interface{}{
 		"sender": map[string]string{
-			"name":  "JOINMUN 2025",
-			"email": s.defaultFrom,
+			"name":  s.defaultName,
+			"email": s.defaultEmail,
 		},
 		"to": []map[string]string{
 			{"email": to},
