@@ -1,13 +1,11 @@
 import type { CollectionConfig } from 'payload'
 
 export const Articles: CollectionConfig = {
-  slug: 'articles',
+  slug: "articles",
   admin: {
     useAsTitle: 'title',
     description: 'Create and edit article pages.'
   },
-  auth: true,
-  upload: true,
   fields: [
     {
       name: "title",

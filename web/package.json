@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
-    "@payloadcms/db-sqlite": "^3.54.0",
+    "@payloadcms/db-vercel-postgres": "^3.54.0",
     "@payloadcms/next": "^3.54.0",
     "@payloadcms/payload-cloud": "^3.54.0",
     "@payloadcms/richtext-lexical": "^3.54.0",
