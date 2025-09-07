@@ -1,20 +1,38 @@
-import type { CollectionConfig } from 'payload'
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import type { CollectionConfig } from "payload";
 
 export const Articles: CollectionConfig = {
   slug: "articles",
   admin: {
-    useAsTitle: 'title',
-    description: 'Create and edit article pages.'
+    useAsTitle: "title",
+    group: "Content",
   },
   fields: [
     {
-      name: "title",
-      type: "text",
-      required: true,
-      admin: {
-        placeholder: "Your Title Here",
-        width: '60%'
-      }
+      type: "row",
+      fields: [
+        {
+          name: "title",
+          type: "text",
+          required: true,
+          admin: {
+            placeholder: "Your Title Here",
+            width: "50%",
+          },
+        },
+        {
+          name: "slug",
+          type: "text",
+          required: true,
+          unique: true,
+          admin: {
+            placeholder: "your-title-here",
+            description:
+              "A slug is the URL-Friendly version of the corresponding title. For example, a title of 'Yogyakarta International' would have a slug of 'yogyakarta-international'.",
+            width: "50%",
+          },
+        },
+      ],
     },
     {
       type: "row",
@@ -25,42 +43,39 @@ export const Articles: CollectionConfig = {
           required: true,
           admin: {
             placeholder: "John Doe",
-            width: '50%'
-          }
+            width: "50%",
+          },
         },
         {
-          name: "slug",
-          type: "text",
+          name: "media",
+          type: "relationship",
+          relationTo: "media-publishers",
           required: true,
-          unique: true,
-          admin: {
-            placeholder: "your-title-here",
-            description: "A slug is the URL-Friendly version of the corresponding title. For example, a title of 'Yogyakarta International' would have a slug of 'yogyakarta-international'.",
-            width: '50%'
-          },
-        }
-      ]
+        },
+      ],
     },
     {
       name: "image",
       type: "upload",
-      relationTo: 'media',
+      relationTo: "media",
       required: true,
       filterOptions: {
-        mimeType: { contains: 'image' }
+        mimeType: { contains: "image" },
       },
       admin: {
-        
-        description: "The header image for this specific page. Shown on the top of every article page."
-      }
+        description:
+          "The header image for this specific page. Shown on the top of every article page.",
+      },
     },
     {
       name: "content",
       type: "richText",
       required: true,
-      admin: {
-        description: "Write the contents of your article here in markdown format."
-      }
-    }
+      editor: lexicalEditor({
+        admin: {
+          placeholder: "Your content here...",
+        },
+      }),
+    },
   ],
-}
+};
