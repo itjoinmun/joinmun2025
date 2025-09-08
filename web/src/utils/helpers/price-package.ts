@@ -338,7 +338,7 @@ export const pricePackage = {
           label: "With Accommodation",
           price: {
             usd: "188",
-            idr: "2.400.000",
+            idr: "2.500.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -366,7 +366,7 @@ export const pricePackage = {
           label: "With Accommodation",
           price: {
             usd: "186",
-            idr: "2.350.000",
+            idr: "2.450.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -392,7 +392,7 @@ export const pricePackage = {
           label: "With Accommodation",
           price: {
             usd: "184",
-            idr: "2.300.000",
+            idr: "2.400.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
@@ -420,7 +420,7 @@ export const pricePackage = {
           label: "With Accommodation",
           price: {
             usd: "182",
-            idr: "2.250.000",
+            idr: "2.350.000",
           },
           description: "Deluxe shared room for 2 nights, including breakfast",
         },
