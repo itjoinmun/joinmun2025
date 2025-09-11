@@ -177,6 +177,10 @@ export interface Article {
    * The header image for this specific page. Shown on the top of every article page.
    */
   image: number | Media;
+  /**
+   * Shown on the article card, max 50 characters.
+   */
+  description?: string | null;
   content: {
     root: {
       type: string;
@@ -196,14 +200,16 @@ export interface Article {
   createdAt: string;
 }
 /**
- * Create and edit media publisher profiles.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media-publishers".
  */
 export interface MediaPublisher {
   id: number;
   name: string;
+  /**
+   * A slug is the URL-Friendly version of the corresponding title. For example, a title of 'Yogyakarta International' would have a slug of 'yogyakarta-international'.
+   */
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -322,6 +328,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   author?: T;
   media?: T;
   image?: T;
+  description?: T;
   content?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -332,6 +339,7 @@ export interface ArticlesSelect<T extends boolean = true> {
  */
 export interface MediaPublishersSelect<T extends boolean = true> {
   name?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

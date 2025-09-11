@@ -9,7 +9,10 @@ export const Articles: CollectionConfig = {
   },
   fields: [
     {
-      type: "row",
+      type: "group",
+      admin: {
+        position: "sidebar",
+      },
       fields: [
         {
           name: "title",
@@ -17,7 +20,6 @@ export const Articles: CollectionConfig = {
           required: true,
           admin: {
             placeholder: "Your Title Here",
-            width: "50%",
           },
         },
         {
@@ -29,14 +31,8 @@ export const Articles: CollectionConfig = {
             placeholder: "your-title-here",
             description:
               "A slug is the URL-Friendly version of the corresponding title. For example, a title of 'Yogyakarta International' would have a slug of 'yogyakarta-international'.",
-            width: "50%",
           },
         },
-      ],
-    },
-    {
-      type: "row",
-      fields: [
         {
           name: "author",
           type: "text",
@@ -68,12 +64,22 @@ export const Articles: CollectionConfig = {
       },
     },
     {
+      name: "description",
+      type: "textarea",
+      required: false,
+      maxLength: 50,
+      admin: {
+        placeholder: "A short description of the article",
+        description: "Shown on the article card, max 50 characters.",
+      }
+    },
+    {
       name: "content",
       type: "richText",
       required: true,
       editor: lexicalEditor({
         admin: {
-          placeholder: "Your content here...",
+          placeholder: "Start writing your article here",
         },
       }),
     },

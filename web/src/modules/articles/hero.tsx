@@ -4,17 +4,17 @@ import Container from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 
 const ArticlesHero = () => (
-  <div className="relative bg-gradient-to-b overflow-clip from-transparent to-background">
+  <div className="to-background relative overflow-clip bg-gradient-to-b from-transparent">
     <NavbarResolver />
 
-    <Container className="text-center gap-2 items-center">
+    <Container className="items-center gap-2 text-center">
       <h1 className="">Articles</h1>
 
-      <h2 className="text-xl text-gradient-gold">
+      <h2 className="text-gradient-gold text-xl">
         Progressive <strong>Writing</strong> by Joinmun <strong>Delegates</strong>
       </h2>
 
-      <Input placeholder="Find Articles" className="max-w-xs w-full mt-4" />
+      <Input placeholder="Find Articles" className="w-full max-w-xs mt-4" />
     </Container>
 
     <BatikPattern className="" />
