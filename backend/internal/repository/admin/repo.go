@@ -190,28 +190,26 @@ func (r *adminRepo) GetDelegateMUNResponses() ([]dashboard.MUNResponseWithQuesti
 func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time) ([]payment.TeamPaymentSummary, error) {
 	var teamSummaries []payment.TeamPaymentSummary
 
-	// This query correctly identifies both teams and individuals without a team.
-	// It uses a UNION ALL to combine results for teams (grouped by mun_team_id)
-	// and individuals (grouped by their email when mun_team_id is NULL).
+	// Team selection based on delegate registration (created_at)
 	teamQuery := `
-        WITH filtered_payments AS (
+        WITH filtered_delegates AS (
             SELECT
-                p.mun_team_id,
-                p.mun_delegate_email,
-                p.payment_date,
+                d.mun_team_id,
+                d.mun_delegate_email,
                 d.participant_type,
+                d.created_at,
                 t.mun_team_lead
-            FROM payment p
-            JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
-            LEFT JOIN mun_teams t ON p.mun_team_id = t.mun_team_id
+            FROM mun_delegates d
+            LEFT JOIN mun_teams t ON d.mun_team_id = t.mun_team_id
             WHERE ($1 = '' OR d.participant_type = $1)
     `
 
 	args := []interface{}{delegateType}
 	argIndex := 2
 
+	// Filter by registration date (created_at), not payment_date
 	if startDate != nil && endDate != nil {
-		teamQuery += fmt.Sprintf(" AND p.payment_date BETWEEN $%d AND $%d", argIndex, argIndex+1)
+		teamQuery += fmt.Sprintf(" AND d.created_at BETWEEN $%d AND $%d", argIndex, argIndex+1)
 		args = append(args, *startDate, *endDate)
 		argIndex += 2
 	}
@@ -219,29 +217,29 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 	teamQuery += `
         ),
         team_info AS (
-            -- Aggregate for actual teams
+            -- Teams
             SELECT
                 mun_team_id,
                 COALESCE(mun_team_lead, MIN(mun_delegate_email)) as mun_team_lead,
-                MIN(payment_date) as earliest_payment
-            FROM filtered_payments
+                MIN(created_at) as earliest_insert
+            FROM filtered_delegates
             WHERE mun_team_id IS NOT NULL
             GROUP BY mun_team_id, mun_team_lead
 
             UNION ALL
 
-            -- Aggregate for individuals (no team)
+            -- Individuals (no team)
             SELECT
                 NULL as mun_team_id,
                 mun_delegate_email as mun_team_lead,
-                MIN(payment_date) as earliest_payment
-            FROM filtered_payments
+                MIN(created_at) as earliest_insert
+            FROM filtered_delegates
             WHERE mun_team_id IS NULL
             GROUP BY mun_delegate_email
         )
         SELECT mun_team_id, mun_team_lead
         FROM team_info
-        ORDER BY earliest_payment DESC
+        ORDER BY earliest_insert DESC
     `
 
 	type TeamInfo struct {
@@ -252,16 +250,14 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 	var teams []TeamInfo
 	err := r.db.Select(&teams, teamQuery, args...)
 	if err != nil {
-		logger.LogError(err, "Failed to get team payment summaries", map[string]interface{}{
+		logger.LogError(err, "Failed to get team registration summaries", map[string]interface{}{
 			"layer":     "repository",
 			"operation": "repo.GetTeamPaymentSummaries",
 		})
 		return nil, err
 	}
 
-	// For each team or individual, get all payments
-	// This part of the logic remains the same as it correctly handles
-	// both teams and individuals based on the data from the query above.
+	// For each team/individual, collect payments (no date filter here!)
 	for _, team := range teams {
 		var teamPayments []payment.PaymentResponseWithTeam
 
@@ -279,17 +275,10 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
             FROM payment p
             JOIN mun_delegates d ON p.mun_delegate_email = d.mun_delegate_email
             WHERE (p.mun_team_id = $1 OR ($1 IS NULL AND p.mun_delegate_email = $2))
+            ORDER BY p.payment_date DESC
         `
 
 		paymentArgs := []interface{}{team.MUNTeamID, team.MUNTeamLead}
-		argIndex := 3 // Start next placeholders at $3
-
-		if startDate != nil && endDate != nil {
-			paymentQuery += fmt.Sprintf(" AND p.payment_date BETWEEN $%d AND $%d", argIndex, argIndex+1)
-			paymentArgs = append(paymentArgs, *startDate, *endDate)
-		}
-
-		paymentQuery += " ORDER BY p.payment_date DESC"
 
 		err := r.db.Select(&teamPayments, paymentQuery, paymentArgs...)
 		if err != nil {
@@ -302,7 +291,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 			continue
 		}
 
-		// Calculate summary statistics
+		// Calculate summary
 		var totalAmount, pendingCount, paidCount, failedCount int
 		for _, p := range teamPayments {
 			totalAmount += p.PaymentAmount
@@ -332,6 +321,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 
 	return teamSummaries, nil
 }
+
 func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *time.Time) ([]dashboard.TeamDelegateGroup, error) {
 	var teamGroups []dashboard.TeamDelegateGroup
 
