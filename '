@@ -3,7 +3,7 @@ import config from "@payload-config";
 import Container from "@/components/ui/container";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { RichText } from "@/components/payload/RichText";
+import { RichText } from "@/components/payload/rich-text";
 
 export const revalidate = 3600
 

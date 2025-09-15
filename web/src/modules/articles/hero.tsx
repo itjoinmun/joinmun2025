@@ -10,7 +10,7 @@ const ArticlesHero = () => (
     <Container className="items-center gap-2 text-center">
       <h1 className="">Articles</h1>
 
-      <h2 className="text-gradient-gold text-xl">
+      <h2 className="text-gradient-gold text-2xl">
         Progressive <strong>Writing</strong> by Joinmun <strong>Delegates</strong>
       </h2>
 

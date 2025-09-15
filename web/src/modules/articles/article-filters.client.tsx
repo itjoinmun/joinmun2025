@@ -10,14 +10,14 @@ const ArticleFiltersClient = ({ publishers }: { publishers: MediaPublisher[] }) 
 
   return (
     <>
-      <Button variant={pathname === "/articles" ? "primary" : "outline"} asChild>
+      <Button variant={pathname === "/articles" ? "warning" : "outline"} asChild>
         <Link href={`/articles`}>All</Link>
       </Button>
 
       {publishers.map((publisher) => (
         <Button
           key={publisher.id}
-          variant={pathname === `/articles/${publisher.slug}` ? "primary" : "outline"}
+          variant={pathname === `/articles/${publisher.slug}` ? "warning" : "outline"}
           asChild
         >
           <Link href={`/articles/${publisher.slug}`}>{publisher.name}</Link>

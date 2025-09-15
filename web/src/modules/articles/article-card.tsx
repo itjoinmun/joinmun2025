@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const ArticleCard = (props: Article) => {
   return (
-    <div className="border-red overflow-clip rounded-sm border">
+    <div className="border-accent overflow-clip rounded-sm border">
       <div className="relative h-24 w-full bg-neutral-800">
         <Image
           src={typeof props.image === "object" ? (props.image.url as string) : ""}
