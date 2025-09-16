@@ -190,17 +190,18 @@ func (r *adminRepo) GetDelegateMUNResponses() ([]dashboard.MUNResponseWithQuesti
 func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endDate *time.Time) ([]payment.TeamPaymentSummary, error) {
 	var teamSummaries []payment.TeamPaymentSummary
 
-	// Team selection based on delegate registration (created_at)
+	// Step 1: Build team/individual info based on delegate registration
 	teamQuery := `
         WITH filtered_delegates AS (
             SELECT
-                d.mun_team_id,
                 d.mun_delegate_email,
                 d.participant_type,
-                d.created_at,
+                d.insert_date,
+                tm.mun_team_id,
                 t.mun_team_lead
             FROM mun_delegates d
-            LEFT JOIN mun_teams t ON d.mun_team_id = t.mun_team_id
+            LEFT JOIN mun_team_members tm ON d.mun_delegate_email = tm.mun_delegate_email
+            LEFT JOIN mun_teams t ON tm.mun_team_id = t.mun_team_id
             WHERE ($1 = '' OR d.participant_type = $1)
     `
 
@@ -209,7 +210,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 
 	// Filter by registration date (created_at), not payment_date
 	if startDate != nil && endDate != nil {
-		teamQuery += fmt.Sprintf(" AND d.created_at BETWEEN $%d AND $%d", argIndex, argIndex+1)
+		teamQuery += fmt.Sprintf(" AND d.insert_date BETWEEN $%d AND $%d", argIndex, argIndex+1)
 		args = append(args, *startDate, *endDate)
 		argIndex += 2
 	}
@@ -220,8 +221,8 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
             -- Teams
             SELECT
                 mun_team_id,
-                COALESCE(mun_team_lead, MIN(mun_delegate_email)) as mun_team_lead,
-                MIN(created_at) as earliest_insert
+                COALESCE(mun_team_lead, MIN(mun_delegate_email)) AS mun_team_lead,
+                MIN(insert_date) AS earliest_insert
             FROM filtered_delegates
             WHERE mun_team_id IS NOT NULL
             GROUP BY mun_team_id, mun_team_lead
@@ -230,9 +231,9 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 
             -- Individuals (no team)
             SELECT
-                NULL as mun_team_id,
-                mun_delegate_email as mun_team_lead,
-                MIN(created_at) as earliest_insert
+                NULL AS mun_team_id,
+                mun_delegate_email AS mun_team_lead,
+                MIN(insert_date) AS earliest_insert
             FROM filtered_delegates
             WHERE mun_team_id IS NULL
             GROUP BY mun_delegate_email
@@ -248,16 +249,11 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 	}
 
 	var teams []TeamInfo
-	err := r.db.Select(&teams, teamQuery, args...)
-	if err != nil {
-		logger.LogError(err, "Failed to get team registration summaries", map[string]interface{}{
-			"layer":     "repository",
-			"operation": "repo.GetTeamPaymentSummaries",
-		})
-		return nil, err
+	if err := r.db.Select(&teams, teamQuery, args...); err != nil {
+		return nil, fmt.Errorf("get team registration summaries: %w", err)
 	}
 
-	// For each team/individual, collect payments (no date filter here!)
+	// Step 2: Collect payments for each team/individual
 	for _, team := range teams {
 		var teamPayments []payment.PaymentResponseWithTeam
 
@@ -277,17 +273,10 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
             WHERE (p.mun_team_id = $1 OR ($1 IS NULL AND p.mun_delegate_email = $2))
             ORDER BY p.payment_date DESC
         `
-
 		paymentArgs := []interface{}{team.MUNTeamID, team.MUNTeamLead}
 
-		err := r.db.Select(&teamPayments, paymentQuery, paymentArgs...)
-		if err != nil {
-			logger.LogError(err, "Failed to get payments for group", map[string]interface{}{
-				"layer":     "repository",
-				"operation": "repo.GetTeamPaymentSummaries",
-				"teamId":    team.MUNTeamID,
-				"teamLead":  team.MUNTeamLead,
-			})
+		if err := r.db.Select(&teamPayments, paymentQuery, paymentArgs...); err != nil {
+			// don’t fail whole report if one team errors
 			continue
 		}
 
