@@ -208,6 +208,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
 	args := []interface{}{delegateType}
 	argIndex := 2
 
+	// Filter by registration date (created_at), not payment_date
 	if startDate != nil && endDate != nil {
 		teamQuery += fmt.Sprintf(" AND d.insert_date BETWEEN $%d AND $%d", argIndex, argIndex+1)
 		args = append(args, *startDate, *endDate)
