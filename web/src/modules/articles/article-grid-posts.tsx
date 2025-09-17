@@ -9,7 +9,7 @@ const ArticlesGridPosts = async (props: { media?: string }) => {
     collection: "articles",
     ...(props.media && {
       where: {
-        media: {
+        "media.slug": {
           equals: props.media || null,
         },
       },

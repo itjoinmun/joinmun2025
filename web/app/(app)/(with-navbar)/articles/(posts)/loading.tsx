@@ -1,5 +1,7 @@
+import ArticlesGridPostsSuspense from "@/modules/articles/article-grid-posts.suspense";
+
 const ArticlesLoading = () => {
-  return <div>Loading articles...</div>;
+  return <ArticlesGridPostsSuspense />
 }
 
 export default ArticlesLoading;

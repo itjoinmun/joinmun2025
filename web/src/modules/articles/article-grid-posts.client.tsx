@@ -7,7 +7,7 @@ import { useArticleSearch } from "./article-search-bar";
 const ArticleGridPostsClient = ({ articles }: { articles: Article[] }) => {
   const query = useArticleSearch()?.query.toLowerCase() || "";
   const filteredArticles = articles.filter((article) =>
-    article.title.toLowerCase().includes(query),
+    article.title.toLowerCase().includes(query) || article.author.toLowerCase().includes(query),
   );
 
   return (

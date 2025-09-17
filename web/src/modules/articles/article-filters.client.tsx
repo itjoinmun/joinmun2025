@@ -6,7 +6,6 @@ import { MediaPublisher } from "../../../payload-types";
 
 const ArticleFiltersClient = ({ publishers }: { publishers: MediaPublisher[] }) => {
   const pathname = usePathname();
-  console.log("Current pathname:", pathname);
 
   return (
     <>

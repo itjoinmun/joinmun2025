@@ -6,15 +6,6 @@ import { Suspense } from "react";
 
 export const revalidate = 3600;
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config })
-  const { docs: publishers } = await payload.find({ 
-    collection: 'media-publishers',
-  })
-
-  return publishers.map(publisher => ({ media: publisher.slug }))
-}
-
 const ArticlesPage = async ({ params }: { params: Promise<{ media: string }> }) => {
   const { media } = await params;
 
@@ -24,5 +15,14 @@ const ArticlesPage = async ({ params }: { params: Promise<{ media: string }> }) 
     </Suspense>
   );
 };
+
+export async function generateStaticParams() {
+  const payload = await getPayload({ config })
+  const { docs: publishers } = await payload.find({
+    collection: 'media-publishers',
+  })
+
+  return publishers.map(publisher => ({ media: publisher.slug }))
+}
 
 export default ArticlesPage;
