@@ -176,7 +176,7 @@ const AdminPaymentsTable = ({ paymentsData, onDataChange }: AdminPaymentsTablePr
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {team.team_payments.map((payment, index) => {
+                {team.team_payments?.map((payment, index) => {
                   const statusDisplay = getPaymentStatusDisplay(payment.payment_status);
 
                   return (
