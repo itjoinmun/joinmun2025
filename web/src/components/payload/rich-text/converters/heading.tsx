@@ -4,7 +4,7 @@ import { SerializedHeadingNode } from "@payloadcms/richtext-lexical";
 export const headingConverter: JSXConverters<SerializedHeadingNode> = {
   heading: ({ node, nodesToJSX }) => {
     const text = nodesToJSX({ nodes: node.children });
-    const Tag = node.tag 
+    const Tag = node.tag;
 
     const sizeClass = {
       h1: "text-3xl",
@@ -13,7 +13,7 @@ export const headingConverter: JSXConverters<SerializedHeadingNode> = {
       h4: "text-xl",
       h5: "text-lg",
       h6: "text-base",
-    }
+    };
 
     return <Tag className={`font-bold ${sizeClass[node.tag]}`}>{text}</Tag>;
   },

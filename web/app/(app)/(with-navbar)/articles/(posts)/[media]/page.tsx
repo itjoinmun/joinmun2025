@@ -17,12 +17,12 @@ const ArticlesPage = async ({ params }: { params: Promise<{ media: string }> }) 
 };
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config })
+  const payload = await getPayload({ config });
   const { docs: publishers } = await payload.find({
-    collection: 'media-publishers',
-  })
+    collection: "media-publishers",
+  });
 
-  return publishers.map(publisher => ({ media: publisher.slug }))
+  return publishers.map((publisher) => ({ media: publisher.slug }));
 }
 
 export default ArticlesPage;

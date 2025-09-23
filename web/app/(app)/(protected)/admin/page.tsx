@@ -350,15 +350,15 @@ const DashboardAdmin = () => {
           <div className="mb-2 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
             <Heading className="hidden sm:block">Admin Dashboard</Heading>
             <div className="flex w-fit items-center justify-between gap-2">
-              <Button 
+              <Button
                 variant="warning"
                 className="flex w-fit items-center gap-2 self-end sm:self-auto"
                 onClick={handleSendEmail}
                 disabled={sendingEmail}
-                >
+              >
                 <Upload className="h-4 w-4" />
                 {sendingEmail ? "Sending..." : "Send Payment Reminder Email"}
-                </Button>
+              </Button>
               <Button
                 variant="warning"
                 className="flex w-fit items-center gap-2 self-end sm:self-auto"

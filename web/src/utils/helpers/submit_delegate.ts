@@ -64,7 +64,7 @@ export const submitDelegateRegistration = async ({
       // Single delegate submission (original logic)
       const formDataArray = Array.isArray(formData) ? formData : Object.values(formData);
       const completeData = formDataArray[index];
-      
+
       if (!completeData) {
         return {
           success: false,

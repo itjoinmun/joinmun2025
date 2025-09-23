@@ -22,6 +22,9 @@ const ArticleBySlugPage = async (props: { params: Promise<{ slug: string }> }) =
     collection: "articles",
     where: {
       slug: { equals: slug },
+      published: {
+        equals: true,
+      },
     },
     depth: 10,
   });
@@ -109,14 +112,18 @@ export async function generateMetadata({
     collection: "articles",
     where: {
       slug: { equals: slug },
+      published: {
+        equals: true,
+      },
     },
     depth: 10,
   });
 
-  if (!article) return {
-    title: `Not Found`,
-    description: `The requested article was not found.`,
-  }
+  if (!article)
+    return {
+      title: `Not Found`,
+      description: `The requested article was not found.`,
+    };
 
   return {
     title: `${article.title} | JOINMUN 2025`,

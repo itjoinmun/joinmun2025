@@ -252,4 +252,4 @@ export const sendPaymentReminderEmail = async () => {
   }
 
   return response.json();
-}
+};

@@ -48,6 +48,11 @@ export const Articles: CollectionConfig = {
           relationTo: "media-publishers",
           required: true,
         },
+        {
+          name: "published",
+          type: "checkbox",
+          defaultValue: false,
+        },
       ],
     },
     {
@@ -71,7 +76,7 @@ export const Articles: CollectionConfig = {
       admin: {
         placeholder: "A short description of the article",
         description: "Shown on the article card, max 50 characters.",
-      }
+      },
     },
     {
       name: "content",

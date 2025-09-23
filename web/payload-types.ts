@@ -173,6 +173,7 @@ export interface Article {
   slug: string;
   author: string;
   media: number | MediaPublisher;
+  published?: boolean | null;
   /**
    * The header image for this specific page. Shown on the top of every article page.
    */
@@ -327,6 +328,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   slug?: T;
   author?: T;
   media?: T;
+  published?: T;
   image?: T;
   description?: T;
   content?: T;
