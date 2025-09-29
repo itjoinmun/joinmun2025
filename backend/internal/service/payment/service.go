@@ -31,10 +31,10 @@ func NewPaymentService(delegateRepo delegateRepo.DelegateRepo, paymentRepo payme
 func (s *paymentService) GetPaymentByDelegateEmail(delegateEmail string) (*paymentModel.PaymentWithTeamMembers, error) {
 	payment, err := s.paymentRepo.GetPaymentWithTeamByDelegateEmail(delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get payment with team by email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
+		logger.LogError(err, "Failed to get payment with team by email", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
 		return nil, err
 	}
-	logger.LogDebug("Payment with team retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
+	logger.LogDebug("Payment with team retrieved successfully", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "GetPaymentByDelegateEmail"})
 	return payment, nil
 }
 
@@ -42,11 +42,11 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 	// check if user is already approved
 	user, err := s.delegateRepo.GetDelegateByEmail(payment.MUNDelegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get user by email", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+		logger.LogError(err, "Failed to get user by email", map[string]any{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return err
 	}
 	if user == nil {
-		logger.LogError(nil, "User not found", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+		logger.LogError(nil, "User not found", map[string]any{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return fmt.Errorf("user not found with email: %s", payment.MUNDelegateEmail)
 	}
 
@@ -56,7 +56,7 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 	}
 
 	if userConfirmedStatus != "confirmed" {
-		logger.LogError(nil, "User not confirmed", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+		logger.LogError(nil, "User not confirmed", map[string]any{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return fmt.Errorf("user not confirmed with email: %s", payment.MUNDelegateEmail)
 	}
 
@@ -65,7 +65,7 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 	if user.ParticipantType != nil {
 		participantType = *user.ParticipantType
 	} else {
-		logger.LogError(nil, "Participant type is nil", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+		logger.LogError(nil, "Participant type is nil", map[string]any{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return fmt.Errorf("participant type is nil for user: %s", payment.MUNDelegateEmail)
 	}
 
@@ -77,7 +77,7 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		// For other participant types, get team ID
 		teamID, err := s.delegateRepo.GetTeamIDByDelegateEmail(payment.MUNDelegateEmail)
 		if err != nil {
-			logger.LogError(err, "Failed to get team ID by delegate email", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+			logger.LogError(err, "Failed to get team ID by delegate email", map[string]any{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 			return err
 		}
 		payment.MUNTeamID = &teamID
@@ -87,10 +87,10 @@ func (s *paymentService) InsertPayment(payment *paymentModel.Payment) error {
 		// Insert the payment
 		err := s.paymentRepo.UploadPayment(tx, payment)
 		if err != nil {
-			logger.LogError(err, "Failed to insert payment", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+			logger.LogError(err, "Failed to insert payment", map[string]any{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 			return err
 		}
-		logger.LogDebug("Payment inserted successfully", map[string]interface{}{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
+		logger.LogDebug("Payment inserted successfully", map[string]any{"delegateEmail": payment.MUNDelegateEmail, "layer": "service", "operation": "InsertPayment"})
 		return nil
 	})
 }

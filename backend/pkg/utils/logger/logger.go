@@ -64,7 +64,7 @@ func InitLogger() {
 }
 
 // LogDebug to create debug log with function name and line number
-func LogDebug(message string, fields ...map[string]interface{}) {
+func LogDebug(message string, fields ...map[string]any) {
 	// Get function name, file name, and line number of the caller
 	pc, file, line, _ := runtime.Caller(1)
 	// Get function name from the program counter (if u took OS class u'll know program counter lmao)
@@ -87,7 +87,7 @@ func LogDebug(message string, fields ...map[string]interface{}) {
 }
 
 // LogError creates an error log with function name
-func LogError(err error, message string, fields ...map[string]interface{}) {
+func LogError(err error, message string, fields ...map[string]any) {
 	pc, _, _, _ := runtime.Caller(1)
 	funcName := runtime.FuncForPC(pc).Name()
 
@@ -105,7 +105,7 @@ func LogError(err error, message string, fields ...map[string]interface{}) {
 }
 
 // addField adds a field to the log event based on its type (we will specify the fields in the code later)
-func addField(event *zerolog.Event, key string, value interface{}) *zerolog.Event {
+func addField(event *zerolog.Event, key string, value any) *zerolog.Event {
 	// Switch on the type of the value and add it to the log event
 	switch v := value.(type) {
 	case string:

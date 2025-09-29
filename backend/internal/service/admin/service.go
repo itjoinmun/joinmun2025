@@ -9,13 +9,12 @@ import (
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
 	"backend/internal/s3"
-	"sync"
-	"time"
-
 	"backend/pkg/utils"
 	"backend/pkg/utils/helper"
 	"backend/pkg/utils/logger"
 	"fmt"
+	"sync"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -95,7 +94,7 @@ func NewAdminService(uploader *s3.S3Uploader, adminRepo adminRepo.AdminRepo, del
 func (s *adminService) UpdateParticipantStatus(email, status string) (retErr error) {
 	participant, err := s.delegateRepo.GetDelegateByEmail(email)
 	if err != nil {
-		logger.LogError(err, "Failed to get participant by email", map[string]interface{}{
+		logger.LogError(err, "Failed to get participant by email", map[string]any{
 			"layer":     "service",
 			"operation": "service.UpdateParticipantStatus",
 			"error":     err,
@@ -112,7 +111,7 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 		participantTap = *participant.ParticipantType
 	}
 	// if participantStatus != "" && participantStatus != "pending" {
-	// 	logger.LogError(nil, "Participant already confirmed", map[string]interface{}{
+	// 	logger.LogError(nil, "Participant already confirmed", map[string]any{
 	// 		"layer":     "service",
 	// 		"operation": "service.UpdateParticipantStatus",
 	// 		"error":     "participant already confirmed",
@@ -122,7 +121,7 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 	// 	return retErr
 	// }
 	if participant.ParticipantType == nil || participantTap != "team_delegate" && participantTap != "single_delegate" && participantTap != "faculty_advisor" && participantTap != "observer" {
-		logger.LogError(nil, "Participant is not a delegate", map[string]interface{}{
+		logger.LogError(nil, "Participant is not a delegate", map[string]any{
 			"layer":     "service",
 			"operation": "service.UpdateParticipantStatus",
 			"error":     "participant is not a delegate",
@@ -134,7 +133,7 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 	if status == "rejected" {
 		err := s.emailer.SendRejectionEmail(email)
 		if err != nil {
-			logger.LogError(err, "Failed to send biodata rejection email", map[string]interface{}{
+			logger.LogError(err, "Failed to send biodata rejection email", map[string]any{
 				"layer":     "service",
 				"operation": "service.UpdateParticipantStatus",
 				"error":     err,
@@ -145,7 +144,7 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 	} else {
 		err = s.emailer.SendBiodataApprovalEmail(email)
 		if err != nil {
-			logger.LogError(err, "Failed to send biodata approval email", map[string]interface{}{
+			logger.LogError(err, "Failed to send biodata approval email", map[string]any{
 				"layer":     "service",
 				"operation": "service.UpdateParticipantStatus",
 				"error":     err,
@@ -157,7 +156,7 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 
 	err = s.adminRepo.UpdateDelegateStatus(email, status)
 	if err != nil {
-		logger.LogError(err, "Failed to update participant status", map[string]interface{}{
+		logger.LogError(err, "Failed to update participant status", map[string]any{
 			"layer":     "service",
 			"operation": "service.UpdateParticipantStatus",
 			"error":     err,
@@ -171,7 +170,7 @@ func (s *adminService) UpdateParticipantStatus(email, status string) (retErr err
 func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error {
 	participant, err := s.delegateRepo.GetDelegateByEmail(delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get participant by email", map[string]interface{}{
+		logger.LogError(err, "Failed to get participant by email", map[string]any{
 			"layer":     "service",
 			"operation": "service.UpdateDelegateCountryAndCouncil",
 			"error":     err,
@@ -201,7 +200,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 	// }
 
 	if participantStatus != "confirmed" {
-		logger.LogError(nil, "Participant is not confirmed", map[string]interface{}{
+		logger.LogError(nil, "Participant is not confirmed", map[string]any{
 			"layer":     "service",
 			"operation": "service.UpdateDelegateCountryAndCouncil",
 			"error":     "participant is not confirmed",
@@ -210,7 +209,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 		return fmt.Errorf("email %s is not confirmed", delegateEmail)
 	}
 	if participantType != "single_delegate" && participantType != "team_delegate" {
-		logger.LogError(nil, "Participant is not a delegate", map[string]interface{}{
+		logger.LogError(nil, "Participant is not a delegate", map[string]any{
 			"layer":     "service",
 			"operation": "service.UpdateDelegateCountryAndCouncil",
 			"error":     "participant is not a delegate",
@@ -219,7 +218,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 		return fmt.Errorf("email %s is not a delegate", delegateEmail)
 	}
 	// if participantCountry != "" || participantCouncil != "" {
-	// 	logger.LogError(nil, "Participant already has a country and council", map[string]interface{}{
+	// 	logger.LogError(nil, "Participant already has a country and council", map[string]any{
 	// 		"layer":     "service",
 	// 		"operation": "service.UpdateDelegateCountryAndCouncil",
 	// 		"error":     "participant already has the same country and council",
@@ -229,7 +228,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 	// }
 	err = s.adminRepo.UpdateDelegateCountryAndCouncil(country, council, delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to update delegate country and council", map[string]interface{}{
+		logger.LogError(err, "Failed to update delegate country and council", map[string]any{
 			"layer":     "service",
 			"operation": "service.UpdateDelegateCountryAndCouncil",
 			"error":     err,
@@ -243,7 +242,7 @@ func (s *adminService) MakePairing(delegateEmail, pair string) (retErr error) {
 	return utils.WithTransaction(s.adminRepo.DB(), func(tx *sqlx.Tx) error {
 		err := s.adminRepo.UpdatePairing(tx, delegateEmail, pair)
 		if err != nil {
-			logger.LogError(err, "Failed to update pairing", map[string]interface{}{
+			logger.LogError(err, "Failed to update pairing", map[string]any{
 				"layer":     "service",
 				"operation": "service.MakePairing",
 				"error":     err,
@@ -251,7 +250,7 @@ func (s *adminService) MakePairing(delegateEmail, pair string) (retErr error) {
 			return err
 		}
 
-		logger.LogDebug("Making pairing", map[string]interface{}{
+		logger.LogDebug("Making pairing", map[string]any{
 			"delegateEmail": delegateEmail,
 			"pair":          pair,
 			"layer":         "service",
@@ -266,36 +265,36 @@ func (s *adminService) UpdatePaymentStatus(delegateEmail, status string) error {
 	// Check if the payment exists
 	payment, err := s.paymentRepo.GetPaymentByDelegateEmail(delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get payment by delegate email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+		logger.LogError(err, "Failed to get payment by delegate email", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 		return err
 	}
 
 	if payment.PaymentStatus == "paid" {
-		logger.LogError(nil, "Payment already updated", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+		logger.LogError(nil, "Payment already updated", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 		return fmt.Errorf("payment already updated for delegate email: %s", delegateEmail)
 	}
 
 	if status == "failed" {
 		err = s.emailer.SendPaymentFailureEmail(delegateEmail)
 		if err != nil {
-			logger.LogError(err, "Failed to send payment failure email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+			logger.LogError(err, "Failed to send payment failure email", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 			return err
 		}
 	} else {
 		err = s.emailer.SendPaymentApprovalEmail(delegateEmail)
 		if err != nil {
-			logger.LogError(err, "Failed to send payment approval email", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+			logger.LogError(err, "Failed to send payment approval email", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 			return err
 		}
 	}
 
 	err = s.adminRepo.UpdatePaymentStatus(delegateEmail, status)
 	if err != nil {
-		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+		logger.LogError(err, "Failed to update payment status", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 		return err
 	}
 
-	logger.LogDebug("Payment status updated successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
+	logger.LogDebug("Payment status updated successfully", map[string]any{"delegateEmail": delegateEmail, "layer": "service", "operation": "UpdatePaymentStatus"})
 	return nil
 }
 
@@ -306,23 +305,23 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string) ([]Amalgamat
 
 	biodata, err := s.adminRepo.GetDelegateBiodataResponses(delegateType)
 	if err != nil {
-		logger.LogError(err, "Failed to get biodata for amalgamation", map[string]interface{}{"layer": "service"})
+		logger.LogError(err, "Failed to get biodata for amalgamation", map[string]any{"layer": "service"})
 		return nil, err
 	}
 	health, err := s.adminRepo.GetDelegateHealthResponses(delegateType)
 	if err != nil {
-		logger.LogError(err, "Failed to get health data for amalgamation", map[string]interface{}{"layer": "service"})
+		logger.LogError(err, "Failed to get health data for amalgamation", map[string]any{"layer": "service"})
 		return nil, err
 	}
 	mun, err := s.adminRepo.GetDelegateMUNResponses() // MUN responses are not filtered by delegateType in repo
 	if err != nil {
-		logger.LogError(err, "Failed to get MUN data for amalgamation", map[string]interface{}{"layer": "service"})
+		logger.LogError(err, "Failed to get MUN data for amalgamation", map[string]any{"layer": "service"})
 		return nil, err
 	}
 
 	amalgamatedMap := make(map[string]map[string]string) // delegate_email -> {prefixed_question: answer}
 
-	processRawResponses := func(responses interface{}, prefix string) {
+	processRawResponses := func(responses any, prefix string) {
 		switch rType := responses.(type) {
 		case []delegateModel.BiodataResponseWithQuestion:
 			for _, r := range rType {
@@ -333,7 +332,7 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string) ([]Amalgamat
 				if r.BiodataQuestionType == "file" && r.BiodataAnswerText != "" {
 					url, errPresign := s.uploader.GeneratePresignedURL(r.BiodataAnswerText, 8*time.Hour)
 					if errPresign != nil {
-						logger.LogError(errPresign, "Presign URL error", map[string]interface{}{"key": r.BiodataAnswerText})
+						logger.LogError(errPresign, "Presign URL error", map[string]any{"key": r.BiodataAnswerText})
 						answerText = "Error generating URL"
 					} else {
 						answerText = url
@@ -372,7 +371,7 @@ func (s *adminService) GetAmalgamatedResponses(delegateType string) ([]Amalgamat
 		})
 	}
 
-	logger.LogDebug("Amalgamated responses retrieved", map[string]interface{}{"count": len(result), "layer": "service"})
+	logger.LogDebug("Amalgamated responses retrieved", map[string]any{"count": len(result), "layer": "service"})
 	return result, nil
 }
 
@@ -381,13 +380,13 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 
 	startDate, endDate, err := helper.GetWaveDates(timeWave)
 	if err != nil {
-		logger.LogError(err, "Failed to get wave dates", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
+		logger.LogError(err, "Failed to get wave dates", map[string]any{"layer": "service", "operation": "GetDelegatePaymentResponses"})
 		return nil, err
 	}
 
 	teamPaymentSummaries, err := s.adminRepo.GetTeamPaymentSummaries(delegateType, startDate, endDate)
 	if err != nil {
-		logger.LogError(err, "Failed to get delegate payment responses", map[string]interface{}{"layer": "service", "operation": "GetDelegatePaymentResponses"})
+		logger.LogError(err, "Failed to get delegate payment responses", map[string]any{"layer": "service", "operation": "GetDelegatePaymentResponses"})
 		return nil, err
 	}
 
@@ -395,9 +394,9 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 	for i := range teamPaymentSummaries {
 		for j := range teamPaymentSummaries[i].TeamPayments {
 			if teamPaymentSummaries[i].TeamPayments[j].PaymentFile != "" {
-				url, err := s.uploader.GeneratePresignedURL(teamPaymentSummaries[i].TeamPayments[j].PaymentFile, 15*time.Minute)
+				url, err := s.uploader.GeneratePresignedURL(teamPaymentSummaries[i].TeamPayments[j].PaymentFile, 8*time.Hour)
 				if err != nil {
-					logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": teamPaymentSummaries[i].TeamPayments[j].PaymentFile})
+					logger.LogError(err, "Failed to generate presigned URL", map[string]any{"key": teamPaymentSummaries[i].TeamPayments[j].PaymentFile})
 					teamPaymentSummaries[i].TeamPayments[j].PaymentFile = ""
 					continue
 				}
@@ -412,31 +411,30 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string) ([]delegateModel.TeamDelegateGroup, error) {
 	startDate, endDate, err := helper.GetWaveDates(timeWave)
 	if err != nil {
-		logger.LogError(err, "Failed to get wave dates", map[string]interface{}{"layer": "service", "operation": "GetDelegatesByTeam"})
+		logger.LogError(err, "Failed to get wave dates", map[string]any{"layer": "service", "operation": "GetDelegatesByTeam"})
 		return nil, err
 	}
 
 	teamDelegates, err := s.adminRepo.GetDelegatesByTeam(delegateType, startDate, endDate)
 	if err != nil {
-		logger.LogError(err, "Failed to get delegates by team", map[string]interface{}{"layer": "service", "operation": "GetDelegatesByTeam"})
+		logger.LogError(err, "Failed to get delegates by team", map[string]any{"layer": "service", "operation": "GetDelegatesByTeam"})
 		return nil, err
 	}
 
-	logger.LogDebug("Delegates by team retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetDelegatesByTeam"})
+	logger.LogDebug("Delegates by team retrieved successfully", map[string]any{"layer": "service", "operation": "GetDelegatesByTeam"})
 	return teamDelegates, nil
 }
 
 func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel.TeamPositionPaperGroup, error) {
-
 	startDate, endDate, err := helper.GetWaveDates(timeWave)
 	if err != nil {
-		logger.LogError(err, "Failed to get wave dates", map[string]interface{}{"layer": "service", "operation": "GetPositionPapersByTeam"})
+		logger.LogError(err, "Failed to get wave dates", map[string]any{"layer": "service", "operation": "GetPositionPapersByTeam"})
 		return nil, err
 	}
 
 	teamPapers, err := s.adminRepo.GetPositionPapersByTeam(startDate, endDate)
 	if err != nil {
-		logger.LogError(err, "Failed to get position papers by team", map[string]interface{}{"layer": "service", "operation": "GetPositionPapersByTeam"})
+		logger.LogError(err, "Failed to get position papers by team", map[string]any{"layer": "service", "operation": "GetPositionPapersByTeam"})
 		return nil, err
 	}
 
@@ -446,7 +444,7 @@ func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel
 			if teamPapers[i].PositionPapers[j].SubmissionFile != "" {
 				url, err := s.uploader.GeneratePresignedURL(teamPapers[i].PositionPapers[j].SubmissionFile, 15*time.Minute)
 				if err != nil {
-					logger.LogError(err, "Failed to generate presigned URL", map[string]interface{}{"key": teamPapers[i].PositionPapers[j].SubmissionFile})
+					logger.LogError(err, "Failed to generate presigned URL", map[string]any{"key": teamPapers[i].PositionPapers[j].SubmissionFile})
 					teamPapers[i].PositionPapers[j].SubmissionFile = ""
 					continue
 				}
@@ -455,14 +453,14 @@ func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel
 		}
 	}
 
-	logger.LogDebug("Position papers by team retrieved successfully", map[string]interface{}{"layer": "service", "operation": "GetPositionPapersByTeam"})
+	logger.LogDebug("Position papers by team retrieved successfully", map[string]any{"layer": "service", "operation": "GetPositionPapersByTeam"})
 	return teamPapers, nil
 }
 
 func (s *adminService) SendPaymentReminderEmail() error {
 	emails, err := s.adminRepo.GetUnpaidDelegateEmails()
 	if err != nil {
-		logger.LogError(err, "Failed to get unpaid delegate emails", map[string]interface{}{
+		logger.LogError(err, "Failed to get unpaid delegate emails", map[string]any{
 			"layer":     "service",
 			"operation": "SendPaymentReminderEmail",
 		})

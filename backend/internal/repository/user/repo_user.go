@@ -36,13 +36,13 @@ func (r *userRepo) CreateUser(user *user.User) error {
 	err := r.db.QueryRow(query, params...).Scan(&user.UserID)
 	if err != nil {
 		errorMessage := "Failed to insert user into users table"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.CreateUser"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.CreateUser"})
 		return err
 	}
 
 	// Log the successful creation of the user
 	debugMessage := "User created successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.CreateUser"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.CreateUser"})
 	return nil
 }
 
@@ -58,13 +58,13 @@ func (r *userRepo) GetUserByEmail(email string) (*user.User, error) {
 	err := r.db.Get(&u, query, params...)
 	if err != nil {
 		errorMessage := "Failed to get user by email"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.GetUserByEmail"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.GetUserByEmail"})
 		return nil, err
 	}
 
 	// Log the successful retrieval of the user
 	debugMessage := "User retrieved successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.GetUserByEmail"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.GetUserByEmail"})
 	return &u, nil
 }
 
@@ -80,13 +80,13 @@ func (r *userRepo) GetUserByID(userID int) (*user.User, error) {
 	err := r.db.Get(&user, query, params...)
 	if err != nil {
 		errorMessage := "Failed to get user by ID"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.GetUserByID"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.GetUserByID"})
 		return nil, err
 	}
 
 	// Log the successful retrieval of the user
 	debugMessage := "User retrieved successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.GetUserByID"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.GetUserByID"})
 	return &user, nil
 }
 
@@ -104,13 +104,13 @@ func (r *userRepo) ResetPassword(newPassword, resetToken string) error {
 	_, err := r.db.Exec(query, params...)
 	if err != nil {
 		errorMessage := "Failed to reset password"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.ResetPassword"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.ResetPassword"})
 		return err
 	}
 
 	// Log the successful password reset
 	debugMessage := "Password reset successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.ResetPassword"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.ResetPassword"})
 	return nil
 }
 
@@ -125,12 +125,12 @@ func (r *userRepo) RequestPasswordReset(email, resetToken string, resetTokenExpi
 	_, err := r.db.Exec(query, params...)
 	if err != nil {
 		errorMessage := "Failed to request password reset"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.RequestPasswordReset"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.RequestPasswordReset"})
 		return err
 	}
 
 	// Log the successful password reset request
 	debugMessage := "Password reset requested successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.RequestPasswordReset"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.RequestPasswordReset"})
 	return nil
 }

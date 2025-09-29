@@ -36,10 +36,10 @@ func (r *paymentRepo) GetPaymentByID(paymentID int) (*payment.Payment, error) {
 	query := `SELECT * FROM payment WHERE payment_id = $1`
 	err := r.db.Get(&payment, query, paymentID)
 	if err != nil {
-		logger.LogError(err, "Failed to get payment", map[string]interface{}{"paymentID": paymentID, "layer": "repository", "operation": "repo.GetPaymentByID"})
+		logger.LogError(err, "Failed to get payment", map[string]any{"paymentID": paymentID, "layer": "repository", "operation": "repo.GetPaymentByID"})
 		return nil, err
 	}
-	logger.LogDebug("Payment retrieved successfully", map[string]interface{}{"paymentID": paymentID, "layer": "repository", "operation": "repo.GetPaymentByID"})
+	logger.LogDebug("Payment retrieved successfully", map[string]any{"paymentID": paymentID, "layer": "repository", "operation": "repo.GetPaymentByID"})
 	return &payment, nil
 }
 
@@ -52,10 +52,10 @@ func (r *paymentRepo) GetPaymentByDelegateEmail(delegateEmail string) (*payment.
 	WHERE p.mun_delegate_email = $1`
 	err := r.db.Get(&payments, query, delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get payments for delegate", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.GetPaymentsBydelegateEmail"})
+		logger.LogError(err, "Failed to get payments for delegate", map[string]any{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.GetPaymentsBydelegateEmail"})
 		return nil, err
 	}
-	logger.LogDebug("Payments retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.GetPaymentsBydelegateEmail"})
+	logger.LogDebug("Payments retrieved successfully", map[string]any{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.GetPaymentsBydelegateEmail"})
 	return &payments, nil
 }
 
@@ -84,7 +84,7 @@ func (r *paymentRepo) GetPaymentWithTeamByDelegateEmail(delegateEmail string) (*
 
 	err := r.db.Get(&paymentData, query, delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get payment with team for delegate", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.GetPaymentWithTeamByDelegateEmail"})
+		logger.LogError(err, "Failed to get payment with team for delegate", map[string]any{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.GetPaymentWithTeamByDelegateEmail"})
 		return nil, err
 	}
 
@@ -110,13 +110,13 @@ func (r *paymentRepo) GetPaymentWithTeamByDelegateEmail(delegateEmail string) (*
 		var teamMembers []payment.TeamMemberInfo
 		err = r.db.Select(&teamMembers, teamPaymentsQuery, paymentData.MUNTeamID)
 		if err != nil {
-			logger.LogError(err, "Failed to get team payments", map[string]interface{}{"teamID": paymentData.MUNTeamID, "layer": "repository", "operation": "repo.GetPaymentWithTeamByDelegateEmail"})
+			logger.LogError(err, "Failed to get team payments", map[string]any{"teamID": paymentData.MUNTeamID, "layer": "repository", "operation": "repo.GetPaymentWithTeamByDelegateEmail"})
 			return nil, err
 		}
 		paymentData.TeamMembers = teamMembers
 	}
 
-	logger.LogDebug("Payment with team members retrieved successfully", map[string]interface{}{"delegateEmail": delegateEmail, "teamID": paymentData.MUNTeamID, "memberCount": len(paymentData.TeamMembers), "layer": "repository", "operation": "repo.GetPaymentWithTeamByDelegateEmail"})
+	logger.LogDebug("Payment with team members retrieved successfully", map[string]any{"delegateEmail": delegateEmail, "teamID": paymentData.MUNTeamID, "memberCount": len(paymentData.TeamMembers), "layer": "repository", "operation": "repo.GetPaymentWithTeamByDelegateEmail"})
 	return &paymentData, nil
 }
 
@@ -135,7 +135,7 @@ func (r *paymentRepo) UploadPayment(tx *sqlx.Tx, payment *payment.Payment) error
 		payment.MUNDelegateEmail,
 	)
 	if err != nil {
-		logger.LogError(err, "Failed to update payment", map[string]interface{}{
+		logger.LogError(err, "Failed to update payment", map[string]any{
 			"paymentID":     payment.PaymentID,
 			"delegateEmail": payment.MUNDelegateEmail,
 			"teamID":        payment.MUNTeamID,
@@ -144,7 +144,7 @@ func (r *paymentRepo) UploadPayment(tx *sqlx.Tx, payment *payment.Payment) error
 		})
 		return err
 	}
-	logger.LogDebug("Payment updated successfully", map[string]interface{}{
+	logger.LogDebug("Payment updated successfully", map[string]any{
 		"paymentID":     payment.PaymentID,
 		"delegateEmail": payment.MUNDelegateEmail,
 		"teamID":        payment.MUNTeamID,
@@ -169,7 +169,7 @@ func (r *paymentRepo) MakeInitialPayment(tx *sqlx.Tx, delegateEmail, teamID stri
 		0,
 	).Scan(&id)
 	if err != nil {
-		logger.LogError(err, "Failed to insert initial payment", map[string]interface{}{
+		logger.LogError(err, "Failed to insert initial payment", map[string]any{
 			"delegateEmail": delegateEmail,
 			"teamID":        teamID,
 			"layer":         "repository",
@@ -177,7 +177,7 @@ func (r *paymentRepo) MakeInitialPayment(tx *sqlx.Tx, delegateEmail, teamID stri
 		})
 		return 0, err
 	}
-	logger.LogDebug("Initial payment inserted successfully", map[string]interface{}{
+	logger.LogDebug("Initial payment inserted successfully", map[string]any{
 		"layer":     "repository",
 		"operation": "repo.MakeInitialPayment",
 		"teamID":    teamID,
@@ -193,7 +193,7 @@ func (r *paymentRepo) MakeInitialPaymentsForTeam(tx *sqlx.Tx, delegateEmails []s
 	// Build bulk insert query
 	query := `INSERT INTO payment (mun_delegate_email, mun_team_id, package, payment_file, payment_status, payment_date, payment_amount) VALUES `
 
-	args := make([]interface{}, 0, len(delegateEmails)*7)
+	args := make([]any, 0, len(delegateEmails)*7)
 	placeholders := make([]string, 0, len(delegateEmails))
 	now := time.Now()
 	for i, email := range delegateEmails {
@@ -208,7 +208,7 @@ func (r *paymentRepo) MakeInitialPaymentsForTeam(tx *sqlx.Tx, delegateEmails []s
 
 	_, err := tx.Exec(query, args...)
 	if err != nil {
-		logger.LogError(err, "Failed to insert initial payments for team", map[string]interface{}{
+		logger.LogError(err, "Failed to insert initial payments for team", map[string]any{
 			"teamID":         teamID,
 			"delegateEmails": delegateEmails,
 			"layer":          "repository",
@@ -217,7 +217,7 @@ func (r *paymentRepo) MakeInitialPaymentsForTeam(tx *sqlx.Tx, delegateEmails []s
 		return err
 	}
 
-	logger.LogDebug("Initial payments inserted successfully for team", map[string]interface{}{
+	logger.LogDebug("Initial payments inserted successfully for team", map[string]any{
 		"teamID":        teamID,
 		"delegateCount": len(delegateEmails),
 		"layer":         "repository",
@@ -232,7 +232,7 @@ func (r *paymentRepo) UpdatePaymentTeam(tx *sqlx.Tx, teamID, delegateEmail strin
 			  WHERE mun_delegate_email = $2 AND mun_team_id IS NULL`
 	_, err := tx.Exec(query, teamID, delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to update payment team", map[string]interface{}{
+		logger.LogError(err, "Failed to update payment team", map[string]any{
 			"teamID":        teamID,
 			"delegateEmail": delegateEmail,
 			"layer":         "repository",
@@ -240,7 +240,7 @@ func (r *paymentRepo) UpdatePaymentTeam(tx *sqlx.Tx, teamID, delegateEmail strin
 		})
 		return err
 	}
-	logger.LogDebug("Payment team updated successfully", map[string]interface{}{
+	logger.LogDebug("Payment team updated successfully", map[string]any{
 		"teamID":        teamID,
 		"delegateEmail": delegateEmail,
 		"layer":         "repository",

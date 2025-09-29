@@ -240,6 +240,29 @@ export const downloadResponsesCSV = async (
   window.URL.revokeObjectURL(url);
 };
 
+export const exportToCSV = async (
+  delegateType: DelegateType,
+): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/admin/payments/csv`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to download responses: ${response.statusText}`);
+  }
+
+  // Handle file download
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `responses_${delegateType}_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+};
+
 export const sendPaymentReminderEmail = async () => {
   const response = await fetch(`${API_BASE_URL}/email/send-payment-reminder`, {
     method: "POST",
@@ -252,4 +275,4 @@ export const sendPaymentReminderEmail = async () => {
   }
 
   return response.json();
-}
+};
