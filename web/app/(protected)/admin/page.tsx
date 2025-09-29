@@ -7,7 +7,7 @@ import {
   DashboardModuleHeader,
 } from "@/components/dashboard/dashboard-module";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Download, FileDownIcon, Send, Upload } from "lucide-react";
+import { AlertCircle, FileDownIcon, Send } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   getDelegatesByTeam,
