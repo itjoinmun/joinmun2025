@@ -9,13 +9,12 @@ import (
 	delegateRepo "backend/internal/repository/dashboard"
 	paymentRepo "backend/internal/repository/payment"
 	"backend/internal/s3"
-	"sync"
-	"time"
-
 	"backend/pkg/utils"
 	"backend/pkg/utils/helper"
 	"backend/pkg/utils/logger"
 	"fmt"
+	"sync"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -395,7 +394,7 @@ func (s *adminService) GetDelegatePaymentResponses(delegateType, timeWave string
 	for i := range teamPaymentSummaries {
 		for j := range teamPaymentSummaries[i].TeamPayments {
 			if teamPaymentSummaries[i].TeamPayments[j].PaymentFile != "" {
-				url, err := s.uploader.GeneratePresignedURL(teamPaymentSummaries[i].TeamPayments[j].PaymentFile, 15*time.Minute)
+				url, err := s.uploader.GeneratePresignedURL(teamPaymentSummaries[i].TeamPayments[j].PaymentFile, 8*time.Hour)
 				if err != nil {
 					logger.LogError(err, "Failed to generate presigned URL", map[string]any{"key": teamPaymentSummaries[i].TeamPayments[j].PaymentFile})
 					teamPaymentSummaries[i].TeamPayments[j].PaymentFile = ""
@@ -427,7 +426,6 @@ func (s *adminService) GetDelegatesByTeam(delegateType, timeWave string) ([]dele
 }
 
 func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel.TeamPositionPaperGroup, error) {
-
 	startDate, endDate, err := helper.GetWaveDates(timeWave)
 	if err != nil {
 		logger.LogError(err, "Failed to get wave dates", map[string]any{"layer": "service", "operation": "GetPositionPapersByTeam"})

@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -270,6 +271,81 @@ func (h *AdminHandler) GetAmalgamatedResponsesHandler(c *gin.Context) {
 
 	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	c.Data(http.StatusOK, "text/csv; charset=utf-8", []byte(csvString))
+}
+
+func (h *AdminHandler) GetDelegatesPaymentCSVHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok || userContext.Role != "admin" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	delegateType := c.DefaultQuery("delegate_type", "")
+	timeWave := c.Query("time")
+
+	// Reuse service
+	summaries, err := h.adminService.GetDelegatePaymentResponses(delegateType, timeWave)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve payment data", "details": err.Error()})
+		return
+	}
+
+	// Set CSV headers
+	c.Header("Content-Type", "text/csv")
+	filename := fmt.Sprintf("delegate_payments_%s.csv", time.Now().Format("20060102_150405"))
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+
+	writer := csv.NewWriter(c.Writer)
+	defer writer.Flush()
+
+	// Write header row
+	header := []string{
+		"Team ID",
+		"Team Lead",
+		"Delegate Email",
+		"Participant Type",
+		"Package",
+		"Payment Status",
+		"Payment Date",
+		"Amount",
+		"Payment File",
+	}
+	if err := writer.Write(header); err != nil {
+		c.String(http.StatusInternalServerError, "Failed to write CSV header: %v", err)
+		return
+	}
+
+	// Flatten summaries into rows
+	for _, summary := range summaries {
+		teamID := "No Team"
+		if summary.MUNTeamID != nil {
+			teamID = *summary.MUNTeamID
+		}
+
+		for _, p := range summary.TeamPayments {
+			paymentDate := ""
+			if !p.PaymentDate.IsZero() { // if sql.NullTime
+				paymentDate = p.PaymentDate.Format(time.RFC3339)
+			}
+
+			record := []string{
+				teamID,
+				summary.MUNTeamLead,
+				p.MUNDelegateEmail,
+				p.ParticipantType,
+				p.Package,
+				p.PaymentStatus,
+				paymentDate,
+				strconv.Itoa(p.PaymentAmount),
+				p.PaymentFile, // already presigned
+			}
+
+			if err := writer.Write(record); err != nil {
+				c.String(http.StatusInternalServerError, "Failed to write CSV row: %v", err)
+				return
+			}
+		}
+	}
 }
 
 func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
