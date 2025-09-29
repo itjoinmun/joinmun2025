@@ -368,7 +368,7 @@ const DashboardAdmin = () => {
                   variant="warning"
                   size={"sm"}
                   className="flex items-center gap-2 whitespace-nowrap"
-                  onClick={handleDownloadCSV}
+                  onClick={handleExportToCSV}
                   disabled={downloading}
                 >
                   <FileDownIcon className="h-4 w-4" />
@@ -379,7 +379,7 @@ const DashboardAdmin = () => {
                   variant="warning"
                   size={"sm"}
                   className="flex items-center gap-2 whitespace-nowrap"
-                  onClick={handleExportToCSV}
+                  onClick={handleDownloadCSV}
                   disabled={downloading}
                 >
                   <FileDownIcon className="h-4 w-4" />
