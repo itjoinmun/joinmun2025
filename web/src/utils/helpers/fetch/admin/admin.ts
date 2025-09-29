@@ -240,10 +240,8 @@ export const downloadResponsesCSV = async (
   window.URL.revokeObjectURL(url);
 };
 
-export const exportToCSV = async (
-  delegateType: DelegateType,
-): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/admin/payments/csv`, {
+export const exportToCSV = async (delegateType: DelegateType): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/payments/csv`, {
     credentials: "include",
   });
 
