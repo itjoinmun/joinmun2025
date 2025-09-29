@@ -246,7 +246,7 @@ export const exportToCSV = async (
   offset: number = 0,
 ): Promise<void> => {
   const params = new URLSearchParams({
-    delegate_type: delegateType || "all",
+    delegate_type: delegateType === "all" ? "" : delegateType,
     limit: limit.toString(),
     offset: offset.toString(),
   });
@@ -264,7 +264,7 @@ export const exportToCSV = async (
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `responses_${delegateType}_${new Date().toISOString().split("T")[0]}.csv`;
+  link.download = `responses_v2_${delegateType}_${new Date().toISOString().split("T")[0]}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
