@@ -234,6 +234,7 @@ const DashboardAdmin = () => {
   const [activeTab, setActiveTab] = useState<TabType>("delegates");
   const [downloading, setDownloading] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // ==================== CUSTOM HOOKS ====================
   const { pages, updatePage, resetPagination } = usePagination();
@@ -319,14 +320,14 @@ const DashboardAdmin = () => {
 
   const handleExportToCSV = useCallback(async () => {
     try {
-      setDownloading(true);
-      await exportToCSV(delegateType, MAX_FETCH_LIMIT, 0);
+      setExporting(true);
+      await exportToCSV();
     } catch (error) {
       console.error("Error downloading CSV:", error);
     } finally {
-      setDownloading(false);
+      setExporting(false);
     }
-  }, [delegateType]);
+  }, []);
 
   const handleSendEmail = useCallback(async () => {
     try {
@@ -370,10 +371,10 @@ const DashboardAdmin = () => {
                   size={"sm"}
                   className="flex items-center gap-2 whitespace-nowrap"
                   onClick={handleExportToCSV}
-                  disabled={downloading}
+                  disabled={exporting}
                 >
                   <FileDownIcon className="h-4 w-4" />
-                  {downloading ? "Exporting..." : "Export To CSV"}
+                  {exporting ? "Exporting..." : "Export To CSV"}
                 </Button>
 
                 <Button

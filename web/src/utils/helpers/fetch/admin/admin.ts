@@ -240,18 +240,8 @@ export const downloadResponsesCSV = async (
   window.URL.revokeObjectURL(url);
 };
 
-export const exportToCSV = async (
-  delegateType: DelegateType,
-  limit: number = 1000,
-  offset: number = 0,
-): Promise<void> => {
-  const params = new URLSearchParams({
-    delegate_type: delegateType === "all" ? "" : delegateType,
-    limit: limit.toString(),
-    offset: offset.toString(),
-  });
-
-  const response = await fetch(`${API_BASE_URL}/payments/csv?${params}`, {
+export const exportToCSV = async (): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/payments/csv`, {
     credentials: "include",
   });
 
@@ -264,7 +254,7 @@ export const exportToCSV = async (
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `responses_v2_${delegateType}_${new Date().toISOString().split("T")[0]}.csv`;
+  link.download = `responses_v2_all_${new Date().toISOString().split("T")[0]}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
