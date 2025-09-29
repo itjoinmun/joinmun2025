@@ -373,7 +373,7 @@ const DashboardAdmin = () => {
                   disabled={downloading}
                 >
                   <FileDownIcon className="h-4 w-4" />
-                  {downloading ? "Downloading..." : "Download CSV"}
+                  {downloading ? "Exporting..." : "Export To CSV"}
                 </Button>
 
                 <Button
