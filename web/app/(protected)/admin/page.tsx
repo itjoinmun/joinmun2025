@@ -15,6 +15,7 @@ import {
   getPositionPapersByTeam,
   downloadResponsesCSV,
   sendPaymentReminderEmail,
+  exportToCSV,
 } from "@/utils/helpers/fetch/admin/admin";
 import {
   TeamDelegateGroup,
@@ -319,7 +320,7 @@ const DashboardAdmin = () => {
   const handleExportToCSV = useCallback(async () => {
     try {
       setDownloading(true);
-      await downloadResponsesCSV(delegateType, MAX_FETCH_LIMIT, 0);
+      await exportToCSV(delegateType, MAX_FETCH_LIMIT, 0);
     } catch (error) {
       console.error("Error downloading CSV:", error);
     } finally {
