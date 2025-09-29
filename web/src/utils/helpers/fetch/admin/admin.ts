@@ -241,7 +241,7 @@ export const downloadResponsesCSV = async (
 };
 
 export const exportToCSV = async (): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/payments/csv`, {
+  const response = await fetch(`${API_BASE_URL}/page/payments/csv`, {
     credentials: "include",
   });
 
