@@ -31,7 +31,7 @@ func GetUserFromContext(c *gin.Context) (*middleware.ContextUser, bool) {
 	user, exists := c.Get("user")
 	if !exists {
 		// Log the error if user is not found in the context
-		logger.LogError(nil, "User not found in context", map[string]interface{}{
+		logger.LogError(nil, "User not found in context", map[string]any{
 			"layer":     "middleware",
 			"operation": "utils.GetUserFromContext",
 		})
@@ -42,7 +42,7 @@ func GetUserFromContext(c *gin.Context) (*middleware.ContextUser, bool) {
 	contextUser, ok := user.(*middleware.ContextUser)
 	if !ok {
 		// Log an error if the type assertion fails
-		logger.LogError(nil, "Failed to assert user to *ContextUser", map[string]interface{}{
+		logger.LogError(nil, "Failed to assert user to *ContextUser", map[string]any{
 			"layer":     "middleware",
 			"operation": "utils.GetUserFromContext",
 		})

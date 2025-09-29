@@ -41,14 +41,14 @@ func (r *adminRepo) UpdateDelegateStatus(delegateEmail, status string) error {
 	query := `UPDATE mun_delegates SET confirmed = $1, confirmed_date = $2 WHERE mun_delegate_email = $3`
 	_, err := r.db.Exec(query, status, time.Now(), delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to update delegate status", map[string]interface{}{
+		logger.LogError(err, "Failed to update delegate status", map[string]any{
 			"layer":         "repository",
 			"operation":     "repo.UpdateDelegateStatus",
 			"delegateEmail": delegateEmail,
 		})
 		return err
 	}
-	logger.LogDebug("Delegate status updated successfully", map[string]interface{}{
+	logger.LogDebug("Delegate status updated successfully", map[string]any{
 		"layer":         "repository",
 		"operation":     "repo.UpdateDelegateStatus",
 		"delegateEmail": delegateEmail,
@@ -61,14 +61,14 @@ func (r *adminRepo) UpdateDelegateCountryAndCouncil(country, council, delegateEm
 	query := `UPDATE mun_delegates SET country = $1, council = $2, council_date = $3, type = $4 WHERE mun_delegate_email = $5`
 	_, err := r.db.Exec(query, country, council, time.Now(), "single_delegate", delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to update delegate country and council", map[string]interface{}{
+		logger.LogError(err, "Failed to update delegate country and council", map[string]any{
 			"layer":         "repository",
 			"operation":     "repo.UpdateDelegateCountryAndCouncil",
 			"delegateEmail": delegateEmail,
 		})
 		return err
 	}
-	logger.LogDebug("Delegate country and council updated successfully", map[string]interface{}{
+	logger.LogDebug("Delegate country and council updated successfully", map[string]any{
 		"layer":         "repository",
 		"operation":     "repo.UpdateDelegateCountryAndCouncil",
 		"delegateEmail": delegateEmail,
@@ -80,7 +80,7 @@ func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail strin
 	query1 := `UPDATE mun_delegates SET pair = $1, type = $2 WHERE mun_delegate_email = $3`
 	res1, err := tx.Exec(query1, pairingEmail, "double_delegate", delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
+		logger.LogError(err, "Failed to update pairing", map[string]any{
 			"layer":         "repository",
 			"operation":     "repo.UpdatePairing",
 			"delegateEmail": delegateEmail,
@@ -89,7 +89,7 @@ func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail strin
 	}
 	rows1, _ := res1.RowsAffected()
 	if rows1 == 0 {
-		logger.LogError(nil, "No rows affected while updating pairing", map[string]interface{}{
+		logger.LogError(nil, "No rows affected while updating pairing", map[string]any{
 			"layer":         "repository",
 			"operation":     "repo.UpdatePairing",
 			"delegateEmail": delegateEmail,
@@ -100,7 +100,7 @@ func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail strin
 	query2 := `UPDATE mun_delegates SET pair = $1, type = $2 WHERE mun_delegate_email = $3`
 	res2, err := tx.Exec(query2, delegateEmail, "double_delegate", pairingEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to update pairing", map[string]interface{}{
+		logger.LogError(err, "Failed to update pairing", map[string]any{
 			"layer":         "repository",
 			"operation":     "repo.UpdatePairing",
 			"delegateEmail": pairingEmail,
@@ -108,14 +108,14 @@ func (r *adminRepo) UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail strin
 	}
 	rows2, _ := res2.RowsAffected()
 	if rows2 == 0 {
-		logger.LogError(nil, "No rows affected while updating pairing", map[string]interface{}{
+		logger.LogError(nil, "No rows affected while updating pairing", map[string]any{
 			"layer":         "repository",
 			"operation":     "repo.UpdatePairing",
 			"delegateEmail": pairingEmail,
 		})
 		return nil
 	}
-	logger.LogDebug("Pairing updated successfully", map[string]interface{}{
+	logger.LogDebug("Pairing updated successfully", map[string]any{
 		"layer":         "repository",
 		"operation":     "repo.UpdatePairing",
 		"delegateEmail": delegateEmail,
@@ -127,9 +127,9 @@ func (r *adminRepo) UpdatePaymentStatus(delegateEmail, status string) error {
 	query := `UPDATE payment SET payment_status = $1 WHERE mun_delegate_email = $2`
 	_, err := r.db.Exec(query, status, delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to update payment status", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
+		logger.LogError(err, "Failed to update payment status", map[string]any{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
 	}
-	logger.LogDebug("Payment status updated successfully", map[string]interface{}{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
+	logger.LogDebug("Payment status updated successfully", map[string]any{"delegateEmail": delegateEmail, "layer": "repository", "operation": "repo.UpdatePaymentStatus"})
 	return err
 }
 
@@ -205,7 +205,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
             WHERE ($1 = '' OR d.participant_type = $1)
     `
 
-	args := []interface{}{delegateType}
+	args := []any{delegateType}
 	argIndex := 2
 
 	// Filter by registration date (created_at), not payment_date
@@ -273,7 +273,7 @@ func (r *adminRepo) GetTeamPaymentSummaries(delegateType string, startDate, endD
             WHERE (p.mun_team_id = $1 OR ($1 IS NULL AND p.mun_delegate_email = $2))
             ORDER BY p.payment_date DESC
         `
-		paymentArgs := []interface{}{team.MUNTeamID, team.MUNTeamLead}
+		paymentArgs := []any{team.MUNTeamID, team.MUNTeamLead}
 
 		if err := r.db.Select(&teamPayments, paymentQuery, paymentArgs...); err != nil {
 			// don’t fail whole report if one team errors
@@ -329,7 +329,7 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 			WHERE ($1 = '' OR md.participant_type = $1)
 	`
 
-	args := []interface{}{delegateType}
+	args := []any{delegateType}
 	argIndex := 2
 
 	if startDate != nil && endDate != nil {
@@ -371,7 +371,7 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 	var teams []TeamInfo
 	err := r.db.Select(&teams, teamQuery, args...)
 	if err != nil {
-		logger.LogError(err, "Failed to get team delegate groups", map[string]interface{}{
+		logger.LogError(err, "Failed to get team delegate groups", map[string]any{
 			"layer":     "repository",
 			"operation": "repo.GetDelegatesByTeam",
 		})
@@ -403,7 +403,7 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 			WHERE 1=1
 		`
 
-		var delegateArgs []interface{}
+		var delegateArgs []any
 		argIdx := 1
 
 		// Handle team vs individual logic
@@ -433,7 +433,7 @@ func (r *adminRepo) GetDelegatesByTeam(delegateType string, startDate, endDate *
 
 		err := r.db.Select(&teamDelegates, delegateQuery, delegateArgs...)
 		if err != nil {
-			logger.LogError(err, "Failed to get delegates for team", map[string]interface{}{
+			logger.LogError(err, "Failed to get delegates for team", map[string]any{
 				"layer":     "repository",
 				"operation": "repo.GetDelegatesByTeam",
 				"teamId":    team.MUNTeamID,
@@ -472,7 +472,7 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time) ([]po
 			WHERE 1=1
 	`
 
-	args := []interface{}{}
+	args := []any{}
 	argIndex := 1
 
 	if startDate != nil && endDate != nil {
@@ -514,7 +514,7 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time) ([]po
 	var teams []TeamInfo
 	err := r.db.Select(&teams, teamQuery, args...)
 	if err != nil {
-		logger.LogError(err, "Failed to get team position paper groups", map[string]interface{}{
+		logger.LogError(err, "Failed to get team position paper groups", map[string]any{
 			"layer":     "repository",
 			"operation": "repo.GetPositionPapersByTeam",
 		})
@@ -537,7 +537,7 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time) ([]po
 			WHERE 1=1
 		`
 
-		var paperArgs []interface{}
+		var paperArgs []any
 		argIdx := 1
 
 		// Handle team vs individual logic
@@ -561,7 +561,7 @@ func (r *adminRepo) GetPositionPapersByTeam(startDate, endDate *time.Time) ([]po
 
 		err := r.db.Select(&teamPapers, paperQuery, paperArgs...)
 		if err != nil {
-			logger.LogError(err, "Failed to get position papers for team", map[string]interface{}{
+			logger.LogError(err, "Failed to get position papers for team", map[string]any{
 				"layer":     "repository",
 				"operation": "repo.GetPositionPapersByTeam",
 				"teamId":    team.MUNTeamID,
@@ -591,7 +591,7 @@ func (r *adminRepo) GetUnpaidDelegateEmails() ([]string, error) {
 	`
 	err := r.db.Select(&emails, query)
 	if err != nil {
-		logger.LogError(err, "Failed to get unpaid delegate emails", map[string]interface{}{
+		logger.LogError(err, "Failed to get unpaid delegate emails", map[string]any{
 			"layer":     "repository",
 			"operation": "repo.GetUnpaidDelegateEmails",
 		})

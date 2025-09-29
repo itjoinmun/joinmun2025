@@ -302,7 +302,7 @@ func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
 	}
 
 	// Group payments by team for better admin visibility
-	teamPayments := make(map[string][]interface{})
+	teamPayments := make(map[string][]any)
 	for _, payment := range responses {
 		var teamID string
 		if payment.MUNTeamID != nil {
@@ -311,7 +311,7 @@ func (h *AdminHandler) GetDelegatesPaymentHandler(c *gin.Context) {
 			teamID = "No Team"
 		}
 		if teamPayments[teamID] == nil {
-			teamPayments[teamID] = make([]interface{}, 0)
+			teamPayments[teamID] = make([]any, 0)
 		}
 		teamPayments[teamID] = append(teamPayments[teamID], payment)
 	}

@@ -58,7 +58,7 @@ func GenerateRefreshToken() (string, error) {
 
 func ValidateAccessToken(accessToken string) (*AccessTokenClaims, error) {
 	// Parse the token
-	token, err := jwt.ParseWithClaims(accessToken, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &AccessTokenClaims{}, func(token *jwt.Token) (any, error) {
 		return jwtAccessTokenSecret, nil
 	})
 	if err != nil {
