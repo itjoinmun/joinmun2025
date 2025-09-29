@@ -240,8 +240,18 @@ export const downloadResponsesCSV = async (
   window.URL.revokeObjectURL(url);
 };
 
-export const exportToCSV = async (delegateType: DelegateType): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/payments/csv`, {
+export const exportToCSV = async (
+  delegateType: DelegateType,
+  limit: number = 1000,
+  offset: number = 0,
+): Promise<void> => {
+  const params = new URLSearchParams({
+    delegate_type: delegateType || "all",
+    limit: limit.toString(),
+    offset: offset.toString(),
+  });
+
+  const response = await fetch(`${API_BASE_URL}/payments/csv?${params}`, {
     credentials: "include",
   });
 
