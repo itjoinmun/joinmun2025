@@ -1,0 +1,29 @@
+@import "tailwindcss"
+
+.rich h1 {
+  @apply scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance;
+}
+.rich h2 {
+  @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
+}
+.rich h3 {
+  @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+}
+.rich h4 {
+  @apply scroll-m-20 text-xl font-semibold tracking-tight;
+}
+.rich p {
+  @apply leading-7 [&:not(:first-child)]:mt-6;
+}
+.rich blockquote {
+  @apply mt-6 border-l-2 pl-6 italic;
+}
+.rich code {
+  @apply bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
+}
+.rich ul {
+  @apply my-6 ml-6 list-disc [&>li]:mt-2;
+}
+.rich ol {
+  @apply my-6 ml-6 list-decimal [&>li]:mt-2;
+}
