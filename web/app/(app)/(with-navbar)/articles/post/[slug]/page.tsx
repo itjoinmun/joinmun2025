@@ -77,9 +77,7 @@ const ArticleBySlugPage = async (props: { params: Promise<{ slug: string }> }) =
 
         <hr className="border-accent my-8 w-full border-t-2" />
 
-        {article.content && (
-          <RichText data={article.content} className="space-y-2 text-justify text-sm" />
-        )}
+        {article.content && <RichText data={article.content} />}
 
         <hr className="border-accent my-8 w-full border-t-2" />
       </Container>

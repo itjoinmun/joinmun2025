@@ -1,7 +1,8 @@
 import { RichText as RichTextConverter } from "@payloadcms/richtext-lexical/react";
 import { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
 import { jsxConverter } from "./converters";
-import "@/styles/rich.css"
+import "@/styles/rich.css";
+import { cn } from "@/utils/helpers/cn";
 
 type Props = {
   data: SerializedEditorState;
@@ -9,11 +10,5 @@ type Props = {
 
 export function RichText(props: Props) {
   const { className, ...rest } = props;
-
-  return (
-
-    <RichTextConverter className={'rich'} {...rest} converters={jsxConverter} />
-  )
-
->>>>>>> 415dd0f (fix: move to css file for rich text styling)
+  return <RichTextConverter className={`rich ${className}`} {...rest} converters={jsxConverter} />;
 }
