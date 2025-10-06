@@ -44,7 +44,7 @@ const Timeline = () => {
         aria-hidden="true"
       />
       <motion.main
-        className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12"
+        className="bg-background relative z-0 overflow-hidden pb-12"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.3 }}
@@ -95,7 +95,7 @@ const Timeline = () => {
           </Carousel>
         </div>
 
-        <BatikPattern />
+        {/*<BatikPattern />*/}
       </motion.main>
     </>
   );
