@@ -5,12 +5,12 @@
 // - Observer: Done
 // - Faculty Advisor: Done
 // Regular:
-// - Single Delegate: 
+// - Single Delegate:
 // - Team Delegation:
 // - Observer:
 // - Faculty Advisor:
 // Late:
-// - Single Delegate: 
+// - Single Delegate:
 // - Team Delegation:
 // - Observer:
 // - Faculty Advisor:
@@ -41,7 +41,7 @@ export const pricePackage = {
         "Access to opening ceremony",
         "Access to networking night",
         "Many more",
-      ],  
+      ],
     },
     Regular: {
       nonAccommodation: {
@@ -454,14 +454,14 @@ export const pricePackage = {
         },
         description: "Deluxe shared room for 2 nights, including breakfast",
       },
-        points: [
-          "Meals and coffee break",
-          "Meeting room",
-          "Access to opening ceremony",
-          "Access to awarding ceremony",
-          "Transportation (Shuttle Bus)",
-          "Many more",
-        ],
+      points: [
+        "Meals and coffee break",
+        "Meeting room",
+        "Access to opening ceremony",
+        "Access to awarding ceremony",
+        "Transportation (Shuttle Bus)",
+        "Many more",
+      ],
     },
     Regular: {
       nonAccommodation: {

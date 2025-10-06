@@ -58,7 +58,9 @@ const ParticipantData = async () => {
                       index === participantData.length - 1 && "first:rounded-bl-lg",
                     )}
                   >
-                    {participant.participant_type === "faculty_advisor" ? `${participant.mun_delegate_name} (ADVISOR)` : `${participant.mun_delegate_name}`}
+                    {participant.participant_type === "faculty_advisor"
+                      ? `${participant.mun_delegate_name} (ADVISOR)`
+                      : `${participant.mun_delegate_name}`}
                   </TableCell>
                   <TableCell className="py-3">
                     <span

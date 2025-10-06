@@ -58,7 +58,9 @@ const DelegationTeamPage = () => {
       }
 
       if (!isInitialized) {
-        setSubmitError("File storage could not be initialized. Please refresh the page and try again.");
+        setSubmitError(
+          "File storage could not be initialized. Please refresh the page and try again.",
+        );
         setIsSubmitting(false);
         return;
       }
