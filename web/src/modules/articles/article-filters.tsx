@@ -11,7 +11,7 @@ const ArticleFilters = async () => {
 
   return (
     <>
-      <Container className="flex-row gap-2">
+      <Container className="no-scrollbar flex snap-x snap-mandatory gap-2 overflow-auto">
         <ArticleFiltersClient publishers={publishers} />
       </Container>
     </>

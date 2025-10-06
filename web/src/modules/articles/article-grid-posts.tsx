@@ -17,6 +17,9 @@ const ArticlesGridPosts = async (props: { media?: string }) => {
         equals: true,
       },
     },
+    sort: "-publishedDate",
+    limit: 100,
+    depth: 10,
   });
 
   console.log("articles", articles);

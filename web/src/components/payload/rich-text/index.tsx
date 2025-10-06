@@ -2,7 +2,6 @@ import { RichText as RichTextConverter } from "@payloadcms/richtext-lexical/reac
 import { SerializedEditorState } from "@payloadcms/richtext-lexical/lexical";
 import { jsxConverter } from "./converters";
 import "@/styles/rich.css";
-import { cn } from "@/utils/helpers/cn";
 
 type Props = {
   data: SerializedEditorState;
