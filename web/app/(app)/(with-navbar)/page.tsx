@@ -7,15 +7,17 @@ import Events from "@/modules/home/events";
 import Councils from "@/modules/home/councils";
 import ContactUs from "@/modules/home/contact-us";
 import Pricing from "@/modules/home/pricing";
+import Articles from "@/modules/home/articles";
 
 export default function Home() {
   return (
     <>
       <Hero />
       <AboutUs />
-      <Timeline />
+      <Articles />
       <HomeTheme />
       <WelcomingRemarks />
+      <Timeline />
       <Events />
       <Councils />
       <ContactUs />

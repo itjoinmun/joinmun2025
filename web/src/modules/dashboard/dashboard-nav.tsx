@@ -258,8 +258,9 @@ export const LogoutButton = ({ isAdmin }: LogoutButtonProps) => {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="default"
+          variant={isAdmin ? "white" : "default"}
           className={cn("cursor-pointer", isAdmin ? "md:w-fit" : "md:w-full")}
+          size={isAdmin ? "sm" : "default"}
         >
           <LogOut /> <span className="group-data-[collapsible=icon]:hidden">Logout</span>
         </Button>

@@ -7,7 +7,7 @@ import {
   DashboardModuleHeader,
 } from "@/components/dashboard/dashboard-module";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Download, Upload } from "lucide-react";
+import { AlertCircle, FileDownIcon, Send } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   getDelegatesByTeam,
@@ -15,6 +15,7 @@ import {
   getPositionPapersByTeam,
   downloadResponsesCSV,
   sendPaymentReminderEmail,
+  exportToCSV,
 } from "@/utils/helpers/fetch/admin/admin";
 import {
   TeamDelegateGroup,
@@ -233,6 +234,7 @@ const DashboardAdmin = () => {
   const [activeTab, setActiveTab] = useState<TabType>("delegates");
   const [downloading, setDownloading] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // ==================== CUSTOM HOOKS ====================
   const { pages, updatePage, resetPagination } = usePagination();
@@ -316,6 +318,17 @@ const DashboardAdmin = () => {
     }
   }, [delegateType]);
 
+  const handleExportToCSV = useCallback(async () => {
+    try {
+      setExporting(true);
+      await exportToCSV();
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+    } finally {
+      setExporting(false);
+    }
+  }, []);
+
   const handleSendEmail = useCallback(async () => {
     try {
       setSendingEmail(true);
@@ -347,28 +360,47 @@ const DashboardAdmin = () => {
     <DashboardPage className="flex flex-col gap-6">
       <DashboardModule>
         <DashboardModuleHeader>
-          <div className="mb-2 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center">
-            <Heading className="hidden sm:block">Admin Dashboard</Heading>
-            <div className="flex w-fit items-center justify-between gap-2">
-              <Button
-                variant="warning"
-                className="flex w-fit items-center gap-2 self-end sm:self-auto"
-                onClick={handleSendEmail}
-                disabled={sendingEmail}
-              >
-                <Upload className="h-4 w-4" />
-                {sendingEmail ? "Sending..." : "Send Payment Reminder Email"}
-              </Button>
-              <Button
-                variant="warning"
-                className="flex w-fit items-center gap-2 self-end sm:self-auto"
-                onClick={handleDownloadCSV}
-                disabled={downloading}
-              >
-                <Download className="h-4 w-4" />
-                {downloading ? "Downloading..." : "Download All Responses as CSV"}
-              </Button>
-              <LogoutButton isAdmin={true} />
+          <div className="mb-2 flex w-full flex-col gap-3">
+            <Heading className="block">Admin Dashboard</Heading>
+
+            {/* Button group dengan scroll horizontal di mobile */}
+            <div className="no-scrollbar -mx-4 overflow-x-auto px-4 sm:mx-0 sm:overflow-visible sm:px-0">
+              <div className="flex min-w-max gap-2 sm:min-w-0 sm:flex-wrap sm:justify-end">
+                <Button
+                  variant="warning"
+                  size={"sm"}
+                  className="flex items-center gap-2 whitespace-nowrap"
+                  onClick={handleExportToCSV}
+                  disabled={exporting}
+                >
+                  <FileDownIcon className="h-4 w-4" />
+                  {exporting ? "Exporting..." : "Export To CSV"}
+                </Button>
+
+                <Button
+                  variant="warning"
+                  size={"sm"}
+                  className="flex items-center gap-2 whitespace-nowrap"
+                  onClick={handleDownloadCSV}
+                  disabled={downloading}
+                >
+                  <FileDownIcon className="h-4 w-4" />
+                  {downloading ? "Downloading..." : "Download CSV (Old)"}
+                </Button>
+
+                <Button
+                  variant="warning"
+                  size={"sm"}
+                  className="flex items-center gap-2 whitespace-nowrap"
+                  onClick={handleSendEmail}
+                  disabled={sendingEmail}
+                >
+                  <Send className="h-4 w-4" />
+                  {sendingEmail ? "Sending..." : "Send Email Reminder (Not Updated)"}
+                </Button>
+
+                <LogoutButton isAdmin={true} />
+              </div>
             </div>
           </div>
         </DashboardModuleHeader>

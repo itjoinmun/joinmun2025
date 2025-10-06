@@ -25,7 +25,7 @@ func (r *positionPaperRepo) GetPositionPaperByDelegateEmail(email string) (*posi
 	query := `SELECT * FROM position_paper WHERE mun_delegate_email = $1`
 	err := r.db.Get(&paper, query, email)
 	if err != nil {
-		logger.LogError(err, "Failed to get position paper", map[string]interface{}{"delegateEmail": email})
+		logger.LogError(err, "Failed to get position paper", map[string]any{"delegateEmail": email})
 		return nil, err
 	}
 	return &paper, nil
@@ -43,7 +43,7 @@ func (r *positionPaperRepo) InsertPositionPaper(positionPaper *position.Position
 		positionPaper.SubmissionStatus,
 	)
 	if err != nil {
-		logger.LogError(err, "Failed to insert position paper", map[string]interface{}{
+		logger.LogError(err, "Failed to insert position paper", map[string]any{
 			"delegateEmail": positionPaper.MUNDelegateEmail,
 		})
 		return err

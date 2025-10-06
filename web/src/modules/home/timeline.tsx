@@ -14,15 +14,15 @@ import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-v
 
 const TIMELINE_CONTENT = [
   {
-    date: "16 June - 14 July",
+    date: "16 Jun - 14 Jul",
     title: "Early Bird Registration",
   },
   {
-    date: "29 July - 24 August",
+    date: "29 Jul - 24 Aug",
     title: "Regular Wave Registration",
   },
   {
-    date: "Coming Soon",
+    date: "8 Sep - 29 Sep",
     title: "Late Wave Registration",
   },
   {
@@ -44,7 +44,7 @@ const Timeline = () => {
         aria-hidden="true"
       />
       <motion.main
-        className="from-foreground to-red-normal relative z-0 overflow-hidden bg-gradient-to-b pb-12"
+        className="bg-background relative z-0 overflow-hidden pb-12"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.3 }}
@@ -95,7 +95,7 @@ const Timeline = () => {
           </Carousel>
         </div>
 
-        <BatikPattern />
+        {/*<BatikPattern />*/}
       </motion.main>
     </>
   );

@@ -34,13 +34,13 @@ func (r *refreshTokenRepo) StoreRefreshToken(refreshToken *user.RefreshToken) er
 	err := r.db.QueryRow(query, params...).Scan(&refreshToken.RefreshTokenID)
 	if err != nil {
 		errorMessage := "Failed to insert refresh token into refresh_tokens table"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.StoreRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.StoreRefreshToken"})
 		return err
 	}
 
 	// Log the successful creation of the refresh token
 	debugMessage := "Refresh token inserted successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.StoreRefreshToken"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.StoreRefreshToken"})
 	return nil
 }
 
@@ -55,13 +55,13 @@ func (r *refreshTokenRepo) RevokeRefreshToken(refreshToken string) error {
 	_, err := r.db.Exec(query, params...)
 	if err != nil {
 		errorMessage := "Failed to update table to revoke refresh token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.RevokeRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.RevokeRefreshToken"})
 		return err
 	}
 
 	// Log the successful revocation of the refresh token
 	debugMessage := "Refresh token revoked successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.RevokeRefreshToken"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.RevokeRefreshToken"})
 	return nil
 }
 
@@ -77,13 +77,13 @@ func (r *refreshTokenRepo) GetValidRefreshToken(refreshToken string) (*user.Refr
 	err := r.db.Get(&rt, query, params...)
 	if err != nil {
 		errorMessage := "Failed to execute query to get valid refresh token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.GetValidRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.GetValidRefreshToken"})
 		return nil, err
 	}
 
 	// Log the successful retrieval of the valid refresh token
 	debugMessage := "Valid refresh token retrieved successfully"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.GetValidRefreshToken"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.GetValidRefreshToken"})
 	return &rt, nil
 }
 
@@ -98,12 +98,12 @@ func (r *refreshTokenRepo) RevokeAllRefreshTokenBasedOnUserID(userID int) error 
 	_, err := r.db.Exec(query, params...)
 	if err != nil {
 		errorMessage := "Failed to update table to revoke all refresh tokens based on user ID"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "repository", "operation": "repo.RevokeAllRefreshTokenBasedOnUserID"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "repository", "operation": "repo.RevokeAllRefreshTokenBasedOnUserID"})
 		return err
 	}
 
 	// Log the successful revocation of all refresh tokens based on user ID
 	debugMessage := "All refresh tokens revoked successfully for user ID"
-	logger.LogDebug(debugMessage, map[string]interface{}{"layer": "repository", "operation": "repo.RevokeAllRefreshTokenBasedOnUserID"})
+	logger.LogDebug(debugMessage, map[string]any{"layer": "repository", "operation": "repo.RevokeAllRefreshTokenBasedOnUserID"})
 	return nil
 }

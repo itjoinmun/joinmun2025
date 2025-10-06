@@ -6,6 +6,7 @@ import Link from "next/link";
 import NavbarResolver from "../../components/Layout/navbar-resolver";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import * as motion from "motion/react-client";
+import { ArrowRightIcon } from "lucide-react";
 
 const Hero = () => {
   const IDK_SECTION = [
@@ -31,13 +32,20 @@ const Hero = () => {
       <NavbarResolver />
       <Container className="max-w-8xl justify-end pb-12">
         <div className="xs:h-24" />
+        <Link
+          href={`#articles`}
+          className="bg-background border-gold hidden h-fit w-fit items-center justify-start gap-2 rounded-[10px] border-2 px-6 py-3 font-medium md:flex"
+        >
+          Read about articles by delegates
+          <ArrowRightIcon className="size-5" />
+        </Link>
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0, type: "spring" }}
           className="2xs:text-3xl/normal max-w-lg text-2xl font-bold md:text-4xl/normal"
         >
-          Your Chance to Take on Real-World Issues and Shape Meaningful Change
+          Deepen Your Knowledge, Read from Our Delegates’ Progressive Writing
         </motion.h1>
         <motion.h3
           initial={{ opacity: 0, y: 10 }}
@@ -50,15 +58,26 @@ const Hero = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4, type: "tween" }}
+          className="flex flex-wrap gap-5"
         >
           <Link
             href={`/register`}
             className={cn(
-              buttonVariants({ variant: "primary" }),
+              buttonVariants({ variant: "primary", size: "lg" }),
               "xs:mb-8 mt-2 mb-4 w-fit text-sm md:mb-0",
             )}
           >
             Register Now
+          </Link>
+          <Link
+            href={`/articles`}
+            className={cn(
+              buttonVariants({ variant: "outlineGold", size: "lg" }),
+              "xs:mb-8 mt-2 mb-4 w-fit text-sm md:mb-0 md:hidden",
+            )}
+          >
+            Read Articles
+            <ArrowRightIcon className="size-5" />
           </Link>
         </motion.div>
 

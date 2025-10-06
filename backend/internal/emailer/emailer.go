@@ -35,7 +35,7 @@ func NewEmailService() (*EmailService, error) {
 
 // SendEmail is a helper function to send emails with timeout handling
 func (s *EmailService) SendEmail(to, subject, htmlContent, textContent string) error {
-	reqBody := map[string]interface{}{
+	reqBody := map[string]any{
 		"sender": map[string]string{
 			"name":  s.defaultName,
 			"email": s.defaultEmail,
