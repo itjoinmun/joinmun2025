@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
 import { Delegate, getDelegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
+import Link from "next/link";
 
 const ParticipantData = async () => {
   const showCouncilAndCountry = process.env.NEXT_PUBLIC_CC_REVEAL === "true";
@@ -58,7 +59,9 @@ const ParticipantData = async () => {
                       index === participantData.length - 1 && "first:rounded-bl-lg",
                     )}
                   >
-                    {participant.participant_type === "faculty_advisor" ? `${participant.mun_delegate_name} (ADVISOR)` : `${participant.mun_delegate_name}`}
+                    {participant.participant_type === "faculty_advisor"
+                      ? `${participant.mun_delegate_name} (ADVISOR)`
+                      : `${participant.mun_delegate_name}`}
                   </TableCell>
                   <TableCell className="py-3">
                     <span
@@ -100,6 +103,20 @@ const ParticipantData = async () => {
             )}
           </TableBody>
         </Table>
+        <div className="flex w-full rounded-lg border border-black bg-white p-4 text-sm text-black">
+          {delegate?.pair ? (
+            <div className="gap-x-1 flex flex-wrap items-center">
+              <p>You’ve been paired up! Reach out to your partner via this email:</p>
+              <Link href={`mailto:${delegate?.pair}`} className="font-semibold">
+                {delegate?.pair}
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              {"Your partner will be assigned soon. Stay tuned!"}
+            </div>
+          )}
+        </div>
       </DashboardModuleContent>
     </DashboardModule>
   );
