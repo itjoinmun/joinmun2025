@@ -181,7 +181,13 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 	var participantType string
 	// var participantCountry, participantCouncil string
 	var participantStatus string
+	var doubleOrSingle string
 
+	if participant.Pair != nil {
+		doubleOrSingle = "double_delegate"
+	} else {
+		doubleOrSingle = "single_delegate"
+	}
 	// dereference the pointers
 	if participant.ParticipantType != nil {
 		participantType = *participant.ParticipantType
@@ -226,7 +232,7 @@ func (s *adminService) UpdateDelegateCountryAndCouncil(country, council, delegat
 	// 	})
 	// 	return fmt.Errorf("email %s already has a country and council", delegateEmail)
 	// }
-	err = s.adminRepo.UpdateDelegateCountryAndCouncil(country, council, delegateEmail)
+	err = s.adminRepo.UpdateDelegateCountryAndCouncil(country, council, delegateEmail, doubleOrSingle)
 	if err != nil {
 		logger.LogError(err, "Failed to update delegate country and council", map[string]any{
 			"layer":     "service",
