@@ -14,7 +14,7 @@ import (
 type AdminRepo interface {
 	DB() *sqlx.DB // Get the database connection
 	UpdateDelegateStatus(delegateEmail, status string) error
-	UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error
+	UpdateDelegateCountryAndCouncil(country, council, delegateEmail, doubleOrSingle string) error
 	UpdatePairing(tx *sqlx.Tx, delegateEmail, pairingEmail string) error
 	UpdatePaymentStatus(delegateEmail, status string) error
 	GetDelegateHealthResponses(delegateType string) ([]dashboard.HealthResponseWithQuestion, error)
@@ -57,9 +57,9 @@ func (r *adminRepo) UpdateDelegateStatus(delegateEmail, status string) error {
 	return nil
 }
 
-func (r *adminRepo) UpdateDelegateCountryAndCouncil(country, council, delegateEmail string) error {
+func (r *adminRepo) UpdateDelegateCountryAndCouncil(country, council, delegateEmail, doubleOrSingle string) error {
 	query := `UPDATE mun_delegates SET country = $1, council = $2, council_date = $3, type = $4 WHERE mun_delegate_email = $5`
-	_, err := r.db.Exec(query, country, council, time.Now(), "single_delegate", delegateEmail)
+	_, err := r.db.Exec(query, country, council, time.Now(), doubleOrSingle, delegateEmail)
 	if err != nil {
 		logger.LogError(err, "Failed to update delegate country and council", map[string]any{
 			"layer":         "repository",
