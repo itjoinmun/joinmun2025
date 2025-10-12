@@ -105,7 +105,7 @@ const ParticipantData = async () => {
         </Table>
         <div className="flex w-full rounded-lg border border-black bg-white p-4 text-sm text-black">
           {delegate?.pair ? (
-            <div className="gap-x-1x flex flex-wrap items-center">
+            <div className="gap-x-1 flex flex-wrap items-center">
               <p>You’ve been paired up! Reach out to your partner via this email:</p>
               <Link href={`mailto:${delegate?.pair}`} className="font-semibold">
                 {delegate?.pair}
