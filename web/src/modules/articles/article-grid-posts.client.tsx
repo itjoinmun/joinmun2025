@@ -17,7 +17,7 @@ const ArticleGridPostsClient = ({ articles }: { articles: Article[] }) => {
       {filteredArticles.length > 0 ? (
         filteredArticles.map((article) => <ArticleCard key={article.id} {...article} />)
       ) : (
-        <div className="text-accent col-span-full gap-4 flex min-h-80 flex-col items-center justify-center text-center">
+        <div className="text-accent col-span-full flex min-h-80 flex-col items-center justify-center gap-4 text-center">
           <Frown className={`text-accent col size-16`} />
           <p>No articles found. Try searching for another article!</p>
         </div>
