@@ -2,20 +2,9 @@
 import * as motion from "motion/react-client";
 import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import Container from "@/components/ui/container";
 import { cn } from "@/utils/helpers/cn";
-import { isThemeReveal } from "@/utils/helpers/reveal";
-import { THEMES } from "@/utils/helpers/themes";
-import Image from "next/image";
 import Link from "next/link";
-import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-variants";
 
 const Articles = () => {
   return (
@@ -51,7 +40,7 @@ const Articles = () => {
                 collaboration, critical thinking, and international awareness.
               </motion.p>*/}
               <Link
-                href={`/theme`}
+                href={`/articles`}
                 className={cn(buttonVariants({ variant: "primary" }), "ml-auto w-fit md:ml-0")}
               >
                 Read More

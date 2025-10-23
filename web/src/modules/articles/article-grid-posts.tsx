@@ -22,7 +22,7 @@ const ArticlesGridPosts = async (props: { media?: string }) => {
     depth: 10,
   });
 
-  console.log("articles", articles);
+  // console.log("articles", articles);
 
   return (
     <Container className="grid grid-cols-1 py-2 sm:auto-rows-fr sm:grid-cols-2 lg:grid-cols-4">

@@ -8,7 +8,7 @@ const ArticleFiltersClient = ({ publishers }: { publishers: MediaPublisher[] }) 
   const pathname = usePathname();
 
   return (
-    <>
+    <div className="flex flex-wrap gap-2">
       <Button variant={pathname === "/articles" ? "warning" : "outline"} asChild>
         <Link href={`/articles`}>All</Link>
       </Button>
@@ -22,7 +22,7 @@ const ArticleFiltersClient = ({ publishers }: { publishers: MediaPublisher[] }) 
           <Link href={`/articles/${publisher.slug}`}>{publisher.name}</Link>
         </Button>
       ))}
-    </>
+    </div>
   );
 };
 

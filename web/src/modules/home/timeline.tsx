@@ -1,6 +1,5 @@
 "use client";
 import * as motion from "motion/react-client";
-import BatikPattern from "@/components/Element/batik-pattern";
 import { Heading, SubHeading } from "@/components/Layout/section-heading";
 import Container from "@/components/ui/container";
 import {

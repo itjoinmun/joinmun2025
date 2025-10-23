@@ -6,8 +6,8 @@ import Image from "next/image";
 
 const ArticleCard = (props: Article) => {
   return (
-    <div className="border-accent overflow-clip rounded-sm border">
-      <div className="relative h-24 w-full bg-neutral-800">
+    <div className="border-accent flex h-full flex-col overflow-clip rounded-sm border">
+      <div className="relative aspect-[326/165] w-full bg-neutral-800">
         <Image
           src={typeof props.image === "object" ? (props.image.url as string) : ""}
           loading="lazy"
@@ -18,25 +18,24 @@ const ArticleCard = (props: Article) => {
         />
       </div>
 
-      <div className="flex flex-col gap-1 p-4 text-xs">
+      <div className="flex flex-1 flex-col justify-between gap-1 p-4 text-xs">
         <div className="text-accent flex items-center justify-between gap-1">
           <p>{formatDate(props.createdAt)}</p>
           <p>{props.author}</p>
         </div>
 
-        <h2 className="text-lg font-bold text-white">{props.title}</h2>
+        <h2 className="line-clamp-3 text-lg font-bold text-white">{props.title}</h2>
 
-        {props.description && <p className="text-accent line-clamp-1">{props.description}</p>}
+        {props.description && <p className="text-accent mt-1 line-clamp-1">{props.description}</p>}
 
-        <div className="text-accent mt-auto flex items-center justify-between gap-2">
-          <p>{typeof props.media === "object" && props.media.name && props.media.name}</p>
+        <div className="flex-1" />
 
-          <Button
-            variant={`primary`}
-            size={`sm`}
-            className="h-7 text-xs hover:cursor-pointer"
-            asChild
-          >
+        <div className="text-accent mt-auto mb-0 flex items-center justify-between gap-2">
+          <p className="line-clamp-1 w-full">
+            {typeof props.media === "object" && props.media.name && props.media.name}
+          </p>
+
+          <Button variant="primary" size="sm" className="h-7 text-xs hover:cursor-pointer" asChild>
             <Link href={`/articles/post/${props.slug}`}>Read</Link>
           </Button>
         </div>
