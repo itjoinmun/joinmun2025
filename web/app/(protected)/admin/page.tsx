@@ -16,6 +16,7 @@ import {
   downloadResponsesCSV,
   sendPaymentReminderEmail,
   exportToCSV,
+  downloadPospapCSV,
 } from "@/utils/helpers/fetch/admin/admin";
 import {
   TeamDelegateGroup,
@@ -235,6 +236,7 @@ const DashboardAdmin = () => {
   const [downloading, setDownloading] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [pospapDownloading, setPospapDownloading] = useState(false);
 
   // ==================== CUSTOM HOOKS ====================
   const { pages, updatePage, resetPagination } = usePagination();
@@ -329,6 +331,16 @@ const DashboardAdmin = () => {
     }
   }, []);
 
+  const handlePospapCSVDownload = useCallback(async () => {
+    try {
+      setPospapDownloading(true);
+      await downloadPospapCSV();
+    } catch (error) {
+
+    } finally {
+      setPospapDownloading(false);
+    }
+  }, []);
   const handleSendEmail = useCallback(async () => {
     try {
       setSendingEmail(true);
@@ -377,6 +389,16 @@ const DashboardAdmin = () => {
                   {exporting ? "Exporting..." : "Export To CSV"}
                 </Button>
 
+                <Button
+                  variant="warning"
+                  size={"sm"}
+                  className="flex items-center gap-2 whitespace-nowrap"
+                  onClick={handlePospapCSVDownload}
+                  disabled={exporting}
+                >
+                  <FileDownIcon className="h-4 w-4" />
+                  {exporting ? "Pospap Download..." : "Pospap CSV"}
+                </Button>
                 <Button
                   variant="warning"
                   size={"sm"}
@@ -456,33 +478,30 @@ const DashboardAdmin = () => {
             <button
               id="tab-delegates"
               onClick={() => handleTabChange("delegates")}
-              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${
-                activeTab === "delegates"
-                  ? "bg-background text-white shadow-sm"
-                  : "text-muted-foreground hover:text-background"
-              }`}
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${activeTab === "delegates"
+                ? "bg-background text-white shadow-sm"
+                : "text-muted-foreground hover:text-background"
+                }`}
             >
               Delegates ({totals.delegates})
             </button>
             <button
               id="tab-payments"
               onClick={() => handleTabChange("payments")}
-              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${
-                activeTab === "payments"
-                  ? "bg-background text-white shadow-sm"
-                  : "text-muted-foreground hover:text-background"
-              }`}
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${activeTab === "payments"
+                ? "bg-background text-white shadow-sm"
+                : "text-muted-foreground hover:text-background"
+                }`}
             >
               Payments ({totals.payments})
             </button>
             <button
               id="tab-papers"
               onClick={() => handleTabChange("papers")}
-              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${
-                activeTab === "papers"
-                  ? "bg-background text-white shadow-sm"
-                  : "text-muted-foreground hover:text-background"
-              }`}
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${activeTab === "papers"
+                ? "bg-background text-white shadow-sm"
+                : "text-muted-foreground hover:text-background"
+                }`}
             >
               Position Papers ({totals.papers})
             </button>
