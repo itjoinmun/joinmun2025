@@ -327,10 +327,12 @@ const StatusCard = ({
           {cardDescription}
         </DashboardModuleDescription>
       </DashboardModuleHeader>
-      <DashboardModuleContent className="mt-auto min-h-20 flex-row items-center gap-4">
+      <DashboardModuleContent className="mt-auto flex min-h-20 flex-row items-center justify-between gap-4">
         <div className="text-sm opacity-90">{description}</div>
-        {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
-        {paperUploaded && <ViewPaperButton />}
+        <div>
+          {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
+          {paperUploaded && <ViewPaperButton />}
+        </div>
       </DashboardModuleContent>
     </DashboardModule>
   );
