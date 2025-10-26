@@ -2,6 +2,7 @@ package handler
 
 import (
 	userHandlerI "backend/internal/api/handler/user"
+	"backend/internal/emailer"
 	userRepoI "backend/internal/repository/user"
 	userServiceI "backend/internal/service/user"
 
@@ -17,6 +18,10 @@ import (
 	adminRepoI "backend/internal/repository/admin"
 	adminServiceI "backend/internal/service/admin"
 
+	positionHandlerI "backend/internal/api/handler/position"
+	positionRepoI "backend/internal/repository/position"
+	positionServiceI "backend/internal/service/position"
+
 	"backend/internal/s3"
 
 	"github.com/jmoiron/sqlx"
@@ -27,14 +32,17 @@ type HandlerContainer struct {
 	DashboardHandler *dashboardHandlerI.DashboardHandler
 	PaymentHandler   *paymentHandlerI.PaymentHandler
 	AdminHandler     *adminHandlerI.AdminHandler
+	PositionHandler  *positionHandlerI.PositionHandler
 }
 
-func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer {
+func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader, emailer *emailer.EmailService) *HandlerContainer {
+	paymentRepo := paymentRepoI.NewPaymentRepo(db)
+
 	// USER
 	tokenRepo := userRepoI.NewRefreshTokenRepo(db)
 	userRepo := userRepoI.NewUserRepo(db)
 	tokenService := userServiceI.NewRefreshTokenService(tokenRepo, userRepo)
-	userService := userServiceI.NewUserService(userRepo, tokenService)
+	userService := userServiceI.NewUserService(userRepo, tokenService, emailer)
 	userHandler := userHandlerI.NewUserHandler(userService, tokenService)
 
 	// DASHBOARD
@@ -46,6 +54,7 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer
 		questionRepo,
 		delegateRepo,
 		responseRepo,
+		paymentRepo,
 	)
 	dashboardHandler, err := dashboardHandlerI.NewDashboardHandler(dashboardService, uploader)
 	if err != nil {
@@ -53,16 +62,23 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer
 	}
 
 	// PAYMENT
-	paymentRepo := paymentRepoI.NewPaymentRepo(db)
 	paymentService := paymentServiceI.NewPaymentService(delegateRepo, paymentRepo)
 	paymentHandler, err := paymentHandlerI.NewPaymentHandler(paymentService, uploader)
 	if err != nil {
 		panic(err)
 	}
 
+	// POSITION
+	positionRepo := positionRepoI.NewPositionPaperRepo(db)
+	positionService := positionServiceI.NewPositionService(uploader, positionRepo, paymentRepo, delegateRepo)
+	positionHandler, err := positionHandlerI.NewPositionHandler(positionService, uploader)
+	if err != nil {
+		panic(err)
+	}
+
 	// ADMIN
 	adminRepo := adminRepoI.NewAdminRepo(db)
-	adminService := adminServiceI.NewAdminService(adminRepo, delegateRepo, paymentRepo)
+	adminService := adminServiceI.NewAdminService(uploader, adminRepo, delegateRepo, paymentRepo, emailer)
 	adminHandler, err := adminHandlerI.NewAdminHandler(adminService)
 	if err != nil {
 		panic(err)
@@ -73,5 +89,6 @@ func NewHandlerContainer(db *sqlx.DB, uploader *s3.S3Uploader) *HandlerContainer
 		DashboardHandler: dashboardHandler,
 		PaymentHandler:   paymentHandler,
 		AdminHandler:     adminHandler,
+		PositionHandler:  positionHandler,
 	}
 }

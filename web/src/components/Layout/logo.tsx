@@ -4,7 +4,14 @@ import Link from "next/link";
 const Logo = () => {
   return (
     <Link href={`/`} className="flex items-center gap-3 select-none">
-      <Image src={`/LOGO.png`} alt="JOINMUN" width={100} height={100} priority className="size-6" />
+      <Image
+        src={`/LOGO.png`}
+        alt="JOINMUN"
+        width={100}
+        height={100}
+        priority
+        className="h-6 w-auto"
+      />
 
       <h1 className="font-bold text-nowrap">
         JOINMUN <span className="hidden md:inline">2025</span>

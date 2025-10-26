@@ -35,7 +35,7 @@ func (s *refreshTokenService) GenerateAccessAndRefreshToken(userID int) (string,
 	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil {
 		errorMessage := "Failed to get user by ID"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.GenerateAccessToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.GenerateAccessToken"})
 		return "", "", err
 	}
 
@@ -43,7 +43,7 @@ func (s *refreshTokenService) GenerateAccessAndRefreshToken(userID int) (string,
 	accessToken, err := auth.GenerateAccessToken(user.UserID, user.Email, user.Username, user.Role)
 	if err != nil {
 		errorMessage := "Failed to generate access token because of utils error"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.GenerateAccessToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.GenerateAccessToken"})
 		return "", "", err
 	}
 
@@ -51,7 +51,7 @@ func (s *refreshTokenService) GenerateAccessAndRefreshToken(userID int) (string,
 	refreshToken, err := auth.GenerateRefreshToken()
 	if err != nil {
 		errorMessage := "Failed to generate refresh token because of utils error"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.GenerateAccessToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.GenerateAccessToken"})
 		return "", "", err
 	}
 
@@ -69,7 +69,7 @@ func (s *refreshTokenService) GenerateAccessAndRefreshToken(userID int) (string,
 	})
 	if err != nil {
 		errorMessage := "Failed to store refresh token, repo error"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.GenerateAccessToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.GenerateAccessToken"})
 		return "", "", err
 	}
 
@@ -82,7 +82,7 @@ func (s *refreshTokenService) ValidateAndReRefreshToken(refreshToken string) (st
 	refreshTokenFromDB, err := s.refreshTokenRepo.GetValidRefreshToken(refreshToken)
 	if err != nil {
 		errorMessage := "Repo failed to find a valid token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.ValidateRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.ValidateRefreshToken"})
 		return "", "", err
 	}
 
@@ -94,7 +94,7 @@ func (s *refreshTokenService) ValidateAndReRefreshToken(refreshToken string) (st
 	err = s.refreshTokenRepo.RevokeRefreshToken(refreshToken)
 	if err != nil {
 		errorMessage := "Repo failed to revoke refresh token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.ValidateRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.ValidateRefreshToken"})
 		return "", "", err
 	}
 
@@ -102,7 +102,7 @@ func (s *refreshTokenService) ValidateAndReRefreshToken(refreshToken string) (st
 	newAccessToken, newRefreshToken, err := s.GenerateAccessAndRefreshToken(userID)
 	if err != nil {
 		errorMessage := "Service failed to generate new token pair, check the chain service error"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.ValidateRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.ValidateRefreshToken"})
 		return "", "", err
 	}
 
@@ -115,7 +115,8 @@ func (s *refreshTokenService) BlacklistRefreshToken(refreshToken string) error {
 	refreshTokenFromDB, err := s.refreshTokenRepo.GetValidRefreshToken(refreshToken)
 	if err != nil {
 		errorMessage := "Repo failed to find a valid token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.BlacklistRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.BlacklistRefreshToken", "token": refreshToken})
+		return err
 	}
 
 	// revoke the refresh token
@@ -123,7 +124,8 @@ func (s *refreshTokenService) BlacklistRefreshToken(refreshToken string) error {
 	err = s.refreshTokenRepo.RevokeRefreshToken(refreshToken)
 	if err != nil {
 		errorMessage := "Repo failed to revoke refresh token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.BlacklistRefreshToken"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.BlacklistRefreshToken", "token": refreshToken})
+		return err
 	}
 
 	// return nil if the refresh token is revoked successfully
@@ -135,7 +137,7 @@ func (s *refreshTokenService) BlacklistTokenOnEmail(email string) error {
 	user, err := s.userRepo.GetUserByEmail(email)
 	if err != nil {
 		errorMessage := "REpo Failed to get user by email"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.BlacklistTokenOnEmail"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.BlacklistTokenOnEmail"})
 		return err
 	}
 
@@ -143,7 +145,7 @@ func (s *refreshTokenService) BlacklistTokenOnEmail(email string) error {
 	err = s.refreshTokenRepo.RevokeAllRefreshTokenBasedOnUserID(user.UserID)
 	if err != nil {
 		errorMessage := "Repo Failed to revoke all refresh tokens for user"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.BlacklistTokenOnEmail"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.BlacklistTokenOnEmail"})
 		return err
 	}
 

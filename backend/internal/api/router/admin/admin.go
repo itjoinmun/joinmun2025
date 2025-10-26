@@ -24,5 +24,18 @@ func InitializeAdminRoutes(r *gin.Engine, adminHandler *admin.AdminHandler) *gin
 		adminPayment.POST("/update-payment-status", adminHandler.UpdatePaymentStatusHandler)
 	}
 
+	adminPage := admin.Group("/page")
+	{
+		adminPage.GET("/position-paper", adminHandler.GetDelegatePositionPaperHandler)
+		adminPage.GET("/payments", adminHandler.GetDelegatesPaymentHandler)
+		adminPage.GET("/delegates", adminHandler.GetDelegatesHandler)
+		adminPage.GET("/responses", adminHandler.GetAmalgamatedResponsesHandler)
+		adminPage.GET("/payments/csv", adminHandler.GetDelegatesPaymentCSVHandler)
+	}
+
+	adminEmail := admin.Group("/email")
+	{
+		adminEmail.POST("/send-payment-reminder", adminHandler.SendPaymentReminderEmailHandler)
+	}
 	return r
 }

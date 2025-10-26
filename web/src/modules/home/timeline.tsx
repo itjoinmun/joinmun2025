@@ -14,15 +14,15 @@ import { fadeInVariants, slideInItemVariants } from "@/utils/helpers/animation-v
 
 const TIMELINE_CONTENT = [
   {
-    date: "Coming Soon",
+    date: "16 Jun - 14 Jul",
     title: "Early Bird Registration",
   },
   {
-    date: "Coming Soon",
+    date: "29 Jul - 24 Aug",
     title: "Regular Wave Registration",
   },
   {
-    date: "Coming Soon",
+    date: "8 Sep - 29 Sep",
     title: "Late Wave Registration",
   },
   {
@@ -106,14 +106,14 @@ const TimelineCard = ({ date, title, index }: { date: string; title: string; ind
     <motion.div
       className="flex h-full flex-col items-center gap-1 rounded-xs bg-gradient-to-br from-white/40 to-white/10 p-4 backdrop-blur-sm"
       variants={slideInItemVariants}
-      initial='hidden'
-      whileInView='visible'
+      initial="hidden"
+      whileInView="visible"
       custom={index}
       viewport={{ once: true }}
     >
       <h2 className="w-full text-center">{date}</h2>
       <motion.div
-        className="my-2 w-full border-b"
+        className="my-2 w-full border-b border-white"
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true, amount: 0.6 }}

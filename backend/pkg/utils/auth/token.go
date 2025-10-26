@@ -21,7 +21,7 @@ type AccessTokenClaims struct {
 }
 
 func GenerateAccessToken(userID int, email, username, role string) (string, error) {
-	expiresAt := time.Now().Add(15 * time.Minute)
+	expiresAt := time.Now().Add(1 * time.Hour) // Set the expiration time for the access token to 1 hour from now
 	issuedAt := time.Now()
 
 	// Create the claims for the access token
@@ -31,7 +31,7 @@ func GenerateAccessToken(userID int, email, username, role string) (string, erro
 		Username: username,
 		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "your_app_name",
+			Issuer:    "joinmun2025",
 			IssuedAt:  jwt.NewNumericDate(issuedAt),
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},
@@ -58,7 +58,7 @@ func GenerateRefreshToken() (string, error) {
 
 func ValidateAccessToken(accessToken string) (*AccessTokenClaims, error) {
 	// Parse the token
-	token, err := jwt.ParseWithClaims(accessToken, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &AccessTokenClaims{}, func(token *jwt.Token) (any, error) {
 		return jwtAccessTokenSecret, nil
 	})
 	if err != nil {

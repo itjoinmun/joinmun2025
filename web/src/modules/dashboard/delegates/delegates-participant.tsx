@@ -5,23 +5,35 @@ import {
   DashboardModuleHeader,
   DashboardModuleTitle,
 } from "@/components/dashboard/dashboard-module";
-import { PRICES } from "@/utils/helpers/pricing";
+import { DELEGATES } from "@/utils/helpers/delegates";
+import { getDelegate } from "@/utils/helpers/fetch/delegates/delegates";
 
-const DelegatesParticipant = () => {
+const DelegatesParticipant = async () => {
+  let res;
+  try {
+    res = await getDelegate();
+  } catch (error) {
+    console.error("Error fetching delegate:", error);
+  }
+
+  if (res) return <></>;
+
   return (
     <DashboardModule>
       <DashboardModuleHeader>
         <DashboardModuleTitle>Participant</DashboardModuleTitle>
       </DashboardModuleHeader>
       <DashboardModuleContent className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {Object.entries(PRICES).map((price, i) => (
-          <CTACard
-            title={price[1].name}
-            description={price[1].description}
-            href={"/dashboard"}
-            key={i}
-          />
-        ))}
+        {Object.entries(DELEGATES)
+          .filter(([, delegate]) => delegate.type === "participant")
+          .map(([key, delegate]) => (
+            <CTACard
+              title={delegate.name}
+              description={delegate.description}
+              href={`delegates/${key === "team" ? "team" : key + "/registration/1"}`}
+              key={key}
+            />
+          ))}
       </DashboardModuleContent>
     </DashboardModule>
   );

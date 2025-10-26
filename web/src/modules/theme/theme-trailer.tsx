@@ -18,9 +18,7 @@ const ThemeTrailer = () => {
         <section
           className={cn("grid grid-cols-1 gap-2 md:gap-12", isThemeReveal ? "md:grid-cols-5" : "")}
         >
-          <div
-            className={cn(isThemeReveal ? "md:col-span-2" : "")}
-          >
+          <div className={cn(isThemeReveal ? "md:col-span-2" : "")}>
             <Heading>2025 JOINMUN Trailer</Heading>
           </div>
 
@@ -28,9 +26,9 @@ const ThemeTrailer = () => {
             <motion.div
               className="text-sm text-white md:col-span-3"
               variants={fadeInVariants}
-              initial={'hidden'}
-              whileInView={'visible'}
-              viewport={{ once: true, amount: 0.8}}
+              initial={"hidden"}
+              whileInView={"visible"}
+              viewport={{ once: true, amount: 0.8 }}
             >
               Now that the theme is out, let this trailer walk you through the feeling, message, and
               inspiration behind it — captured in one short visual journey.

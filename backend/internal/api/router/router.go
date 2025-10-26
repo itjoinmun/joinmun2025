@@ -5,6 +5,7 @@ import (
 	adminRoutes "backend/internal/api/router/admin"
 	dashboardRoutes "backend/internal/api/router/dashboard"
 	paymentRoutes "backend/internal/api/router/payment"
+	positionRoutes "backend/internal/api/router/position"
 	userRoutes "backend/internal/api/router/user"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,9 @@ func InitializeRoutes(r *gin.Engine, h *handler.HandlerContainer) *gin.Engine {
 
 	// Payment routes
 	paymentRoutes.InitializePaymentRoutes(r, h.PaymentHandler)
+
+	// Position routes
+	positionRoutes.InitializePositionRoutes(r, h.PositionHandler)
 
 	// Admin routes
 	adminRoutes.InitializeAdminRoutes(r, h.AdminHandler)

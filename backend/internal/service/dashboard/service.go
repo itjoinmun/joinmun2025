@@ -3,6 +3,7 @@ package dashboard
 import (
 	"backend/internal/model/dashboard"
 	dashboardRepo "backend/internal/repository/dashboard"
+	paymentRepo "backend/internal/repository/payment"
 	"backend/pkg/utils"
 	dashboardUtils "backend/pkg/utils/dashboard"
 	"backend/pkg/utils/logger"
@@ -25,25 +26,29 @@ type DashboardService interface {
 		biodataResponse []dashboard.BiodataResponses,
 	) (retErr error)
 	LinkMeToTeam(delegateEmail, teamID string) (retErr error)
-	GetParticipantData(email string) ([]dashboard.MUNDelegates, error)
+	GetParticipantData(email string) ([]dashboard.MUNDelegates, string, error)
 	GetQuestions() (biodataQuestions []dashboard.BiodataQuestions, healthQuestions []dashboard.HealthQuestions, munQuestions []dashboard.MUNQuestions, err error)
+	GetUserData(email string) (*dashboard.MUNDelegates, error)
 }
 
 type dashboardService struct {
 	questionRepo dashboardRepo.QuestionRepo
 	delegateRepo dashboardRepo.DelegateRepo
 	responseRepo dashboardRepo.ResponseRepo
+	paymentRepo  paymentRepo.PaymentRepo // Assuming you have a PaymentRepo for payment-related operations
 }
 
 func NewDashboardService(
 	questionRepo dashboardRepo.QuestionRepo,
 	delegateRepo dashboardRepo.DelegateRepo,
 	responseRepo dashboardRepo.ResponseRepo,
+	paymentRepo paymentRepo.PaymentRepo, // Injecting PaymentRepo for payment-related operations
 ) DashboardService {
 	return &dashboardService{
 		questionRepo: questionRepo,
 		delegateRepo: delegateRepo,
 		responseRepo: responseRepo,
+		paymentRepo:  paymentRepo, // Assigning the injected PaymentRepo
 	}
 }
 
@@ -59,7 +64,7 @@ func (s *dashboardService) InsertDelegates(
 		potentialExistingEmail := d.MUNDelegateEmail
 		exists, _ := s.delegateRepo.GetDelegateByEmail(potentialExistingEmail)
 		if exists != nil {
-			logger.LogError(nil, "Delegate already exists", map[string]interface{}{
+			logger.LogError(nil, "Delegate already exists", map[string]any{
 				"layer":     "service",
 				"operation": "service.InsertDelegates",
 				"error":     "Delegate already exists",
@@ -71,7 +76,7 @@ func (s *dashboardService) InsertDelegates(
 
 	teamCode, err := dashboardUtils.GenerateTeamCode()
 	if err != nil {
-		logger.LogError(err, "utils Failed to generate team code", map[string]interface{}{
+		logger.LogError(err, "utils Failed to generate team code", map[string]any{
 			"layer":     "service",
 			"operation": "utils.GenerateTeamCode",
 			"error":     err,
@@ -86,9 +91,37 @@ func (s *dashboardService) InsertDelegates(
 		// insert delegates and make teams
 		_, err := s.delegateRepo.InsertTeamWithDelegates(tx, team, delegates)
 		if err != nil {
-			logger.LogError(err, "Failed to insert team with delegates", map[string]interface{}{
+			logger.LogError(err, "Failed to insert team with delegates", map[string]any{
 				"delegates": delegates,
 				"team":      team,
+				"layer":     "service",
+				"operation": "service.InsertDelegates",
+				"error":     err,
+			})
+			return err
+		}
+
+		// Extract delegate emails for bulk payment creation
+		if len(delegates) == 0 {
+			logger.LogError(nil, "No delegates provided", map[string]any{
+				"delegates": delegates,
+				"team":      team,
+				"layer":     "service",
+				"operation": "service.InsertDelegates",
+				"error":     "no delegates provided",
+			})
+			return fmt.Errorf("no delegates provided")
+		}
+
+		delegateEmails := make([]string, len(delegates))
+		for i, d := range delegates {
+			delegateEmails[i] = d.MUNDelegateEmail
+		}
+
+		if err := s.paymentRepo.MakeInitialPaymentsForTeam(tx, delegateEmails, team.MUNTeamID); err != nil {
+			logger.LogError(err, "Failed to make initial payments for team", map[string]any{
+				"emails":    delegateEmails,
+				"teamID":    team.MUNTeamID,
 				"layer":     "service",
 				"operation": "service.InsertDelegates",
 				"error":     err,
@@ -106,7 +139,7 @@ func (s *dashboardService) InsertDelegates(
 			defer wg.Done()
 			err := s.responseRepo.InsertBiodataResponses(tx, biodataResponses)
 			if err != nil {
-				logger.LogError(err, "Failed to insert biodata responses", map[string]interface{}{
+				logger.LogError(err, "Failed to insert biodata responses", map[string]any{
 					"layer":     "service",
 					"operation": "service.InsertDelegates",
 					"error":     err,
@@ -120,7 +153,7 @@ func (s *dashboardService) InsertDelegates(
 			defer wg.Done()
 			err := s.responseRepo.InsertHealthResponses(tx, healthResponses)
 			if err != nil {
-				logger.LogError(err, "Failed to insert health responses", map[string]interface{}{
+				logger.LogError(err, "Failed to insert health responses", map[string]any{
 					"layer":     "service",
 					"operation": "service.InsertDelegates",
 					"error":     err,
@@ -134,7 +167,7 @@ func (s *dashboardService) InsertDelegates(
 			defer wg.Done()
 			err := s.responseRepo.InsertMUNResponses(tx, munResponses)
 			if err != nil {
-				logger.LogError(err, "Failed to insert MUN responses", map[string]interface{}{
+				logger.LogError(err, "Failed to insert MUN responses", map[string]any{
 					"layer":     "service",
 					"operation": "service.InsertDelegates",
 					"error":     err,
@@ -152,32 +185,32 @@ func (s *dashboardService) InsertDelegates(
 			return err
 		}
 
-		logger.LogDebug("Inserting delegates", map[string]interface{}{"delegates": delegates, "team": team, "layer": "service", "operation": "InsertDelegates"})
+		logger.LogDebug("Inserting delegates", map[string]any{"delegates": delegates, "team": team, "layer": "service", "operation": "InsertDelegates"})
 		return nil
 	})
 }
 
-func (s *dashboardService) GetParticipantData(email string) ([]dashboard.MUNDelegates, error) {
+func (s *dashboardService) GetParticipantData(email string) ([]dashboard.MUNDelegates, string, error) {
 	teamID, err := s.delegateRepo.GetTeamIDByDelegateEmail(email)
 	if err != nil {
-		logger.LogError(err, "Failed to get team by delegate email", map[string]interface{}{
+		logger.LogError(err, "Failed to get team by delegate email", map[string]any{
 			"layer":     "service",
 			"operation": "service.GetParticipantData",
 			"error":     err,
 		})
-		return nil, err
+		return nil, "", err
 	}
 
 	delegates, err := s.delegateRepo.GetDelegatesByTeamID(teamID)
 	if err != nil {
-		logger.LogError(err, "Repo Failed to get delegates by team ID", map[string]interface{}{
+		logger.LogError(err, "Repo Failed to get delegates by team ID", map[string]any{
 			"layer":     "service",
 			"operation": "service.GetParticipantData",
 			"error":     err,
 		})
 	}
 
-	return delegates, nil
+	return delegates, teamID, nil
 }
 
 // AI GENERATED CODE #VIBECODER
@@ -196,7 +229,7 @@ func (s *dashboardService) GetQuestions() (biodataQuestions []dashboard.BiodataQ
 		defer wg.Done()
 		questions, err := s.questionRepo.GetBiodataQuestions()
 		if err != nil {
-			logger.LogError(err, "Failed to get biodata questions", map[string]interface{}{
+			logger.LogError(err, "Failed to get biodata questions", map[string]any{
 				"layer":     "service",
 				"operation": "service.GetQuestions",
 				"error":     err,
@@ -212,7 +245,7 @@ func (s *dashboardService) GetQuestions() (biodataQuestions []dashboard.BiodataQ
 		defer wg.Done()
 		questions, err := s.questionRepo.GetHealthQuestions()
 		if err != nil {
-			logger.LogError(err, "Failed to get health questions", map[string]interface{}{
+			logger.LogError(err, "Failed to get health questions", map[string]any{
 				"layer":     "service",
 				"operation": "service.GetQuestions",
 				"error":     err,
@@ -228,7 +261,7 @@ func (s *dashboardService) GetQuestions() (biodataQuestions []dashboard.BiodataQ
 		defer wg.Done()
 		questions, err := s.questionRepo.GetMUNQuestions()
 		if err != nil {
-			logger.LogError(err, "Failed to get MUN questions", map[string]interface{}{
+			logger.LogError(err, "Failed to get MUN questions", map[string]any{
 				"layer":     "service",
 				"operation": "service.GetQuestions",
 				"error":     err,
@@ -273,7 +306,7 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 	// Check if the participant already exists
 	existingDelegate, _ := s.delegateRepo.GetDelegateByEmail(participant.MUNDelegateEmail)
 	if existingDelegate != nil {
-		logger.LogError(nil, "Participant already exists", map[string]interface{}{
+		logger.LogError(nil, "Participant already exists", map[string]any{
 			"layer":     "service",
 			"operation": "service.InsertOneDelegateForFAOrObserver",
 			"error":     "participant already exists",
@@ -285,12 +318,20 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 	return utils.WithTransaction(s.delegateRepo.DB(), func(tx *sqlx.Tx) error {
 		// insert the participant
 		if _, err := s.delegateRepo.InsertOneDelegate(tx, participant); err != nil {
-			logger.LogError(err, "Failed to insert participant", map[string]interface{}{
+			logger.LogError(err, "Failed to insert participant", map[string]any{
 				"layer":     "service",
 				"operation": "service.InsertOneDelegateForFAOrObserver",
 				"error":     err,
 			})
 			return err
+		}
+
+		if _, err := s.paymentRepo.MakeInitialPayment(tx, participant.MUNDelegateEmail, ""); err != nil {
+			logger.LogError(err, "Failed to make initial payment for participant", map[string]any{
+				"layer":     "service",
+				"operation": "service.InsertOneDelegateForFAOrObserver",
+				"error":     err,
+			})
 		}
 
 		// insert concurrent responses
@@ -302,7 +343,7 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 		go func() {
 			defer wg.Done()
 			if err := s.responseRepo.InsertHealthResponses(tx, healthResponse); err != nil {
-				logger.LogError(err, "Failed to insert health responses", map[string]interface{}{
+				logger.LogError(err, "Failed to insert health responses", map[string]any{
 					"layer":     "service",
 					"operation": "service.InsertOneDelegateForFAOrObserver",
 					"error":     err,
@@ -313,7 +354,7 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 		go func() {
 			defer wg.Done()
 			if err := s.responseRepo.InsertBiodataResponses(tx, biodataResponse); err != nil {
-				logger.LogError(err, "Failed to insert biodata responses", map[string]interface{}{
+				logger.LogError(err, "Failed to insert biodata responses", map[string]any{
 					"layer":     "service",
 					"operation": "service.InsertOneDelegateForFAOrObserver",
 					"error":     err,
@@ -326,7 +367,7 @@ func (s *dashboardService) InsertOneDelegateForFAOrObserver(
 		close(errChan)
 		for err := range errChan {
 			if err != nil {
-				logger.LogError(err, "Failed to insert responses", map[string]interface{}{
+				logger.LogError(err, "Failed to insert responses", map[string]any{
 					"layer":     "service",
 					"operation": "service.InsertOneDelegateForFAOrObserver",
 					"error":     err,
@@ -342,7 +383,7 @@ func (s *dashboardService) LinkMeToTeam(delegateEmail, teamID string) (retErr er
 	// Check if the delegate is a faculty advisor
 	me, err := s.delegateRepo.GetDelegateByEmail(delegateEmail)
 	if err != nil {
-		logger.LogError(err, "Failed to get delegate by email", map[string]interface{}{
+		logger.LogError(err, "Failed to get delegate by email", map[string]any{
 			"layer":     "service",
 			"operation": "service.LinkMeToTeam",
 			"error":     err,
@@ -355,7 +396,7 @@ func (s *dashboardService) LinkMeToTeam(delegateEmail, teamID string) (retErr er
 		meType = *me.ParticipantType
 	}
 	if meType != "faculty_advisor" {
-		logger.LogError(nil, "Participant is not a faculty advisor", map[string]interface{}{
+		logger.LogError(nil, "Participant is not a faculty advisor", map[string]any{
 			"layer":     "service",
 			"operation": "service.LinkMeToTeam",
 			"error":     "participant is not a faculty advisor",
@@ -365,22 +406,43 @@ func (s *dashboardService) LinkMeToTeam(delegateEmail, teamID string) (retErr er
 		return retErr
 	}
 
-	// Check if the team exists
-	if err = s.delegateRepo.InsertMeToTeam(teamID, delegateEmail); err != nil {
-		logger.LogError(err, "Failed to insert delegate to team", map[string]interface{}{
+	return utils.WithTransaction(s.delegateRepo.DB(), func(tx *sqlx.Tx) error {
+		if err := s.delegateRepo.InsertMeToTeam(tx, teamID, delegateEmail); err != nil {
+			logger.LogError(err, "Failed to insert delegate to team", map[string]any{
+				"teamID":        teamID,
+				"delegateEmail": delegateEmail,
+				"layer":         "service",
+				"operation":     "service.LinkMeToTeam",
+				"error":         err,
+			})
+			return err
+		}
+
+		if err := s.paymentRepo.UpdatePaymentTeam(tx, teamID, delegateEmail); err != nil {
+			logger.LogError(err, "Failed to update payment team", map[string]any{
+				"teamID":        teamID,
+				"delegateEmail": delegateEmail,
+				"layer":         "service",
+				"operation":     "service.LinkMeToTeam",
+				"error":         err,
+			})
+			return err
+		}
+		return nil
+	})
+}
+
+func (s *dashboardService) GetUserData(email string) (*dashboard.MUNDelegates, error) {
+	// Get the delegate by email
+	delegate, err := s.delegateRepo.GetDelegateByEmail(email)
+	if err != nil {
+		logger.LogError(err, "Failed to get delegate by email", map[string]any{
 			"layer":     "service",
-			"operation": "service.LinkMeToTeam",
+			"operation": "service.GetUserData",
 			"error":     err,
 		})
-		retErr = err
-		return retErr
+		return nil, err
 	}
 
-	logger.LogDebug("Linking delegate to team", map[string]interface{}{
-		"teamID":        teamID,
-		"delegateEmail": delegateEmail,
-		"layer":         "service",
-		"operation":     "service.LinkMeToTeam",
-	})
-	return nil
+	return delegate, nil
 }

@@ -34,9 +34,9 @@ const ThemeTeaser = () => {
       <Container className="max-w-4xl pt-0 2xl:max-w-6xl">
         {/* Light mode video */}
         <HeroVideoDialog
-          className="z-20 block dark:hidden"
+          className="block dark:hidden"
           animationStyle="from-bottom"
-          videoSrc="/assets/theme/like him.mp4?autoplay=1&mute=1"
+          videoSrc="/video/Teaser.mp4?autoplay=1&mute=1"
           thumbnailSrc="/assets/theme/teaser-thumbnail.webp"
           thumbnailAlt="JOINMUN 2025 Teaser"
         />

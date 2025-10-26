@@ -44,13 +44,7 @@ func (h *PositionHandler) GetPositionPaperHandler(c *gin.Context) {
 		return
 	}
 
-	paperUrl, err := h.uploader.GeneratePresignedURL(paper.SubmissionFile) // 15 minutes expiration
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate presigned URL", "details": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, paperUrl)
+	c.JSON(http.StatusOK, paper)
 }
 
 // insert position paper

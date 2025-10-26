@@ -1,10 +1,10 @@
 package user
 
 import (
+	"backend/internal/emailer"
 	userModel "backend/internal/model/user"
 	userRepository "backend/internal/repository/user"
 	"backend/pkg/utils/auth"
-	emailUtils "backend/pkg/utils/email"
 	"backend/pkg/utils/logger"
 	"errors"
 	"fmt"
@@ -30,12 +30,14 @@ type UserService interface {
 type userService struct {
 	userRepo     userRepository.UserRepo
 	tokenService RefreshTokenService
+	emailer      *emailer.EmailService
 }
 
-func NewUserService(userRepo userRepository.UserRepo, tokenService RefreshTokenService) UserService {
+func NewUserService(userRepo userRepository.UserRepo, tokenService RefreshTokenService, emailer *emailer.EmailService) UserService {
 	return &userService{
 		userRepo:     userRepo,
 		tokenService: tokenService,
+		emailer:      emailer,
 	}
 }
 
@@ -50,7 +52,7 @@ func (s *userService) CreateUser(user *userModel.User) error {
 	// check if the user already exists
 	if existingUser, _ := s.userRepo.GetUserByEmail(user.Email); existingUser != nil {
 		errorMessage := "User already exists"
-		logger.LogError(errors.New("user exists"), errorMessage, map[string]interface{}{"layer": "service", "operation": "service.CreateUser"})
+		logger.LogError(errors.New("user exists"), errorMessage, map[string]any{"layer": "service", "operation": "service.CreateUser"})
 		return fmt.Errorf("user already exists: %w", errors.New("user exists"))
 	}
 
@@ -58,7 +60,7 @@ func (s *userService) CreateUser(user *userModel.User) error {
 	hashedPassword, err := auth.HashPassword(user.Password)
 	if err != nil {
 		errorMessage := "Utils Failed to hash password"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.CreateUser"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.CreateUser"})
 		return fmt.Errorf("failed to hash password: %w", err)
 	}
 
@@ -67,7 +69,7 @@ func (s *userService) CreateUser(user *userModel.User) error {
 
 	if err := s.userRepo.CreateUser(user); err != nil {
 		errorMessage := "Failed to create user"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.CreateUser"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.CreateUser"})
 		return fmt.Errorf("failed to create user: %w", err)
 	}
 	return nil
@@ -78,14 +80,14 @@ func (s *userService) LoginUser(email, password string) (string, string, error) 
 	user, err := s.userRepo.GetUserByEmail(email)
 	if err != nil {
 		errorMessage := "Failed to get user by email"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.LoginUser"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.LoginUser"})
 		return "", "", fmt.Errorf("failed to get user by email: %w", err)
 	}
 
 	// Check if the password is correct
 	if !auth.CheckHash(password, user.Password) {
 		errorMessage := "Invalid password hash check"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.LoginUser", "email": email})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.LoginUser", "email": email})
 		return "", "", fmt.Errorf("invalid password: %w", err)
 	}
 
@@ -93,7 +95,7 @@ func (s *userService) LoginUser(email, password string) (string, string, error) 
 	accessToken, refreshToken, err := s.tokenService.GenerateAccessAndRefreshToken(user.UserID)
 	if err != nil {
 		errorMessage := "Token service failed to generate access and refresh token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.LoginUser"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.LoginUser"})
 		return "", "", fmt.Errorf("failed to generate access and refresh token: %w", err)
 	}
 
@@ -108,12 +110,12 @@ func (s *userService) RequestPasswordReset(email string) error {
 	user, err := s.userRepo.GetUserByEmail(email)
 	if err != nil {
 		errorMessage := "Repo Failed to get user by email"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.RequestPasswordReset"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.RequestPasswordReset"})
 		return err
 	}
 	if user == nil {
 		errorMessage := "User not found"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.RequestPasswordReset"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.RequestPasswordReset"})
 		return fmt.Errorf("user not found: %w", err)
 	}
 
@@ -121,16 +123,16 @@ func (s *userService) RequestPasswordReset(email string) error {
 	resetToken, expiry, err := auth.CreateResetToken()
 	if err != nil {
 		errorMessage := "Utils Failed to create reset token"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.RequestPasswordReset"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.RequestPasswordReset"})
 		return err
 	}
 
 	// generate the resetLink
 	var resetLink string
 	if os.Getenv("ENVIRONMENT") == "production" {
-		resetLink = fmt.Sprintf("https://%s/forgot-password/%s", os.Getenv("FRONTEND_URL"), resetToken)
+		resetLink = fmt.Sprintf("https://www.joinmun.id/forgot-password/%s", resetToken)
 	} else {
-		resetLink = fmt.Sprintf("https://joinmun.localhost/forgot-password/%s", resetToken)
+		resetLink = fmt.Sprintf("http://localhost:3000/forgot-password/%s", resetToken)
 	}
 
 	// run the password reset request and email sending concurrently
@@ -138,7 +140,7 @@ func (s *userService) RequestPasswordReset(email string) error {
 	g.Go(func() error {
 		if err := s.tokenService.BlacklistTokenOnEmail(email); err != nil {
 			errorMessage := "Service Failed to blacklist refresh token"
-			logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.RequestPasswordReset"})
+			logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.RequestPasswordReset"})
 			return err
 		}
 		return nil
@@ -148,7 +150,7 @@ func (s *userService) RequestPasswordReset(email string) error {
 	g.Go(func() error {
 		if err := s.userRepo.RequestPasswordReset(email, resetToken, expiry); err != nil {
 			errorMessage := "Repo Failed to request password reset"
-			logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.RequestPasswordReset"})
+			logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.RequestPasswordReset"})
 			return err
 		}
 		return nil
@@ -156,9 +158,9 @@ func (s *userService) RequestPasswordReset(email string) error {
 
 	// send the email with the reset link
 	g.Go(func() error {
-		if err := emailUtils.SendPasswordResetEmail(email, resetLink); err != nil {
+		if err := s.emailer.SendPasswordResetEmail(email, resetLink); err != nil {
 			errorMessage := "Utils Failed to send password reset email"
-			logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.RequestPasswordReset"})
+			logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.RequestPasswordReset"})
 			return err
 		}
 		return nil
@@ -177,14 +179,14 @@ func (s *userService) ResetPassword(newPassword, resetToken string) error {
 	newHashedPassword, err := auth.HashPassword(newPassword)
 	if err != nil {
 		errorMessage := "Utils Failed to hash password"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.ResetPassword"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.ResetPassword"})
 		return fmt.Errorf("failed to hash password: %w", err)
 	}
 
 	// Reset the password in the database
 	if err := s.userRepo.ResetPassword(newHashedPassword, resetToken); err != nil {
 		errorMessage := "Repo Failed to reset password"
-		logger.LogError(err, errorMessage, map[string]interface{}{"layer": "service", "operation": "service.ResetPassword"})
+		logger.LogError(err, errorMessage, map[string]any{"layer": "service", "operation": "service.ResetPassword"})
 		return fmt.Errorf("failed to reset password: %w", err)
 	}
 

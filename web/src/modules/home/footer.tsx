@@ -43,9 +43,7 @@ const FOOTER_CONTENT: FooterSection[] = [
   {
     title: "Contact Us",
     content: [
-      { name: "Phone", link: "/service1" },
-      { name: "Email", link: "/service2" },
-      { name: "Address", link: "/service3" },
+      { name: "Direct Message", link: "https://www.instagram.com/direct/t/114960663222344" },
     ],
   },
   {

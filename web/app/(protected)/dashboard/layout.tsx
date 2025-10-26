@@ -1,23 +1,37 @@
 "use client";
 import DashboardContainer from "@/components/dashboard/dashboard-container";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ComingSoon from "@/modules/coming-soon";
 import DashboardNav from "@/modules/dashboard/dashboard-nav";
 import UserProfileInfo from "@/modules/dashboard/user-profile-info";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { isRegistrationOpen } from "@/utils/helpers/reveal";
+import { AuthProvider, useSession } from "@/utils/hooks/use-session";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useState } from "react";
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayoutContent = ({ children }: { children: React.ReactNode }) => {
+  const [open, setOpen] = useState<boolean>(false);
+  const { user } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.role?.toLowerCase() === "admin") {
+      router.push("/admin");
+    }
+  }, [user, router]);
+
   return (
     <>
       {isRegistrationOpen ? (
-        <SidebarProvider>
+        <SidebarProvider open={open} onOpenChange={setOpen}>
           <main className="relative flex h-screen w-full flex-col gap-6 md:flex-row md:gap-0 md:overflow-clip">
             <DashboardNav />
             <section className="max-h-screen w-full md:overflow-y-auto">
               <DashboardContainer className="gap-6 pt-0 md:px-6 md:pt-6">
                 <header className="hidden w-full items-center justify-between gap-8 md:flex">
-                  <div className="flex group items-baseline gap-4">
+                  <div className="group flex items-baseline gap-4">
                     <SidebarToggle />
                     <h1 className="text-2xl font-bold">Dashboard</h1>
                   </div>
@@ -32,6 +46,14 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <ComingSoon />
       )}
     </>
+  );
+};
+
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <AuthProvider>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </AuthProvider>
   );
 };
 

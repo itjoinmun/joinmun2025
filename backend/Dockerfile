@@ -1,5 +1,5 @@
 # STAGE 1: build stage using golang image to compile the service
-FROM golang:1.24.2-alpine3.21 AS builder
+FROM golang:1.24.4-alpine3.21 AS builder
 
 # install git to download go dependencies
 RUN apk add --no-cache git

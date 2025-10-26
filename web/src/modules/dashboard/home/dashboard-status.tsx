@@ -1,11 +1,26 @@
 import {
   DashboardModule,
+  DashboardModuleContent,
+  DashboardModuleDescription,
   DashboardModuleHeader,
   DashboardModuleTitle,
-  DashboardModuleDescription,
-  DashboardModuleContent,
 } from "@/components/dashboard/dashboard-module";
+import { PositionPaperModal } from "@/components/dashboard/position-paper-modal";
+import { ViewPaperButton } from "@/components/dashboard/view-paper-button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/utils/helpers/cn";
+import {
+  Delegate,
+  getDelegate,
+  getDelegatePaper,
+  getPayment,
+  getDelegates,
+  Payment,
+  Delegates,
+  Paper,
+} from "@/utils/helpers/fetch/delegates/delegates";
+import Link from "next/link";
+import DelegateCodeInput from "./delegate-code-input";
 
 type RegistrationStatus =
   | "not_registered"
@@ -13,107 +28,311 @@ type RegistrationStatus =
   | "verified_pending_payment"
   | "payment_checking"
   | "payment_verified";
-
-type DelegateCodeStatus = "not_registered" | "registration_pending" | "code_available";
-
-type PaperSubmissionStatus = "not_registered" | "registration_pending" | "can_upload" | "uploaded";
-
+type DelegateCodeStatus =
+  | "not_registered"
+  | "registration_pending"
+  | "can_input"
+  | "code_available";
+type PaperSubmissionStatus =
+  | "not_registered"
+  | "registration_pending"
+  | "can_upload"
+  | "uploaded"
+  | "not_revealed";
 type InformationCenterStatus =
   | "not_registered"
   | "registration_pending"
   | "no_information"
   | "has_information";
 
-interface ParticipantData {
-  registrationStatus: RegistrationStatus;
-  delegateCode: DelegateCodeStatus;
-  paperSubmission: PaperSubmissionStatus;
-  informationCenter: InformationCenterStatus;
-  paperUrl?: string;
-  delegateCodeValue?: string;
-  informationContent?: string;
-}
+/**
+ * Function 1: Registration Status Logic
+ * Handles only registration and verification status
+ */
+const getRegistrationStatus = (
+  delegate: Delegate,
+  delegates: Delegates,
+  payment: Payment,
+): RegistrationStatus => {
+  if (!delegate) return "not_registered";
 
-const currentUserState: ParticipantData = {
-  registrationStatus: "verified_pending_payment",
-  delegateCode: "registration_pending",
-  paperSubmission: "registration_pending",
-  informationCenter: "no_information",
+  // Team logic
+  if (delegates?.participant_data?.length > 0) {
+    const teamMembers = delegates.participant_data;
+    const hasRejected = teamMembers.some((member) => member.confirmed === "rejected");
+    const hasPending = teamMembers.some((member) => member.confirmed === "pending");
+    const allApproved = teamMembers.every((member) => member.confirmed === "confirmed");
+
+    if (hasRejected) return "not_registered";
+    if (hasPending) return "waiting_verification";
+
+    if (allApproved) {
+      if (!payment) return "verified_pending_payment";
+
+      // Check team payment status
+      if (payment.team_members?.length > 0) {
+        const allPaid = payment.team_members.every((member) => member.payment_status === "paid");
+        const anyPending = payment.team_members.some(
+          (member) => member.payment_status === "pending",
+        );
+        const haventPaid = payment.team_members.some((member) => !member.package);
+
+        if (haventPaid) return "verified_pending_payment";
+        if (allPaid) return "payment_verified";
+        if (anyPending) return "payment_checking";
+        return "verified_pending_payment";
+      }
+
+      // Fallback to single payment check
+      if (!payment.package) return "verified_pending_payment";
+      if (payment.payment_status === "paid") return "payment_verified";
+      if (payment.payment_status === "pending") return "payment_checking";
+      return "verified_pending_payment";
+    }
+  }
+
+  // Single delegate fallback
+  if (delegate.confirmed === "pending") return "waiting_verification";
+  if (delegate.confirmed === "rejected") return "not_registered";
+  if (delegate.confirmed === "confirmed") {
+    if (!payment) return "verified_pending_payment";
+    if (!payment.package) return "verified_pending_payment";
+    if (payment.payment_status === "paid") return "payment_verified";
+    if (payment.payment_status === "pending") return "payment_checking";
+    return "verified_pending_payment";
+  }
+
+  return "verified_pending_payment";
 };
 
-interface StatusCardProps {
-  title: string;
-  status: string;
-  description: string;
-  cardHeader: string;
-  cardDescription: string;
-}
+/**
+ * Function 2: Delegate Code Status Logic
+ * Handles delegate code availability
+ */
+const getDelegateCodeStatus = (delegate: Delegate, delegates: Delegates, payment: Payment): DelegateCodeStatus => {
+  if (!delegate) return "not_registered";
+  // Faculty advisor special case
+  
+  if (delegate.participant_type === "faculty_advisor" && payment.payment_status === "paid") {
+    return "can_input";
+  }
 
-const DashboardStatus = () => {
-  const regInfo = getRegistrationStatusInfo(currentUserState.registrationStatus);
-  const codeInfo = getDelegateCodeInfo(currentUserState.delegateCode);
-  const paperInfo = getPaperSubmissionInfo(currentUserState.paperSubmission);
-  const infoInfo = getInformationCenterInfo(currentUserState.informationCenter);
+  // Check if all team members are approved
+  if (delegates?.participant_data?.length > 0) {
+    const allApproved = delegates.participant_data.every(
+      (member) => member.confirmed === "confirmed",
+    );
+    return allApproved ? "code_available" : "registration_pending";
+  }
+
+  // Single delegate
+  return delegate.confirmed === "confirmed" ? "code_available" : "registration_pending";
+};
+
+/**
+ * Function 3: Paper Submission Status Logic
+ * Handles position paper submission status
+ */
+const getPaperSubmissionStatus = (
+  delegate: Delegate,
+  delegates: Delegates,
+  payment: Payment,
+  paper: Paper,
+): PaperSubmissionStatus => {
+  if (!delegate) return "not_registered";
+
+  let registrationComplete = false;
+  let paymentComplete = false;
+
+  // Team logic
+  if (delegates?.participant_data?.length > 0) {
+    const allApproved = delegates.participant_data.every(
+      (member) => member.confirmed === "confirmed",
+    );
+    registrationComplete = allApproved && !!delegate.council && !!delegate.country;
+
+    if (payment?.team_members?.length > 0) {
+      paymentComplete = payment.team_members.every((member) => member.payment_status === "paid");
+    } else {
+      paymentComplete = payment?.payment_status === "paid";
+    }
+  } else {
+    // Single delegate
+    registrationComplete =
+      delegate.confirmed === "confirmed" && !!delegate.council && !!delegate.country;
+    paymentComplete = payment?.payment_status === "paid";
+  }
+
+  if (!registrationComplete || !paymentComplete) {
+    return "registration_pending";
+  }
+
+  // Check paper status
+  if (paper?.submission_file) return "uploaded";
+  if (process.env.NEXT_PUBLIC_CC_REVEAL === "false") return "not_revealed";
+  return "can_upload";
+};
+
+/**
+ * Function 4: Information Center Status Logic
+ * Handles council/country assignment information
+ */
+const getInformationCenterStatus = (
+  delegate: Delegate,
+  delegates: Delegates,
+  payment: Payment,
+): InformationCenterStatus => {
+  if (!delegate) return "not_registered";
+
+  let registrationComplete = false;
+  let paymentComplete = false;
+
+  // Team logic
+  if (delegates?.participant_data?.length > 0) {
+    registrationComplete = delegates.participant_data.every(
+      (member) => member.confirmed === "confirmed",
+    );
+
+    if (payment?.team_members?.length > 0) {
+      paymentComplete = payment.team_members.every((member) => member.payment_status === "paid");
+    } else {
+      // Fallback for team if team_members is not populated but a general payment status exists
+      // This case might need review based on actual data structure for team payments without team_members array
+      paymentComplete = payment?.payment_status === "paid";
+    }
+  } else {
+    // Single delegate
+    registrationComplete = delegate.confirmed === "confirmed";
+    paymentComplete = payment?.payment_status === "paid";
+  }
+
+  const requirementsMet = registrationComplete && paymentComplete;
+
+  if (!requirementsMet) return "registration_pending";
+
+  // Check if council and country are assigned
+  return delegate.council && delegate.country && process.env.NEXT_PUBLIC_GROUP_REVEAL === "true"
+    ? "has_information"
+    : "no_information";
+};
+
+const DashboardStatus = async () => {
+  const delegate = (await getDelegate()) as Delegate;
+  const delegates = (await getDelegates()) as Delegates;
+  const paper = (await getDelegatePaper()) as Paper;
+  const payment = (await getPayment()) as Payment;
+
+  const registrationStatus = getRegistrationStatus(delegate, delegates, payment);
+  const delegateCode = getDelegateCodeStatus(delegate, delegates, payment);
+  const paperSubmission = getPaperSubmissionStatus(delegate, delegates, payment, paper);
+  const informationCenter = getInformationCenterStatus(delegate, delegates, payment);
+
+  const regInfo = getRegistrationStatusInfo(registrationStatus);
+  const codeInfo = getDelegateCodeInfo(delegateCode, payment?.mun_team_id);
+  const paperInfo = getPaperSubmissionInfo(paperSubmission);
+  const infoInfo = getInformationCenterInfo(informationCenter);
 
   return (
     <DashboardModule className="">
-      <section className="mt-3 grid grid-cols-1 gap-4 md:auto-rows-fr lg:grid-cols-2">
-        <StatusCard
-          cardHeader="Registration Status"
-          cardDescription="Track your registration progress from initial signup to payment verification"
-          title="Current Status"
-          status={regInfo.status}
-          description={regInfo.description}
-        />
-        <StatusCard
-          cardHeader="Delegate Code"
-          cardDescription="Your unique identifier for the JOINMUN 2025 conference"
-          title="Code Status"
-          status={codeInfo.status}
-          description={codeInfo.description}
-        />
-        <StatusCard
-          cardHeader="Paper Submission"
-          cardDescription="Submit and manage your position papers for the conference"
-          title="Submission Status"
-          status={paperInfo.status}
-          description={paperInfo.description}
-        />
-        <StatusCard
-          cardHeader="Information Center"
-          cardDescription="Stay updated with important announcements and conference details"
-          title="Update Status"
-          status={infoInfo.status}
-          description={infoInfo.description}
-        />
+      <section className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {(delegate?.participant_type === "single_delegate" ||
+          delegate?.participant_type === "team_delegate" ||
+          !delegate) && (
+          <>
+            <StatusCard
+              cardHeader="Registration Status"
+              cardDescription="Your current registration progress"
+              status={regInfo.status}
+              description={regInfo.description}
+            />
+            <StatusCard
+              cardHeader="Delegate Code"
+              cardDescription="Your unique delegate identifier"
+              status={codeInfo.status}
+              description={codeInfo.description}
+            />
+            <StatusCard
+              cardHeader="Paper Submission"
+              cardDescription="Position paper upload status"
+              status={paperInfo.status}
+              description={paperInfo.description}
+              canSubmitPaper={
+                paperSubmission === "can_upload" && !!delegate.country && !!delegate.council
+              }
+              paperUploaded={paperSubmission === "uploaded"}
+              userStatus={delegate}
+            />
+            <StatusCard
+              cardHeader="Information Center"
+              cardDescription=""
+              description={infoInfo.description}
+            />
+          </>
+        )}
+
+        {delegate?.participant_type === "faculty_advisor" && (
+          <>
+            <StatusCard
+              cardHeader="Status"
+              cardDescription=""
+              description={regInfo.description}
+            />
+            <StatusCard cardHeader="Information Center" description={infoInfo.description} />
+            {delegateCode === "can_input" && (
+              <StatusCard
+                cardHeader="Delegate Code"
+                cardDescription="Input code from your delegates"
+                description={codeInfo.description}
+              />
+            )}
+          </>
+        )}
+
+        {delegate?.participant_type === "observer" && (
+          <>
+            <StatusCard
+              cardHeader="Status"
+              cardDescription=""
+              description={regInfo.description}
+            />
+            <StatusCard cardHeader="Information Center" description={infoInfo.description} />
+          </>
+        )}
       </section>
     </DashboardModule>
   );
 };
 
 const StatusCard = ({
-  // title,
-  // status,
   description,
   cardHeader,
   cardDescription,
-}: StatusCardProps) => {
+  canSubmitPaper = false,
+  userStatus,
+  paperUploaded = false,
+}: {
+  status?: string;
+  description: string | React.ReactNode;
+  cardHeader: string;
+  cardDescription?: string;
+  canSubmitPaper?: boolean;
+  userStatus?: Delegate | null;
+  paperUploaded?: boolean;
+}) => {
   return (
-    <DashboardModule
-      className={cn(
-        "flex flex-col gap-3 transition-all",
-        // variantStyles[variant],
-      )}
-    >
-      <DashboardModuleHeader className="flex shrink-0 flex-col text-nowrap 2xl:flex-row 2xl:justify-between 2xl:*:max-w-1/2">
+    <DashboardModule className={cn("flex flex-col gap-3 transition-all")}>
+      <DashboardModuleHeader className="flex shrink-0 flex-col text-nowrap lg:flex-row lg:gap-4 lg:max-2xl:items-center 2xl:justify-between 2xl:*:max-w-1/2">
         <DashboardModuleTitle>{cardHeader}</DashboardModuleTitle>
         <DashboardModuleDescription className="text-wrap opacity-80">
           {cardDescription}
         </DashboardModuleDescription>
       </DashboardModuleHeader>
-      <DashboardModuleContent className="mt-auto">
-        <p className="text-sm opacity-90">{description}</p>
-        {/* <p className="text-xs opacity-75">{description}</p> */}
+      <DashboardModuleContent className="mt-auto flex min-h-20 flex-row items-center justify-between gap-4">
+        <div className="text-sm opacity-90">{description}</div>
+        <div>
+          {canSubmitPaper && userStatus && <PositionPaperModal userStatus={userStatus} />}
+          {paperUploaded && <ViewPaperButton />}
+        </div>
       </DashboardModuleContent>
     </DashboardModule>
   );
@@ -121,58 +340,76 @@ const StatusCard = ({
 
 const getRegistrationStatusInfo = (status: RegistrationStatus) => {
   switch (status) {
-    // Belum Daftar
     case "not_registered":
       return {
         status: "Not Registered",
-        description: "You haven't registered, <b>Register Now</b>",
+        description: (
+          <div className="flex items-center justify-between gap-4">
+            <p>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
+            </p>
+            <Link
+              href="/dashboard/delegates"
+              className={cn(buttonVariants({ variant: "primary", size: "sm" }), "h-7 text-xs")}
+            >
+              Register Now
+            </Link>
+          </div>
+        ),
       };
-    // Sudah Daftar
     case "waiting_verification":
       return {
-        status: "Waiting for Verification",
-        description: "Waiting For Verification",
+        status: "Pending Verification",
+        description: <>Your registration is being reviewed by administrators.</>,
       };
-    // Belum Verified
     case "verified_pending_payment":
       return {
         status: "Payment Required",
-        description: "Verified, Go To Payment",
+        description: (
+          <>Registration approved! Please proceed with payment to complete your registration.</>
+        ),
       };
-    // Pendaftaran Sudah Verified
     case "payment_checking":
       return {
-        status: "Payment Being Checked",
-        description: "Verified, Go To Payment",
+        status: "Payment Under Review",
+        description: <>Your payment is being verified by our team.</>,
       };
-    // Payment Sudah Verified
     case "payment_verified":
       return {
         status: "Fully Registered",
-        description: "Your registration is complete",
+        description: <>Congratulations! Your registration and payment are complete.</>,
       };
   }
 };
 
-const getDelegateCodeInfo = (status: DelegateCodeStatus) => {
+const getDelegateCodeInfo = (status: DelegateCodeStatus, paymentCode?: string) => {
   switch (status) {
     case "not_registered":
       return {
         status: "Not Available",
-        description: "Complete registration to get your delegate code",
-        variant: "error" as const,
+        description: (
+          <div className="flex items-center justify-between gap-4">
+            <p>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
+            </p>
+          </div>
+        ),
       };
     case "registration_pending":
       return {
-        status: "Pending Registration",
-        description: "Code will be available after registration is complete",
-        variant: "warning" as const,
+        status: "Pending Approval",
+        description: "Code will be available after registration approval",
+      };
+    case "can_input":
+      return {
+        status: "Input Delegate Code",
+        description: <DelegateCodeInput />,
       };
     case "code_available":
+      const delegateCode = paymentCode || "Individual";
       return {
-        status: "Code Available",
-        description: "Your delegate code is ready to use",
-        variant: "success" as const,
+        status: delegateCode,
+        description: `${delegateCode}`,
       };
   }
 };
@@ -182,7 +419,13 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
     case "not_registered":
       return {
         status: "Not Available",
-        description: "Register first to submit your paper",
+        description: (
+          <div className="flex justify-between gap-4">
+            <p>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
+            </p>
+          </div>
+        ),
         variant: "error" as const,
       };
     case "registration_pending":
@@ -203,6 +446,12 @@ const getPaperSubmissionInfo = (status: PaperSubmissionStatus) => {
         description: "Your paper has been uploaded successfully",
         variant: "success" as const,
       };
+    case "not_revealed":
+      return {
+        status: "Not Revealed",
+        description: "Position paper submission is not yet available",
+        variant: "info" as const,
+      };
   }
 };
 
@@ -211,26 +460,42 @@ const getInformationCenterInfo = (status: InformationCenterStatus) => {
     case "not_registered":
       return {
         status: "Not Available",
-        description: "Register to access information center",
-        variant: "error" as const,
+        description: (
+          <div className="flex justify-between gap-4">
+            <p>
+              You haven&apos;t registered yet. <strong>Register Now</strong>
+            </p>
+          </div>
+        ),
       };
     case "registration_pending":
       return {
         status: "Pending Registration",
-        description: "Complete registration to view information",
-        variant: "warning" as const,
+        description: "Complete registration and payment to view assignments",
       };
     case "no_information":
       return {
-        status: "No Updates",
-        description: "No new information available at this time",
-        variant: "info" as const,
+        status: "Assignment Pending",
+        description: "Council and country assignments will be available soon",
       };
     case "has_information":
       return {
-        status: "Updates Available",
-        description: "New information is available for you",
-        variant: "success" as const,
+        status: "Assignment Available",
+        description: (
+          <div className="flex items-center justify-between gap-2">
+            <p>Join whatsapp group:</p>
+            <Link
+              rel="noopener noreferrer"
+              target="_blank"
+              // TODO : GRUP WA
+              href="https://chat.whatsapp.com/D666666666666666666666666666666666666666"
+            >
+              <Button variant="primary" className="h-8 text-xs" size="sm">
+                Join
+              </Button>
+            </Link>
+          </div>
+        ),
       };
   }
 };

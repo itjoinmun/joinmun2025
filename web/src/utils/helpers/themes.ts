@@ -10,7 +10,7 @@ export const THEMES = [
     description: "Fahmi Monjali",
   },
   {
-    src: "alun.webp",
+    src: "alun-utara.png",
     title: "Alun-alun Utara",
     description: "Balance and openness",
   },
@@ -25,7 +25,7 @@ export const THEMES = [
     description: "Balance and openness",
   },
   {
-    src: "alun.webp",
+    src: "panggung-krapyak.jpg",
     title: "Panggung Krapyak",
     description: "Balance and openness",
   },

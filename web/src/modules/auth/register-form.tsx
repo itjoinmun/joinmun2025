@@ -1,20 +1,22 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { register } from "@/utils/actions/auth-handler";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const loginSchema = z
   .object({
@@ -43,6 +45,8 @@ const loginSchema = z
 
 const RegisterForm = () => {
   const [pending, setPending] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -54,19 +58,35 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = () =>
-    // values: z.infer<typeof loginSchema>
-    {
-      setPending(true);
-      try {
-        // post to backend api
-      } catch (error) {
-        console.error(error);
-      } finally {
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setPending(true);
+    try {
+      const res = await register({
+        username: values.name,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (!res.ok) {
         setPending(false);
+        setError("Registration failed. Please try again.");
+        return;
       }
-      // do something
-    };
+
+      toast.success("Registration Successful", {
+        description: "You have successfully registered. Please log in.",
+        position: "top-center",
+        duration: 3000,
+      });
+      router.push("/login");
+    } catch (error) {
+      console.error(error);
+      setPending(false);
+    } finally {
+      // TO DO: Toast
+    }
+    // do something
+  };
 
   return (
     <Form {...form}>
@@ -78,7 +98,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="Enter your name" autoFocus autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -91,7 +111,7 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="fatimah@badr.co.id" {...field} />
+                <Input placeholder="Enter your email" autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,7 +124,12 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Fill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,16 +142,29 @@ const RegisterForm = () => {
             <FormItem>
               <FormLabel>Refill Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="fatimah@badr.co.id" {...field} />
+                <Input
+                  type="password"
+                  placeholder="Confirm your password"
+                  autoComplete="off"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button disabled={pending} type="submit" variant={`primary`} className="w-full">
+
+        {error && <div className="text-center text-sm text-red-500 md:text-start">{error}</div>}
+
+        <Button
+          disabled={pending}
+          type="submit"
+          variant={`primary`}
+          className="w-full cursor-pointer"
+        >
           {pending ? (
             <>
-              <Loader className="animate-spin" /> Loading...
+              <Loader className="animate-spin" /> Creating your account...
             </>
           ) : (
             "Register"

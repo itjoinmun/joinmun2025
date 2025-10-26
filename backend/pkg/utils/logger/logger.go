@@ -1,11 +1,9 @@
 package logger
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
-	"time"
 
 	"github.com/rs/zerolog"
 )
@@ -27,29 +25,17 @@ func InitLogger() {
 	// This configuration:
 	// - Keeps the first N logs (initial burst)
 	// - After that, samples logs at the given interval (1 out of every M)
-	sampler := &zerolog.BurstSampler{
-		Burst:       5,                             // Allow first 5 messages without sampling
-		Period:      300 * time.Second,             // Reset counter every 30 seconds
-		NextSampler: &zerolog.BasicSampler{N: 100}, // After burst, sample 1 in 50 messages
-	}
+	// sampler := &zerolog.BurstSampler{
+	// 	Burst:       5,                             // Allow first 5 messages without sampling
+	// 	Period:      300 * time.Second,             // Reset counter every 30 seconds
+	// 	NextSampler: &zerolog.BasicSampler{N: 100}, // After burst, sample 1 in 50 messages
+	// }
 
 	// Local or other environments → Log to both file and stdout
 	logPath := "/var/log/joinmun_backend"
-	if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
-		log.Printf("ERROR: Failed to create log directory '%s': %v", logPath, err)
-		return
-	}
-
-	appLogFile, err := os.OpenFile(logPath+"/app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Printf("ERROR: Failed to open app log file '%s': %v", logPath+"/app.log", err)
-		return
-	}
-	errorLogFile, err := os.OpenFile(logPath+"/error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Printf("ERROR: Failed to open error log file '%s': %v", logPath+"/error.log", err)
-		return
-	}
+	_ = os.MkdirAll(logPath, os.ModePerm)
+	appLogFile, _ := os.OpenFile(logPath+"/app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	errorLogFile, _ := os.OpenFile(logPath+"/error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 
 	var multiAppWriter, multiErrorWriter zerolog.LevelWriter
 
@@ -65,7 +51,7 @@ func InitLogger() {
 		multiErrorWriter = zerolog.MultiLevelWriter(os.Stdout)
 	}
 
-	Log = zerolog.New(multiAppWriter).Sample(sampler).With().
+	Log = zerolog.New(multiAppWriter).With().
 		Timestamp().
 		Str("service", "joinmun_backend").
 		Logger()
@@ -78,7 +64,7 @@ func InitLogger() {
 }
 
 // LogDebug to create debug log with function name and line number
-func LogDebug(message string, fields ...map[string]interface{}) {
+func LogDebug(message string, fields ...map[string]any) {
 	// Get function name, file name, and line number of the caller
 	pc, file, line, _ := runtime.Caller(1)
 	// Get function name from the program counter (if u took OS class u'll know program counter lmao)
@@ -101,7 +87,7 @@ func LogDebug(message string, fields ...map[string]interface{}) {
 }
 
 // LogError creates an error log with function name
-func LogError(err error, message string, fields ...map[string]interface{}) {
+func LogError(err error, message string, fields ...map[string]any) {
 	pc, _, _, _ := runtime.Caller(1)
 	funcName := runtime.FuncForPC(pc).Name()
 
@@ -119,7 +105,7 @@ func LogError(err error, message string, fields ...map[string]interface{}) {
 }
 
 // addField adds a field to the log event based on its type (we will specify the fields in the code later)
-func addField(event *zerolog.Event, key string, value interface{}) *zerolog.Event {
+func addField(event *zerolog.Event, key string, value any) *zerolog.Event {
 	// Switch on the type of the value and add it to the log event
 	switch v := value.(type) {
 	case string:

@@ -39,7 +39,7 @@ type DelegateRepo interface {
 	InsertDelegates(tx *sqlx.Tx, delegates []dashboard.MUNDelegates) error                                             // batch insert delegates
 	InsertTeam(tx *sqlx.Tx, team *dashboard.MUNTeams) (string, error)                                                  // Insert a new team (this will be used for the team dashboard, triggered by the delegates insertion also)
 	InsertTeamWithDelegates(tx *sqlx.Tx, team *dashboard.MUNTeams, delegates []dashboard.MUNDelegates) (string, error) // create  a relationship between team and delegates (using insert team and insert delegates)
-	InsertMeToTeam(teamID string, delegateEmail string) error                                                          // add a delegate to a team (this is used for the team dashboard)
+	InsertMeToTeam(tx *sqlx.Tx, teamID string, delegateEmail string) error                                             // add a delegate to a team (this is used for the team dashboard)
 }
 
 // Factory functions to create repository implementations

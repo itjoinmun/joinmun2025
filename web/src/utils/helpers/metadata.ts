@@ -1,6 +1,6 @@
 export default function getMetadata({
-  title = "JOINMUN 2025",
-  description = "Jogjakarta International Model United Nations 2025 is a simulation of the United Nations General Assembly, where participants will represent countries and discuss and debate global issues.",
+  title = "JOINMUN 2025 | Jogja International Model United Nations",
+  description = "JOINMUN 2025 is a prestigious Model United Nations conference in Jogjakarta, Indonesia. Join us for an immersive UN simulation experience with global youth leaders.",
 }) {
   return {
     title,
@@ -8,6 +8,7 @@ export default function getMetadata({
     metadataBase: new URL("https://joinmun.id/"),
     keywords: [
       "JOINMUN",
+      "JOINMUN 2025",
       "Model United Nations",
       "MUN",
       "Jogjakarta",
@@ -47,7 +48,7 @@ export default function getMetadata({
       title,
       description,
       url: "https://joinmun.id/",
-      siteName: "JOINMUN",
+      siteName: "JOINMUN 2025",
       images: [
         {
           url: `/metadata/web-app-manifest-512x512.png`,
@@ -62,14 +63,14 @@ export default function getMetadata({
     },
 
     // Twitter metadata
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [`/metadata/web-app-manifest-512x512.png`],
-      creator: "@joinmun",
-      site: "@joinmun",
-    },
+    // twitter: {
+    //   card: "summary_large_image",
+    //   title,
+    //   description,
+    //   images: [`/metadata/web-app-manifest-512x512.png`],
+    //   creator: "@joinmun",
+    //   site: "@joinmun",
+    // },
 
     // Favicon and icon definitions
     icons: {

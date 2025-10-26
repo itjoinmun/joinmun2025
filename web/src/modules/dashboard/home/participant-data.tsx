@@ -13,35 +13,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/utils/helpers/cn";
+import { Delegate, getDelegate, getDelegates } from "@/utils/helpers/fetch/delegates/delegates";
+import Link from "next/link";
 
-interface ParticipantTableData {
-  id: string;
-  name: string;
-  delegateStatus: string;
-  council: string;
-  country: string;
-}
+const ParticipantData = async () => {
+  const showCouncilAndCountry = process.env.NEXT_PUBLIC_CC_REVEAL === "true";
+  const delegate = await getDelegate();
 
-// Dummy data for development
-const dummyData: ParticipantTableData[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    delegateStatus: "Single Delegate",
-    council: "UNSC",
-    country: "United States",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    delegateStatus: "Double Delegate",
-    council: "WHO",
-    country: "United Kingdom",
-  },
-  // Add more dummy data as needed
-];
+  if (delegate?.participant_type === "observer") return <></>;
 
-const ParticipantData = () => {
+  const delegates = await getDelegates();
+
+  let participantData: Delegate[] | undefined;
+
+  if (delegates) {
+    participantData = delegates.participant_data;
+  }
+
+  if (delegate?.participant_type === "faculty_advisor" && !participantData) return <></>;
+
   return (
     <DashboardModule>
       <DashboardModuleHeader>
@@ -49,35 +39,84 @@ const ParticipantData = () => {
       </DashboardModuleHeader>
 
       <DashboardModuleContent className="no-scrollbar max-h-96 overflow-scroll">
+        {/* <p className="mb-2 text-xs">Announcement at 12 December 2025</p> */}
         <Table>
           <TableHeader>
-            <TableRow className="bg-background hover:bg-background">
+            <TableRow className="bg-background border-b *:text-white">
               <TableHead className="first:rounded-tl-lg last:rounded-tr-lg">Name</TableHead>
-              <TableHead>Delegate Status</TableHead>
-              <TableHead>Council</TableHead>
-              <TableHead>Country</TableHead>
+              <TableHead className="">Delegate Status</TableHead>
+              <TableHead className="">Council</TableHead>
+              <TableHead className="">Country</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="bg-blue-100">
-            {dummyData.map((participant, index) => (
-              <TableRow key={participant.id} className="hover:bg-blue-100/80">
-                <TableCell
-                  className={cn(
-                    "font-medium",
-                    index === dummyData.length - 1 && "first:rounded-bl-lg",
-                  )}
-                >
-                  {participant.name}
-                </TableCell>
-                <TableCell>{participant.delegateStatus}</TableCell>
-                <TableCell>{participant.council}</TableCell>
-                <TableCell className={cn(index === dummyData.length - 1 && "rounded-br-lg")}>
-                  {participant.country}
+          <TableBody className="bg-blue-50">
+            {participantData ? (
+              participantData.map((participant: Delegate, index: number) => (
+                <TableRow key={participant.mun_delegate_name} className="border-b border-gray-100">
+                  <TableCell
+                    className={cn(
+                      "py-3 font-medium text-gray-900",
+                      index === participantData.length - 1 && "first:rounded-bl-lg",
+                    )}
+                  >
+                    {participant.participant_type === "faculty_advisor"
+                      ? `${participant.mun_delegate_name} (ADVISOR)`
+                      : `${participant.mun_delegate_name}`}
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-1 text-xs font-medium",
+                        participant.confirmed === "confirmed"
+                          ? "bg-green-100 text-green-800"
+                          : participant.confirmed === "rejected"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800",
+                      )}
+                    >
+                      {participant.confirmed === "confirmed"
+                        ? "Confirmed"
+                        : participant.confirmed === "rejected"
+                          ? "Rejected"
+                          : "Pending"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-3 text-gray-700">
+                    {showCouncilAndCountry ? (participant.council ?? "-") : "Wait for reveal"}
+                  </TableCell>
+                  <TableCell
+                    className={cn(
+                      "py-3 text-gray-700",
+                      index === participantData.length - 1 && "rounded-br-lg",
+                    )}
+                  >
+                    {showCouncilAndCountry ? (participant.country ?? "-") : "Wait for reveal"}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow className="border-b bg-red-50">
+                <TableCell colSpan={4} className="text-primary py-6 text-center font-medium">
+                  You haven&apos;t registered. Register now
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
+        <div className="flex w-full rounded-lg border border-black bg-white p-4 text-sm text-black">
+          {delegate?.pair ? (
+            <div className="gap-x-1 flex flex-wrap items-center">
+              <p>You’ve been paired up! Reach out to your partner via this email:</p>
+              <Link href={`mailto:${delegate?.pair}`} className="font-semibold">
+                {delegate?.pair}
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              {"Your partner will be assigned soon. Stay tuned!"}
+            </div>
+          )}
+        </div>
       </DashboardModuleContent>
     </DashboardModule>
   );

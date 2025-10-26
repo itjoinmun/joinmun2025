@@ -30,13 +30,13 @@ const ThemeUnesco = () => {
   return (
     <main className="bg-background relative -z-10 overflow-hidden">
       <Container className="gap-2">
-        <SubHeading>Why The Sumbu Filosofi of Yogyakarta</SubHeading>
+        <SubHeading>Why is The Sumbu Filosofi of Yogyakarta</SubHeading>
 
         <section className="grid grid-cols-1 gap-y-2">
           <Heading>Recognized by UNESCO</Heading>
 
           <div className="mt-7 flex flex-col gap-x-11 gap-y-8 lg:flex-row">
-            <div className="aspect-[354/219] relative shrink-0 w-full shadow-lg lg:aspect-auto lg:h-full lg:max-w-[32%]">
+            <div className="relative aspect-[354/219] w-full shrink-0 shadow-lg lg:aspect-auto lg:h-full lg:max-w-[32%]">
               <Image
                 src="/assets/theme/recognized.webp"
                 alt="The Sumbu Filosofi of Yogyakarta"
