@@ -31,6 +31,7 @@ func InitializeAdminRoutes(r *gin.Engine, adminHandler *admin.AdminHandler) *gin
 		adminPage.GET("/delegates", adminHandler.GetDelegatesHandler)
 		adminPage.GET("/responses", adminHandler.GetAmalgamatedResponsesHandler)
 		adminPage.GET("/payments/csv", adminHandler.GetDelegatesPaymentCSVHandler)
+		adminPage.GET("/position-paper/csv", adminHandler.GetDelegatePospapCSVHandler)
 	}
 
 	adminEmail := admin.Group("/email")

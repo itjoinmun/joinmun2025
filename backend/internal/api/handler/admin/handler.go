@@ -482,3 +482,68 @@ func (h *AdminHandler) SendPaymentReminderEmailHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Payment reminder email sent successfully"})
 }
+
+func (h *AdminHandler) GetDelegatePospapCSVHandler(c *gin.Context) {
+	userContext, ok := dashboard.GetUserFromContext(c)
+	if !ok || userContext.Role != "admin" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	timeWave := c.Query("time")
+
+	teamPapers, err := h.adminService.GetPositionPapersByTeam(timeWave)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve position papers", "details": err.Error()})
+		return
+	}
+
+	// CSV headers
+	c.Header("Content-Type", "text/csv")
+	filename := fmt.Sprintf("position_papers_%s.csv", time.Now().Format("20060102_150405"))
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+
+	writer := csv.NewWriter(c.Writer)
+	defer writer.Flush()
+
+	headers := []string{
+		"Team ID",
+		"Team Lead",
+		"Delegate Email",
+		"Submission File URL",
+		"Submission Date",
+		"Submission Status",
+	}
+	if err := writer.Write(headers); err != nil {
+		c.String(http.StatusInternalServerError, "Failed to write CSV header: %v", err)
+		return
+	}
+
+	for _, team := range teamPapers {
+		teamID := "Individual"
+		if team.MUNTeamID != nil {
+			teamID = *team.MUNTeamID
+		}
+
+		teamLead := "Unknown"
+		if team.MUNTeamLead != nil {
+			teamLead = *team.MUNTeamLead
+		}
+
+		for _, paper := range team.PositionPapers {
+			record := []string{
+				teamID,
+				teamLead,
+				paper.MUNDelegateEmail,
+				paper.SubmissionFile,
+				paper.SubmissionDate.Format(time.RFC3339),
+				paper.SubmissionStatus,
+			}
+
+			if err := writer.Write(record); err != nil {
+				c.String(http.StatusInternalServerError, "Failed to write CSV row: %v", err)
+				return
+			}
+		}
+	}
+}
