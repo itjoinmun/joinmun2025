@@ -37,7 +37,13 @@ export const ViewPaperButton = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button onClick={handleViewPaper} variant="outline" className="w-full" disabled={isLoading}>
+        <Button
+          onClick={handleViewPaper}
+          size={"sm"}
+          variant="outline"
+          disabled={isLoading}
+          className="text-xs"
+        >
           {isLoading ? "Loading..." : "View Uploaded Paper"}
         </Button>
       </DialogTrigger>
