@@ -448,7 +448,7 @@ func (s *adminService) GetPositionPapersByTeam(timeWave string) ([]positionModel
 	for i := range teamPapers {
 		for j := range teamPapers[i].PositionPapers {
 			if teamPapers[i].PositionPapers[j].SubmissionFile != "" {
-				url, err := s.uploader.GeneratePresignedURL(teamPapers[i].PositionPapers[j].SubmissionFile, 15*time.Minute)
+				url, err := s.uploader.GeneratePresignedURL(teamPapers[i].PositionPapers[j].SubmissionFile, 8*time.Hour)
 				if err != nil {
 					logger.LogError(err, "Failed to generate presigned URL", map[string]any{"key": teamPapers[i].PositionPapers[j].SubmissionFile})
 					teamPapers[i].PositionPapers[j].SubmissionFile = ""
