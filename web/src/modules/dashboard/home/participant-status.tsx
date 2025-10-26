@@ -72,7 +72,7 @@ const Body = async () => {
           </>
         ) : (
           <>
-            <div className="flex flex-col gap-3 w-full md:max-w-1/2">
+            <div className="flex w-full flex-col gap-3 md:max-w-1/2">
               <h1 className="text-2xl leading-normal">
                 You Haven&apos;t Been Identified as a Participant. <Bold>Register Now</Bold>!
               </h1>
@@ -105,7 +105,7 @@ const Body = async () => {
           alt="Dashboard Image"
           width={1048}
           height={1403}
-          className="absolute max-w-[250px] right-0 -bottom-16 md:bottom-0"
+          className="absolute right-0 -bottom-16 max-w-[250px] md:bottom-0"
         />
       </div>
     </section>
