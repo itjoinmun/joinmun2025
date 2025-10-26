@@ -77,7 +77,7 @@ export const PositionPaperModal = ({ userStatus }: PositionPaperModalProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size={`sm`} variant={`primary`} className="h-7 cursor-pointer text-xs">
+        <Button size={`sm`} variant={`primary`} className="cursor-pointer text-xs">
           Submit Position Paper
         </Button>
       </DialogTrigger>
