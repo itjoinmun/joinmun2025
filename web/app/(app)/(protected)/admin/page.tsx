@@ -336,7 +336,7 @@ const DashboardAdmin = () => {
       setPospapDownloading(true);
       await downloadPospapCSV();
     } catch (error) {
-
+      console.error("Error downloading CSV of Position Papers:", error);
     } finally {
       setPospapDownloading(false);
     }
@@ -394,10 +394,10 @@ const DashboardAdmin = () => {
                   size={"sm"}
                   className="flex items-center gap-2 whitespace-nowrap"
                   onClick={handlePospapCSVDownload}
-                  disabled={exporting}
+                  disabled={pospapDownloading}
                 >
                   <FileDownIcon className="h-4 w-4" />
-                  {exporting ? "Pospap Download..." : "Pospap CSV"}
+                  {pospapDownloading ? "Pospap Download..." : "Pospap CSV"}
                 </Button>
                 <Button
                   variant="warning"
