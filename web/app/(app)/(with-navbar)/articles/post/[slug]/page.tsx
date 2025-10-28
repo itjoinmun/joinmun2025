@@ -40,7 +40,7 @@ const ArticleBySlugPage = async (props: { params: Promise<{ slug: string }> }) =
           </Link>
         </Button>
 
-        <Container className="z-10 mx-auto w-full max-w-3xl px-0 py-0">
+        <Container className="z-10 mx-auto w-full max-w-3xl py-0">
           <h1 className="text-gradient-gold text-4xl font-bold">{article.title}</h1>
         </Container>
 
