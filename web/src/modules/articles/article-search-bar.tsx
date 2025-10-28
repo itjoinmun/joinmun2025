@@ -36,7 +36,7 @@ export const ArticleSearchBar = () => {
       placeholder="Find Articles"
       value={query}
       onChange={(e) => setQuery(e.target.value)}
-      className="mt-4 w-full max-w-xs"
+      className="mt-4 w-full md:max-w-xs"
     />
   );
 };
