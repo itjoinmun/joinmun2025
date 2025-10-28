@@ -2,7 +2,7 @@ export const fadeInVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 1, delay: 1, type: "tween" },
+    transition: { duration: 1, delay: 1, type: "tween" as const },
   },
 };
 
@@ -17,7 +17,7 @@ export const slideInItemVariants = {
     transition: {
       //   duration: 0.5,
       delay: 0.15 * index,
-      type: "spring",
+      type: "spring" as const,
     },
   }),
 };
