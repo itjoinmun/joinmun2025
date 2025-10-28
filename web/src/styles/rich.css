@@ -1,27 +1,72 @@
 .rich h1 {
-  @apply text-center text-4xl font-extrabold tracking-tight text-balance;
+  text-align: center;
+  font-size: 2.25rem; /* text-[2.25rem] */
+  font-weight: 700; /* font-bold */
+  letter-spacing: -0.015em; /* tracking-tight */
+  text-wrap: balance; /* text-balance */
 }
+
 .rich h2 {
-  @apply border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
+  border-bottom: 1px solid rgb(229 231 235 / 1); /* border-b (gray-200 default) */
+  padding-bottom: 0.5rem; /* pb-2 */
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 600; /* font-semibold */
+  letter-spacing: -0.015em; /* tracking-tight */
 }
+
 .rich h3 {
-  @apply text-2xl font-semibold tracking-tight;
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 600; /* font-semibold */
+  letter-spacing: -0.015em; /* tracking-tight */
 }
+
 .rich h4 {
-  @apply text-xl font-semibold tracking-tight;
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 600; /* font-semibold */
+  letter-spacing: -0.015em; /* tracking-tight */
 }
+
 .rich p {
-  @apply leading-7 [&:not(:first-child)]:mt-4;
+  line-height: 1.75rem; /* leading-7 */
 }
+
+.rich p:not(:first-child) {
+  margin-top: 1rem; /* mt-4 */
+}
+
 .rich blockquote {
-  @apply mt-6 border-l-2 pl-6 italic;
+  margin-top: 1.5rem; /* mt-6 */
+  border-left: 2px solid rgb(229 231 235 / 1); /* border-l-2 */
+  padding-left: 1.5rem; /* pl-6 */
+  font-style: italic;
 }
+
 .rich code {
-  @apply bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold;
+  background-color: rgb(243 244 246 / 1); /* bg-muted (gray-100) */
+  position: relative;
+  border-radius: 0.25rem; /* rounded */
+  padding: 0.2rem 0.3rem;
+  font-family: monospace;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600; /* font-semibold */
 }
+
 .rich ul {
-  @apply my-1 ml-6 list-disc [&>li]:mt-2;
+  margin: 0.25rem 0; /* my-1 */
+  margin-left: 1.5rem; /* ml-6 */
+  list-style-type: disc;
 }
+
+.rich ul > li {
+  margin-top: 0.5rem; /* mt-2 */
+}
+
 .rich ol {
-  @apply my-1 ml-6 list-decimal [&>li]:mt-2;
+  margin: 0.25rem 0; /* my-1 */
+  margin-left: 1.5rem; /* ml-6 */
+  list-style-type: decimal;
+}
+
+.rich ol > li {
+  margin-top: 0.5rem; /* mt-2 */
 }
