@@ -33,7 +33,7 @@ const ArticleBySlugPage = async (props: { params: Promise<{ slug: string }> }) =
 
   return (
     <>
-      <div className="relative flex min-h-[60vh] flex-col justify-end gap-2 p-4 sm:py-8 xl:min-h-[500px]">
+      <div className="relative mb-4 flex min-h-[60vh] flex-col justify-end gap-2 xl:min-h-[500px]">
         <Button variant={`ghost`} className="absolute top-24 left-4 sm:left-8" asChild>
           <Link href={`/articles`}>
             <ArrowLeft /> Back{" "}
