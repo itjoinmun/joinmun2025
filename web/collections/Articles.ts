@@ -1,11 +1,34 @@
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}
+
 export const Articles: CollectionConfig = {
   slug: "articles",
   admin: {
     useAsTitle: "title",
     group: "Content",
+  },
+  hooks: {
+    beforeValidate: [
+      ({ data, operation }) => {
+        if (!data) return;
+        // Auto-generate slug from title when creating or updating if slug not provided
+        const hasTitle = typeof data.title === "string" && data.title.trim().length > 0;
+        const hasSlug = typeof data.slug === "string" && data.slug.trim().length > 0;
+        if (hasTitle && !hasSlug) {
+          data.slug = generateSlug(data.title as string);
+        }
+      },
+    ],
   },
   fields: [
     {
@@ -25,21 +48,9 @@ export const Articles: CollectionConfig = {
         {
           name: "slug",
           type: "text",
-          required: true,
           unique: true,
           admin: {
-            placeholder: "your-title-here",
-            description:
-              "A slug is the URL-Friendly version of the corresponding title. For example, a title of 'Yogyakarta International' would have a slug of 'yogyakarta-international'.",
-          },
-        },
-        {
-          name: "author",
-          type: "text",
-          required: true,
-          admin: {
-            placeholder: "John Doe",
-            width: "50%",
+            readOnly: true,
           },
         },
         {

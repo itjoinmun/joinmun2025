@@ -17,7 +17,7 @@ const Articles = () => {
         <SubHeading>Articles</SubHeading>
 
         <section className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-12">
-          <Heading>Progressive Writing by Joinmun Delegates</Heading>
+          <Heading>Progressive Writing by JOINMUN Delegates</Heading>
 
           <div className="flex flex-col items-end justify-end gap-4 text-sm text-pretty text-white md:max-w-2xl">
             <Link

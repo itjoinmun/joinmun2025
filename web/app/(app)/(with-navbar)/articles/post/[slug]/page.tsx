@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import Container from "@/components/ui/container";
 import { formatDate } from "@/utils/helpers/cn";
 import config from "@payload-config";
-import { ArrowLeft, Clock, Share2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,14 +33,14 @@ const ArticleBySlugPage = async (props: { params: Promise<{ slug: string }> }) =
 
   return (
     <>
-      <div className="relative flex min-h-[60vh] flex-col justify-end gap-2 p-4 sm:p-8 xl:min-h-[500px]">
+      <div className="relative flex min-h-[60vh] flex-col justify-end gap-2 p-4 sm:py-8 xl:min-h-[500px]">
         <Button variant={`ghost`} className="absolute top-24 left-4 sm:left-8" asChild>
           <Link href={`/articles`}>
             <ArrowLeft /> Back{" "}
           </Link>
         </Button>
 
-        <Container className="z-10 mx-auto w-full max-w-3xl py-0">
+        <Container className="z-10 mx-auto w-full max-w-3xl px-0 py-0">
           <h1 className="text-gradient-gold text-4xl font-bold">{article.title}</h1>
         </Container>
 
@@ -55,24 +55,26 @@ const ArticleBySlugPage = async (props: { params: Promise<{ slug: string }> }) =
       </div>
 
       <Container className="max-w-3xl py-0">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-6 text-sm font-bold">
+        <div className="flex w-full flex-col sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex w-full flex-col gap-2">
+            <div className="flex w-full flex-wrap items-center justify-between gap-6 text-sm font-bold">
               <p>{typeof article.media === "object" && article.media.name}</p>
 
-              <p className="flex items-center gap-1">
+              {/* <p className="flex items-center gap-1">
                 <Clock className="size-4" /> 6 minute read
-              </p>
+              </p> */}
 
               <p>{formatDate(article.createdAt)}</p>
             </div>
 
-            <p className="text-sm text-neutral-300">By {article.author}</p>
+            <p className="text-sm text-neutral-300">
+              By {typeof article.media === "object" && article.media.author && article.media.author}
+            </p>
           </div>
 
-          <Button variant={`ghost`} size={`icon`}>
+          {/* <Button variant={`ghost`} size={`icon`}>
             <Share2 />
-          </Button>
+          </Button> */}
         </div>
 
         <hr className="border-accent my-8 w-full border-t-2" />

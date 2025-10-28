@@ -21,7 +21,7 @@ const ArticleCard = (props: Article) => {
       <div className="flex flex-1 flex-col justify-between gap-1 p-4 text-xs">
         <div className="text-accent flex items-center justify-between gap-1">
           <p>{formatDate(props.createdAt)}</p>
-          <p>{props.author}</p>
+          <p>{typeof props.media === "object" && props.media.author && props.media.author}</p>
         </div>
 
         <h2 className="line-clamp-3 text-lg font-bold text-white">{props.title}</h2>

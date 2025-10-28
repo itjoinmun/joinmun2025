@@ -167,11 +167,7 @@ export interface Media {
 export interface Article {
   id: number;
   title: string;
-  /**
-   * A slug is the URL-Friendly version of the corresponding title. For example, a title of 'Yogyakarta International' would have a slug of 'yogyakarta-international'.
-   */
-  slug: string;
-  author: string;
+  slug?: string | null;
   media: number | MediaPublisher;
   published?: boolean | null;
   /**
@@ -208,9 +204,10 @@ export interface MediaPublisher {
   id: number;
   name: string;
   /**
-   * A slug is the URL-Friendly version of the corresponding title. For example, a title of 'Yogyakarta International' would have a slug of 'yogyakarta-international'.
+   * The name of the author of the articles published by this publisher.
    */
-  slug: string;
+  author: string;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -326,7 +323,6 @@ export interface MediaSelect<T extends boolean = true> {
 export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  author?: T;
   media?: T;
   published?: T;
   image?: T;
@@ -341,6 +337,7 @@ export interface ArticlesSelect<T extends boolean = true> {
  */
 export interface MediaPublishersSelect<T extends boolean = true> {
   name?: T;
+  author?: T;
   slug?: T;
   updatedAt?: T;
   createdAt?: T;
