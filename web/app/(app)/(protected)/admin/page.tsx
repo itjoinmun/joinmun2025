@@ -478,33 +478,30 @@ const DashboardAdmin = () => {
             <button
               id="tab-delegates"
               onClick={() => handleTabChange("delegates")}
-              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${
-                activeTab === "delegates"
-                  ? "bg-background text-white shadow-sm"
-                  : "text-muted-foreground hover:text-background"
-              }`}
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${activeTab === "delegates"
+                ? "bg-background text-white shadow-sm"
+                : "text-muted-foreground hover:text-background"
+                }`}
             >
               Delegates ({totals.delegates})
             </button>
             <button
               id="tab-payments"
               onClick={() => handleTabChange("payments")}
-              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${
-                activeTab === "payments"
-                  ? "bg-background text-white shadow-sm"
-                  : "text-muted-foreground hover:text-background"
-              }`}
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${activeTab === "payments"
+                ? "bg-background text-white shadow-sm"
+                : "text-muted-foreground hover:text-background"
+                }`}
             >
               Payments ({totals.payments})
             </button>
             <button
               id="tab-papers"
               onClick={() => handleTabChange("papers")}
-              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${
-                activeTab === "papers"
-                  ? "bg-background text-white shadow-sm"
-                  : "text-muted-foreground hover:text-background"
-              }`}
+              className={`flex-shrink-0 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-all ${activeTab === "papers"
+                ? "bg-background text-white shadow-sm"
+                : "text-muted-foreground hover:text-background"
+                }`}
             >
               Position Papers ({totals.papers})
             </button>

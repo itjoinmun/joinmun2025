@@ -5,6 +5,7 @@ import Container from "../../components/ui/container";
 import { buttonVariants } from "../../components/ui/button";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
+import { cn } from "@/utils/helpers/cn";
 
 const NAV_LINKS = [
   {
@@ -39,15 +40,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`bg-background fixed z-40 flex h-16 items-center transition-all duration-500 ease-in-out ${
+      className={cn(
+        "bg-background fixed z-40 mx-0 flex h-16 items-center px-0 transition-all duration-500 ease-in-out",
         isScrolled
           ? "inset-x-0 top-0 md:inset-x-5 md:top-5 md:rounded-2xl md:shadow-md"
-          : "inset-x-0 top-0"
-      }`}
+          : "inset-x-0 top-0",
+        "4xl:inset-x-auto 4xl:top-5 4xl:rounded-2xl 4xl:shadow-md max-w-auto",
+      )}
     >
-      <Container className="max-w-none flex-row items-center justify-between gap-8 py-0">
+      <Container className="mx-0 w-auto flex-row items-center justify-between gap-8 px-0 py-0">
         <Logo />
-
         <DesktopNav />
         <MobileNav />
       </Container>

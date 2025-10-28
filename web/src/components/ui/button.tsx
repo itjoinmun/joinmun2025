@@ -20,8 +20,9 @@ const buttonVariants = cva(
         link: "text-white hover:text-white/80",
         ghost: "hover:bg-transparent hover:bg-gray-light/20 dark:hover:bg-accent/50",
         white: "bg-white text-black shadow-xs hover:bg-white/80",
-        warning: "bg-gold text-black hover:bg-gold/90",
+        warning: "bg-gold text-black hover:bg-gold/90 border border-gold",
         warningOutline: "bg-red-dark border border-gold text-gold hover:bg-red-dark-hover",
+        outlineGold: "bg-background border border-gold text-gold hover:bg-background/80 text-white",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
