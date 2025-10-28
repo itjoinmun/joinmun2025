@@ -1,3 +1,5 @@
+@reference "./globals.css";
+
 .rich h1 {
   @apply text-center text-4xl font-extrabold tracking-tight text-balance;
 }
