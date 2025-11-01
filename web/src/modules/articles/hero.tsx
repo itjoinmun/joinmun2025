@@ -11,7 +11,7 @@ const ArticlesHero = () => (
       <h1 className="">Articles</h1>
 
       <h2 className="text-gradient-gold text-2xl">
-        Progressive <strong>Writing</strong> by Joinmun <strong>Delegates</strong>
+        Progressive <strong>Writing</strong> by JOINMUN <strong>Delegates</strong>
       </h2>
 
       <ArticleSearchBar />
