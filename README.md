@@ -48,4 +48,3 @@ See [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to se
 - [Sultan Devino](https://github.com/sultandevin)
 - [Bobby Rahman](https://github.com/)
 - [Keyne](https://github.com/)
-
