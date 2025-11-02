@@ -2,9 +2,6 @@ import Container from "@/components/ui/container";
 import config from "@payload-config";
 import { getPayload } from "payload";
 import ArticleCard from "../articles/article-card";
-import { ClockFadingIcon } from "lucide-react";
-
-const isReveal = process.env.NEXT_PUBLIC_ARTICLES_REVEAL === "true";
 
 const HomeArticles = async () => {
   const payload = await getPayload({ config });
