@@ -8,6 +8,7 @@ const ArticleFilters = async () => {
   const { docs: publishers } = await payload.find({
     collection: "media-publishers",
     limit: 100,
+    sort: "name",
   });
 
   return (
