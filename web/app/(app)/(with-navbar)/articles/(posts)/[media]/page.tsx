@@ -20,6 +20,7 @@ export async function generateStaticParams() {
   const payload = await getPayload({ config });
   const { docs: publishers } = await payload.find({
     collection: "media-publishers",
+    limit: 100,
   });
 
   return publishers.map((publisher) => ({ media: publisher.slug }));
