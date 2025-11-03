@@ -7,6 +7,7 @@ const ArticleFilters = async () => {
   const payload = await getPayload({ config });
   const { docs: publishers } = await payload.find({
     collection: "media-publishers",
+    limit: 100,
   });
 
   return (
