@@ -29,7 +29,7 @@ export const EVENTS: EventSection[] = [
     events: [
       {
         title: "Opening Ceremony",
-        location: "Coming Soon",
+        location: "at Royal Ambarrukmo",
         date: "31 Oct",
         src: "main-event-opening.webp",
         loc: "",
@@ -50,21 +50,21 @@ export const EVENTS: EventSection[] = [
       },
       {
         title: "Networking Night",
-        location: "Coming Soon",
+        location: "at Gramm Hotel",
         date: "1 Nov",
         src: "main-event-networking-night.webp",
         loc: "Coming Soon",
       },
       {
         title: "Cultural Day",
-        location: "Coming Soon",
+        location: "at Royal Ambarrukmo",
         date: "2 Nov",
         src: "main-event-cultural-day.webp",
         loc: "Coming Soon",
       },
       {
         title: "Awarding Ceremony",
-        location: "Coming Soon",
+        location: "at Royal Ambarrukmo",
         date: "2 Nov",
         src: "main-event-awarding-ceremony.webp",
         loc: "Coming Soon",

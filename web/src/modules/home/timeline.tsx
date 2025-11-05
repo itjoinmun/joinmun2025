@@ -25,7 +25,7 @@ const TIMELINE_CONTENT = [
     title: "Late Wave Registration",
   },
   {
-    date: "Coming Soon",
+    date: "Until  30 Oct",
     title: "Roadshow",
   },
   {
