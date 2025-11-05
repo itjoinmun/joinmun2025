@@ -34,7 +34,7 @@ export default buildConfig({
   db: vercelPostgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || "",
-      // ssl: { rejectUnauthorized: false },
+      ssl: { rejectUnauthorized: false },
     },
   }),
   sharp,
