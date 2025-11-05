@@ -80,12 +80,12 @@ const LeaderCard = ({
             )}
 
             <Image
-              // src={`/assets/councils/${image}`}
-              src={
-                isChairsReveal
-                  ? `/lebron.webp`
-                  : `/assets/councils/coming-soon/chairs-placeholder.png`
-              }
+              src={`/councils/${image}`}
+              // src={
+              //   isChairsReveal
+              //     ? `/lebron.webp`
+              //     : `/assets/councils/coming-soon/chairs-placeholder.png`
+              // }
               alt={`${name}'s Image`}
               fill
               sizes="100%"
@@ -93,7 +93,7 @@ const LeaderCard = ({
             />
 
             {/* Text in Image */}
-            <div className="absolute bottom-4 left-4 z-10 lg:bottom-2 lg:left-2">
+            <div className="absolute bottom-4 left-4 z-10 lg:right-2 lg:bottom-2 lg:left-2">
               <h1 className="xs:text-base text-sm font-bold text-white md:text-lg lg:hidden">
                 {isChairsReveal ? role : "To be Announced"}
               </h1>
@@ -114,12 +114,9 @@ const LeaderCard = ({
                 <hr className="border-gray-light my-2 w-full border-b" />
 
                 <h3 className="text-sm">Past Experience</h3>
-                <ul className="mt-2 flex flex-wrap gap-2 text-xs text-white">
+                <ul className="my-1 list-inside list-disc flex-col flex-wrap gap-2 text-xs text-white">
                   {experiences.map((experience, index) => (
-                    <li
-                      key={index}
-                      className="rounded-full border border-neutral-500 bg-neutral-700/50 px-2.5 py-1 text-nowrap"
-                    >
+                    <li key={index} className="text-pretty">
                       {experience}
                     </li>
                   ))}
@@ -162,14 +159,22 @@ const LeaderCard = ({
                 <div className="bg-gradient-from-transparent absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black to-transparent" />
               </div>
 
-              <div className="bg-gray 2xs:p-4 flex w-3/5 flex-col justify-start rounded-md p-2">
+              <div className="bg-gray 2xs:p-4 flex min-h-[200px] w-3/5 flex-col justify-start rounded-md p-2">
                 <h3 className="self-start text-white">Past Experience</h3>
-                <ul className="xs:text-xs mt-3 flex flex-wrap gap-2 text-[10px] text-white">
+                <hr className="border-gray-light my-2 w-full border-b" />
+                {/*<ul className="xs:text-xs mt-3 flex flex-wrap gap-2 text-[10px] text-white">
                   {experiences.map((experience, index) => (
                     <li
                       key={index}
                       className="rounded-full border border-neutral-500 bg-neutral-700/50 px-2.5 py-1 text-start"
                     >
+                      {experience}
+                    </li>
+                  ))}
+                </ul>*/}
+                <ul className="xs:text-xs list-inside list-disc flex-col flex-wrap gap-2 text-start text-[10px] text-white">
+                  {experiences.map((experience, index) => (
+                    <li key={index} className="text-pretty">
                       {experience}
                     </li>
                   ))}
