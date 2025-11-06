@@ -5,21 +5,28 @@ import Lenis from "lenis";
 import { useEffect, useRef, useState } from "react";
 import Container from "../container";
 import { Heading, SubHeading } from "@/components/Layout/section-heading";
+import Image from "next/image";
 
 const images = [
-  "/images/lummi/img15.png",
-  "/images/lummi/img21.png",
-  "/images/lummi/img3.png",
-  "/images/lummi/img4.png",
-  "/images/lummi/img5.png",
-  "/images/lummi/img6.png",
-  "/images/lummi/img7.png",
-  "/images/lummi/img8.png",
-  "/images/lummi/img24.png",
-  "/images/lummi/img10.png",
-  "/images/lummi/img11.png",
-  "/images/lummi/img12.png",
-  "/images/lummi/img13.png",
+  "/moments/1.jpg",
+  "/moments/2.jpg",
+  "/moments/3.jpg",
+  "/moments/4.jpg",
+  "/moments/5.jpg",
+  "/moments/6.jpg",
+  "/moments/7.jpg",
+  "/moments/8.jpg",
+  "/moments/9.jpg",
+  "/moments/10.jpg",
+  "/moments/11.jpg",
+  "/moments/12.jpg",
+  "/moments/13.jpg",
+  "/moments/14.jpg",
+  "/moments/15.jpg",
+  "/moments/16.jpg",
+  "/moments/17.jpg",
+  "/moments/18.jpg",
+  "/moments/19.jpg",
 ];
 
 export default function Skiper30() {
@@ -72,19 +79,27 @@ export default function Skiper30() {
           className="bg-background relative box-border flex h-[175vh] gap-[2vw] overflow-hidden p-[2vw]"
         >
           <Column
-            images={[images[0], images[1], images[2], images[0], images[1], images[2]]}
+            images={[images[0], images[1], images[2], images[3], images[4], images[5]]}
             y={y}
           />
           <Column
-            images={[images[3], images[4], images[5], images[0], images[1], images[2]]}
+            images={[images[6], images[7], images[8], images[9], images[10], images[11]]}
             y={y2}
           />
           <Column
-            images={[images[6], images[7], images[8], images[0], images[1], images[2]]}
+            images={[
+              images[12],
+              images[13],
+              images[17],
+              images[16],
+              images[15],
+              images[5],
+              images[6],
+            ]}
             y={y3}
           />
           <Column
-            images={[images[9], images[10], images[11], images[0], images[1], images[2]]}
+            images={[images[13], images[11], images[12], images[18], images[9], images[10]]}
             y={y4}
           />
         </div>
@@ -135,7 +150,13 @@ function Column({ images, y }: ColumnProps) {
     >
       {images.map((src, i) => (
         <div key={i} className="relative h-auto w-full overflow-hidden">
-          <img src={`/sai.png`} alt="image" className="pointer-events-none object-cover" />
+          <Image
+            src={images[i]}
+            alt={`Image ${i + 1}`}
+            className="pointer-events-none object-cover"
+            width={3226}
+            height={2024}
+          />
         </div>
       ))}
     </motion.div>

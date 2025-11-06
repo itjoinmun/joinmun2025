@@ -23,16 +23,16 @@ const NAV_LINKS = [
     href: "/#theme",
   },
   {
+    name: "Articles",
+    href: "/#articles",
+  },
+  {
     name: "Rundown",
     href: "/#rundown",
   },
   {
     name: "Councils",
     href: "/#councils",
-  },
-  {
-    name: "Pricing",
-    href: "/#pricing",
   },
 ];
 
