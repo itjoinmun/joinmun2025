@@ -145,7 +145,7 @@ type ColumnProps = {
 function Column({ images, y }: ColumnProps) {
   return (
     <motion.div
-      className="relative -top-[45%] flex h-full w-1/4 min-w-[100px] flex-col gap-[2vw] first:top-[-45%] sm:min-w-[250px] [&:nth-child(2)]:top-[-95%] [&:nth-child(3)]:top-[-45%] [&:nth-child(4)]:top-[-75%]"
+      className="relative -top-[45%] flex h-full w-1/4 min-w-[180px] flex-col gap-[2vw] first:top-[-45%] sm:min-w-[250px] [&:nth-child(2)]:top-[-95%] [&:nth-child(3)]:top-[-45%] [&:nth-child(4)]:top-[-75%]"
       style={{ y }}
     >
       {images.map((src, i) => (
